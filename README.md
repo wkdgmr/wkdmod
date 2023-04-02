@@ -1,3 +1,11 @@
+# wkdmod is a fork of DevilutionX.  
+
+## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.
+### For Example: Don't drop items on death, and shared XP.
+### Also I plan on making some additional changes like giving all melee characters splash damage.  I will make a proper changelog at some point maybe.
+
+# Please see below this point for more information on the DevilutionX project.
+
 <p align="center">
 <img width="554" src="https://user-images.githubusercontent.com/204594/113575181-c946a400-961d-11eb-8347-a8829fa3830c.png">
 </p>
