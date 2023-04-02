@@ -2541,8 +2541,7 @@ void AddPlrMonstExper(int lvl, int exp, char pmask)
 
 	if (totplrs != 0) {
 		int e = exp / totplrs;
-		auto &player = Players[i];
-		AddPlrExperience(player.plractive, lvl, e);
+		AddPlrExperience(*MyPlayer, lvl, e);
 	}
 }
 
