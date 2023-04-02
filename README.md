@@ -1,4 +1,4 @@
-# wkdmod is a fork of DevilutionX.  
+# wkdmod is a fork of DevilutionX  
 
 ## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.
 ### For Example: Don't drop items on death, and shared XP.
