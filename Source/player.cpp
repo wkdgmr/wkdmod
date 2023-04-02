@@ -2802,44 +2802,33 @@ StartPlayerKill(Player &player, int earflag)
 				NewCursor(CURSOR_HAND);
 			}
 
-			if (!diablolevel) {
-				DropHalfPlayersGold(player);
-				if (earflag != -1) {
-					if (earflag != 0) {
-						Item ear;
-						InitializeItem(ear, IDI_EAR);
-						CopyUtf8(ear._iName, fmt::format(fmt::runtime(_("Ear of {:s}")), player._pName), sizeof(ear._iName));
-						CopyUtf8(ear._iIName, player._pName, sizeof(ear._iIName));
-						switch (player._pClass) {
-						case HeroClass::Sorcerer:
-							ear._iCurs = ICURS_EAR_SORCERER;
-							break;
-						case HeroClass::Warrior:
-							ear._iCurs = ICURS_EAR_WARRIOR;
-							break;
-						case HeroClass::Rogue:
-						case HeroClass::Monk:
-						case HeroClass::Bard:
-						case HeroClass::Barbarian:
-							ear._iCurs = ICURS_EAR_ROGUE;
-							break;
-						}
+			DropHalfPlayersGold(player);
+			if (earflag != -1) {
+				if (earflag != 0) {
+					Item ear;
+					InitializeItem(ear, IDI_EAR);
+					CopyUtf8(ear._iName, fmt::format(fmt::runtime(_("Ear of {:s}")), player._pName), sizeof(ear._iName));
+					CopyUtf8(ear._iIName, player._pName, sizeof(ear._iIName));
+					switch (player._pClass) {
+					case HeroClass::Sorcerer:
+						ear._iCurs = ICURS_EAR_SORCERER;
+						break;
+					case HeroClass::Warrior:
+						ear._iCurs = ICURS_EAR_WARRIOR;
+						break;
+					case HeroClass::Rogue:
+					case HeroClass::Monk:
+					case HeroClass::Bard:
+					case HeroClass::Barbarian:
+						ear._iCurs = ICURS_EAR_ROGUE;
+						break;
+					}
 
-						ear._iCreateInfo = player._pName[0] << 8 | player._pName[1];
-						ear._iSeed = player._pName[2] << 24 | player._pName[3] << 16 | player._pName[4] << 8 | player._pName[5];
-						ear._ivalue = player._pLevel;
-
-						if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
-							DeadItem(player, std::move(ear), { 0, 0 });
-						}
-					} else {
-						Direction pdd = player._pdir;
-						for (auto &item : player.InvBody) {
-							pdd = Left(pdd);
-							DeadItem(player, item.pop(), Displacement(pdd));
-						}
-
-						CalcPlrInv(player, false);
+					ear._iCreateInfo = player._pName[0] << 8 | player._pName[1];
+					ear._iSeed = player._pName[2] << 24 | player._pName[3] << 16 | player._pName[4] << 8 | player._pName[5];
+					ear._ivalue = player._pLevel;
+					if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
+						DeadItem(player, std::move(ear), { 0, 0 });
 					}
 				}
 			}
