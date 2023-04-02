@@ -2487,7 +2487,7 @@ void AddPlrExperience(Player &player, int lvl, int exp)
 
 	// Prevent power leveling for low level characters
 	 if (gbIsMultiplayer) {
-		const uint32_t clampedPlayerLevel = clamp(static_cast<int>(player._pLevel), 1, MAXCHARLEVEL);
+		const uint32_t clampedPlayerLevel = clamp(static_cast<int>(player._pLevel), 1, MaxCharacterLevel);
 
 		// for low level characters experience gain is capped to 1/20 of current levels xp
 		// REMOVED - for high level characters experience gain is capped to 200 * current level - this is a smaller value than 1/20 of the exp needed for the next level after level 5.
@@ -2541,7 +2541,7 @@ void AddPlrMonstExper(int lvl, int exp, char pmask)
 
 	if (totplrs != 0) {
 		int e = exp / totplrs;
-		AddPlrExperience(MyPlayer, lvl, e);
+		AddPlrExperience(Player, lvl, e);
 	}
 }
 
