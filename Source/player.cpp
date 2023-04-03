@@ -899,7 +899,7 @@ bool DoAttack(Player &player)
 		    || (player._pClass == HeroClass::Barbarian)
 			|| (player._pClass == HeroClass::Warrior)
 			|| (player._pClass == HeroClass::Rogue)
-			|| (player._pClass == HeroClass::Sorcerer) {
+			|| (player._pClass == HeroClass::Sorcerer)) {
 			// playing as a class/weapon with cleave
 			position = player.position.tile + Right(player._pdir);
 			monster = FindMonsterAtPosition(position);
