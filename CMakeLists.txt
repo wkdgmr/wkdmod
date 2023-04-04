@@ -62,9 +62,9 @@ if(NOT VERSION_SUFFIX)
   set(VERSION_SUFFIX "debug")
 endif()
 if(VERSION_NUM MATCHES untagged)
-  project(DevilutionX LANGUAGES C CXX)
+  project(wkdmod LANGUAGES C CXX)
 else()
-  project(DevilutionX
+  project(wkdmod
     VERSION ${VERSION_NUM}
     LANGUAGES C CXX)
 endif()
@@ -300,7 +300,7 @@ include(Dependencies)
 
 add_subdirectory(Source)
 
-set(BIN_TARGET devilutionx)
+set(BIN_TARGET wkdmod)
 if(NINTENDO_3DS)
   set(BIN_TARGET ${BIN_TARGET}.elf)
 endif()
@@ -357,7 +357,7 @@ set_relative_file_macro(${BIN_TARGET})
 
 if(APPLE)
   set_source_files_properties("./Packaging/apple/AppIcon.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-  set(MACOSX_BUNDLE_GUI_IDENTIFIER com.diasurgical.devilutionx)
+  set(MACOSX_BUNDLE_GUI_IDENTIFIER com.devx.wkdmod)
   set(MACOSX_BUNDLE_COPYRIGHT Unlicense)
   set(MACOSX_BUNDLE_BUNDLE_NAME devilutionx)
   set(MACOSX_BUNDLE_DISPLAY_NAME DevilutionX)
