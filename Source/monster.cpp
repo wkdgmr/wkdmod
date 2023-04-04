@@ -830,13 +830,11 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 	if (sendmsg)
 		NetSendCmdQuest(true, quest);
 	sgbSaveSoundOn = gbSoundOn;
-	gbProcessPlayers = false;
 	for (size_t i = 0; i < ActiveMonsterCount; i++) {
 		int monsterId = ActiveMonsters[i];
 		Monster &monster = Monsters[monsterId];
 		if (monster.type().type == MT_DIABLO || diablo.activeForTicks == 0)
 			continue;
-
 		NewMonsterAnim(monster, MonsterGraphic::Death, monster.direction);
 		monster.mode = MonsterMode::Death;
 		monster.var1 = 0;
@@ -4502,7 +4500,7 @@ void SpawnGolem(Player &player, Monster &golem, Point position, Missile &missile
 	golem.pathCount = 0;
 	golem.maxHitPoints = 100 + (missile._mispllvl * 5) + (myPlayer._pMagic * 2);
 	golem.hitPoints = golem.maxHitPoints;
-	golem.armorClass = 25 + (missile._mispllvl * 5) + myPlayer._pLevel;
+	golem.armorClass = 100 + (missile._mispllvl * 5) + myPlayer._pLevel;
 	golem.toHit = myPlayer._pMagic + (missile._mispllvl * 5);
 	golem.minDamage = missile._mispllvl + myPlayer._pLevel;
 	golem.maxDamage = (missile._mispllvl * 5) + myPlayer._pLevel + (myPlayer._pMagic / 2);

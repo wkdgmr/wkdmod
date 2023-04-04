@@ -1789,7 +1789,10 @@ void AddMagmaBall(Missile &missile, AddMissileParameter &parameter)
 	missile.position.traveled.deltaX += 3 * missile.position.velocity.deltaX;
 	missile.position.traveled.deltaY += 3 * missile.position.velocity.deltaY;
 	UpdateMissilePos(missile);
-	missile._mirange = 1;
+	if (!gbIsHellfire || (missile.position.velocity.deltaX & 0xFFFF0000) != 0 || (missile.position.velocity.deltaY & 0xFFFF0000) != 0)
+		missile._mirange = 256;
+	else
+		missile._mirange = 1;
 	missile.var1 = missile.position.start.x;
 	missile.var2 = missile.position.start.y;
 	missile._mlid = AddLight(missile.position.start, 8);
@@ -2211,7 +2214,10 @@ void AddAcid(Missile &missile, AddMissileParameter &parameter)
 {
 	UpdateMissileVelocity(missile, parameter.dst, 16);
 	SetMissDir(missile, GetDirection16(missile.position.start, parameter.dst));
-	missile._mirange = 1;
+	if (!gbIsHellfire || (missile.position.velocity.deltaX & 0xFFFF0000) != 0 || (missile.position.velocity.deltaY & 0xFFFF0000) != 0)
+		missile._mirange = 5 * (Monsters[missile._misource].intelligence + 4);
+	else
+		missile._mirange = 1;
 	missile._mlid = NO_LIGHT;
 	missile.var1 = missile.position.start.x;
 	missile.var2 = missile.position.start.y;
