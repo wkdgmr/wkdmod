@@ -159,7 +159,7 @@ void DrawSpellBook(const Surface &out)
 					if (sn != SpellID::BoneSpirit) {
 						int min;
 						int max;
-						GetDamageAmt(sn, &min, &max);
+						
 						if (min != -1) {
 							if (sn == SpellID::Healing || sn == SpellID::HealOther) {
 								PrintSBookStr(out, line1, fmt::format(fmt::runtime(_(/* TRANSLATORS: UI constraints, keep short please.*/ "Heals: {:d} - {:d}")), min, max), UiFlags::AlignRight);
