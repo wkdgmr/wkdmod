@@ -939,7 +939,7 @@ bool DoAttack(Player &player)
 						didhit = true;
 				}
 			}
-			position = player.position.tile + Right(Right(player._pdir))
+			position = player.position.tile + Right(Right(player._pdir));
 			monster = FindMonsterAtPosition(position);
 			if (monster != nullptr) {
 				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
