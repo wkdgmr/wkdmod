@@ -822,23 +822,24 @@ void StartEating(Monster &monster)
 	monster.position.old = monster.position.tile;
 }
 
-void DiabloDeath(Monster &diablo, bool sendmsg)
+void DiabloDeath(Monster &diablo, Monster &monster, bool sendmsg)
 {
 	PlaySFX(USFX_DIABLOD);
 	auto &quest = Quests[Q_DIABLO];
 	quest._qactive = QUEST_DONE;
+	if (monster.type().type == MT_DIABLO) {}
+		CreateMagicWeapon(monster.position.tile, ItemType::Gold, ICURS_GOLD_LARGE, sendmsg, false);
+		CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
+		CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
+		CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
+		CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
+		CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
 	if (sendmsg)
 		NetSendCmdQuest(true, quest);
 	if (!gbIsMultiplayer) {
 		Player &myPlayer = *MyPlayer;
 		myPlayer.pDiabloKillLevel = std::max(myPlayer.pDiabloKillLevel, static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1));
 	}
-	CreateMagicWeapon(diablo.position.tile, ItemType::Gold, ICURS_GOLD_LARGE, sendmsg, false);
-	CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
-	CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
-	CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
-	CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
-	CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
 }
 
 void SpawnLoot(Monster &monster, bool sendmsg)
