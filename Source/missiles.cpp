@@ -763,7 +763,7 @@ bool IsMissileBlockedByTile(Point tile)
 	return object != nullptr && !object->_oMissFlag;
 }
 
-void GetDamageAmt(SpellID i, int *mind, int *maxd, Missile &missile)
+void GetDamageAmt(SpellID i, int *mind, int *maxd)
 {
 	assert(MyPlayer != nullptr);
 	assert(i >= SpellID::FIRST && i <= SpellID::LAST);
@@ -857,8 +857,8 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd, Missile &missile)
 		*maxd += *maxd / 2;
 		break;
 	case SpellID::Golem:
-		*mind = missile._mispllvl + myPlayer._pLevel;
-		*maxd = (missile._mispllvl * 5) + myPlayer._pLevel + (myPlayer._pMagic / 2);
+		*mind = 11;
+		*maxd = 17;
 		break;
 	case SpellID::Apocalypse:
 		*mind = myPlayer._pLevel;
