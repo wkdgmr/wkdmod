@@ -5,7 +5,9 @@ if (buildAsApplication) {
 } else {
 	apply plugin: 'com.android.library'
 }
+task prepareKotlinBuildScriptModel {
 
+}
 android {
 	//ndkVersion '25.0.8775105'
 	//ndkVersion '24.0.8215888'
@@ -42,7 +44,7 @@ android {
 		}
 		externalNativeBuild {
 			cmake {
-				path '../CMakeLists.txt'
+				path '../../CMakeLists.txt'
 				version "3.22.1+"
 				buildStagingDirectory System.env.DevilutionX_Android_StagingDirectory
 			}
