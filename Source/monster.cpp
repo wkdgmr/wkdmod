@@ -1177,20 +1177,6 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		}
 		return;
 	}
-	if (monster.type().type == MT_YZOMBIE && &player == MyPlayer) {
-		if (player._pMaxHP > 64) {
-			if (player._pMaxHPBase > 64) {
-				player._pMaxHP -= 64;
-				if (player._pHitPoints > player._pMaxHP) {
-					player._pHitPoints = player._pMaxHP;
-				}
-				player._pMaxHPBase -= 64;
-				if (player._pHPBase > player._pMaxHPBase) {
-					player._pHPBase = player._pMaxHPBase;
-				}
-			}
-		}
-	}
 	int dam = (minDam << 6) + GenerateRnd(((maxDam - minDam) << 6) + 1);
 	dam = std::max(dam + (player._pIGetHit << 6), 64);
 	if (&player == MyPlayer) {
@@ -1495,22 +1481,7 @@ void ShrinkLeaderPacksize(const Monster &monster)
 void MonsterDeath(Monster &monster)
 {
 	monster.var1++;
-	if (monster.type().type == MT_DIABLO) {
-		if (monster.position.tile.x < ViewPosition.x) {
-			ViewPosition.x--;
-		} else if (monster.position.tile.x > ViewPosition.x) {
-			ViewPosition.x++;
-		}
-
-		if (monster.position.tile.y < ViewPosition.y) {
-			ViewPosition.y--;
-		} else if (monster.position.tile.y > ViewPosition.y) {
-			ViewPosition.y++;
-		}
-
-		if (monster.var1 == 140)
-			PrepDoEnding();
-	} else if (monster.animInfo.isLastFrame()) {
+	if (monster.animInfo.isLastFrame()) {
 		if (monster.isUnique())
 			AddCorpse(monster.position.tile, monster.corpseId, monster.direction);
 		else
@@ -4523,17 +4494,18 @@ void TalktoMonster(Player &player, Monster &monster)
 
 void SpawnGolem(Player &player, Monster &golem, Point position, Missile &missile)
 {
+	Player &myPlayer = *MyPlayer;
 	dMonster[position.x][position.y] = golem.getId() + 1;
 	golem.position.tile = position;
 	golem.position.future = position;
 	golem.position.old = position;
 	golem.pathCount = 0;
-	golem.maxHitPoints = 2 * (320 * missile._mispllvl + player._pMaxMana / 3);
+	golem.maxHitPoints = 100 + (missile._mispllvl * 5) + (myPlayer._pMagic * 2);
 	golem.hitPoints = golem.maxHitPoints;
-	golem.armorClass = 25;
-	golem.toHit = 5 * (missile._mispllvl + 8) + 2 * player._pLevel;
-	golem.minDamage = 2 * (missile._mispllvl + 4);
-	golem.maxDamage = 2 * (missile._mispllvl + 8);
+	golem.armorClass = 25 + (missile._mispllvl * 5) + myPlayer._pLevel;
+	golem.toHit = myPlayer._pMagic + (missile._mispllvl * 5);
+	golem.minDamage = missile._mispllvl + myPlayer._pLevel;
+	golem.maxDamage = (missile._mispllvl * 5) + myPlayer._pLevel + (myPlayer._pMagic / 2);
 	golem.flags |= MFLAG_GOLEM;
 	StartSpecialStand(golem, Direction::South);
 	UpdateEnemy(golem);

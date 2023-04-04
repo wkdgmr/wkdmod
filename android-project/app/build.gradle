@@ -42,7 +42,7 @@ android {
 		}
 		externalNativeBuild {
 			cmake {
-				path '../../CMakeLists.txt'
+				path '../CMakeLists.txt'
 				version "3.22.1+"
 				buildStagingDirectory System.env.DevilutionX_Android_StagingDirectory
 			}

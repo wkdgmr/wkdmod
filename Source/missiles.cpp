@@ -451,11 +451,6 @@ void CheckMissileCol(Missile &missile, DamageType damageType, int minDamage, int
 	}
 
 	if (isPlayerHit) {
-		if (gbIsHellfire && blocked) {
-			RotateBlockedMissile(missile);
-		} else if (!dontDeleteOnCollision) {
-			missile._mirange = 0;
-		}
 		missile._miHitFlag = true;
 	}
 
@@ -768,7 +763,7 @@ bool IsMissileBlockedByTile(Point tile)
 	return object != nullptr && !object->_oMissFlag;
 }
 
-void GetDamageAmt(SpellID i, int *mind, int *maxd)
+void GetDamageAmt(SpellID i, int *mind, int *maxd, Missile &missile)
 {
 	assert(MyPlayer != nullptr);
 	assert(i >= SpellID::FIRST && i <= SpellID::LAST);
@@ -862,8 +857,8 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd += *maxd / 2;
 		break;
 	case SpellID::Golem:
-		*mind = 11;
-		*maxd = 17;
+		*mind = missile._mispllvl + myPlayer._pLevel;
+		*maxd = (missile._mispllvl * 5) + myPlayer._pLevel + (myPlayer._pMagic / 2);
 		break;
 	case SpellID::Apocalypse:
 		*mind = myPlayer._pLevel;
@@ -1072,16 +1067,6 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 		}
 
 		dam = std::max(dam, 64);
-	}
-
-	if ((resper <= 0 || gbIsHellfire) && blk < blkper) {
-		Direction dir = player._pdir;
-		if (monster != nullptr) {
-			dir = GetDirection(player.position.tile, monster->position.tile);
-		}
-		*blocked = true;
-		StartPlrBlock(player, dir);
-		return true;
 	}
 
 	if (resper > 0) {
@@ -1804,10 +1789,7 @@ void AddMagmaBall(Missile &missile, AddMissileParameter &parameter)
 	missile.position.traveled.deltaX += 3 * missile.position.velocity.deltaX;
 	missile.position.traveled.deltaY += 3 * missile.position.velocity.deltaY;
 	UpdateMissilePos(missile);
-	if (!gbIsHellfire || (missile.position.velocity.deltaX & 0xFFFF0000) != 0 || (missile.position.velocity.deltaY & 0xFFFF0000) != 0)
-		missile._mirange = 256;
-	else
-		missile._mirange = 1;
+	missile._mirange = 1;
 	missile.var1 = missile.position.start.x;
 	missile.var2 = missile.position.start.y;
 	missile._mlid = AddLight(missile.position.start, 8);
@@ -2229,10 +2211,7 @@ void AddAcid(Missile &missile, AddMissileParameter &parameter)
 {
 	UpdateMissileVelocity(missile, parameter.dst, 16);
 	SetMissDir(missile, GetDirection16(missile.position.start, parameter.dst));
-	if (!gbIsHellfire || (missile.position.velocity.deltaX & 0xFFFF0000) != 0 || (missile.position.velocity.deltaY & 0xFFFF0000) != 0)
-		missile._mirange = 5 * (Monsters[missile._misource].intelligence + 4);
-	else
-		missile._mirange = 1;
+	missile._mirange = 1;
 	missile._mlid = NO_LIGHT;
 	missile.var1 = missile.position.start.x;
 	missile.var2 = missile.position.start.y;
@@ -3765,9 +3744,6 @@ void ProcessApocalypse(Missile &missile)
 				continue;
 			if (TileHasAny(dPiece[k][j], TileProperties::Solid))
 				continue;
-			if (gbIsHellfire && !LineClearMissile(missile.position.tile, { k, j }))
-				continue;
-
 			int id = missile._misource;
 			AddMissile({ k, j }, { k, j }, Players[id]._pdir, MissileID::ApocalypseBoom, TARGET_MONSTERS, id, missile._midam, 0);
 			missile.var2 = j;
