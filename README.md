@@ -1,10 +1,26 @@
-# wkdmod is a fork of DevilutionX  
+# wkdmod is a fork of DevilutionX and aims to implement more quality of life changes that are deemed out of scope for DevX.  This modified version of DevilutionX focuses on a more modern and casual approach to ARPG gameplay and mechanics.
 
-## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.
-### For Example: Don't drop items on death, and shared XP.
-### Also I plan on making some additional changes like giving all melee characters splash damage.  I will make a proper changelog at some point maybe.
+## v1.0.1 Latest Release Notes:
 
-# Please see below this point for more information on the DevilutionX project.
+Current DevX Master (as of 4/2/2023) with additional features:
+
+I have made adjustments to the the melee splash damage changes I made in 1.0.0. Splash damage now does damage to two extra tiles (so its more like a U instead of a T, the shape of the splash), and can be accessed with the following classes/weapons:
+- Monk + Staff, 2H Sword
+- Warrior + 2H Sword (I am considering adding 1H Sword splash for Warrior, will consider feedback)
+- Barbarian + 2H Sword, 2H Axe, Staff, 2H Mace
+- Bard + 2x 1h Sword, 2x 1h Mace, or any combination of 1h Swords and Maces
+(I removed splash from Rogue and Sorcerer melee attacks as those classes do not need any extra power)
+
+- Players do not drop items on death (you will still drop gold if it is on your character and not in the stash).
+- Shared XP in multiplayer games.
+- Black Deaths no longer permanently damage your character.
+- Warrior, Barbarian, and Bard have all received a melee ToHit buff and are no longer desperate for Dexterity/ToHit gear.
+- Warrior and Bard have received a buff to ranged ToHit as well.
+- When Diablo is killed the game does not end and he drops loot.
+- Buffed Nakrul drops slightly.
+- Hellfire spell blocking has been completely removed.
+
+### Please see below this point for more information on the DevilutionX project.
 
 <p align="center">
 <img width="554" src="https://user-images.githubusercontent.com/204594/113575181-c946a400-961d-11eb-8347-a8829fa3830c.png">
