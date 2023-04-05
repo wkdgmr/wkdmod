@@ -20,7 +20,7 @@ android {
 		minSdkVersion 18
 		targetSdkVersion 32
 		versionCode 22
-		versionName "1.0.1"
+		versionName "1.0.2"
 		externalNativeBuild {
 			cmake {
 				arguments "-DANDROID_STL=c++_static"
@@ -57,7 +57,7 @@ android {
 			variant.outputs.each { output ->
 				def outputFile = output.outputFile
 				if (outputFile != null && outputFile.name.endsWith(".aar")) {
-					def fileName = "org.diasurgical.devilutionx.aar"
+					def fileName = "org.devx.wkdmod.aar"
 					output.outputFile = new File(outputFile.parent, fileName)
 				}
 			}
