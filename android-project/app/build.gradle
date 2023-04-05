@@ -15,12 +15,12 @@ android {
 	compileSdkVersion 32
 	defaultConfig {
 		if (buildAsApplication) {
-			applicationId "org.wkdgmr.wkdmod"
+			applicationId "org.diasurgical.devilutionx"
 		}
 		minSdkVersion 18
 		targetSdkVersion 32
 		versionCode 22
-		versionName "1.0.2"
+		versionName "1.0.1"
 		externalNativeBuild {
 			cmake {
 				arguments "-DANDROID_STL=c++_static"

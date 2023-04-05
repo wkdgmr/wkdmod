@@ -62,9 +62,9 @@ if(NOT VERSION_SUFFIX)
   set(VERSION_SUFFIX "debug")
 endif()
 if(VERSION_NUM MATCHES untagged)
-  project(wkdmod LANGUAGES C CXX)
+  project(DevilutionX LANGUAGES C CXX)
 else()
-  project(wkdmod
+  project(DevilutionX
     VERSION ${VERSION_NUM}
     LANGUAGES C CXX)
 endif()
@@ -300,7 +300,7 @@ include(Dependencies)
 
 add_subdirectory(Source)
 
-set(BIN_TARGET wkdmod)
+set(BIN_TARGET devilutionx)
 if(NINTENDO_3DS)
   set(BIN_TARGET ${BIN_TARGET}.elf)
 endif()
