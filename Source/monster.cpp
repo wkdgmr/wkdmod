@@ -1235,9 +1235,6 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		return;
 	}
 
-	if (monster.type().type == MT_YZOMBIE) {
-		monster.hitPoints += dam;
-	}
 
 	int dam = (minDam << 6) + GenerateRnd(((maxDam - minDam) << 6) + 1);
 	dam = std::max(dam + (player._pIGetHit << 6), 64);
@@ -1262,7 +1259,7 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING && gbIsMultiplayer
 		&& (monster.type().type == MT_YZOMBIE))
 		monster.hitPoints += dam;
-	}
+		
 	if (player._pHitPoints >> 6 <= 0) {
 		if (gbIsHellfire)
 			M_StartStand(monster, monster.direction);
