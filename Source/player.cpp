@@ -563,7 +563,6 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
 			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-				NetSendCmdDelItem(true, INVLOC_HAND_LEFT);
 				player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
 			}
 			CalcPlrInv(player, true);
@@ -580,7 +579,6 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
 			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-				NetSendCmdDelItem(true, INVLOC_HAND_RIGHT);
 				player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
 			}		
 			CalcPlrInv(player, true);
@@ -597,7 +595,6 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
 			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-				NetSendCmdDelItem(true, INVLOC_HAND_RIGHT);
 				player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
 			}
 			CalcPlrInv(player, true);
@@ -614,7 +611,6 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
 			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-				NetSendCmdDelItem(true, INVLOC_HAND_LEFT);
 				player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
 			}
 			CalcPlrInv(player, true);
@@ -1067,7 +1063,6 @@ void DamageParryItem(Player &player)
 			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
 			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-				NetSendCmdDelItem(true, INVLOC_HAND_LEFT);
 				player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
 			}
 			CalcPlrInv(player, true);
@@ -1080,7 +1075,6 @@ void DamageParryItem(Player &player)
 				player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
 				if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-					NetSendCmdDelItem(true, INVLOC_HAND_RIGHT);
 					player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
 				}
 				CalcPlrInv(player, true);
@@ -1142,11 +1136,6 @@ void DamageArmor(Player &player)
 	}
 	
 	if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-		if (targetHead) {
-			NetSendCmdDelItem(true, INVLOC_CHEST);
-		} else {
-			NetSendCmdDelItem(true, INVLOC_HEAD);
-		}
 		pi->_itype = ItemType::None;
 	}
 
