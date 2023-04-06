@@ -562,9 +562,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
 			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-				player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
-			}
+			player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
 			CalcPlrInv(player, true);
 			return true;
 		}
@@ -578,9 +576,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
 			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-				player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
-			}		
+			player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;		
 			CalcPlrInv(player, true);
 			return true;
 		}
@@ -594,9 +590,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
 			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-				player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
-			}
+			player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
 			CalcPlrInv(player, true);
 			return true;
 		}
@@ -610,9 +604,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
 			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-				player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
-			}
+			player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
 			CalcPlrInv(player, true);
 			return true;
 		}
@@ -1062,9 +1054,7 @@ void DamageParryItem(Player &player)
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
 			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-				player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
-			}
+			player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
 			CalcPlrInv(player, true);
 		}
 	}
@@ -1074,9 +1064,7 @@ void DamageParryItem(Player &player)
 			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
 				player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-				if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-					player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
-				}
+				player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
 				CalcPlrInv(player, true);
 			}
 		}
@@ -1128,17 +1116,10 @@ void DamageArmor(Player &player)
 
 	if (pi->_iDurability != 0) {
 		pi->_iDurability--;
-		if (*sgOptions.Gameplay.allowZeroDurabilityItems) {
-			if (pi->_iDurability == 0)
-				CalcPlrInv(player, true);
-		}
+		if (pi->_iDurability == 0)
+			CalcPlrInv(player, true);
 		return;
 	}
-	
-	if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
-		pi->_itype = ItemType::None;
-	}
-
 
 	CalcPlrInv(player, true);
 }
