@@ -453,6 +453,15 @@ void CheckMissileCol(Missile &missile, DamageType damageType, int minDamage, int
 	if (isPlayerHit) {
 		missile._miHitFlag = true;
 	}
+	
+	if (isPlayerHit) {
+		if (gbIsHellfire && blocked) {
+			continue;
+		} else if (!dontDeleteOnCollision) {
+			missile._mirange = 0;
+		}
+		missile._miHitFlag = true;
+	}
 
 	if (IsMissileBlockedByTile({ mx, my })) {
 		Object *object = FindObjectAtPosition({ mx, my });
@@ -1067,6 +1076,16 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 		}
 
 		dam = std::max(dam, 64);
+	}
+
+	if ((resper <= 0 || gbIsHellfire) && blk < blkper) {
+		Direction dir = player._pdir;
+		if (monster != nullptr) {
+			dir = GetDirection(player.position.tile, monster->position.tile);
+		}
+		*blocked = true;
+		StartPlrBlock(player, dir);
+		return true;
 	}
 
 	if (resper > 0) {
@@ -3749,6 +3768,8 @@ void ProcessApocalypse(Missile &missile)
 			if (Monsters[mid].isPlayerMinion())
 				continue;
 			if (TileHasAny(dPiece[k][j], TileProperties::Solid))
+				continue;
+			if (gbIsHellfire && !LineClearMissile(missile.position.tile, { k, j }))
 				continue;
 			int id = missile._misource;
 			AddMissile({ k, j }, { k, j }, Players[id]._pdir, MissileID::ApocalypseBoom, TARGET_MONSTERS, id, missile._midam, 0);

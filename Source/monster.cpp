@@ -843,11 +843,25 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		M_ClearSquares(monster);
 		dMonster[monster.position.tile.x][monster.position.tile.y] = monsterId + 1;
 	}
-	CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
-	CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
-	CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
-	CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
-	CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
+	if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BROAD_AXE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
+	} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
+	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
+	}
 	AddLight(diablo.position.tile, 8);
 	DoVision(diablo.position.tile, 8, MAP_EXP_NONE, true);
 	int dist = diablo.position.tile.WalkingDistance(ViewPosition);
@@ -857,8 +871,7 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 	diablo.position.temp.x = ViewPosition.y << 16;
 	diablo.position.temp.y = (int)((diablo.var3 - (diablo.position.tile.x << 16)) / (double)dist);
 	if (!gbIsMultiplayer) {
-		Player &myPlayer = *MyPlayer;
-		myPlayer.pDiabloKillLevel = std::max(myPlayer.pDiabloKillLevel, static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1));
+		sgGameInitInfo.nDifficulty + 1;
 	}
 }
 
@@ -875,11 +888,30 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 				stream_stop();
 			Quests[Q_DEFILER]._qlog = false;
 			SpawnMapOfDoom(monster.position.tile, sendmsg);
+			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_LARGE_SHIELD, sendmsg, false);
+			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_TOWER_SHIELD, sendmsg, false);
+			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_GOTHIC_SHIELD, sendmsg, false);
+			}
 		} else if (monster.uniqueType == UniqueMonsterType::HorkDemon) {
 			if (sgGameInitInfo.bTheoQuest != 0) {
 				SpawnTheodore(monster.position.tile, sendmsg);
 			} else {
-				CreateAmulet(monster.position.tile, 13, sendmsg, false);
+				if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+					CreateAmulet(monster.position.tile, 15, sendmsg, false);
+				} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+					CreateAmulet(monster.position.tile, 30, sendmsg, false);
+				} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+					CreateAmulet(monster.position.tile, 50, sendmsg, false);
+				}
 			}
 		} else if (monster.type().type == MT_NAKRUL) {
 			int nSFX = IsUberRoomOpened ? USFX_NAKRUL4 : USFX_NAKRUL5;
@@ -889,14 +921,32 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 				stream_stop();
 			Quests[Q_NAKRUL]._qlog = false;
 			UberDiabloMonsterIndex = -2;
-			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Gold, ICURS_GOLD_LARGE, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
-			CreateSpellBook(monster.position.tile, SpellID::Apocalypse, sendmsg, false);
+			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+				CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_TWO_HANDED_SWORD, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_BROAD_AXE, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+				CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+				CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
+				CreateSpellBook(monster.position.tile, SpellID::Apocalypse, sendmsg, false);
+			}
+
 		} else if (!monster.isPlayerMinion()) {
 			SpawnItem(monster, monster.position.tile, sendmsg);
 		}
@@ -1184,6 +1234,11 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		}
 		return;
 	}
+
+	if (monster.type().type == MT_YZOMBIE) {
+		monster.hitPoints += dam;
+	}
+
 	int dam = (minDam << 6) + GenerateRnd(((maxDam - minDam) << 6) + 1);
 	dam = std::max(dam + (player._pIGetHit << 6), 64);
 	if (&player == MyPlayer) {
@@ -1204,8 +1259,10 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 			M_StartHit(monster, player, mdam);
 	}
 
-	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING && gbIsMultiplayer)
+	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING && gbIsMultiplayer
+		&& (monster.type().type == MT_YZOMBIE))
 		monster.hitPoints += dam;
+	}
 	if (player._pHitPoints >> 6 <= 0) {
 		if (gbIsHellfire)
 			M_StartStand(monster, monster.direction);
