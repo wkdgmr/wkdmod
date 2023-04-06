@@ -1078,7 +1078,10 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 		dam = std::max(dam, 64);
 	}
 
-	if (resper <= 0 && blk < blkper && mtype == MissileID::Arrow) {
+	if ((resper <= 0 && blk < blkper)
+		|| (resper <= 0 && blk < blkper && mtype == MissileID::Arrow))
+	
+	{
 		Direction dir = player._pdir;
 		if (monster != nullptr) {
 			dir = GetDirection(player.position.tile, monster->position.tile);
