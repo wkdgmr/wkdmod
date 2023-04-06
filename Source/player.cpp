@@ -559,9 +559,13 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 			return false;
 		}
 
-		player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability <= 0) {
-			RemoveEquipment(player, INVLOC_HAND_LEFT, true);
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
+				NetSendCmdDelItem(true, INVLOC_HAND_LEFT);
+				player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
+			}
 			CalcPlrInv(player, true);
 			return true;
 		}
@@ -572,9 +576,13 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 			return false;
 		}
 
-		player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-			RemoveEquipment(player, INVLOC_HAND_RIGHT, true);
+			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
+				NetSendCmdDelItem(true, INVLOC_HAND_RIGHT);
+				player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
+			}		
 			CalcPlrInv(player, true);
 			return true;
 		}
@@ -585,9 +593,13 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 			return false;
 		}
 
-		player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-			RemoveEquipment(player, INVLOC_HAND_RIGHT, true);
+			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
+				NetSendCmdDelItem(true, INVLOC_HAND_RIGHT);
+				player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
+			}
 			CalcPlrInv(player, true);
 			return true;
 		}
@@ -598,9 +610,13 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 			return false;
 		}
 
-		player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			RemoveEquipment(player, INVLOC_HAND_LEFT, true);
+			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
+				NetSendCmdDelItem(true, INVLOC_HAND_LEFT);
+				player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
+			}
 			CalcPlrInv(player, true);
 			return true;
 		}
@@ -1047,18 +1063,26 @@ void DamageParryItem(Player &player)
 			return;
 		}
 
-		player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			RemoveEquipment(player, INVLOC_HAND_LEFT, true);
+			if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
+				NetSendCmdDelItem(true, INVLOC_HAND_LEFT);
+				player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
+			}
 			CalcPlrInv(player, true);
 		}
 	}
 
 	if (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield) {
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != DUR_INDESTRUCTIBLE) {
-			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
+			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+				player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-				RemoveEquipment(player, INVLOC_HAND_RIGHT, true);
+				if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
+					NetSendCmdDelItem(true, INVLOC_HAND_RIGHT);
+					player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
+				}
 				CalcPlrInv(player, true);
 			}
 		}
@@ -1108,16 +1132,25 @@ void DamageArmor(Player &player)
 		return;
 	}
 
-	pi->_iDurability--;
 	if (pi->_iDurability != 0) {
+		pi->_iDurability--;
+		if (*sgOptions.Gameplay.allowZeroDurabilityItems) {
+			if (pi->_iDurability == 0)
+				CalcPlrInv(player, true);
+		}
 		return;
 	}
-
-	if (targetHead) {
-		RemoveEquipment(player, INVLOC_HEAD, true);
-	} else {
-		RemoveEquipment(player, INVLOC_CHEST, true);
+	
+	if (!*sgOptions.Gameplay.allowZeroDurabilityItems) {
+		if (targetHead) {
+			NetSendCmdDelItem(true, INVLOC_CHEST);
+		} else {
+			NetSendCmdDelItem(true, INVLOC_HEAD);
+		}
+		pi->_itype = ItemType::None;
 	}
+
+
 	CalcPlrInv(player, true);
 }
 

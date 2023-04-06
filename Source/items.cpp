@@ -517,7 +517,8 @@ void CalcSelfItems(Player &player)
 
 			if (currstr >= equipment._iMinStr
 			    && currmag >= equipment._iMinMag
-			    && currdex >= equipment._iMinDex)
+			    && currdex >= equipment._iMinDex
+				&& ((equipment._iClass == ICLASS_MISC || equipment._iClass == ICLASS_GOLD || equipment._iClass == ICLASS_QUEST) || equipment._iDurability != 0))
 				continue;
 
 			changeflag = true;
@@ -2686,6 +2687,9 @@ void CalcPlrInv(Player &player, bool loadgfx)
 		for (Item &item : InventoryAndBeltPlayerItemsRange { player }) {
 			item.updateRequiredStatsCacheForPlayer(player);
 		}
+		for (Item &item : PlayerItemsRange { player }) {
+			item._iStatFlag = player.CanUseItem(item);
+		}
 		player.CalcScrolls();
 		CalcPlrStaff(player);
 		if (IsStashOpen) {
@@ -4544,6 +4548,8 @@ void initItemGetRecords()
 
 void RepairItem(Item &item, int lvl)
 {
+	auto &myPlayer = Players[MyPlayerId];
+
 	if (item._iDurability == item._iMaxDur) {
 		return;
 	}
@@ -4564,6 +4570,7 @@ void RepairItem(Item &item, int lvl)
 	} while (rep + item._iDurability < item._iMaxDur);
 
 	item._iDurability = std::min<int>(item._iDurability + rep, item._iMaxDur);
+	CalcPlrInv(myPlayer, true);
 }
 
 void RechargeItem(Item &item, Player &player)

@@ -374,7 +374,8 @@ struct Player {
 	{
 		return _pStrength >= item._iMinStr
 		    && _pMagic >= item._iMinMag
-		    && _pDexterity >= item._iMinDex;
+		    && _pDexterity >= item._iMinDex
+			&& (IsAnyOf(item._iClass, ICLASS_MISC, ICLASS_GOLD, ICLASS_QUEST) || item._iDurability != 0);
 	}
 
 	/**
