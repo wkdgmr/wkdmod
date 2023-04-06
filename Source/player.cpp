@@ -909,8 +909,10 @@ bool DoAttack(Player &player)
 							|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace)))
 			|| (player._pClass == HeroClass::Warrior
 				&& (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword
+					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)
+					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace)
 					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)
-					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace)))
+					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword)))
 			|| (player._pClass == HeroClass::Sorcerer
 				&& (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Staff))
 			|| (player.plrlevel == 40)
