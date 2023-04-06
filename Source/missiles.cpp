@@ -456,7 +456,7 @@ void CheckMissileCol(Missile &missile, DamageType damageType, int minDamage, int
 	
 	if (isPlayerHit) {
 		if (gbIsHellfire && blocked) {
-			continue;
+			RotateBlockedMissile(missile);
 		} else if (!dontDeleteOnCollision) {
 			missile._mirange = 0;
 		}
