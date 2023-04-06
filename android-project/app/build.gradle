@@ -15,7 +15,7 @@ android {
 	compileSdkVersion 32
 	defaultConfig {
 		if (buildAsApplication) {
-			applicationId "org.diasurgical.devilutionx"
+			applicationId "org.devilutionx.wkdmod"
 		}
 		minSdkVersion 18
 		targetSdkVersion 32
@@ -57,7 +57,7 @@ android {
 			variant.outputs.each { output ->
 				def outputFile = output.outputFile
 				if (outputFile != null && outputFile.name.endsWith(".aar")) {
-					def fileName = "org.wkdgmr.wkdmod.aar"
+					def fileName = "org.devilutionx.wkdmod.aar"
 					output.outputFile = new File(outputFile.parent, fileName)
 				}
 			}
