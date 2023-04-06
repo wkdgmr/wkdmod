@@ -1,6 +1,10 @@
 # wkdmod is a fork of DevilutionX
 ## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.  This modified version of DevilutionX focuses on a more modern and casual approach to ARPG gameplay and mechanics.
 
+wkdmod is compatible with standard DevilutionX characters. Simply copy your character data and stash data into the wkdgmr/wkdmod folder in %appdata%/roaming/
+
+wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
+
 ### **DevX Master** (as of 4/2/2023) with additional **NEW** features:
 
 - When Diablo is killed the game does not end and he drops loot.
