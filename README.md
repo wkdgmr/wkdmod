@@ -1,35 +1,23 @@
-# wkdmod is a fork of DevilutionX
-## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.  This modified version of DevilutionX focuses on a more modern and casual approach to ARPG gameplay and mechanics.
+# Theodore-s-Lair
+[![Discord Channel](https://img.shields.io/discord/518540764754608128?color=%237289DA&logo=discord&logoColor=%23FFFFFF)]([https://discord.gg/YQKCAYQ](https://discord.gg/9EXmpkVxsf))
+[![Download]([https://img.shields.io/discord/518540764754608128?color=%237289DA&logo=discord&logoColor=%23FFFFFF]([https://img.shields.io/github/downloads/diasurgical/devilutionX/total.svg))](https://discord.gg/YQKCAYQ](https://github.com/dinde451/Theodore-s-Lair/releases/tag/v1.0.0))
+[![Theodore's lair website](https://img.shields.io/discord/518540764754608128?color=%237289DA&logo=discord&logoColor=%23FFFFFF)]([https://discord.gg/YQKCAYQ](https://dinde451.github.io/Theodore-s-Lair/))
 
-wkdmod is compatible with standard DevilutionX characters. Simply copy your character data and stash data into the wkdgmr/wkdmod folder in %appdata%/roaming/
+Theodore's lair is a mod for Diablo 1 and Hellfire (Hellfire is recommended) that aims to increase the difficulty of the game and add more content based on the germanic folklore. We add some germanic monsters and we rename others, we add some unique item with variables and we add some new bosses.
 
-wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
+before the horadrim used it as a temple and built the cathedral on it, the dungeon was the kingdom of the Nibelungen, a people of dwarfs. the years have passed and the dwarves have died, leaving their treasures in the hands of evil creatures, notably a dragon who has renamed Nibelung and his legion.
 
-### **DevX Master** (as of 4/2/2023) with additional **NEW** features:
+The Horadrim have decided to lock the soul stone of Diablo, the lord of terror there because no one can survive the monster in the dungeon. however Diablo is free and in the dungeon ready to destroy Tristram.
 
-- When Diablo is killed the game does not end and he drops loot (drops 5 items).
-- When killing Diablo, Nakrul, Hork Demon or Defiler loot drop tiers are determined by difficulty.  Best drops from these bosses will be found on Hell difficulty.
-- Buffed Nakrul drops slightly (drops 7 items).
-- Buffed Defiler Drops (drops 4 items)
-- Hork Demon amulet drop is now a higher item level depending on difficulty (Normal: ilvl 15, Nightmare: ilvl 20, Hell: ilvl 30) and he drops one extra random item.
-- Items are no longer destroyed at 0 durability, they become disabled and you must repair.
-- Players do not drop items on death (you will still drop gold if it is on your character and not in the stash).
-- Shared XP in multiplayer games.
-- Black Deaths no longer permanently damage your character, HOWEVER, they have been given the same LIFESTEAL mechanic as the Skeleton King.
-- Warrior, Barbarian, and Bard have all received a melee ToHit buff and are no longer desperate for Dexterity/ToHit gear.
-- Warrior and Bard have received a buff to ranged ToHit as well.
-- Hellfire spell blocking has been completely removed.
+Many adventurers tried to kill Diablo and find the treasure, like the brave knight Sirfreid or Odoacer the soldier but none of them came back...
 
-**Splash damage now does damage to two extra tiles** (so its more like a U instead of a T, the shape of the splash), and can be accessed with the following classes/weapons:
-- **Monk:** Staff, 2H Sword
-- **Warrior:** 2H Sword, 1H Sword + Shield, 1H Mace + Shield (must have Shield equipped for splash to work with 1H)
-- **Barbarian:** 2H Sword, 2H Axe, Staff, 2H Mace
-- **Bard:** 2x 1H Sword, 2x 1H Mace, or 1H Sword + 1H Mace
-- **Sorcerer:** Staff
+If you need help or just want to trade item or play with other you can go on our site with this link :https://dinde451.github.io/Theodore-s-Lair/
 
-**AT LEVEL 40 ALL CLASSES UNLOCK WEAPONS EXPERT WHICH GRANTS UNRESTRICTED SPLASH FOR ALL WEAPONS INCLUDING BAREHANDED!!!**
+Theodore's lair is built using DevilutionX a great mod for Diablo 1 and Hellfire you can download it by this link: https://github.com/diasurgical/devilutionX
+Also we use the Zerotier server of DevilutionX so sometimes there is somme little bug or lag.
+The expansion pack is at it start so if you want to help us just pull a request to ask the files of our mod and we will mabey send it to you so you can help us with our mod.
 
-### Please see below this point for more information on the DevilutionX project.
+https://github.com/MarsmoucheStudio/DiabloTL
 
 <p align="center">
 <img width="554" src="https://user-images.githubusercontent.com/204594/113575181-c946a400-961d-11eb-8347-a8829fa3830c.png">
