@@ -908,9 +908,9 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 				if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 					CreateAmulet(monster.position.tile, 15, sendmsg, false);
 				} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-					CreateAmulet(monster.position.tile, 30, sendmsg, false);
+					CreateAmulet(monster.position.tile, 20, sendmsg, false);
 				} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-					CreateAmulet(monster.position.tile, 50, sendmsg, false);
+					CreateAmulet(monster.position.tile, 30, sendmsg, false);
 				}
 			}
 		} else if (monster.type().type == MT_NAKRUL) {
