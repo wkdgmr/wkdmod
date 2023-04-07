@@ -888,14 +888,17 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
                 CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_FULL_HELM, sendmsg, false);
                 CreateMagicWeapon(monster.position.tile, ItemType::LightArmor, ICURS_STUDDED_LEATHER_ARMOR, sendmsg, false);
                 CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_LARGE_SHIELD, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
 			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 				CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_CROWN, sendmsg, false);
 				CreateMagicWeapon(monster.position.tile, ItemType::MediumArmor, ICURS_SPLINT_MAIL, sendmsg, false);
-				CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_TOWER_SHIELD, sendmsg, false);	
+				CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_TOWER_SHIELD, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
 			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 				CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_GREAT_HELM, sendmsg, false);
 				CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
 				CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_GOTHIC_SHIELD, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
 			}
 			if (effect_is_playing(USFX_DEFILER8))
 				stream_stop();
@@ -907,10 +910,13 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 			} else {
 				if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 					CreateAmulet(monster.position.tile, 15, sendmsg, false);
+					SpawnItem(monster, monster.position.tile, sendmsg);
 				} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 					CreateAmulet(monster.position.tile, 20, sendmsg, false);
+					SpawnItem(monster, monster.position.tile, sendmsg);
 				} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 					CreateAmulet(monster.position.tile, 30, sendmsg, false);
+					SpawnItem(monster, monster.position.tile, sendmsg);
 				}
 			}
 		} else if (monster.type().type == MT_NAKRUL) {
