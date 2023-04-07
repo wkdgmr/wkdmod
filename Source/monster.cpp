@@ -886,22 +886,20 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		} else if (monster.uniqueType == UniqueMonsterType::Defiler) {
 			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 				CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_FULL_HELM, sendmsg, false);
-				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
-				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::LightArmor, ICURS_STUDDED_LEATHER_ARMOR, sendmsg, false);
 				CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_LARGE_SHIELD, sendmsg, false);
 			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 				CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_CROWN, sendmsg, false);
-				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
-				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::MediumArmor, ICURS_SPLINT_MAIL, sendmsg, false);
 				CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_TOWER_SHIELD, sendmsg, false);	
 			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 				CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_GREAT_HELM, sendmsg, false);
-				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
-				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
+				CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
 				CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_GOTHIC_SHIELD, sendmsg, false);
 			}
 			if (effect_is_playing(USFX_DEFILER8))
 				stream_stop();
+			Quests[Q_DEFILER]._qlog = false;
 			SpawnMapOfDoom(monster.position.tile, sendmsg);
 		} else if (monster.uniqueType == UniqueMonsterType::HorkDemon) {
 			if (sgGameInitInfo.bTheoQuest != 0) {
