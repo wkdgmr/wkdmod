@@ -7,11 +7,11 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 
 ### **DevX Master** (as of 4/2/2023) with additional **NEW** features:
 
-- When Diablo is killed the game does not end and he drops loot.
+- When Diablo is killed the game does not end and he drops loot (drops 5 items).
 - When killing Diablo, Nakrul, Hork Demon or Defiler loot drop tiers are determined by difficulty.  Best drops from these bosses will be found on Hell difficulty.
-- Buffed Nakrul drops slightly.
-- Buffed Defiler Drops
-- Hork Demon amulet drop is now a higher item level depending on difficulty.  He drops a Lvl 50 amulet on Hell ;)
+- Buffed Nakrul drops slightly (drops 7 items).
+- Buffed Defiler Drops (drops 4 items)
+- Hork Demon amulet drop is now a higher item level depending on difficulty (Normal: ilvl 15, Nightmare: ilvl 20, Hell: ilvl 30) and he drops one extra random item.
 - Items are no longer destroyed at 0 durability, they become disabled and you must repair.
 - Players do not drop items on death (you will still drop gold if it is on your character and not in the stash).
 - Shared XP in multiplayer games.
