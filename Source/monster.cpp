@@ -903,6 +903,7 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 			if (effect_is_playing(USFX_DEFILER8))
 				stream_stop();
 			SpawnMapOfDoom(monster.position.tile, sendmsg);
+			Quests[Q_DEFILER]._qlog = false;
 		} else if (monster.uniqueType == UniqueMonsterType::HorkDemon) {
 			if (sgGameInitInfo.bTheoQuest != 0) {
 				SpawnTheodore(monster.position.tile, sendmsg);
