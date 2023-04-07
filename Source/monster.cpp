@@ -884,10 +884,6 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		if (Quests[Q_GARBUD].IsAvailable() && monster.uniqueType == UniqueMonsterType::Garbud) {
 			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
 		} else if (monster.uniqueType == UniqueMonsterType::Defiler) {
-			if (effect_is_playing(USFX_DEFILER8))
-				stream_stop();
-			Quests[Q_DEFILER]._qlog = false;
-			SpawnMapOfDoom(monster.position.tile, sendmsg);
 			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 				CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_FULL_HELM, sendmsg, false);
 				CreateMagicWeapon(monster.position.tile, ItemType::LightArmor, ICURS_STUDDED_LEATHER_ARMOR, sendmsg, false);
@@ -901,6 +897,9 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 				CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
 				CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_GOTHIC_SHIELD, sendmsg, false);
 			}
+			if (effect_is_playing(USFX_DEFILER8))
+				stream_stop();
+			SpawnMapOfDoom(monster.position.tile, sendmsg);
 		} else if (monster.uniqueType == UniqueMonsterType::HorkDemon) {
 			if (sgGameInitInfo.bTheoQuest != 0) {
 				SpawnTheodore(monster.position.tile, sendmsg);
