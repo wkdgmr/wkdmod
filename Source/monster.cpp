@@ -871,7 +871,7 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 	diablo.position.temp.x = ViewPosition.y << 16;
 	diablo.position.temp.y = (int)((diablo.var3 - (diablo.position.tile.x << 16)) / (double)dist);
 	if (!gbIsMultiplayer) {
-		sgGameInitInfo.nDifficulty + 1;
+		static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1);
 	}
 }
 
@@ -885,9 +885,9 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
 		} else if (monster.uniqueType == UniqueMonsterType::Defiler) {
 			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
-				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
-				CreateMagicWeapon(monster.position.tile, ItemType::Ring, ICURS_RING, sendmsg, false);
+                CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_FULL_HELM, sendmsg, false);
+                CreateMagicWeapon(monster.position.tile, ItemType::LightArmor, ICURS_STUDDED_LEATHER_ARMOR, sendmsg, false);
+                CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_LARGE_SHIELD, sendmsg, false);
 			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 				CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_CROWN, sendmsg, false);
 				CreateMagicWeapon(monster.position.tile, ItemType::MediumArmor, ICURS_SPLINT_MAIL, sendmsg, false);
