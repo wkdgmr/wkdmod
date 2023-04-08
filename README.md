@@ -1,6 +1,11 @@
 # wkdmod is a fork of DevilutionX
 ## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.  This modified version of DevilutionX focuses on a more modern and casual approach to ARPG gameplay and mechanics.
 
+<video width="320" height="240" controls>
+  <source src="https://www.youtube.com/watch?v=qGFhbjFcxxQ" type="video/mp4">
+Your browser does not support the video tag.
+</video>
+
 wkdmod is compatible with standard DevilutionX characters. Simply copy your character data and stash data into the wkdgmr/wkdmod folder in %appdata%/roaming/
 
 wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
