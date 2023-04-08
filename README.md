@@ -1,18 +1,9 @@
 # wkdmod is a fork of DevilutionX
 ## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.  This modified version of DevilutionX focuses on a more modern and casual approach to ARPG gameplay and mechanics.
 
-<video>
-  <source src="https://www.youtube.com/watch?v=qGFhbjFcxxQ" type="video/mp4">
-Your browser does not support the video tag.
-</video>
-
 <a href="https://www.youtube.com/watch?v=qGFhbjFcxxQ">
 <img src="https://github.com/wkdgmr/wkdmod/blob/1e45674d564003a906c145185e141bda8ed285d9/wkdmodbanner.jpg" alt="wkdmod banner" width="838">
 </a>
-
-<p align="center">
-<img width="838" src="https://user-images.githubusercontent.com/204594/113578478-26912400-9623-11eb-9ff6-9bd9717462b6.png">
-</p>
 
 wkdmod is compatible with standard DevilutionX characters. Simply copy your character data and stash data into the wkdgmr/wkdmod folder in %appdata%/roaming/
 
