@@ -596,7 +596,77 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 		}
 	}
 
-	if (player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield) {
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Axe && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (!player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON && player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
 			return false;
 		}
