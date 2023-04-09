@@ -871,7 +871,8 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 	diablo.position.temp.x = ViewPosition.y << 16;
 	diablo.position.temp.y = (int)((diablo.var3 - (diablo.position.tile.x << 16)) / (double)dist);
 	if (!gbIsMultiplayer) {
-		static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1);
+		Player &myPlayer = *MyPlayer;
+		myPlayer.pDiabloKillLevel = (myPlayer, static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1));
 	}
 }
 
@@ -3850,7 +3851,7 @@ void PrepDoEnding()
 
 	Player &myPlayer = *MyPlayer;
 
-	myPlayer.pDiabloKillLevel = std::max(myPlayer.pDiabloKillLevel, static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1));
+	myPlayer.pDiabloKillLevel = static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1);
 
 	for (Player &player : Players) {
 		player._pmode = PM_QUIT;
