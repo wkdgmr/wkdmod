@@ -398,8 +398,8 @@ endif()
 
 if(NINTENDO_SWITCH)
   nx_generate_nacp (${BIN_TARGET}.nacp
-    NAME    "DevilutionX"
-    AUTHOR  "Devilution Team"
+    NAME    "wkdmod"
+    AUTHOR  "wkdgmr"
     VERSION "${PROJECT_VERSION}"
   )
 
@@ -411,7 +411,7 @@ if(NINTENDO_SWITCH)
 endif()
 
 if(VITA)
-  set(VITA_APP_NAME "devilutionX")
+  set(VITA_APP_NAME "wkdmod")
   set(VITA_TITLEID  "DVLX00001")
   set(VITA_VERSION  "01.00")
   set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1")
@@ -442,13 +442,13 @@ if(PS4)
     COMMAND ${CMAKE_COMMAND} -E copy ${DEVILUTIONX_MPQ} "${PROJECT_SOURCE_DIR}/Packaging/ps4/")
   add_self(${BIN_TARGET})
   add_pkg(${BIN_TARGET} "${PROJECT_SOURCE_DIR}/Packaging/ps4"
-    "DVLX00001" "DevilutionX" "${PROJECT_VERSION}")
+    "DVLX00001" "wkdmod" "${PROJECT_VERSION}")
 endif()
 
 if(NINTENDO_3DS)
-  set(APP_TITLE       "DevilutionX")
-  set(APP_DESCRIPTION "DevilutionX port for 3DS")
-  set(APP_AUTHOR      "Diasurgical Team")
+  set(APP_TITLE       "wkdmod")
+  set(APP_DESCRIPTION "wkdmod a DevilutionX mod")
+  set(APP_AUTHOR      "wkdgmr")
   set(APP_ICON        "${PROJECT_SOURCE_DIR}/Packaging/ctr/icon.png")
   set(APP_BANNER      "${PROJECT_SOURCE_DIR}/Packaging/ctr/banner.png")
   set(APP_AUDIO       "${CMAKE_BINARY_DIR}/banner_audio.wav")

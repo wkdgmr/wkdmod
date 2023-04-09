@@ -2,8 +2,8 @@
 <component type="desktop-application">
   <id>org.diasurgical.DevilutionX</id>
   
-  <name>DevilutionX</name>
-  <summary>Diablo/Hellfire source port for modern operating systems</summary>
+  <name>wkdmod</name>
+  <summary>Diablo and Hellfire balance patch</summary>
   
   <metadata_license>CC-BY-SA-4.0</metadata_license>
   <project_license>LicenseRef=https://github.com/diasurgical/devilutionX/blob/master/LICENSE.md</project_license>

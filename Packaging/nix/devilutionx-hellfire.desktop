@@ -1,14 +1,14 @@
 [Desktop Entry]
-Name=DevilutionX Hellfire
-GenericName=DevilutionX Hellfire
+Name=wkdmod Hellfire
+GenericName=wkdmod Hellfire
 Comment=Play Diablo: Hellfire
 Comment[da]=Spil Diablo: Hellfire
 Comment[hr]=Igrajte Diablo: Hellfire
 Comment[it]=Gioca a Diablo: Hellfire
 Comment[ru]=Играть в Diablo: Hellfire
 Comment[ua]=Грати в Diablo: Hellfire
-Exec=devilutionx --hellfire
-Icon=devilutionx-hellfire
+Exec=wkdmod
+Icon=wkdmod-hellfire
 Terminal=false
 Type=Application
 X-DCOP-ServiceType=Multi
