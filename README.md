@@ -34,7 +34,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - **Bard:** 2x 1H Sword, 2x 1H Mace, or 1H Sword + 1H Mace
 - **Sorcerer:** Staff
 
-**AT LEVEL 40 ALL CLASSES UNLOCK WEAPONS EXPERT WHICH GRANTS UNRESTRICTED SPLASH FOR ALL WEAPONS INCLUDING BAREHANDED!!!**
+**WEAPONS EXPERT** (unlocked at Lvl 40) All classes gain access to splash damage on all melee weapons and barehanded.
 
 ### Please see below this point for more information on the DevilutionX project.
 
