@@ -30,6 +30,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - (Hellfire) Cow Quest can be turned on if you want to score some backstage tickets to Aerosmith at the coliseum and get an OP mid-game chest armor
 - No Random is recommended for quests, but playing with random on for flavor is fine if that's your thing
 - Friendly Fire OFF
+
 **DEVIATE FROM THESE RECOMMENDATIONS AT YOUR PERIL**
 
 ### **DevX Master** (as of 4/9/2023) with additional **NEW** features:
