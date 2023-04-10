@@ -8,7 +8,7 @@
 
 <a href="https://www.youtube.com/watch?v=6lJHouylAdA" target="_blank" rel="noopener noreferrer">wkdmod gameplay trailer</a>
 
-wkdmod is compatible with standard DevilutionX characters. Simply copy your character data and stash data into the wkdgmr/wkdmod folder in %appdata%/roaming/
+wkdmod is compatible with standard DevilutionX characters. Simply copy your character data and stash data into the devxmods/wkdmod folder in %appdata%/roaming/
 
 wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 
