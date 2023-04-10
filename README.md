@@ -30,8 +30,8 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - (Hellfire) Theo OFF
 - (Hellfire) Cow Quest can be turned on if you want to score some backstage tickets to Aerosmith at the coliseum and get an OP mid-game chest armor
 - Friendly Fire OFF
-
-**DEVIATE FROM THESE RECOMMENDATIONS AT YOUR PERIL**
+- **DEVIATE FROM THESE RECOMMENDATIONS AT YOUR PERIL**
+- Please feel free to change any setting not mentioned here to your preference.
 
 ### **DevX Master** (as of 4/9/2023) with additional **NEW** features:
 
