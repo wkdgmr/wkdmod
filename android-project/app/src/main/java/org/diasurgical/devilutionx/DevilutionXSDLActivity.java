@@ -132,7 +132,7 @@ public class DevilutionXSDLActivity extends SDLActivity {
 
 	protected String[] getLibraries() {
 		return new String[]{
-				"devilutionx"
+				"wkdmod"
 		};
 	}
 }
