@@ -22,6 +22,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - (Hellfire only) Fixed a bug where killing Nakrul on Android devices results in a crash
 
 **RECOMMENDED GAME SETTINGS FOR WKDMOD**
+- <a href="https://github.com/wkdgmr/wkdmod/blob/5d408772fc32f20652193196221e57e9a8e1692b/diablo.ini" target="_blank" rel="noopener noreferrer">DOWNLOAD PRECONFIGURED SETTINGS FILE</a> place this file into the **devxmods/wkdmod folder in %appdata%/roaming/**
 - **WARNING SINGLEPLAYER GAMEMODE IS UNSTABLE AT THIS TIME DO NOT PLAY**
 - Multiplayer (Select Loopback to play solo offline)
 - SP QUESTS IN MP OFF
