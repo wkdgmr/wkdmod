@@ -961,10 +961,11 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			SpawnItem(monster, monster.position.tile, sendmsg);
 			SpawnItem(monster, monster.position.tile, sendmsg);
 
-		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL)
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 			SpawnItem(monster, monster.position.tile, sendmsg);
 			SpawnItem(monster, monster.position.tile, sendmsg);
 			SpawnItem(monster, monster.position.tile, sendmsg);
+		}
 	}
 }
 
