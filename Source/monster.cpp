@@ -831,7 +831,7 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 	if (sendmsg)
 		NetSendCmdQuest(true, quest);
 
-	if (sgGameInitInfo.nDifficulty == DIFF_NORMAL)
+	if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
@@ -839,7 +839,7 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 
-	if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE)
+	} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
@@ -847,7 +847,7 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 
-	if (sgGameInitInfo.nDifficulty == DIFF_HELL)
+	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL)
 		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
@@ -864,14 +864,14 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 void SpawnLoot(Monster &monster, bool sendmsg)
 {
 	if (monster.type().type == MT_HORKSPWN) {
-		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL)
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 			SpawnItem(monster, monster.position.tile, sendmsg);
 
-		if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE)
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 			SpawnItem(monster, monster.position.tile, sendmsg);
 			SpawnItem(monster, monster.position.tile, sendmsg);
 
-		if (sgGameInitInfo.nDifficulty == DIFF_HELL)
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL)
 			SpawnItem(monster, monster.position.tile, sendmsg);
 			SpawnItem(monster, monster.position.tile, sendmsg);
 			SpawnItem(monster, monster.position.tile, sendmsg);
@@ -883,23 +883,10 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 
 	} else if (monster.uniqueType == UniqueMonsterType::Defiler) {
 
-		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL)
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-
-		if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE)
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-
-		if (sgGameInitInfo.nDifficulty == DIFF_HELL)
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		SpawnItem(monster, monster.position.tile, sendmsg);
 
 		if (effect_is_playing(USFX_DEFILER8))
 			stream_stop();
@@ -910,16 +897,16 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 		if (sgGameInitInfo.bTheoQuest != 0) {
 			SpawnTheodore(monster.position.tile, sendmsg);
 		} else {
-			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL)
+			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 				CreateAmulet(monster.position.tile, 15, sendmsg, false);
 				SpawnItem(monster, monster.position.tile, sendmsg);
 
-			if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE)
+			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 				CreateAmulet(monster.position.tile, 20, sendmsg, false);
 				SpawnItem(monster, monster.position.tile, sendmsg);
 				SpawnItem(monster, monster.position.tile, sendmsg);
 
-			if (sgGameInitInfo.nDifficulty == DIFF_HELL)
+			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL)
 				CreateAmulet(monster.position.tile, 30, sendmsg, false);
 				SpawnItem(monster, monster.position.tile, sendmsg);
 				SpawnItem(monster, monster.position.tile, sendmsg);
@@ -927,7 +914,7 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 		}
 	} else if (monster.type().type == MT_NAKRUL) {
 
-		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL)
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_TWO_HANDED_SWORD, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
@@ -936,7 +923,7 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
 
-		if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE)
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
@@ -945,7 +932,7 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
 
-		if (sgGameInitInfo.nDifficulty == DIFF_HELL)
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL)
 			CreateSpellBook(monster.position.tile, SpellID::Apocalypse, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
@@ -963,14 +950,14 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 		UberDiabloMonsterIndex = -2;
 
 	} else if (!monster.isPlayerMinion()) {
-		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL)
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 			SpawnItem(monster, monster.position.tile, sendmsg);
 
-		if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) 
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 			SpawnItem(monster, monster.position.tile, sendmsg);
 			SpawnItem(monster, monster.position.tile, sendmsg);
 
-		if (sgGameInitInfo.nDifficulty == DIFF_HELL)
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL)
 			SpawnItem(monster, monster.position.tile, sendmsg);
 			SpawnItem(monster, monster.position.tile, sendmsg);
 			SpawnItem(monster, monster.position.tile, sendmsg);
