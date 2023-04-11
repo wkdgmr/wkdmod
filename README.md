@@ -22,16 +22,16 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - (Hellfire only) Fixed a bug where killing Nakrul on Android devices results in a crash
 
 **RECOMMENDED GAME SETTINGS FOR WKDMOD**
-- <a href="https://github.com/wkdgmr/wkdmod/blob/5d408772fc32f20652193196221e57e9a8e1692b/diablo.ini" target="_blank" rel="noopener noreferrer">DOWNLOAD PRECONFIGURED SETTINGS FILE</a> place this file into the **devxmods/wkdmod folder in %appdata%/roaming/** (or whatever location the game data is located depending on device you are playing on)
 - **WARNING SINGLEPLAYER GAMEMODE IS UNSTABLE AT THIS TIME DO NOT PLAY**
+- <a href="https://github.com/wkdgmr/wkdmod/blob/5d408772fc32f20652193196221e57e9a8e1692b/diablo.ini" target="_blank" rel="noopener noreferrer">DOWNLOAD PRECONFIGURED SETTINGS FILE</a> place this file into the **devxmods/wkdmod folder in %appdata%/roaming/** (or whatever location the game data is located depending on device you are playing on)
 - Multiplayer (Select Loopback to play solo offline)
 - SP QUESTS IN MP OFF
 - Crippling Shrines OFF
 - (Hellfire) Theo OFF
 - (Hellfire) Cow Quest can be turned on if you want to score some backstage tickets to Aerosmith at the coliseum and get an OP mid-game chest armor
 - Friendly Fire OFF
-
-**DEVIATE FROM THESE RECOMMENDATIONS AT YOUR PERIL**
+- **DEVIATE FROM THESE RECOMMENDATIONS AT YOUR PERIL**
+- Please feel free to change any setting not mentioned here to your preference.
 
 ### **DevX Master** (as of 4/9/2023) with additional **NEW** features:
 
