@@ -877,9 +877,7 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 	} else if (monster.uniqueType == UniqueMonsterType::Defiler) {
 		if (effect_is_playing(USFX_DEFILER8))
 			stream_stop();
-		Quests[Q_DEFILER]._qlog = false;
-		if (!gbIsMultiplayer)
-			SpawnMapOfDoom(monster.position.tile, sendmsg);
+		SpawnMapOfDoom(monster.position.tile, sendmsg);
 		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 			CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_FULL_HELM, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::LightArmor, ICURS_STUDDED_LEATHER_ARMOR, sendmsg, false);
@@ -920,7 +918,6 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			nSFX = USFX_NAKRUL6;
 		if (effect_is_playing(nSFX))
 			stream_stop();
-		Quests[Q_NAKRUL]._qlog = false;
 		UberDiabloMonsterIndex = -2;
 		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_TWO_HANDED_SWORD, sendmsg, false);
