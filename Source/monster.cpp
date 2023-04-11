@@ -837,18 +837,21 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BROAD_AXE, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 	} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 		if (gbIsHellfire)
 			CreateSpellBook(diablo.position.tile, SpellID::Nova, sendmsg, false);
 	}
@@ -877,22 +880,25 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 	} else if (monster.uniqueType == UniqueMonsterType::Defiler) {
 		if (effect_is_playing(USFX_DEFILER8))
 			stream_stop();
-		SpawnMapOfDoom(monster.position.tile, sendmsg);
+		Quests[Q_DEFILER]._qlog = false;
 		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			SpawnMapOfDoom(monster.position.tile, sendmsg);
 			CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_FULL_HELM, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::LightArmor, ICURS_STUDDED_LEATHER_ARMOR, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_LARGE_SHIELD, sendmsg, false);
-			SpawnItem(monster, monster.position.tile, sendmsg);
+			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MORNING_STAR, sendmsg, false);
 		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			SpawnMapOfDoom(monster.position.tile, sendmsg);
 			CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_CROWN, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::MediumArmor, ICURS_SPLINT_MAIL, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_TOWER_SHIELD, sendmsg, false);
-			SpawnItem(monster, monster.position.tile, sendmsg);
+			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_WAR_HAMMER, sendmsg, false);
 		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			SpawnMapOfDoom(monster.position.tile, sendmsg);
 			CreateMagicWeapon(monster.position.tile, ItemType::Helm, ICURS_GREAT_HELM, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Shield, ICURS_GOTHIC_SHIELD, sendmsg, false);
-			SpawnItem(monster, monster.position.tile, sendmsg);
+			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_FLAIL, sendmsg, false);
 		}
 	} else if (monster.uniqueType == UniqueMonsterType::HorkDemon) {
 		if (sgGameInitInfo.bTheoQuest != 0) {
@@ -918,26 +924,28 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			nSFX = USFX_NAKRUL6;
 		if (effect_is_playing(nSFX))
 			stream_stop();
+		Quests[Q_NAKRUL]._qlog = false;
 		UberDiabloMonsterIndex = -2;
 		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_TWO_HANDED_SWORD, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_BROAD_AXE, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
-			SpawnItem(monster, monster.position.tile, sendmsg);
 		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
-			SpawnItem(monster, monster.position.tile, sendmsg);
 		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
