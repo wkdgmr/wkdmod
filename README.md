@@ -12,6 +12,10 @@ wkdmod is compatible with standard DevilutionX characters. Simply copy your char
 
 wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 
+**Added in 1.0.3:**
+- 1.0.2 Hot Fix finally fixed Defiler crash bug
+- GitHub Repo and GitHub actions clean up.  Fixing wkdmod application name on assets and artifacts
+
 **Added in 1.0.2:**
 
 - New Icon and application name to help differentiate wkdmod from other DevilutionX mods you might be playing!
