@@ -36,5 +36,13 @@ jobs:
       if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
-        name: devilutionx_x64.zip
+        name: wkdmod_x64.zip
         path: build/devilutionx.zip
+        
+    - name: Update Release
+      if: ${{ github.event_name == 'release' && !env.ACT }}
+      uses: svenstaro/upload-release-action@v2
+      with:
+        asset_name: wkdmod_x64.zip
+        file: build/wkdmod_x64.zip
+        overwrite: true
