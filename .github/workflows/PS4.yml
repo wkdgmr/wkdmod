@@ -47,7 +47,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: wkdmod-ps4.pkg
-        path: build-ps4/wkdmod-ps4.pkg
+        path: build-ps4/devilutionx-ps4.pkg
 
     - name: Update Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
