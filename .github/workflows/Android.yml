@@ -50,5 +50,12 @@ jobs:
       if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
-        name: devilutionx-debug.apk
+        name: wkdmod-android.apk
         path: android-project/app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Update Release
+      if: ${{ github.event_name == 'release' && !env.ACT }}
+      uses: svenstaro/upload-release-action@v2
+      with:
+        asset_name: wkdmod-android.apk
+        overwrite: true
