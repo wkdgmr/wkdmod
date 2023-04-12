@@ -33,14 +33,14 @@ jobs:
       if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
-        name: devilutionx-src.tar.xz
+        name: wkdmod-src.tar.xz
         path: devilutionx-src.tar.xz
 
     - name: Update Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
       uses: svenstaro/upload-release-action@v2
       with:
-        file: "devilutionx-src.tar.xz"
+        file: "wkdmod-src.tar.xz"
         overwrite: true
 
   make_src_dist_fully_vendored:
@@ -64,12 +64,12 @@ jobs:
       if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
-        name: devilutionx-src-fully-vendored.tar.xz
+        name: wkdmod-src-fully-vendored.tar.xz
         path: devilutionx-src-fully-vendored.tar.xz
 
     - name: Update Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
       uses: svenstaro/upload-release-action@v2
       with:
-        file: "devilutionx-src-fully-vendored.tar.xz"
+        file: "wkdmod-src-fully-vendored.tar.xz"
         overwrite: true
