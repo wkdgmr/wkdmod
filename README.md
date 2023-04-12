@@ -12,6 +12,16 @@ wkdmod is compatible with standard DevilutionX characters. Simply copy your char
 
 wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 
+**wkdmod speed run challenge**
+- the format is choose a game mode and a game speed setting...
+- So 8 categories consisting of Normal/Fast/Faster/Fastest either in Diablo or Hellfire
+**Any% Rules**
+- The game settings I called out as per outlined in the wkdmod game settings requirements have to be abided by
+- Move your primary stash into a backup folder, you have to have a blank stash for the speed run
+- No cheating via help from other characters or stash, or third party cheats
+- The run has to be recorded
+- The only hard and fast rules in regards to what you have to do in the game is you have to kill Diablo (on each difficulty if you do a multi-difficulty speed run).  How you do it is up to you.  If you play Hellfire you have to kill Diablo and Nakrul, not in any particular order (each difficulty).
+
 **Added in 1.0.3:**
 - 1.0.2 Hot Fix finally fixed Defiler crash bug
 - GitHub Repo and GitHub actions clean up.  Fixing wkdmod application name on assets and artifacts
