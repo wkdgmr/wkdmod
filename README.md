@@ -60,6 +60,17 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 
 **WEAPONS EXPERT** (unlocked at Lvl 40) All classes gain access to splash damage on all melee weapons and barehanded.
 
+**wkdmod speed run challenge**
+- the format is choose a game mode and a game speed setting...
+- So 8 categories consisting of Normal/Fast/Faster/Fastest either in Diablo or Hellfire
+
+**Any% Rules**
+- The game settings I called out as per outlined in the wkdmod game settings requirements have to be abided by
+- Move your primary stash into a backup folder, you have to have a blank stash for the speed run
+- No cheating via help from other characters or stash, or third party cheats
+- The run has to be recorded starting at character creation
+- The only hard and fast rules in regards to what you have to do in the game is you have to kill Diablo (on each difficulty if you do a multi-difficulty speed run).  How you do it is up to you.  If you play Hellfire you have to kill Diablo and Nakrul, not in any particular order (each difficulty).
+
 ### Please see below this point for more information on the DevilutionX project.
 
 <p align="center">
