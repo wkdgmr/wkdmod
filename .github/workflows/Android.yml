@@ -58,4 +58,5 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         asset_name: wkdmod-android.apk
+        file: android-project/app/build/outputs/apk/debug/app-debug.apk
         overwrite: true
