@@ -27,14 +27,14 @@ jobs:
 
     - name: Build
       working-directory: ${{github.workspace}}
-      run: tools/make_src_dist.py && mv build-src-dist/devilutionx-*.tar.xz devilutionx-src.tar.xz
+      run: tools/make_src_dist.py && mv build-src-dist/devilutionx-*.tar.xz wkdmod-src.tar.xz
 
     - name: Upload-Package
       if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
         name: wkdmod-src.tar.xz
-        path: devilutionx-src.tar.xz
+        path: wkdmod-src.tar.xz
 
     - name: Update Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
@@ -58,14 +58,14 @@ jobs:
 
     - name: Build
       working-directory: ${{github.workspace}}
-      run: tools/make_src_dist.py --fully_vendored && mv build-src-dist/devilutionx-*.tar.xz devilutionx-src-fully-vendored.tar.xz
+      run: tools/make_src_dist.py --fully_vendored && mv build-src-dist/devilutionx-*.tar.xz wkdmod-src-fully-vendored.tar.xz
 
     - name: Upload-Package
       if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
         name: wkdmod-src-fully-vendored.tar.xz
-        path: devilutionx-src-fully-vendored.tar.xz
+        path: wkdmod-src-fully-vendored.tar.xz
 
     - name: Update Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
