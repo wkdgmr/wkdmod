@@ -913,6 +913,8 @@ bool PlrHitObj(const Player &player, Object &targetObject)
 	return false;
 }
 
+const bool isPlayerMinion = monster.isPlayerMinion();
+
 bool DoAttack(Player &player)
 {
 	if (player.AnimInfo.currentFrame == player._pAFNum - 2) {
@@ -942,7 +944,7 @@ bool DoAttack(Player &player)
 			}
 		}
 
-		if (monster != nullptr) {
+		if (monster != nullptr && !isPlayerMinion ) {
 			didhit = PlrHitMonst(player, *monster);
 		} else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
 			didhit = PlrHitPlr(player, *PlayerAtPosition(position));
@@ -1007,11 +1009,11 @@ bool DoAttack(Player &player)
 							|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
 							&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
 		                		&& !(player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)))	
-		{
+		{	
 			// playing as a class/weapon with cleave
 			position = player.position.tile + Right(player._pdir);
 			monster = FindMonsterAtPosition(position);
-			if (monster != nullptr) {
+			if (monster != nullptr && !isPlayerMinion) {
 				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
 					if (PlrHitMonst(player, *monster, true))
 						didhit = true;
@@ -1019,7 +1021,7 @@ bool DoAttack(Player &player)
 			}
 			position = player.position.tile + Left(player._pdir);
 			monster = FindMonsterAtPosition(position);
-			if (monster != nullptr) {
+			if (monster != nullptr && !isPlayerMinion) {
 				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
 					if (PlrHitMonst(player, *monster, true))
 						didhit = true;
@@ -1027,7 +1029,7 @@ bool DoAttack(Player &player)
 			}
 			position = player.position.tile + Left(Left(player._pdir));
 			monster = FindMonsterAtPosition(position);
-			if (monster != nullptr) {
+			if (monster != nullptr && !isPlayerMinion) {
 				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
 					if (PlrHitMonst(player, *monster, true))
 						didhit = true;
@@ -1035,7 +1037,7 @@ bool DoAttack(Player &player)
 			}
 			position = player.position.tile + Right(Right(player._pdir));
 			monster = FindMonsterAtPosition(position);
-			if (monster != nullptr) {
+			if (monster != nullptr && !isPlayerMinion) {
 				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
 					if (PlrHitMonst(player, *monster, true))
 						didhit = true;
