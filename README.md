@@ -15,6 +15,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 **wkdmod speed run challenge**
 - the format is choose a game mode and a game speed setting...
 - So 8 categories consisting of Normal/Fast/Faster/Fastest either in Diablo or Hellfire
+
 **Any% Rules**
 - The game settings I called out as per outlined in the wkdmod game settings requirements have to be abided by
 - Move your primary stash into a backup folder, you have to have a blank stash for the speed run
