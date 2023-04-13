@@ -1,7 +1,7 @@
 # wkdmod is a fork of DevilutionX
 ## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.  This modified version of DevilutionX focuses on a more modern and casual approach to ARPG gameplay and mechanics.
 
-This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" target="_blank" rel="noopener noreferrer">wkd1337gmr</a>.  Click the link to view <a href="https://www.patreon.com/wkd1337gmr/membership" target="_blank" rel="noopener noreferrer">Patreon</a>.
+This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" target="_blank" rel="noopener noreferrer">wkd1337gmr</a>.
 
 (click the banner for current intro trailer)
 <a href="https://www.youtube.com/watch?v=qGFhbjFcxxQ" target="_blank" rel="noopener noreferrer">
