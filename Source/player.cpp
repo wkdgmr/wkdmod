@@ -2920,8 +2920,7 @@ StartPlayerKill(Player &player, int earflag)
 				DeadItem(player, std::move(player.HoldItem), { 0, 0 });
 				NewCursor(CURSOR_HAND);
 			}
-			
-			if (*sgOptions.Gameplay.friendlyFire == 1 ) {
+			if (!*sgOptions.Gameplay.friendlyFire) {
 				DropHalfPlayersGold(player);
 				if (earflag != -1) {
 					if (earflag != 0) {
@@ -2951,14 +2950,11 @@ StartPlayerKill(Player &player, int earflag)
 						if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
 							DeadItem(player, std::move(ear), { 0, 0 });
 							Direction pdd = player._pdir;
-						for (auto &item : player.InvBody) {
-							pdd = Left(pdd);
-							DeadItem(player, item.pop(), Displacement(pdd));
 						}
 						CalcPlrInv(player, false);
 					}
 				}
-			} else {
+			}
 				DropHalfPlayersGold(player);
 				if (earflag != -1) {
 					if (earflag != 0) {
@@ -2984,16 +2980,25 @@ StartPlayerKill(Player &player, int earflag)
 						ear._iCreateInfo = player._pName[0] << 8 | player._pName[1];
 						ear._iSeed = player._pName[2] << 24 | player._pName[3] << 16 | player._pName[4] << 8 | player._pName[5];
 						ear._ivalue = player._pLevel;
-						player._pExperience = 0;
 
 						if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
 							DeadItem(player, std::move(ear), { 0, 0 });
 						}
-						CalcPlrInv(player, false);	
+						Direction pdd = player._pdir;
+						for (auto &item : player.InvBody) {
+							pdd = Left(pdd);
+							DeadItem(player, item.pop(), Displacement(pdd));
+						}
+						CalcPlrInv(player, false);
+					} else {
+						Direction pdd = player._pdir;
+						for (auto &item : player.InvBody) {
+							pdd = Left(pdd);
+							DeadItem(player, item.pop(), Displacement(pdd));
+						}
+
+						CalcPlrInv(player, false);
 					}
-				}				
-			}
-			}
 		}
 	}
 	SetPlayerHitPoints(player, 0);
