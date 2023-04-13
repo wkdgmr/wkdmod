@@ -2954,7 +2954,7 @@ StartPlayerKill(Player &player, int earflag)
 						CalcPlrInv(player, false);
 					}
 				}
-			}
+			} else {
 				DropHalfPlayersGold(player);
 				if (earflag != -1) {
 					if (earflag != 0) {
@@ -2999,6 +2999,8 @@ StartPlayerKill(Player &player, int earflag)
 
 						CalcPlrInv(player, false);
 					}
+				}
+			}
 		}
 	}
 	SetPlayerHitPoints(player, 0);
