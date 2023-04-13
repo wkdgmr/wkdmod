@@ -2921,7 +2921,7 @@ StartPlayerKill(Player &player, int earflag)
 				NewCursor(CURSOR_HAND);
 			}
 			
-			if (!*sgOptions.Gameplay.friendlyFire) {
+			if (*sgOptions.Gameplay.friendlyFire == 1 ) {
 				DropHalfPlayersGold(player);
 				if (earflag != -1) {
 					if (earflag != 0) {
