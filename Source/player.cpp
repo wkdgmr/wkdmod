@@ -2951,6 +2951,9 @@ StartPlayerKill(Player &player, int earflag)
 						if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
 							DeadItem(player, std::move(ear), { 0, 0 });
 							Direction pdd = player._pdir;
+						for (auto &item : player.InvBody) {
+							pdd = Left(pdd);
+							DeadItem(player, item.pop(), Displacement(pdd));
 						}
 						CalcPlrInv(player, false);
 					}
@@ -2985,10 +2988,6 @@ StartPlayerKill(Player &player, int earflag)
 
 						if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
 							DeadItem(player, std::move(ear), { 0, 0 });
-							Direction pdd = player._pdir;
-						for (auto &item : player.InvBody) {
-							pdd = Left(pdd);
-							DeadItem(player, item.pop(), Displacement(pdd));
 						}
 						CalcPlrInv(player, false);	
 					}
