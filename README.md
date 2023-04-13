@@ -1,6 +1,8 @@
 # wkdmod is a fork of DevilutionX
 ## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.  This modified version of DevilutionX focuses on a more modern and casual approach to ARPG gameplay and mechanics.
 
+This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" target="_blank" rel="noopener noreferrer">wkd1337gmr</a>.
+
 (click the banner for current intro trailer)
 <a href="https://www.youtube.com/watch?v=qGFhbjFcxxQ" target="_blank" rel="noopener noreferrer">
 <img src="https://github.com/wkdgmr/wkdmod/blob/1e45674d564003a906c145185e141bda8ed285d9/wkdmodbanner.jpg" alt="wkdmod banner" width="838">
@@ -28,9 +30,9 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 **RECOMMENDED GAME SETTINGS FOR WKDMOD**
 - <a href="https://github.com/wkdgmr/wkdmod/blob/5d408772fc32f20652193196221e57e9a8e1692b/diablo.ini" target="_blank" rel="noopener noreferrer">DOWNLOAD PRECONFIGURED SETTINGS FILE</a> place this file into the **devxmods/wkdmod folder in %appdata%/roaming/** (or whatever location the game data is located depending on device you are playing on)
 - Multiplayer (Select Loopback to play solo offline)
-- SP QUESTS IN MP OFF
+- SP QUESTS IN MP On* but only while playing in Normal.  Turn off for NM and Hell.
 - Crippling Shrines OFF
-- (Hellfire) Theo OFF
+- (Hellfire) Theo OFF* optional, I prefer it off.
 - (Hellfire) Cow Quest can be turned on if you want to score some backstage tickets to Aerosmith at the coliseum and get an OP mid-game chest armor
 - Friendly Fire OFF
 - **DEVIATE FROM THESE RECOMMENDATIONS AT YOUR PERIL**
