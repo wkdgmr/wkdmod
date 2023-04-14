@@ -43,7 +43,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - **DEVIATE FROM THESE RECOMMENDATIONS AT YOUR PERIL**
 - Please feel free to change any setting not mentioned here to your preference.
 
-### **DevX Master** (as of 4/9/2023) with additional **NEW** features:
+### **DevX Master** with additional **NEW** features:
 
 - When Diablo is killed the game does not end and he drops loot (drops 5 items).
 - When killing Diablo, Nakrul, Hork Demon or Defiler loot drop tiers are determined by difficulty.  Best drops from these bosses will be found on Hell difficulty.
