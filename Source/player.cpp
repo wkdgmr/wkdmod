@@ -2900,7 +2900,7 @@ StartPlayerKill(Player &player, int earflag)
 	player._pInvincible = true;
 	SetPlayerHitPoints(player, 0);
 
-	if (&player != MyPlayer && earflag == 0 && !diablolevel) {
+	if (&player != MyPlayer && earflag == 0 && earflag == -1) {
 		for (auto &item : player.InvBody) {
 			item.clear();
 		}
@@ -2984,11 +2984,13 @@ StartPlayerKill(Player &player, int earflag)
 						if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
 							DeadItem(player, std::move(ear), { 0, 0 });
 						}
+
 						Direction pdd = player._pdir;
 						for (auto &item : player.InvBody) {
 							pdd = Left(pdd);
 							DeadItem(player, item.pop(), Displacement(pdd));
 						}
+
 						CalcPlrInv(player, false);
 					} else {
 						Direction pdd = player._pdir;
