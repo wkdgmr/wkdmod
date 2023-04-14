@@ -16,7 +16,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 
 **Added in 1.0.4:**
 - Friendly Fire ON now enables HARDCORE MODE! WARNING PLAYER DEATH AND ITEM LOSS IMMINENT
-- NEW DEVILUTIONX COMMUNITY GAMEMODE INVADER PLEASE SEE <a href="https://discord.gg/9azNXBbsjD" target="_blank" rel="noopener noreferrer">DEVILUTIONX DISCORD #WKDMOD CHANNEL</a> FOR MORE INFORMATION
+- NEW! DevilutionX community gamemode **INVADER** please see <a href="https://discord.gg/9azNXBbsjD" target="_blank" rel="noopener noreferrer">DEVILUTIONX DISCORD #WKDMOD CHANNEL</a> for more information
 - Golem stats have been buffed slightly, and the Golem can no longer be hit by its owners melee and melee splash damage.
 
 **Added in 1.0.3:**
