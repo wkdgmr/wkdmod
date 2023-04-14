@@ -2885,7 +2885,10 @@ StartPlayerKill(Player &player, int earflag)
 	player.Say(HeroSpeech::AuughUh);
 
 	if (player._pgfxnum != 0) {
-		player._pgfxnum = 0;
+		if (diablolevel || earflag != 0)
+			player._pgfxnum &= ~0xFU;
+		else
+			player._pgfxnum = 0;
 		ResetPlayerGFX(player);
 		SetPlrAnims(player);
 	}
