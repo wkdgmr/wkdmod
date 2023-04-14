@@ -2885,10 +2885,7 @@ StartPlayerKill(Player &player, int earflag)
 	player.Say(HeroSpeech::AuughUh);
 
 	if (player._pgfxnum != 0) {
-		if (diablolevel || earflag != 0)
-			player._pgfxnum &= ~0xFU;
-		else
-			player._pgfxnum = 0;
+		player._pgfxnum = 0;
 		ResetPlayerGFX(player);
 		SetPlrAnims(player);
 	}
@@ -2900,7 +2897,7 @@ StartPlayerKill(Player &player, int earflag)
 	player._pInvincible = true;
 	SetPlayerHitPoints(player, 0);
 
-	if (&player != MyPlayer && earflag == 0 && earflag == -1) {
+	if (&player != MyPlayer && earflag == 0 && !diablolevel) {
 		for (auto &item : player.InvBody) {
 			item.clear();
 		}
