@@ -28,7 +28,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - New Icon and application name to help differentiate wkdmod from other DevilutionX mods you might be playing!
 - **ATTENTION** Application directory has changed from %roaming%/wkdgmr/wkdmod to **%roaming%/devxmods/wkdmod**
 - Chances for loot drops in Hell have been increased 300%, Nightmare 200%, and Normal is unchanged
-- (Hellfire only) Hork Spawn now have a chance to drop an item on Hell difficulty (prior to this, they have no chance to drop items on any difficulty)
+- (Hellfire only) Hork Spawn now drop items like normal monsters.
 - (Hellfire only) Hell Diablo will drop a book of Nova when killed
 - (Hellfire only) Fixed a bug where killing Nakrul on Android devices results in a crash
 
