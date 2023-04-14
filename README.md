@@ -15,7 +15,7 @@ wkdmod is compatible with standard DevilutionX characters. Simply copy your char
 wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 
 **Added in 1.0.4:**
-- FRIENDLY FIRE ON NOW ENABLES HARDCORE MODE WARNING PLAYER DEATH AND ITEM LOSS IMMINENT
+- Friendly Fire ON now enables HARDCORE MODE! WARNING PLAYER DEATH AND ITEM LOSS IMMINENT
 - NEW DEVILUTIONX COMMUNITY GAMEMODE INVADER PLEASE SEE <a href="https://discord.gg/9azNXBbsjD" target="_blank" rel="noopener noreferrer">DEVILUTIONX DISCORD #WKDMOD CHANNEL</a> FOR MORE INFORMATION
 - Golem stats have been buffed slightly, and the Golem can no longer be hit by its owners melee and melee splash damage.
 
@@ -39,7 +39,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Crippling Shrines OFF
 - (Hellfire) Theo OFF* optional, I prefer it off.
 - (Hellfire) Cow Quest can be turned on if you want to score some backstage tickets to Aerosmith at the coliseum and get an OP mid-game chest armor
-- Friendly Fire OFF* FRIENDLY FIRE ON NOW ENABLES HARDCORE MODE WARNING PLAYER DEATH AND ITEM LOSS IMMINENT
+- Friendly Fire OFF* Friendly Fire ON now enables HARDCORE MODE! WARNING PLAYER DEATH AND ITEM LOSS IMMINENT
 - **DEVIATE FROM THESE RECOMMENDATIONS AT YOUR PERIL**
 - Please feel free to change any setting not mentioned here to your preference.
 
