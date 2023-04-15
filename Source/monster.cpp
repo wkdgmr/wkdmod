@@ -935,6 +935,10 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
 
 		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			int oilpermchance = 10;
+			int dropoil = (int)(rand() * oilpermchance);
+			if (dropoil == 1)
+				CreateMagicWeapon(monster.position.tile, ItemType::Misc, IMISC_OILPERM, sendmsg, false);
 			CreateSpellBook(monster.position.tile, SpellID::Apocalypse, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
