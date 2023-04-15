@@ -580,7 +580,7 @@ std::string DebugCmdChangeHealth(const string_view parameter)
 	int newHealth = myPlayer._pHitPoints + (change * 64);
 	SetPlayerHitPoints(myPlayer, newHealth);
 	if (newHealth <= 0)
-		SyncPlrKill(myPlayer, 0);
+		SyncPlrKill(myPlayer, DeathReason::MonsterOrTrap);
 
 	return "Health has changed.";
 }
@@ -1285,7 +1285,7 @@ bool ShouldHighlightDebugAutomapTile(Point position)
 	if (SearchItems.size() > 0 && dItem[position.x][position.y] != 0) {
 		const int itemId = abs(dItem[position.x][position.y]) - 1;
 		const Item &item = Items[itemId];
-		if (matchesSearched(item._iIName, SearchItems))
+		if (matchesSearched(item.getName(), SearchItems))
 			return true;
 	}
 

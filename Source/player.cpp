@@ -52,6 +52,7 @@ namespace devilution {
 size_t MyPlayerId;
 Player *MyPlayer;
 std::vector<Player> Players;
+Player *InspectPlayer;
 bool MyPlayerIsDead;
 
 /** Specifies the X-coordinate delta from the player start location in Tristram. */
@@ -197,7 +198,7 @@ void StartWalkAnimation(Player &player, Direction dir, bool pmWillBeCalled)
 void StartWalk(Player &player, Direction dir, bool pmWillBeCalled)
 {
 	if (player._pInvincible && player._pHitPoints == 0 && &player == MyPlayer) {
-		SyncPlrKill(player, -1);
+		SyncPlrKill(player, DeathReason::Unknown);
 		return;
 	}
 
@@ -230,7 +231,7 @@ void ChangeOffset(Player &player)
 void StartAttack(Player &player, Direction d, bool includesFirstFrame)
 {
 	if (player._pInvincible && player._pHitPoints == 0 && &player == MyPlayer) {
-		SyncPlrKill(player, -1);
+		SyncPlrKill(player, DeathReason::Unknown);
 		return;
 	}
 
@@ -273,7 +274,7 @@ void StartAttack(Player &player, Direction d, bool includesFirstFrame)
 void StartRangeAttack(Player &player, Direction d, WorldTileCoord cx, WorldTileCoord cy, bool includesFirstFrame)
 {
 	if (player._pInvincible && player._pHitPoints == 0 && &player == MyPlayer) {
-		SyncPlrKill(player, -1);
+		SyncPlrKill(player, DeathReason::Unknown);
 		return;
 	}
 
@@ -313,7 +314,7 @@ player_graphic GetPlayerGraphicForSpell(SpellID spellId)
 void StartSpell(Player &player, Direction d, WorldTileCoord cx, WorldTileCoord cy)
 {
 	if (player._pInvincible && player._pHitPoints == 0 && &player == MyPlayer) {
-		SyncPlrKill(player, -1);
+		SyncPlrKill(player, DeathReason::Unknown);
 		return;
 	}
 
@@ -2784,7 +2785,7 @@ void FixPlayerLocation(Player &player, Direction bDir)
 void StartStand(Player &player, Direction dir)
 {
 	if (player._pInvincible && player._pHitPoints == 0 && &player == MyPlayer) {
-		SyncPlrKill(player, -1);
+		SyncPlrKill(player, DeathReason::Unknown);
 		return;
 	}
 
@@ -2799,7 +2800,7 @@ void StartStand(Player &player, Direction dir)
 void StartPlrBlock(Player &player, Direction dir)
 {
 	if (player._pInvincible && player._pHitPoints == 0 && &player == MyPlayer) {
-		SyncPlrKill(player, -1);
+		SyncPlrKill(player, DeathReason::Unknown);
 		return;
 	}
 
@@ -2829,7 +2830,7 @@ void FixPlrWalkTags(const Player &player)
 void StartPlrHit(Player &player, int dam, bool forcehit)
 {
 	if (player._pInvincible && player._pHitPoints == 0 && &player == MyPlayer) {
-		SyncPlrKill(player, -1);
+		SyncPlrKill(player, DeathReason::Unknown);
 		return;
 	}
 
@@ -2870,25 +2871,31 @@ void StartPlrHit(Player &player, int dam, bool forcehit)
 __attribute__((no_sanitize("shift-base")))
 #endif
 void
-StartPlayerKill(Player &player, int earflag)
+StartPlayerKill(Player &player, DeathReason deathReason)
 {
 	if (player._pHitPoints <= 0 && player._pmode == PM_DEATH) {
 		return;
 	}
 
 	if (&player == MyPlayer) {
-		NetSendCmdParam1(true, CMD_PLRDEAD, earflag);
+		NetSendCmdParam1(true, CMD_PLRDEAD, static_cast<uint16_t>(deathReason));
 	}
 
-	bool diablolevel = gbIsMultiplayer && (player.isOnLevel(16) || player.isOnArenaLevel());
+	const bool dropGold = !gbIsMultiplayer || !(player.isOnLevel(16) || player.isOnArenaLevel());
+	const bool dropItems = dropGold && deathReason == DeathReason::MonsterOrTrap;
+	const bool dropEar = dropGold && deathReason == DeathReason::Player;
 
 	player.Say(HeroSpeech::AuughUh);
 
+	// Are the current animations item dependend?
 	if (player._pgfxnum != 0) {
-		if (diablolevel || earflag != 0)
-			player._pgfxnum &= ~0xFU;
-		else
+		if (dropItems) {
+			// Ensure death animation show the player without weapon and armor, because they drop on death
 			player._pgfxnum = 0;
+		} else {
+			// Death animation aren't weapon specific, so always use the unarmed animations
+			player._pgfxnum &= ~0xFU;
+		}
 		ResetPlayerGFX(player);
 		SetPlrAnims(player);
 	}
@@ -2900,7 +2907,9 @@ StartPlayerKill(Player &player, int earflag)
 	player._pInvincible = true;
 	SetPlayerHitPoints(player, 0);
 
-	if (&player != MyPlayer && earflag == 0 && !diablolevel) {
+	if (&player != MyPlayer && dropItems) {
+		// Ensure that items are removed for remote players
+		// The dropped items will be synced seperatly (by the remote client)
 		for (auto &item : player.InvBody) {
 			item.clear();
 		}
@@ -2913,6 +2922,8 @@ StartPlayerKill(Player &player, int earflag)
 		dFlags[player.position.tile.x][player.position.tile.y] |= DungeonFlag::DeadPlayer;
 		SetPlayerOld(player);
 
+		// Only generate drops once (for the local player)
+		// For remote players we get seperated sync messages (by the remote client)
 		if (&player == MyPlayer) {
 			RedrawComponent(PanelDrawComponent::Health);
 
@@ -2920,88 +2931,54 @@ StartPlayerKill(Player &player, int earflag)
 				DeadItem(player, std::move(player.HoldItem), { 0, 0 });
 				NewCursor(CURSOR_HAND);
 			}
+
 			if (!*sgOptions.Gameplay.friendlyFire) {
 				DropHalfPlayersGold(player);
-				if (earflag != -1) {
-					if (earflag != 0) {
-						Item ear;
-						InitializeItem(ear, IDI_EAR);
-						CopyUtf8(ear._iName, fmt::format(fmt::runtime(_("Ear of {:s}")), player._pName), sizeof(ear._iName));
-						CopyUtf8(ear._iIName, player._pName, sizeof(ear._iIName));
-						switch (player._pClass) {
-						case HeroClass::Sorcerer:
-							ear._iCurs = ICURS_EAR_SORCERER;
-							break;
-						case HeroClass::Warrior:
-							ear._iCurs = ICURS_EAR_WARRIOR;
-							break;
-						case HeroClass::Rogue:
-						case HeroClass::Monk:
-						case HeroClass::Bard:
-						case HeroClass::Barbarian:
-							ear._iCurs = ICURS_EAR_ROGUE;
-							break;
-						}
-
-						ear._iCreateInfo = player._pName[0] << 8 | player._pName[1];
-						ear._iSeed = player._pName[2] << 24 | player._pName[3] << 16 | player._pName[4] << 8 | player._pName[5];
-						ear._ivalue = player._pLevel;
-
-						if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
-							DeadItem(player, std::move(ear), { 0, 0 });
-							Direction pdd = player._pdir;
-						}
-						CalcPlrInv(player, false);
-					}
+			}
+			if (dropEar) {
+				Item ear;
+				InitializeItem(ear, IDI_EAR);
+				CopyUtf8(ear._iName, fmt::format(fmt::runtime("Ear of {:s}"), player._pName), sizeof(ear._iName));
+				CopyUtf8(ear._iIName, player._pName, sizeof(ear._iIName));
+				switch (player._pClass) {
+				case HeroClass::Sorcerer:
+					ear._iCurs = ICURS_EAR_SORCERER;
+					break;
+				case HeroClass::Warrior:
+					ear._iCurs = ICURS_EAR_WARRIOR;
+					break;
+				case HeroClass::Rogue:
+				case HeroClass::Monk:
+				case HeroClass::Bard:
+				case HeroClass::Barbarian:
+					ear._iCurs = ICURS_EAR_ROGUE;
+					break;
 				}
-			} else {
-				DropHalfPlayersGold(player);
-				if (earflag != -1) {
-					if (earflag != 0) {
-						Item ear;
-						InitializeItem(ear, IDI_EAR);
-						CopyUtf8(ear._iName, fmt::format(fmt::runtime(_("Ear of {:s}")), player._pName), sizeof(ear._iName));
-						CopyUtf8(ear._iIName, player._pName, sizeof(ear._iIName));
-						switch (player._pClass) {
-						case HeroClass::Sorcerer:
-							ear._iCurs = ICURS_EAR_SORCERER;
-							break;
-						case HeroClass::Warrior:
-							ear._iCurs = ICURS_EAR_WARRIOR;
-							break;
-						case HeroClass::Rogue:
-						case HeroClass::Monk:
-						case HeroClass::Bard:
-						case HeroClass::Barbarian:
-							ear._iCurs = ICURS_EAR_ROGUE;
-							break;
-						}
 
-						ear._iCreateInfo = player._pName[0] << 8 | player._pName[1];
-						ear._iSeed = player._pName[2] << 24 | player._pName[3] << 16 | player._pName[4] << 8 | player._pName[5];
-						ear._ivalue = player._pLevel;
+				ear._iCreateInfo = player._pName[0] << 8 | player._pName[1];
+				ear._iSeed = player._pName[2] << 24 | player._pName[3] << 16 | player._pName[4] << 8 | player._pName[5];
+				ear._ivalue = player._pLevel;
 
-						if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
-							DeadItem(player, std::move(ear), { 0, 0 });
-						}
-
-						Direction pdd = player._pdir;
-						for (auto &item : player.InvBody) {
-							pdd = Left(pdd);
-							DeadItem(player, item.pop(), Displacement(pdd));
-						}
-
-						CalcPlrInv(player, false);
-					} else {
-						Direction pdd = player._pdir;
-						for (auto &item : player.InvBody) {
-							pdd = Left(pdd);
-							DeadItem(player, item.pop(), Displacement(pdd));
-						}
-
-						CalcPlrInv(player, false);
-					}
+				if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
+					DeadItem(player, std::move(ear), { 0, 0 });
 				}
+				Direction pdd = player._pdir;
+				for (auto &item : player.InvBody) {
+					pdd = Left(pdd);
+					DeadItem(player, item.pop(), Displacement(pdd));
+				}
+
+				CalcPlrInv(player, false);
+				
+			}
+			if (dropItems) {
+				Direction pdd = player._pdir;
+				for (auto &item : player.InvBody) {
+					pdd = Left(pdd);
+					DeadItem(player, item.pop(), Displacement(pdd));
+				}
+
+				CalcPlrInv(player, false);
 			}
 		}
 	}
@@ -3026,7 +3003,7 @@ void StripTopGold(Player &player)
 	player._pGold = CalculateGold(player);
 }
 
-void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*= 0*/, int frac /*= 0*/, int earflag /*= 0*/)
+void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*= 0*/, int frac /*= 0*/, DeathReason deathReason /*= DeathReason::MonsterOrTrap*/)
 {
 	int totalDamage = (dam << 6) + frac;
 	if (&player == MyPlayer) {
@@ -3070,11 +3047,11 @@ void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*
 		SetPlayerHitPoints(player, minHitPoints);
 	}
 	if (player._pHitPoints >> 6 <= 0) {
-		SyncPlrKill(player, earflag);
+		SyncPlrKill(player, deathReason);
 	}
 }
 
-void SyncPlrKill(Player &player, int earflag)
+void SyncPlrKill(Player &player, DeathReason deathReason)
 {
 	if (player._pHitPoints <= 0 && leveltype == DTYPE_TOWN) {
 		SetPlayerHitPoints(player, 64);
@@ -3082,7 +3059,7 @@ void SyncPlrKill(Player &player, int earflag)
 	}
 
 	SetPlayerHitPoints(player, 0);
-	StartPlayerKill(player, earflag);
+	StartPlayerKill(player, deathReason);
 }
 
 void RemovePlrMissiles(const Player &player)
@@ -3162,9 +3139,9 @@ void RestartTownLvl(Player &player)
 	player._pManaBase = player._pMana - (player._pMaxMana - player._pMaxManaBase);
 
 	CalcPlrInv(player, false);
+	player._pmode = PM_NEWLVL;
 
 	if (&player == MyPlayer) {
-		player._pmode = PM_NEWLVL;
 		player._pInvincible = true;
 		SDL_Event event;
 		event.type = CustomEventToSdlEvent(WM_DIABRETOWN);
@@ -3236,7 +3213,7 @@ void ProcessPlayers()
 			CheckCheatStats(player);
 
 			if (!PlrDeathModeOK(player) && (player._pHitPoints >> 6) <= 0) {
-				SyncPlrKill(player, -1);
+				SyncPlrKill(player, DeathReason::Unknown);
 			}
 
 			if (&player == MyPlayer) {

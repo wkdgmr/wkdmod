@@ -162,6 +162,16 @@ enum class SpellFlag : uint8_t {
 };
 use_enum_as_flags(SpellFlag);
 
+/* @brief When the player dies, what is the reason/source why? */
+enum class DeathReason {
+	/* @brief Monster or Trap (dungeon) */
+	MonsterOrTrap,
+	/* @brief Other player or selfkill (for example firewall) */
+	Player,
+	/* @brief HP is zero but we don't know when or where this happend */
+	Unknown,
+};
+
 /** Maps from armor animation to letter used in graphic files. */
 constexpr std::array<char, 4> ArmourChar = {
 	'l', // light
@@ -763,6 +773,13 @@ struct Player {
 extern DVL_API_FOR_TEST size_t MyPlayerId;
 extern DVL_API_FOR_TEST Player *MyPlayer;
 extern DVL_API_FOR_TEST std::vector<Player> Players;
+/** @brief What Player items and stats should be displayed? Normally this is identical to MyPlayer but can differ when /inspect was used. */
+extern Player *InspectPlayer;
+/** @brief Do we currently inspect a remote player (/inspect was used)? In this case the (remote) players items and stats can't be modified. */
+inline bool IsInspectingPlayer()
+{
+	return MyPlayer != InspectPlayer;
+}
 extern bool MyPlayerIsDead;
 
 Player *PlayerAtPosition(Point position);
@@ -791,7 +808,7 @@ void NextPlrLevel(Player &player);
 #endif
 void AddPlrExperience(Player &player, int lvl, int exp);
 void AddPlrMonstExper(int lvl, int exp, char pmask);
-void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP = 0, int frac = 0, int earflag = 0);
+void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP = 0, int frac = 0, DeathReason deathReason = DeathReason::MonsterOrTrap);
 void InitPlayer(Player &player, bool FirstTime);
 void InitMultiView();
 void PlrClrTrans(Point position);
@@ -802,12 +819,12 @@ void StartStand(Player &player, Direction dir);
 void StartPlrBlock(Player &player, Direction dir);
 void FixPlrWalkTags(const Player &player);
 void StartPlrHit(Player &player, int dam, bool forcehit);
-void StartPlayerKill(Player &player, int earflag);
+void StartPlayerKill(Player &player, DeathReason deathReason);
 /**
  * @brief Strip the top off gold piles that are larger than MaxGold
  */
 void StripTopGold(Player &player);
-void SyncPlrKill(Player &player, int earflag);
+void SyncPlrKill(Player &player, DeathReason deathReason);
 void RemovePlrMissiles(const Player &player);
 void StartNewLvl(Player &player, interface_mode fom, int lvl);
 void RestartTownLvl(Player &player);

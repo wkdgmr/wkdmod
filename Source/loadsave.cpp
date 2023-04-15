@@ -315,6 +315,7 @@ void LoadItemData(LoadHelper &file, Item &item)
 		item._iDamAcFlags = static_cast<ItemSpecialEffectHf>(file.NextLE<uint32_t>());
 	else
 		item._iDamAcFlags = ItemSpecialEffectHf::None;
+	UpdateHellfireFlag(item, item._iIName);
 
 	RemoveInvalidItem(item);
 }
@@ -2097,6 +2098,8 @@ void LoadGame(bool firstflag)
 	for (int &monstkill : MonsterKillCounts)
 		monstkill = file.NextBE<int32_t>();
 
+	// skip ahead for vanilla save compatibility (Related to bugfix where MonsterKillCounts[MaxMonsters] was changed to MonsterKillCounts[NUM_MTYPES]
+	file.Skip(4 * (MaxMonsters - NUM_MTYPES));
 	if (leveltype != DTYPE_TOWN) {
 		for (int &monsterId : ActiveMonsters)
 			monsterId = file.NextBE<int32_t>();
@@ -2350,6 +2353,8 @@ void SaveGameData(SaveWriter &saveWriter)
 		SavePortal(&file, i);
 	for (int monstkill : MonsterKillCounts)
 		file.WriteBE<int32_t>(monstkill);
+	// add padding for vanilla save compatibility (Related to bugfix where MonsterKillCounts[MaxMonsters] was changed to MonsterKillCounts[NUM_MTYPES]
+	file.Skip(4 * (MaxMonsters - NUM_MTYPES));
 
 	if (leveltype != DTYPE_TOWN) {
 		for (int monsterId : ActiveMonsters)
