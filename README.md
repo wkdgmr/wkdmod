@@ -36,8 +36,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - **Barbarian:** 2H Sword, 2H Axe, Staff, 2H Mace
 - **Bard:** 2x 1H Sword, 2x 1H Mace, or 1H Sword + 1H Mace
 - **Sorcerer:** Staff
-- 
-**WEAPONS EXPERT** (unlocked at Lvl 40) All classes gain access to splash damage on all melee weapons and barehanded.
+- **WEAPONS EXPERT** (unlocked at Lvl 40) All classes gain access to splash damage on all melee weapons and barehanded.
 
 **[HELLFIRE ONLY]**
 - The following oils can now drop in multiplayer: *Oil of Permanence, Oil of Mastery, Oil of Imperviousness, Oil of Death, Oil of Skill
