@@ -2680,7 +2680,9 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 200;
 	} else if (player._pClass == HeroClass::Monk) {
 		player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
-		if ((!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Staff) || (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Staff))
+		if ((!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Staff) 
+		|| (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Staff)
+		|| (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT].isEmpty()))
 			player._pDamageMod /= 2; // Monks get half the normal damage bonus if they're holding a non-staff weapon
 	} else if (player._pClass == HeroClass::Bard) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword)
@@ -2780,6 +2782,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		}
 		if (player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT].isEmpty())
 			player._pBlockFlag = true;
+			player._pIFlags |= ItemSpecialEffect::FastBlock;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON && player.GetItemLocation(player.InvBody[INVLOC_HAND_LEFT]) != ILOC_TWOHAND && player.InvBody[INVLOC_HAND_RIGHT].isEmpty())
 			player._pBlockFlag = true;
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON && player.GetItemLocation(player.InvBody[INVLOC_HAND_RIGHT]) != ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT].isEmpty())
@@ -2835,16 +2838,48 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		if (player._pClass == HeroClass::Monk && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE)
 			player._pIAC += player._pLevel / 2;
 		animArmorId = PlayerArmorGraphic::Heavy;
-	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
-		if (player._pClass == HeroClass::Monk) {
-			if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE)
-				player._pIAC += player._pLevel * 2;
-			else
-				player._pIAC += player._pLevel / 2;
-		}
+	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor) {
+		if (player._pClass == HeroClass::Monk)
+			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+				player._pIAC += player._pLevel + player._pIAC;
+				player._pIBonusToHit += 20;
+				player._pMagResist += 15;
+				player._pFireResist += 15;
+				player._pLghtResist += 15;
+			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+				player._pIAC += player._pLevel + player._pIAC * 3;
+				player._pIBonusToHit += 50;
+				player._pMagResist += 25;
+				player._pFireResist += 25;
+				player._pLghtResist += 25;
+			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+				player._pIAC += player._pLevel + player._pIAC * 6;
+				player._pIBonusToHit += 100;
+				player._pMagResist += 35;
+				player._pFireResist += 35;
+				player._pLghtResist += 35;
+			}
 		animArmorId = PlayerArmorGraphic::Medium;
 	} else if (player._pClass == HeroClass::Monk) {
-		player._pIAC += player._pLevel * 2;
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			player._pIAC += player._pLevel + player._pIAC * 5;
+			player._pIBonusToHit += 20;
+			player._pMagResist += 15;
+			player._pFireResist += 15;
+			player._pLghtResist += 15;
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			player._pIAC += player._pLevel + player._pIAC * 15;
+			player._pIBonusToHit += 50;
+			player._pMagResist += 25;
+			player._pFireResist += 25;
+			player._pLghtResist += 25;
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			player._pIAC += player._pLevel + player._pIAC * 30;
+			player._pIBonusToHit += 100;
+			player._pMagResist += 35;
+			player._pFireResist += 35;
+			player._pLghtResist += 35;
+		}
 	}
 
 	const uint8_t gfxNum = static_cast<uint8_t>(animWeaponId) | static_cast<uint8_t>(animArmorId);
