@@ -2841,19 +2841,19 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor) {
 		if (player._pClass == HeroClass::Monk)
 			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-				player._pIAC += player._pLevel + player._pIAC;
+				player._pIAC += player._pIAC * 2;
 				player._pIBonusToHit += 20;
 				player._pMagResist += 15;
 				player._pFireResist += 15;
 				player._pLghtResist += 15;
 			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-				player._pIAC += player._pLevel + player._pIAC * 3;
+				player._pIAC += player._pIAC * 4;
 				player._pIBonusToHit += 50;
 				player._pMagResist += 25;
 				player._pFireResist += 25;
 				player._pLghtResist += 25;
 			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-				player._pIAC += player._pLevel + player._pIAC * 6;
+				player._pIAC += player._pIAC * 8;
 				player._pIBonusToHit += 100;
 				player._pMagResist += 35;
 				player._pFireResist += 35;
@@ -2862,19 +2862,19 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		animArmorId = PlayerArmorGraphic::Medium;
 	} else if (player._pClass == HeroClass::Monk) {
 		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-			player._pIAC += player._pLevel + player._pIAC * 5;
+			player._pIAC += player._pIAC * 3;
 			player._pIBonusToHit += 20;
 			player._pMagResist += 15;
 			player._pFireResist += 15;
 			player._pLghtResist += 15;
 		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-			player._pIAC += player._pLevel + player._pIAC * 15;
+			player._pIAC += player._pIAC * 6;
 			player._pIBonusToHit += 50;
 			player._pMagResist += 25;
 			player._pFireResist += 25;
 			player._pLghtResist += 25;
 		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-			player._pIAC += player._pLevel + player._pIAC * 30;
+			player._pIAC += player._pIAC * 12;
 			player._pIBonusToHit += 100;
 			player._pMagResist += 35;
 			player._pFireResist += 35;
