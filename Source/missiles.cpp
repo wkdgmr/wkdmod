@@ -1657,20 +1657,9 @@ void AddElementalArrow(Missile &missile, AddMissileParameter &parameter)
 			av += (player._pLevel) / 4;
 		else if (IsAnyOf(player._pClass, HeroClass::Warrior, HeroClass::Bard))
 			av += (player._pLevel) / 8;
-
-		if (gbIsHellfire) {
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack))
-				av++;
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack))
-				av += 2;
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FasterAttack))
-				av += 4;
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack))
-				av += 8;
-		} else {
-			if (IsAnyOf(player._pClass, HeroClass::Rogue, HeroClass::Warrior, HeroClass::Bard))
-				av -= 1;
-		}
+		if (IsAnyOf(player._pClass, HeroClass::Rogue, HeroClass::Warrior, HeroClass::Bard))
+			av -= 1;
+		
 	}
 	UpdateMissileVelocity(missile, dst, av);
 
@@ -1698,17 +1687,6 @@ void AddArrow(Missile &missile, AddMissileParameter &parameter)
 			av += (player._pLevel - 1) / 4;
 		else if (player._pClass == HeroClass::Warrior || player._pClass == HeroClass::Bard)
 			av += (player._pLevel - 1) / 8;
-
-		if (gbIsHellfire) {
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack))
-				av++;
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack))
-				av += 2;
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FasterAttack))
-				av += 4;
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack))
-				av += 8;
-		}
 	}
 	UpdateMissileVelocity(missile, dst, av);
 	missile._miAnimFrame = static_cast<int>(GetDirection16(missile.position.start, dst)) + 1;
@@ -3771,7 +3749,7 @@ void ProcessApocalypse(Missile &missile)
 				continue;
 			if (TileHasAny(dPiece[k][j], TileProperties::Solid))
 				continue;
-			if (gbIsHellfire && !LineClearMissile(missile.position.tile, { k, j }))
+			if (!LineClearMissile(missile.position.tile, { k, j }))
 				continue;
 			int id = missile._misource;
 			AddMissile({ k, j }, { k, j }, Players[id]._pdir, MissileID::ApocalypseBoom, TARGET_MONSTERS, id, missile._midam, 0);
