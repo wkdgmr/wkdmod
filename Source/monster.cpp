@@ -1272,8 +1272,9 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 			M_StartHit(monster, player, mdam);
 	}
 
-	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING && gbIsMultiplayer
-	    && (monster.type().type == MT_YZOMBIE))
+	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING
+	|| (monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_YZOMBIE
+	|| (monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_GOLEM)
 		monster.hitPoints += dam;
 
 	if (player._pHitPoints >> 6 <= 0) {
@@ -3502,11 +3503,14 @@ void WeakenNaKrul()
 	auto &monster = Monsters[UberDiabloMonsterIndex];
 	PlayEffect(monster, MonsterSound::Death);
 	Quests[Q_NAKRUL]._qlog = false;
-	monster.armorClass -= 50;
-	int hp = monster.maxHitPoints / 2;
-	monster.resistance = 0;
-	monster.hitPoints = hp;
-	monster.maxHitPoints = hp;
+	if (sgGameInitInfo.nDifficulty != DIFF_HELL) {
+		monster.resistance = 7;
+		monster.armorClass -= 125;
+		monster.maxHitPoints -= 666;
+	} else {
+		monster.armorClass -= 50;
+		monster.resistance = 1 << 0;
+	}
 }
 
 void InitGolems()
@@ -4581,11 +4585,11 @@ void SpawnGolem(Player &player, Monster &golem, Point position, Missile &missile
 	golem.pathCount = 0;
 	golem.maxHitPoints = (100 * missile._mispllvl + player._pMaxMana + player._pMaxHP);
 	golem.hitPoints = golem.maxHitPoints;
-	golem.armorClass = player._pArmorClass;
+	golem.armorClass = player._pVitality + (20 * missile._mispllvl);
 	golem.toHit = 5 * (missile._mispllvl + 8) + 2 * player._pLevel;
 	golem.minDamage = 2 * (missile._mispllvl + 4);
 	golem.maxDamage = 2 * (missile._mispllvl + 8);
-	golem.resistance = player._pLghtResist;
+	golem.resistance = 7;
 	golem.flags |= MFLAG_GOLEM;
 	StartSpecialStand(golem, Direction::South);
 	UpdateEnemy(golem);
@@ -4705,8 +4709,6 @@ bool Monster::isResistant(MissileID missileType, DamageType missileElement) cons
 	if (((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
 	    || ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
 	    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning))
-		return true;
-	if (gbIsHellfire && missileType == MissileID::HolyBolt && IsAnyOf(type().type, MT_DIABLO, MT_BONEDEMN))
 		return true;
 	return false;
 }
