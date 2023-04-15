@@ -28,12 +28,15 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Golem has been buffed significantly and can no longer take Friendly Fire damage.
 - Nerfed Apocalypse in Diablo so it acts like its Hellfire counterpart
 - When Full Quests in Multiplayer is enabled, Unique Quest items originally exclusive to Single Player can now drop.
+- 
 **Splash damage now does damage to two extra tiles** and thanks to DevX is applied in both Diablo and Hellfire gamemodes (so its more like a U instead of a T, the shape of the splash), and can be accessed with the following classes/weapons:
+
 - **Monk:** Staff, 2H Sword
 - **Warrior:** 2H Sword, 1H Sword + Shield, 1H Mace + Shield (must have Shield equipped for splash to work with 1H)
 - **Barbarian:** 2H Sword, 2H Axe, Staff, 2H Mace
 - **Bard:** 2x 1H Sword, 2x 1H Mace, or 1H Sword + 1H Mace
 - **Sorcerer:** Staff
+- 
 **WEAPONS EXPERT** (unlocked at Lvl 40) All classes gain access to splash damage on all melee weapons and barehanded.
 
 **[HELLFIRE ONLY]**
