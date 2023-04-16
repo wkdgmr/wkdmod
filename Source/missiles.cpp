@@ -1141,9 +1141,7 @@ void InitMissiles()
 		for (auto &missile : Missiles) {
 			if (missile._mitype == MissileID::Rage) {
 				if (missile.sourcePlayer() == MyPlayer) {
-					int missingHP = myPlayer._pMaxHP - myPlayer._pHitPoints;
 					CalcPlrItemVals(myPlayer, true);
-					ApplyPlrDamage(DamageType::Physical, myPlayer, 0, 1, missingHP + missile.var2);
 				}
 			}
 		}
@@ -2476,6 +2474,7 @@ void AddRage(Missile &missile, AddMissileParameter &parameter)
 	int lvl = player._pLevel * 2;
 	missile._mirange = lvl + 10 * missile._mispllvl + 245;
 	CalcPlrItemVals(player, true);
+	player._pMana = player._pMana / 2;
 	RedrawEverything();
 	player.Say(HeroSpeech::Aaaaargh);
 }
@@ -3822,7 +3821,7 @@ void ProcessRage(Missile &missile)
 
 	Player &player = Players[missile._misource];
 
-	int hpdif = player._pMaxHP - player._pHitPoints;
+	int mpdif = player._pMaxMana - player._pMana;
 
 	if (HasAnyOf(player._pSpellFlags, SpellFlag::RageActive)) {
 		player._pSpellFlags &= ~SpellFlag::RageActive;
@@ -3832,11 +3831,10 @@ void ProcessRage(Missile &missile)
 	} else {
 		player._pSpellFlags &= ~SpellFlag::RageCooldown;
 		missile._miDelFlag = true;
-		hpdif += missile.var2;
+		player._pMana = player._pMana / 2;
 	}
 
 	CalcPlrItemVals(player, true);
-	ApplyPlrDamage(DamageType::Physical, player, 0, 1, hpdif);
 	RedrawEverything();
 	player.Say(HeroSpeech::HeavyBreathing);
 }
