@@ -510,7 +510,7 @@ struct Player {
 	int GetMeleeToHit() const
 	{
 		int hper = _pLevel + _pDexterity / 2 + _pIBonusToHit + BaseHitChance;
-		if (_pClass == HeroClass::Warrior || _pClass == HeroClass::Bard || _pClass == HeroClass::Barbarian)
+		if (_pClass == HeroClass::Warrior || _pClass == HeroClass::Barbarian)
 			hper += _pDexterity;
 		return hper;
 	}
@@ -535,7 +535,7 @@ struct Player {
 		int hper = _pLevel + _pDexterity + _pIBonusToHit + BaseHitChance;
 		if (_pClass == HeroClass::Rogue)
 			hper += 20;
-		else if (_pClass == HeroClass::Warrior || _pClass == HeroClass::Bard || _pClass == HeroClass::Barbarian)
+		else if (_pClass == HeroClass::Warrior || _pClass == HeroClass::Barbarian)
 			hper += _pDexterity;
 		return hper;
 	}

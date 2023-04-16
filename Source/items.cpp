@@ -2857,10 +2857,10 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	PlayerArmorGraphic animArmorId = PlayerArmorGraphic::Light;
 	if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
 		if (player._pClass == HeroClass::Monk && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE
-		|| (player._pClass == HeroClass::Bard && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE))
+		|| (player._pClass == HeroClass::Bard && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE)) {
 			player._pIAC += player._pLevel;
 			player._pIBonusToHit += player._pLevel / 2;
-			if (player._pFireResist != 75)
+			if (player._pFireResist <= 74)
 				if (player._pLevel <= 30) {
 					player._pFireResist += player._pLevel;
 				} else {
@@ -2868,7 +2868,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				}
 				if (player._pFireResist >= 75)
 					player._pFireResist = 75;
-			if (player._pMagResist != 75)
+			if (player._pMagResist <= 74)
 				if (player._pLevel <= 30) {
 					player._pMagResist += player._pLevel;
 				} else {
@@ -2876,7 +2876,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				}
 				if (player._pMagResist >= 75)
 					player._pMagResist = 75;
-			if (player._pLghtResist != 75)
+			if (player._pLghtResist <= 74)
 				if (player._pLevel <= 30) {
 					player._pLghtResist += player._pLevel;
 				} else {
@@ -2884,7 +2884,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				}
 				if (player._pLghtResist >= 75)
 					 player._pLghtResist = 75;
-		else {
+		} else {
 			player._pIBonusToHit -= player._pIBonusToHit / 2;
 		}
 		animArmorId = PlayerArmorGraphic::Heavy;
@@ -2894,7 +2894,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 			if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE) {
 				player._pIAC += player._pLevel * 2;
 				player._pIBonusToHit += player._pLevel / 2;
-				if (player._pFireResist != 75)
+				if (player._pFireResist <= 74) {
 					if (player._pLevel <= 30) {
 						player._pFireResist += player._pLevel;
 					} else {
@@ -2902,7 +2902,8 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 					}
 					if (player._pFireResist >= 75)
 						player._pFireResist = 75;
-				if (player._pMagResist != 75)
+				}
+				if (player._pMagResist <= 74) {
 					if (player._pLevel <= 30) {
 						player._pMagResist += player._pLevel;
 					} else {
@@ -2910,7 +2911,8 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 					}
 					if (player._pMagResist >= 75)
 						player._pMagResist = 75;
-				if (player._pLghtResist != 75)
+				}
+				if (player._pLghtResist <= 74) {
 					if (player._pLevel <= 30) {
 						player._pLghtResist += player._pLevel;
 					} else {
@@ -2918,10 +2920,11 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 					}
 					if (player._pLghtResist >= 75)
 						 player._pLghtResist = 75;
+				}
 			} else {
 				player._pIAC += player._pLevel * 2;
 				player._pIBonusToHit += player._pLevel / 2;
-				if (player._pFireResist != 75)
+				if (player._pFireResist <= 74) {
 					if (player._pLevel <= 30) {
 						player._pFireResist += player._pLevel;
 					} else {
@@ -2929,7 +2932,8 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 					}
 					if (player._pFireResist >= 75)
 						player._pFireResist = 75;
-				if (player._pMagResist != 75)
+				}
+				if (player._pMagResist <= 74) {
 					if (player._pLevel <= 30) {
 						player._pMagResist += player._pLevel;
 					} else {
@@ -2937,7 +2941,8 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 					}
 					if (player._pMagResist >= 75)
 						player._pMagResist = 75;
-				if (player._pLghtResist != 75)
+				}
+				if (player._pLghtResist <= 74) {
 					if (player._pLevel <= 30) {
 						player._pLghtResist += player._pLevel;
 					} else {
@@ -2945,6 +2950,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 					}
 					if (player._pLghtResist >= 75)
 						 player._pLghtResist = 75;
+				}
 			}
 		}
 		animArmorId = PlayerArmorGraphic::Medium;
@@ -2952,7 +2958,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	|| (player._pClass == HeroClass::Bard)) {
 		player._pIAC += player._pLevel * 2;
 		player._pIBonusToHit += player._pLevel;
-		if (player._pFireResist != 75)
+		if (player._pFireResist <= 74) {
 			if (player._pLevel <= 30) {
 				player._pFireResist += player._pLevel;
 			} else {
@@ -2960,7 +2966,8 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 			}
 			if (player._pFireResist >= 75)
 				player._pFireResist = 75;
-		if (player._pMagResist != 75)
+		}
+		if (player._pMagResist <= 74) {
 			if (player._pLevel <= 30) {
 				player._pMagResist += player._pLevel;
 			} else {
@@ -2968,7 +2975,8 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 			}
 			if (player._pMagResist >= 75)
 				player._pMagResist = 75;
-		if (player._pLghtResist != 75)
+		}
+		if (player._pLghtResist <= 74) {
 			if (player._pLevel <= 30) {
 				player._pLghtResist += player._pLevel;
 			} else {
@@ -2976,6 +2984,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 			}
 			if (player._pLghtResist >= 75)
 				 player._pLghtResist = 75;
+		}
 	}
 
 	const uint8_t gfxNum = static_cast<uint8_t>(animWeaponId) | static_cast<uint8_t>(animArmorId);
@@ -5074,6 +5083,8 @@ bool ApplyOilToItem(Item &item, Player &player)
 				r = GenerateRnd(41) + 10;
 				item._iMaxDur += r;
 				item._iDurability += r;
+				break;
+			} else {
 				break;
 			}
 		}
