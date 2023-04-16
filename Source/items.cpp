@@ -5045,9 +5045,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 		break;
 	case IMISC_OILPERM:
-		int applyoilchance = 10;
-		int applyoil = (int)(rand() * applyoilchance);
-		if (applyoil == 1) {
+		if ((int)(rand() * 10) == 1) {
 			item._iDurability = DUR_INDESTRUCTIBLE;
 			item._iMaxDur = DUR_INDESTRUCTIBLE;
 			break;
