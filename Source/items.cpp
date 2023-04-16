@@ -2691,10 +2691,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	} else if (player._pClass == HeroClass::Monk) {
 		player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
 		if ((!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Staff) 
-		|| (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Staff)
-		|| (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Sword) 
-		|| (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Sword)
-		|| (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT].isEmpty()))
+		|| (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Staff))
 			player._pDamageMod /= 2; // Monks get half the normal damage bonus if they're holding a non-staff weapon
 	} else if (player._pClass == HeroClass::Bard) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword) {
@@ -2858,102 +2855,58 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	PlayerArmorGraphic animArmorId = PlayerArmorGraphic::Light;
 	if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
 		if (player._pClass == HeroClass::Monk && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE)
-			player._pIAC += player._pLevel / 2;
+			player._pIAC += player._pLevel;
 		animArmorId = PlayerArmorGraphic::Heavy;
-	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor) {
-		if (player._pClass == HeroClass::Monk)
-			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-				player._pIBonusToHit += 25;
-			if (player._pFireResist != 75)
-				player._pFireResist += 10;
-				if (player._pFireResist >= 75)
-					player._pFireResist = 75;
-			if (player._pMagResist != 75)
-				player._pMagResist += 10;
-				if (player._pMagResist >= 75)
-					player._pMagResist = 75;
-			if (player._pLghtResist != 75)
-				player._pLghtResist += 10;
-				if (player._pLghtResist >= 75)
-					 player._pLghtResist = 75;
-			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-				player._pIBonusToHit += 50;
-			if (player._pFireResist != 75)
-				player._pFireResist += 20;
-				if (player._pFireResist >= 75)
-					player._pFireResist = 75;
-			if (player._pMagResist != 75)
-				player._pMagResist += 20;
-				if (player._pMagResist >= 75)
-					player._pMagResist = 75;
-			if (player._pLghtResist != 75)
-				player._pLghtResist += 20;
-				if (player._pLghtResist >= 75)
-					 player._pLghtResist = 75;
-			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-				player._pIBonusToHit += 100;
-			if (player._pFireResist != 75)
-				player._pFireResist += 30;
-				if (player._pFireResist >= 75)
-					player._pFireResist = 75;
-			if (player._pMagResist != 75)
-				player._pMagResist += 30;
-				if (player._pMagResist >= 75)
-					player._pMagResist = 75;
-			if (player._pLghtResist != 75)
-				player._pLghtResist += 30;
-				if (player._pLghtResist >= 75)
-					 player._pLghtResist = 75;
+	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
+		if (player._pClass == HeroClass::Monk) {
+			if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE) {
+				player._pIAC += player._pLevel * 2;
+				player._pIBonusToHit += player._pLevel;
+				if (player._pFireResist != 75)
+					player._pFireResist += player._pLevel;
+					if (player._pFireResist >= 75)
+						player._pFireResist = 75;
+				if (player._pMagResist != 75)
+					player._pMagResist += player._pLevel;
+					if (player._pMagResist >= 75)
+						player._pMagResist = 75;
+				if (player._pLghtResist != 75)
+					player._pLghtResist += player._pLevel;
+					if (player._pLghtResist >= 75)
+						 player._pLghtResist = 75;
+			} else {
+				player._pIAC += player._pLevel * 2;
+				player._pIBonusToHit += player._pLevel;
+				if (player._pFireResist != 75)
+					player._pFireResist += player._pLevel;
+					if (player._pFireResist >= 75)
+						player._pFireResist = 75;
+				if (player._pMagResist != 75)
+					player._pMagResist += player._pLevel;
+					if (player._pMagResist >= 75)
+						player._pMagResist = 75;
+				if (player._pLghtResist != 75)
+					player._pLghtResist += player._pLevel;
+					if (player._pLghtResist >= 75)
+						 player._pLghtResist = 75;
 			}
+		}
 		animArmorId = PlayerArmorGraphic::Medium;
 	} else if (player._pClass == HeroClass::Monk) {
-		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-				player._pIAC += 25;
-				player._pIBonusToHit += 25;
-			if (player._pFireResist != 75)
-				player._pFireResist += 10;
-				if (player._pFireResist >= 75)
-					player._pFireResist = 75;
-			if (player._pMagResist != 75)
-				player._pMagResist += 10;
-				if (player._pMagResist >= 75)
-					player._pMagResist = 75;
-			if (player._pLghtResist != 75)
-				player._pLghtResist += 10;
-				if (player._pLghtResist >= 75)
-					 player._pLghtResist = 75;
-		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-				player._pIAC += 50;
-				player._pIBonusToHit += 50;
-			if (player._pFireResist != 75)
-				player._pFireResist += 20;
-				if (player._pFireResist >= 75)
-					player._pFireResist = 75;
-			if (player._pMagResist != 75)
-				player._pMagResist += 20;
-				if (player._pMagResist >= 75)
-					player._pMagResist = 75;
-			if (player._pLghtResist != 75)
-				player._pLghtResist += 20;
-				if (player._pLghtResist >= 75)
-					 player._pLghtResist = 75;
-		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-				player._pIAC += 75;
-				player._pIBonusToHit += 100;
-			if (player._pFireResist != 75)
-				player._pFireResist += 30;
-				if (player._pFireResist >= 75)
-					player._pFireResist = 75;
-			if (player._pMagResist != 75)
-				player._pMagResist += 30;
-				if (player._pMagResist >= 75)
-					player._pMagResist = 75;
-			if (player._pLghtResist != 75)
-				player._pLghtResist += 30;
-				if (player._pLghtResist >= 75)
-					 player._pLghtResist = 75;
-
-		}
+		player._pIAC += player._pLevel * 2;
+		player._pIBonusToHit += player._pLevel;
+		if (player._pFireResist != 75)
+			player._pFireResist += player._pLevel;
+			if (player._pFireResist >= 75)
+				player._pFireResist = 75;
+		if (player._pMagResist != 75)
+			player._pMagResist += player._pLevel;
+			if (player._pMagResist >= 75)
+				player._pMagResist = 75;
+		if (player._pLghtResist != 75)
+			player._pLghtResist += player._pLevel;
+			if (player._pLghtResist >= 75)
+				 player._pLghtResist = 75;
 	}
 
 	const uint8_t gfxNum = static_cast<uint8_t>(animWeaponId) | static_cast<uint8_t>(animArmorId);
