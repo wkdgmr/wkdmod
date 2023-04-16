@@ -2692,6 +2692,8 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
 		if ((!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Staff) 
 		|| (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Staff)
+		|| (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Sword)
+		|| (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Sword)
 		|| (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT].isEmpty()))
 			player._pDamageMod /= 2; // Monks get half the normal damage bonus if they're holding a non-staff weapon
 	} else if (player._pClass == HeroClass::Bard) {
@@ -2846,12 +2848,11 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	PlayerArmorGraphic animArmorId = PlayerArmorGraphic::Light;
 	if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
 		if (player._pClass == HeroClass::Monk && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE)
-			player._pIAC += player._pLevel;
+			player._pIAC += player._pLevel / 2;
 		animArmorId = PlayerArmorGraphic::Heavy;
 	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor) {
 		if (player._pClass == HeroClass::Monk)
 			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-				player._pIAC += 25;
 				player._pIBonusToHit += 25;
 			if (player._pFireResist != 75)
 				player._pFireResist += 10;
@@ -2866,7 +2867,6 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				if (player._pLghtResist >= 75)
 					 player._pLghtResist = 75;
 			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-				player._pIAC += 50;
 				player._pIBonusToHit += 50;
 			if (player._pFireResist != 75)
 				player._pFireResist += 20;
@@ -2881,7 +2881,6 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				if (player._pLghtResist >= 75)
 					 player._pLghtResist = 75;
 			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-				player._pIAC += 100;
 				player._pIBonusToHit += 100;
 			if (player._pFireResist != 75)
 				player._pFireResist += 30;
@@ -2914,7 +2913,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				if (player._pLghtResist >= 75)
 					 player._pLghtResist = 75;
 		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-				player._pIAC += 75;
+				player._pIAC += 50;
 				player._pIBonusToHit += 50;
 			if (player._pFireResist != 75)
 				player._pFireResist += 20;
@@ -2929,7 +2928,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				if (player._pLghtResist >= 75)
 					 player._pLghtResist = 75;
 		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-				player._pIAC += 150;
+				player._pIAC += 75;
 				player._pIBonusToHit += 100;
 			if (player._pFireResist != 75)
 				player._pFireResist += 30;
