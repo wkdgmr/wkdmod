@@ -2448,7 +2448,7 @@ bool IsItemAvailable(int i)
 	           i != IDI_MAPOFDOOM                   // Cathedral Map
 	           && i != IDI_LGTFORGE                 // Bovine Plate
 	           && (i < IDI_OIL || i > IDI_GREYSUIT) // Hellfire exclusive items
-	           && (i < 83 || i > 86)                // Oils
+	           && (i < 83 || i > 91)                // Oils
 	           && i != 92                           // Scroll of Search
 	           && (i < 161 || i > 165)              // Runes
 	           && i != IDI_SORCERER                 // Short Staff of Mana
