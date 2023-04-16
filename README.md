@@ -25,6 +25,10 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Shared XP in multiplayer games.
 - Black Deaths no longer permanently damage your character, HOWEVER, they have been given the same LIFESTEAL mechanic as the Skeleton King.
 - Warrior, Barbarian, and Bard have all received a melee and ranged ToHit buff and are no longer desperate for Dexterity/ToHit gear.
+- Barbarian no longer takes damage from the Rage skill, it will drain mana instead if the Barbarian has any
+- Buffed Barbarian's passive bonuses to include 2H Axes, 2H Maces, Staffs, 2H Swords
+- Buffed Bard's passive bonuses with dual wielding any combination of 1H weapons
+- Bard is now buffed when wearing Unique, Medium, and Light Armor.  However receives a debuff when wearing non-Unique Heavy Armor (same as Monk).
 - Golem has been buffed significantly and can no longer take Friendly Fire damage.
 - Rogue gains +100 on Normal, +500 on Nightmare, or +1000 on Hell experience points when disarming a trap
 - Nerfed Apocalypse in Diablo so it acts like its Hellfire counterpart
@@ -40,21 +44,19 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - **WEAPONS EXPERT** (unlocked at Lvl 40) All classes gain access to splash damage on all melee weapons and barehanded.
 
 **[HELLFIRE ONLY]**
-- The following oils can now drop in singleplayer and multiplayer: Oil of Imperviousness, Oil of Death, Oil of Skill, *Oil of Permanence
-*Very low chances of dropping from Hell Diablo and Hell Nakrul, and a set 10% chance to drop from Hell Nakrul specifically
+- The following oils can now drop in singleplayer and multiplayer: Oil of Imperviousness, Oil of Death, Oil of Skill, *Oil of Permanence (10% Chance of Success)
+*Low chances of dropping in Hell difficulty from mobs that can drop QLVL 40 or higher, and a set 10% chance to drop from Hell Nakrul specifically.  When the Oil of Permanence fails, it will simply act like an Oil of Fortitude.
 - Buffed Nakrul drops slightly (drops 7 items) and Hell Nakrul now has a 10% chance to drop an Oil of Permanence.
 - Buffed Defiler Drops (drops 4 items)
-- Buffed Monk's Light Armor and Medium Armor passive bonuses significantly
+- Monk is now buffed when wearing Unique, Medium, and Light Armor.  However receives a debuff when wearing non-Unique Heavy Armor (same as Bard).
 - Buffed Monk's abilities with barehanded and 2H Sword
 - Monk now has Infravision as a class skill
 - Search Books and Search Scrolls no longer drop
-- Barbarian no longer takes damage from the Rage skill, it will drain mana instead if the Barbarian has any
-- Buffed Barbarian's passive bonuses with Axes, Staffs, 2H Swords, Bows
-- Buffed Bard's passive bonuses with dual wielding any combination of 1H weapons, and Bows
 - Hork Demon amulet drop is now a higher item level depending on difficulty (Normal: ilvl 15, Nightmare: ilvl 20, Hell: ilvl 30) and he drops more or less items depending on difficulty.
 - Hellfire spell blocking has been completely removed.
 - Hork Spawn now drop items like normal monsters.
 - Hell Diablo will drop a book of Nova when killed.
+- Fixed Hellfire Arrow behavior to be like Diablo
 - Fixed Hellfire Arrow behavior to be like Diablo
 
 **[INVADER]**
