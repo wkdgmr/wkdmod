@@ -2442,9 +2442,9 @@ bool IsItemAvailable(int i)
 		return false;
 
 	if (gbIsSpawn) {
-		if (i >= 67 && i <= 76)
+		if (i >= 62 && i <= 71)
 			return false; // Medium and heavy armors
-		if (IsAnyOf(i, 109, 111, 112, 114, 115, 117))
+		if (IsAnyOf(i, 105, 107, 108, 110, 111, 113))
 			return false; // Unavailable scrolls
 	}
 
@@ -2455,8 +2455,12 @@ bool IsItemAvailable(int i)
 	           i != IDI_MAPOFDOOM                   // Cathedral Map
 	           && i != IDI_LGTFORGE                 // Bovine Plate
 	           && (i < IDI_OIL || i > IDI_GREYSUIT) // Hellfire exclusive items
-	           && (i < 83 || i > 91)                // Oils
-	           && (i < 165 || i > 169)              // Runes
+	           && (i < 83 || i > 86)                // Oils
+	           && i != 92                           // Oil of Permanence
+	           && i != 93                           // Oil of Imperviousness
+	           && i != 97                           // Oil of Death
+	           && i != 99                           // Oil of Skill
+	           && (i < 161 || i > 165)              // Runes
 	           && i != IDI_SORCERER                 // Short Staff of Mana
 	           )
 	    || (
