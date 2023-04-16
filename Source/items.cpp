@@ -2855,38 +2855,87 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	PlayerArmorGraphic animArmorId = PlayerArmorGraphic::Light;
 	if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
 		if (player._pClass == HeroClass::Monk && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE)
-			player._pIAC += player._pLevel;
+				player._pIAC += player._pLevel;
+				player._pIBonusToHit += player._pLevel / 2;
+				if (player._pFireResist != 75)
+					if (player._pLevel <= 30) {
+						player._pFireResist += player._pLevel;
+					} else {
+						player._pFireResist += 30;
+					}
+					if (player._pFireResist >= 75)
+						player._pFireResist = 75;
+				if (player._pMagResist != 75)
+					if (player._pLevel <= 30) {
+						player._pMagResist += player._pLevel;
+					} else {
+						player._pMagResist += 30;
+					}
+					if (player._pMagResist >= 75)
+						player._pMagResist = 75;
+				if (player._pLghtResist != 75)
+					if (player._pLevel <= 30) {
+						player._pLghtResist += player._pLevel;
+					} else {
+						player._pLghtResist += 30;
+					}
+					if (player._pLghtResist >= 75)
+						 player._pLghtResist = 75;
 		animArmorId = PlayerArmorGraphic::Heavy;
 	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
 		if (player._pClass == HeroClass::Monk) {
 			if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE) {
 				player._pIAC += player._pLevel * 2;
-				player._pIBonusToHit += player._pLevel;
+				player._pIBonusToHit += player._pLevel / 2;
 				if (player._pFireResist != 75)
-					player._pFireResist += player._pLevel;
+					if (player._pLevel <= 30) {
+						player._pFireResist += player._pLevel;
+					} else {
+						player._pFireResist += 30;
+					}
 					if (player._pFireResist >= 75)
 						player._pFireResist = 75;
 				if (player._pMagResist != 75)
-					player._pMagResist += player._pLevel;
+					if (player._pLevel <= 30) {
+						player._pMagResist += player._pLevel;
+					} else {
+						player._pMagResist += 30;
+					}
 					if (player._pMagResist >= 75)
 						player._pMagResist = 75;
 				if (player._pLghtResist != 75)
-					player._pLghtResist += player._pLevel;
+					if (player._pLevel <= 30) {
+						player._pLghtResist += player._pLevel;
+					} else {
+						player._pLghtResist += 30;
+					}
 					if (player._pLghtResist >= 75)
 						 player._pLghtResist = 75;
 			} else {
 				player._pIAC += player._pLevel * 2;
 				player._pIBonusToHit += player._pLevel;
 				if (player._pFireResist != 75)
-					player._pFireResist += player._pLevel;
+					if (player._pLevel <= 30) {
+						player._pFireResist += player._pLevel;
+					} else {
+						player._pFireResist += 30;
+					}
 					if (player._pFireResist >= 75)
 						player._pFireResist = 75;
 				if (player._pMagResist != 75)
-					player._pMagResist += player._pLevel;
+					if (player._pLevel <= 30) {
+						player._pMagResist += player._pLevel;
+					} else {
+						player._pMagResist += 30;
+					}
 					if (player._pMagResist >= 75)
 						player._pMagResist = 75;
 				if (player._pLghtResist != 75)
-					player._pLghtResist += player._pLevel;
+					if (player._pLevel <= 30) {
+						player._pLghtResist += player._pLevel;
+					} else {
+						player._pLghtResist += 30;
+					}
 					if (player._pLghtResist >= 75)
 						 player._pLghtResist = 75;
 			}
