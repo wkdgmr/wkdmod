@@ -24,8 +24,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Players do not drop items on death, unless you enable **INVADER** mode, more details below.
 - Shared XP in multiplayer games.
 - Black Deaths no longer permanently damage your character, HOWEVER, they have been given the same LIFESTEAL mechanic as the Skeleton King.
-- Warrior, Barbarian, and Bard have all received a melee ToHit buff and are no longer desperate for Dexterity/ToHit gear.
-- Warrior and Bard have received a buff to ranged ToHit as well.
+- Warrior, Barbarian, and Bard have all received a melee and ranged ToHit buff and are no longer desperate for Dexterity/ToHit gear.
 - Golem has been buffed significantly and can no longer take Friendly Fire damage.
 - Rogue gains +100 on Normal, +500 on Nightmare, or +1000 on Hell experience points when disarming a trap
 - Nerfed Apocalypse in Diablo so it acts like its Hellfire counterpart
@@ -50,6 +49,8 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Monk now has Infravision as a class skill
 - Search Books and Search Scrolls no longer drop
 - Barbarian no longer takes damage from the Rage skill, it will drain mana instead if the Barbarian has any
+- Buffed Barbarian's passive bonuses with Axes, Staffs, 2H Swords, Bows
+- Buffed Bard's passive bonuses with dual wielding any combination of 1H weapons, and Bows
 - Hork Demon amulet drop is now a higher item level depending on difficulty (Normal: ilvl 15, Nightmare: ilvl 20, Hell: ilvl 30) and he drops more or less items depending on difficulty.
 - Hellfire spell blocking has been completely removed.
 - Hork Spawn now drop items like normal monsters.
