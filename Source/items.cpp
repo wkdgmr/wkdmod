@@ -2889,8 +2889,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				if (player._pLghtResist >= 75)
 					 player._pLghtResist = 75;
 		else {
-			player._pIAC += player._pLevel / 2;
-			player._pIBonusToHit += player._pLevel / 2;
+			player._pIBonusToHit -= player._pIBonusToHit / 2;
 		}
 		animArmorId = PlayerArmorGraphic::Heavy;
 	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
