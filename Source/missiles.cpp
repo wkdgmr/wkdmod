@@ -2522,9 +2522,10 @@ void AddTrapDisarm(Missile &missile, AddMissileParameter & /*parameter*/)
 	if (&player == MyPlayer) {
 		NewCursor(CURSOR_DISARM);
 		if (ControlMode != ControlTypes::KeyboardAndMouse) {
-			if (ObjectUnderCursor != nullptr)
+			if (ObjectUnderCursor != nullptr) {
 				NetSendCmdLoc(MyPlayerId, true, CMD_DISARMXY, cursPosition);
-			else
+				player._pExperience += 100;
+			} else
 				NewCursor(CURSOR_HAND);
 		}
 	}

@@ -647,6 +647,13 @@ void GetBookSpell(Item &item, int lvl)
 			if (s == static_cast<int8_t>(SpellID::HealOther))
 				s = static_cast<int8_t>(SpellID::BloodStar);
 		}
+		if (!gbIsMultiplayer) {
+			if (s == static_cast<int8_t>(SpellID::Search))
+				s = static_cast<int8_t>(SpellID::HolyBolt);
+		} else {
+			if (s == static_cast<int8_t>(SpellID::Search))
+				s = static_cast<int8_t>(SpellID::HolyBolt);
+		}
 		if (s == maxSpells)
 			s = 1;
 	}
@@ -2434,10 +2441,13 @@ bool IsItemAvailable(int i)
 	if (i < 0 || i > IDI_LAST)
 		return false;
 
+	if (i = 97)
+		return false;
+
 	if (gbIsSpawn) {
-		if (i >= 62 && i <= 71)
+		if (i >= 67 && i <= 76)
 			return false; // Medium and heavy armors
-		if (IsAnyOf(i, 105, 107, 108, 110, 111, 113))
+		if (IsAnyOf(i, 110, 112, 113, 115, 116, 118))
 			return false; // Unavailable scrolls
 	}
 
@@ -2449,8 +2459,8 @@ bool IsItemAvailable(int i)
 	           && i != IDI_LGTFORGE                 // Bovine Plate
 	           && (i < IDI_OIL || i > IDI_GREYSUIT) // Hellfire exclusive items
 	           && (i < 83 || i > 91)                // Oils
-	           && i != 92                           // Scroll of Search
-	           && (i < 161 || i > 165)              // Runes
+	           && i != 97                           // Scroll of Search
+	           && (i < 166 || i > 170)              // Runes
 	           && i != IDI_SORCERER                 // Short Staff of Mana
 	           )
 	    || (
@@ -2475,7 +2485,7 @@ uint8_t GetOutlineColor(const Item &item, bool checkReq)
 
 bool IsUniqueAvailable(int i)
 {
-	return gbIsHellfire || i <= 89;
+	return gbIsHellfire || i <= 94;
 }
 
 void InitItemGFX()
@@ -2836,49 +2846,104 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	PlayerArmorGraphic animArmorId = PlayerArmorGraphic::Light;
 	if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
 		if (player._pClass == HeroClass::Monk && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE)
-			player._pIAC += player._pLevel / 2;
+			player._pIAC += player._pLevel;
 		animArmorId = PlayerArmorGraphic::Heavy;
 	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor) {
 		if (player._pClass == HeroClass::Monk)
 			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-				player._pIAC += player._pLevel;
-				player._pIBonusToHit += 20;
-				player._pMagResist += 10;
+				player._pIAC += 25;
+				player._pIBonusToHit += 25;
+			if (player._pFireResist != 75)
 				player._pFireResist += 10;
+				if (player._pFireResist >= 75)
+					player._pFireResist = 75;
+			if (player._pMagResist != 75)
+				player._pMagResist += 10;
+				if (player._pMagResist >= 75)
+					player._pMagResist = 75;
+			if (player._pLghtResist != 75)
 				player._pLghtResist += 10;
+				if (player._pLghtResist >= 75)
+					 player._pLghtResist = 75;
 			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-				player._pIAC += player._pLevel * 2;
+				player._pIAC += 50;
 				player._pIBonusToHit += 50;
-				player._pMagResist += 20;
+			if (player._pFireResist != 75)
 				player._pFireResist += 20;
+				if (player._pFireResist >= 75)
+					player._pFireResist = 75;
+			if (player._pMagResist != 75)
+				player._pMagResist += 20;
+				if (player._pMagResist >= 75)
+					player._pMagResist = 75;
+			if (player._pLghtResist != 75)
 				player._pLghtResist += 20;
+				if (player._pLghtResist >= 75)
+					 player._pLghtResist = 75;
 			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-				player._pIAC += player._pLevel * 4;
+				player._pIAC += 100;
 				player._pIBonusToHit += 100;
-				player._pMagResist += 30;
+			if (player._pFireResist != 75)
 				player._pFireResist += 30;
+				if (player._pFireResist >= 75)
+					player._pFireResist = 75;
+			if (player._pMagResist != 75)
+				player._pMagResist += 30;
+				if (player._pMagResist >= 75)
+					player._pMagResist = 75;
+			if (player._pLghtResist != 75)
 				player._pLghtResist += 30;
+				if (player._pLghtResist >= 75)
+					 player._pLghtResist = 75;
 			}
 		animArmorId = PlayerArmorGraphic::Medium;
-	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::LightArmor) {
+	} else if (player._pClass == HeroClass::Monk) {
 		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-			player._pIAC += player._pLevel * 2;
-			player._pIBonusToHit += 20;
-			player._pMagResist += 10;
-			player._pFireResist += 10;
-			player._pLghtResist += 10;
+				player._pIAC += 25;
+				player._pIBonusToHit += 25;
+			if (player._pFireResist != 75)
+				player._pFireResist += 10;
+				if (player._pFireResist >= 75)
+					player._pFireResist = 75;
+			if (player._pMagResist != 75)
+				player._pMagResist += 10;
+				if (player._pMagResist >= 75)
+					player._pMagResist = 75;
+			if (player._pLghtResist != 75)
+				player._pLghtResist += 10;
+				if (player._pLghtResist >= 75)
+					 player._pLghtResist = 75;
 		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-			player._pIAC += player._pLevel * 4;
-			player._pIBonusToHit += 50;
-			player._pMagResist += 20;
-			player._pFireResist += 20;
-			player._pLghtResist += 20;
+				player._pIAC += 75;
+				player._pIBonusToHit += 50;
+			if (player._pFireResist != 75)
+				player._pFireResist += 20;
+				if (player._pFireResist >= 75)
+					player._pFireResist = 75;
+			if (player._pMagResist != 75)
+				player._pMagResist += 20;
+				if (player._pMagResist >= 75)
+					player._pMagResist = 75;
+			if (player._pLghtResist != 75)
+				player._pLghtResist += 20;
+				if (player._pLghtResist >= 75)
+					 player._pLghtResist = 75;
 		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-			player._pIAC += player._pLevel * 6;
-			player._pIBonusToHit += 100;
-			player._pMagResist += 30;
-			player._pFireResist += 30;
-			player._pLghtResist += 30;
+				player._pIAC += 150;
+				player._pIBonusToHit += 100;
+			if (player._pFireResist != 75)
+				player._pFireResist += 30;
+				if (player._pFireResist >= 75)
+					player._pFireResist = 75;
+			if (player._pMagResist != 75)
+				player._pMagResist += 30;
+				if (player._pMagResist >= 75)
+					player._pMagResist = 75;
+			if (player._pLghtResist != 75)
+				player._pLghtResist += 30;
+				if (player._pLghtResist >= 75)
+					 player._pLghtResist = 75;
+
 		}
 	}
 
