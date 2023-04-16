@@ -2913,7 +2913,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 						 player._pLghtResist = 75;
 			} else {
 				player._pIAC += player._pLevel * 2;
-				player._pIBonusToHit += player._pLevel;
+				player._pIBonusToHit += player._pLevel / 2;
 				if (player._pFireResist != 75)
 					if (player._pLevel <= 30) {
 						player._pFireResist += player._pLevel;
