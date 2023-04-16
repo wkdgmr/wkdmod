@@ -2441,13 +2441,10 @@ bool IsItemAvailable(int i)
 	if (i < 0 || i > IDI_LAST)
 		return false;
 
-	if (i = 97)
-		return false;
-
 	if (gbIsSpawn) {
 		if (i >= 67 && i <= 76)
 			return false; // Medium and heavy armors
-		if (IsAnyOf(i, 110, 112, 113, 115, 116, 118))
+		if (IsAnyOf(i, 109, 111, 112, 114, 115, 117))
 			return false; // Unavailable scrolls
 	}
 
@@ -2459,8 +2456,7 @@ bool IsItemAvailable(int i)
 	           && i != IDI_LGTFORGE                 // Bovine Plate
 	           && (i < IDI_OIL || i > IDI_GREYSUIT) // Hellfire exclusive items
 	           && (i < 83 || i > 91)                // Oils
-	           && i != 97                           // Scroll of Search
-	           && (i < 166 || i > 170)              // Runes
+	           && (i < 165 || i > 169)              // Runes
 	           && i != IDI_SORCERER                 // Short Staff of Mana
 	           )
 	    || (
