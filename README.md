@@ -18,6 +18,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 
 **[GLOBAL]**
 - When Diablo is killed the game does not end and he drops loot (drops 5 items).
+- Buffed loot drop chances 300% in Hell, 200% in Nightmare, Normal is unchanged.
 - When killing Diablo, Nakrul, Hork Demon or Defiler loot drop tiers are determined by difficulty.  Best drops from these bosses will be found on Hell difficulty.
 - Items are no longer destroyed at 0 durability, they become disabled and you must repair.
 - Players do not drop items on death, unless you enable **INVADER** mode, more details below.
@@ -26,8 +27,10 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Warrior, Barbarian, and Bard have all received a melee ToHit buff and are no longer desperate for Dexterity/ToHit gear.
 - Warrior and Bard have received a buff to ranged ToHit as well.
 - Golem has been buffed significantly and can no longer take Friendly Fire damage.
+- Rogue gains +100 on Normal, +500 on Nightmare, or +1000 on Hell experience points when disarming a trap
 - Nerfed Apocalypse in Diablo so it acts like its Hellfire counterpart
 - When Full Quests in Multiplayer is enabled, Unique Quest items originally exclusive to Single Player can now drop.
+- Swapped some scrolls out for the four oils I added in Hellfire, nobody will miss them
 
 **Splash damage now does damage to two extra tiles** (so its more like a U instead of a T, the shape of the splash), and can be accessed with the following classes/weapons (and thanks to DevX is applied in both Diablo and Hellfire gamemodes):
 - **Monk:** Staff, 2H Sword
@@ -38,13 +41,16 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - **WEAPONS EXPERT** (unlocked at Lvl 40) All classes gain access to splash damage on all melee weapons and barehanded.
 
 **[HELLFIRE ONLY]**
-- The following oils can now drop in multiplayer: *Oil of Permanence, Oil of Mastery, Oil of Imperviousness, Oil of Death, Oil of Skill
+- The following oils can now drop in singleplayer and multiplayer: Oil of Imperviousness, Oil of Death, Oil of Skill, *Oil of Permanence
 *Very low chances of dropping from Hell Diablo and Hell Nakrul, and a set 10% chance to drop from Hell Nakrul specifically
 - Buffed Nakrul drops slightly (drops 7 items) and Hell Nakrul now has a 10% chance to drop an Oil of Permanence.
 - Buffed Defiler Drops (drops 4 items)
 - Buffed Monk's Light Armor and Medium Armor passive bonuses significantly
-- Buffed Monk's barehanded abilities
-- Hork Demon amulet drop is now a higher item level depending on difficulty (Normal: ilvl 15, Nightmare: ilvl 20, Hell: ilvl 30) and he drops one extra random item.
+- Buffed Monk's abilities with barehanded and 2H Sword
+- Monk now has Infravision as a class skill
+- Search Books and Search Scrolls no longer drop
+- Barbarian no longer takes damage from the Rage skill, it will drain mana instead if the Barbarian has any
+- Hork Demon amulet drop is now a higher item level depending on difficulty (Normal: ilvl 15, Nightmare: ilvl 20, Hell: ilvl 30) and he drops more or less items depending on difficulty.
 - Hellfire spell blocking has been completely removed.
 - Hork Spawn now drop items like normal monsters.
 - Hell Diablo will drop a book of Nova when killed.
