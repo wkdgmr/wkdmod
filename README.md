@@ -57,7 +57,6 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Hork Spawn now drop items like normal monsters.
 - Hell Diablo will drop a book of Nova when killed.
 - Fixed Hellfire Arrow behavior to be like Diablo
-- Fixed Hellfire Arrow behavior to be like Diablo
 
 **[INVADER]**
 - INVADER is a stand alone game mode within wkdmod.  It's just your standard wkdmod Diablo or Hellfire... but with a twist...
