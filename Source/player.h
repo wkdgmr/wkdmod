@@ -535,7 +535,7 @@ struct Player {
 		int hper = _pLevel + _pDexterity + _pIBonusToHit + BaseHitChance;
 		if (_pClass == HeroClass::Rogue)
 			hper += 20;
-		else if (_pClass == HeroClass::Warrior || _pClass == HeroClass::Bard)
+		else if (_pClass == HeroClass::Warrior || _pClass == HeroClass::Bard || _pClass == HeroClass::Barbarian)
 			hper += _pDexterity;
 		return hper;
 	}
