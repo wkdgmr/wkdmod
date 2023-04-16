@@ -2689,10 +2689,16 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	if (player._pClass == HeroClass::Rogue) {
 		player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 200;
 	} else if (player._pClass == HeroClass::Monk) {
-		player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
-		if ((!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Staff) 
-		|| (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Staff))
-			player._pDamageMod /= 2; // Monks get half the normal damage bonus if they're holding a non-staff weapon
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Staff) {
+			player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
+		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword) {
+			player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
+		} else if (player.InvBody[INVLOC_HAND_LEFT].isEmpty() || player.InvBody[INVLOC_HAND_RIGHT].isEmpty()) {
+			player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
+		} else {
+			player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
+			player._pDamageMod /= 2;
+		}
 	} else if (player._pClass == HeroClass::Bard) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword) {
 			player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
@@ -2854,36 +2860,42 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 
 	PlayerArmorGraphic animArmorId = PlayerArmorGraphic::Light;
 	if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
-		if (player._pClass == HeroClass::Monk && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE)
-				player._pIAC += player._pLevel;
-				player._pIBonusToHit += player._pLevel / 2;
-				if (player._pFireResist != 75)
-					if (player._pLevel <= 30) {
-						player._pFireResist += player._pLevel;
-					} else {
-						player._pFireResist += 30;
-					}
-					if (player._pFireResist >= 75)
-						player._pFireResist = 75;
-				if (player._pMagResist != 75)
-					if (player._pLevel <= 30) {
-						player._pMagResist += player._pLevel;
-					} else {
-						player._pMagResist += 30;
-					}
-					if (player._pMagResist >= 75)
-						player._pMagResist = 75;
-				if (player._pLghtResist != 75)
-					if (player._pLevel <= 30) {
-						player._pLghtResist += player._pLevel;
-					} else {
-						player._pLghtResist += 30;
-					}
-					if (player._pLghtResist >= 75)
-						 player._pLghtResist = 75;
+		if (player._pClass == HeroClass::Monk && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE
+		|| (player._pClass == HeroClass::Bard && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE))
+			player._pIAC += player._pLevel;
+			player._pIBonusToHit += player._pLevel / 2;
+			if (player._pFireResist != 75)
+				if (player._pLevel <= 30) {
+					player._pFireResist += player._pLevel;
+				} else {
+					player._pFireResist += 30;
+				}
+				if (player._pFireResist >= 75)
+					player._pFireResist = 75;
+			if (player._pMagResist != 75)
+				if (player._pLevel <= 30) {
+					player._pMagResist += player._pLevel;
+				} else {
+					player._pMagResist += 30;
+				}
+				if (player._pMagResist >= 75)
+					player._pMagResist = 75;
+			if (player._pLghtResist != 75)
+				if (player._pLevel <= 30) {
+					player._pLghtResist += player._pLevel;
+				} else {
+					player._pLghtResist += 30;
+				}
+				if (player._pLghtResist >= 75)
+					 player._pLghtResist = 75;
+		else {
+			player._pIAC += player._pLevel / 2;
+			player._pIBonusToHit += player._pLevel / 2;
+		}
 		animArmorId = PlayerArmorGraphic::Heavy;
 	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
-		if (player._pClass == HeroClass::Monk) {
+		if (player._pClass == HeroClass::Monk
+		|| (player._pClass == HeroClass::Bard)) {
 			if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE) {
 				player._pIAC += player._pLevel * 2;
 				player._pIBonusToHit += player._pLevel / 2;
@@ -2941,19 +2953,32 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 			}
 		}
 		animArmorId = PlayerArmorGraphic::Medium;
-	} else if (player._pClass == HeroClass::Monk) {
+	} else if (player._pClass == HeroClass::Monk
+	|| (player._pClass == HeroClass::Bard)) {
 		player._pIAC += player._pLevel * 2;
 		player._pIBonusToHit += player._pLevel;
 		if (player._pFireResist != 75)
-			player._pFireResist += player._pLevel;
+			if (player._pLevel <= 30) {
+				player._pFireResist += player._pLevel;
+			} else {
+				player._pFireResist += 30;
+			}
 			if (player._pFireResist >= 75)
 				player._pFireResist = 75;
 		if (player._pMagResist != 75)
-			player._pMagResist += player._pLevel;
+			if (player._pLevel <= 30) {
+				player._pMagResist += player._pLevel;
+			} else {
+				player._pMagResist += 30;
+			}
 			if (player._pMagResist >= 75)
 				player._pMagResist = 75;
 		if (player._pLghtResist != 75)
-			player._pLghtResist += player._pLevel;
+			if (player._pLevel <= 30) {
+				player._pLghtResist += player._pLevel;
+			} else {
+				player._pLghtResist += 30;
+			}
 			if (player._pLghtResist >= 75)
 				 player._pLghtResist = 75;
 	}
@@ -5049,8 +5074,14 @@ bool ApplyOilToItem(Item &item, Player &player)
 			item._iDurability = DUR_INDESTRUCTIBLE;
 			item._iMaxDur = DUR_INDESTRUCTIBLE;
 			break;
-		} else
-			break;
+		} else {
+			if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur < 200) {
+				r = GenerateRnd(41) + 10;
+				item._iMaxDur += r;
+				item._iDurability += r;
+				break;
+			}
+		}
 	case IMISC_OILHARD:
 		if (item._iAC < 60) {
 			item._iAC += GenerateRnd(2) + 1;
