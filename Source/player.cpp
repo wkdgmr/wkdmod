@@ -2712,6 +2712,7 @@ void InitPlayer(Player &player, bool firstTime)
 		}
 
 		player.position.future = player.position.tile;
+		SetPlayerOld(player);
 		player.walkpath[0] = WALK_NONE;
 		player.destAction = ACTION_NONE;
 
@@ -2825,6 +2826,16 @@ void FixPlrWalkTags(const Player &player)
 			dPlayer[searchTile.x][searchTile.y] = 0;
 		}
 	}
+
+#ifdef _DEBUG
+	// Checks that FixPlrWalkTags really removes player from all dPlayer tiles
+	// FixPlrWalkTags could fail if player.position.old is not updated correctly
+	for (int y = 0; y < MAXDUNY; y++) {
+		for (int x = 0; x < MAXDUNX; x++) {
+			assert(PlayerAtPosition({ x, y }) != &player);
+		}
+	}
+#endif
 }
 
 void StartPlrHit(Player &player, int dam, bool forcehit)
