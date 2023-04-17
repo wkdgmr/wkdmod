@@ -2858,6 +2858,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
 		if (player._pClass == HeroClass::Monk && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE
 		|| (player._pClass == HeroClass::Bard && player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE)) {
+			player._pIAC += player._pLevel;
 			if (player._pFireResist <= 74) {
 				if (player._pLevel <= 30) {
 					player._pFireResist += player._pLevel;
