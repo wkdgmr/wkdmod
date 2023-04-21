@@ -804,7 +804,7 @@ void SetupObject(Object &object, Point position, _object_id ot)
 	object._oAnimWidth = objectData.animWidth;
 	object._oSolidFlag = objectData.isSolid() ? 1 : 0;
 	object._oMissFlag = objectData.missilesPassThrough() ? 1 : 0;
-	object._oLight = objectData.isLight() ? 1 : 0;
+	object.applyLighting = objectData.applyLighting();
 	object._oDelFlag = false;
 	object._oBreak = objectData.isBreakable() ? 1 : 0;
 	object._oSelFlag = objectData.selFlag;
@@ -1529,28 +1529,35 @@ void AddMushPatch()
 	}
 }
 
+bool IsLightVisible(Object &light, int lightRadius)
+{
+#ifdef _DEBUG
+	if (!DisableLighting)
+		return false;
+#endif
+
+	for (const Player &player : Players) {
+		if (!player.plractive)
+			continue;
+
+		if (!player.isOnActiveLevel())
+			continue;
+
+		if (player.position.tile.WalkingDistance(light.position) < lightRadius + 10) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void UpdateObjectLight(Object &light, int lightRadius)
 {
 	if (light._oVar1 == -1) {
 		return;
 	}
 
-	bool turnon = false;
-	if (!DisableLighting) {
-		for (const Player &player : Players) {
-			if (!player.plractive)
-				continue;
-
-			if (!player.isOnActiveLevel())
-				continue;
-
-			if (player.position.tile.WalkingDistance(light.position) < lightRadius + 10) {
-				turnon = true;
-				break;
-			}
-		}
-	}
-	if (turnon) {
+	if (IsLightVisible(light, lightRadius)) {
 		if (light._oVar1 == 0)
 			light._olid = AddLight(light.position, lightRadius);
 		light._oVar1 = 1;
@@ -4308,7 +4315,7 @@ void RedoPlayerVision()
 {
 	for (const Player &player : Players) {
 		if (player.plractive && player.isOnActiveLevel()) {
-			ChangeVisionXY(player._pvid, player.position.tile);
+			ChangeVisionXY(player.getId(), player.position.tile);
 		}
 	}
 }
@@ -4645,6 +4652,10 @@ void SyncOpObject(Player &player, int cmd, Object &object)
 		break;
 	case OBJ_GOATSHRINE:
 		OperateGoatShrine(player, object, LS_GSHRINE);
+		break;
+	case OBJ_LAZSTAND:
+		if (!sendmsg)
+			UpdateState(object, object._oAnimFrame + 1);
 		break;
 	case OBJ_CAULDRON:
 		OperateCauldron(player, object, LS_CALDRON);
