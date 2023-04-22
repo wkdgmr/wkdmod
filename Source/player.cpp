@@ -2870,7 +2870,7 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 	}
 
 	const bool dropGold = !gbIsMultiplayer || !(player.isOnLevel(16) || player.isOnArenaLevel());
-	const bool dropItems = dropGold && deathReason == DeathReason::MonsterOrTrap;
+	const bool dropItems = dropGold && deathReason == DeathReason::MonsterOrTrap || deathReason == DeathReason::Player;
 	const bool dropEar = dropGold && deathReason == DeathReason::Player;
 
 	player.Say(HeroSpeech::AuughUh);
@@ -2922,8 +2922,12 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 
 			if (!*sgOptions.Gameplay.friendlyFire) {
 				DropHalfPlayersGold(player);
+				int pExperience_penalty = round(player._pExperience / 5);
+				player._pExperience -= pExperience_penalty;
 			} else {
 				DropHalfPlayersGold(player);
+				int pExperience_penalty = round(player._pExperience / 5);
+				player._pExperience -= pExperience_penalty;
 				if (dropEar) {
 					Item ear;
 					InitializeItem(ear, IDI_EAR);
