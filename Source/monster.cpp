@@ -1227,7 +1227,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		ac += 40;
 	if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::ACAgainstUndead) && monster.data().monsterClass == MonsterClass::Undead)
 		ac += 20;
-	hit += 2 * (monster.level(sgGameInitInfo.nDifficulty) - player._pLevel)
+	hit += 2 * (monster.level(sgGameInitInfo.nDifficulty) - (player._pLevel + player.GetBlockChance()))
 	    + 30
 	    - ac;
 	int minhit = GetMinHit();
