@@ -2922,11 +2922,11 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 
 			if (!*sgOptions.Gameplay.friendlyFire) {
 				DropHalfPlayersGold(player);
-				int pExperience_penalty = round(player._pExperience / 5);
+				int pExperience_penalty = round(player._pExperience / 100);
 				player._pExperience -= pExperience_penalty;
 			} else {
 				DropHalfPlayersGold(player);
-				int pExperience_penalty = round(player._pExperience / 5);
+				int pExperience_penalty = round(player._pExperience / 100);
 				player._pExperience -= pExperience_penalty;
 				if (dropEar) {
 					Item ear;
