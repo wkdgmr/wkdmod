@@ -1704,10 +1704,10 @@ void PrintItemOil(char iDidx)
 		AddPanelString(_("weapon's chance to hit"));
 		break;
 	case IMISC_OILSHARP:
-		AddPanelString(_("increase weapon damage"));
+		AddPanelString(_("increase weapon DMG max"));
 		break;
 	case IMISC_OILDEATH:
-		AddPanelString(_("greatly increase weapon damage"));
+		AddPanelString(_("increase weapon DMG min/max"));
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILSKILL:
@@ -1727,10 +1727,10 @@ void PrintItemOil(char iDidx)
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 10%"));
 		break;
 	case IMISC_OILHARD:
-		AddPanelString(_("increase AC of armor/shields"));
+		AddPanelString(_("increase AC"));
 		break;
 	case IMISC_OILIMP:
-		AddPanelString(_("greatly increase AC of armor/shields"));
+		AddPanelString(_("greatly increase AC"));
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_RUNEF:
