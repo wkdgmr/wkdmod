@@ -20,8 +20,10 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - When Diablo is killed the game does not end and he drops loot (drops 5 items).
 - Buffed loot drop chances 300% in Hell, 200% in Nightmare, Normal is unchanged.
 - When killing Diablo, Nakrul, Hork Demon or Defiler loot drop tiers are determined by difficulty.  Best drops from these bosses will be found on Hell difficulty.
+- Diablo and Nakrul have been buffed and are much more difficult to defeat.
+- Nightmare and Hell monster HP/AC/ToHit has been increased
 - Items are no longer destroyed at 0 durability, they become disabled and you must repair.
-- Players do not drop items on death, unless you enable **INVADER** mode, more details below.
+- Players do not drop items on death, unless you enable **INVADER** mode, more details below.  -1% TOTAL CHARACTER Experience upon death.
 - Shared XP in multiplayer games.
 - Black Deaths no longer permanently damage your character, HOWEVER, they have been given the same LIFESTEAL mechanic as the Skeleton King.
 - Warrior, Barbarian, and Bard have all received a melee and ranged ToHit buff and are no longer desperate for Dexterity/ToHit gear.
@@ -32,6 +34,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Golem has been buffed significantly and can no longer take Friendly Fire damage.
 - Rogue gains +100 on Normal, +500 on Nightmare, or +1000 on Hell experience points when disarming a trap
 - Nerfed Apocalypse in Diablo so it acts like its Hellfire counterpart
+- Chance to Block is now added against Monster Spell Damage
 - When Full Quests in Multiplayer is enabled, Unique Quest items originally exclusive to Single Player can now drop.
 - Swapped some scrolls out for the four oils I added in Hellfire, nobody will miss them
 
@@ -44,8 +47,11 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - **WEAPONS EXPERT** (unlocked at Lvl 40) All classes gain access to splash damage on all melee weapons and barehanded.
 
 **[HELLFIRE ONLY]**
-- The following oils can now drop in singleplayer and multiplayer: Oil of Imperviousness, Oil of Death, Oil of Skill, *Oil of Permanence (10% Chance of Success)
-*Low chances of dropping in Hell difficulty from mobs that can drop QLVL 40 or higher, and a set 10% chance to drop from Hell Nakrul specifically.  When the Oil of Permanence fails, it will simply act like an Oil of Fortitude.
+- The following OILS can now drop in SINGLEPLAYER and MULTIPLAYER:
+  - Oil of Imperviousness QLVL 10 / 50% Chance of Success / Acts like Hardening on Fail
+  - Oil of Skill QLVL 10
+  - Oil of Permanence QLVL 40 / 10% Chance of Success / Acts like Fortitude on Fail
+  - Oil of Death QLVL 10 / 50% Chance of Success / Acts like Sharpening on Fail
 - Buffed Nakrul drops slightly (drops 7 items) and Hell Nakrul now has a 10% chance to drop an Oil of Permanence.
 - Buffed Defiler Drops (drops 4 items)
 - Monk is now buffed when wearing Unique, Medium, and Light Armor.  However receives a debuff when wearing non-Unique Heavy Armor (same as Bard).
