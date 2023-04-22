@@ -588,8 +588,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 		}
 	}
 
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Bow && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND)) {
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
 			return false;
 		}
@@ -603,8 +602,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 	}
 
 
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND)) {
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
 			return false;
 		}
@@ -617,8 +615,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 		}
 	}
 
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Axe && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Axe && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND)) {
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Axe && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
 			return false;
 		}
@@ -631,8 +628,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 		}
 	}
 
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND)) {
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
 			return false;
 		}
@@ -645,8 +641,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 		}
 	}
 
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND)) {
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
 			return false;
 		}
