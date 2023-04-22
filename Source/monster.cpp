@@ -132,9 +132,6 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 	monster.animInfo.currentFrame = GenerateRnd(monster.animInfo.numberOfFrames - 1);
 
 	int maxhp = monster.data().hitPointsMinimum + GenerateRnd(monster.data().hitPointsMaximum - monster.data().hitPointsMinimum + 1);
-	if (monster.type().type == MT_DIABLO && !gbIsHellfire) {
-		maxhp /= 2;
-	}
 	monster.maxHitPoints = maxhp << 6;
 
 	if (!gbIsMultiplayer)
@@ -177,29 +174,29 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 	if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 		monster.maxHitPoints = 3 * monster.maxHitPoints;
 		if (gbIsHellfire)
-			monster.maxHitPoints += (gbIsMultiplayer ? 100 : 50) << 6;
-		else
-			monster.maxHitPoints += 100 << 6;
-		monster.hitPoints = monster.maxHitPoints;
-		monster.toHit += NightmareToHitBonus;
-		monster.minDamage = 2 * (monster.minDamage + 2);
-		monster.maxDamage = 2 * (monster.maxDamage + 2);
-		monster.minDamageSpecial = 2 * (monster.minDamageSpecial + 2);
-		monster.maxDamageSpecial = 2 * (monster.maxDamageSpecial + 2);
-		monster.armorClass += NightmareAcBonus;
-	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-		monster.maxHitPoints = 4 * monster.maxHitPoints;
-		if (gbIsHellfire)
 			monster.maxHitPoints += (gbIsMultiplayer ? 200 : 100) << 6;
 		else
 			monster.maxHitPoints += 200 << 6;
 		monster.hitPoints = monster.maxHitPoints;
-		monster.toHit += HellToHitBonus;
+		monster.toHit += (NightmareToHitBonus + 40);
+		monster.minDamage = 2 * (monster.minDamage + 2);
+		monster.maxDamage = 2 * (monster.maxDamage + 2);
+		monster.minDamageSpecial = 2 * (monster.minDamageSpecial + 2);
+		monster.maxDamageSpecial = 2 * (monster.maxDamageSpecial + 2);
+		monster.armorClass += (NightmareAcBonus + 40);
+	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+		monster.maxHitPoints = 4 * monster.maxHitPoints;
+		if (gbIsHellfire)
+			monster.maxHitPoints += (gbIsMultiplayer ? 400 : 200) << 6;
+		else
+			monster.maxHitPoints += 400 << 6;
+		monster.hitPoints = monster.maxHitPoints;
+		monster.toHit += (HellToHitBonus + 80);
 		monster.minDamage = 4 * monster.minDamage + 6;
 		monster.maxDamage = 4 * monster.maxDamage + 6;
 		monster.minDamageSpecial = 4 * monster.minDamageSpecial + 6;
 		monster.maxDamageSpecial = 4 * monster.maxDamageSpecial + 6;
-		monster.armorClass += HellAcBonus;
+		monster.armorClass += (HellAcBonus + 80);
 		monster.resistance = monster.data().resistanceHell;
 	}
 }
@@ -1230,7 +1227,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		ac += 40;
 	if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::ACAgainstUndead) && monster.data().monsterClass == MonsterClass::Undead)
 		ac += 20;
-	hit += 2 * (monster.level(sgGameInitInfo.nDifficulty) - player._pLevel)
+	hit += 2 * (monster.level(sgGameInitInfo.nDifficulty) - (player._pLevel + player.GetBlockChance()))
 	    + 30
 	    - ac;
 	int minhit = GetMinHit();
@@ -1745,8 +1742,8 @@ bool IsTileSafe(const Monster &monster, Point position)
 	if (!InDungeonBounds(position))
 		return false;
 
-	const bool fearsFire = (monster.resistance & IMMUNE_FIRE) == 0 || monster.type().type == MT_DIABLO;
-	const bool fearsLightning = (monster.resistance & IMMUNE_LIGHTNING) == 0 || monster.type().type == MT_DIABLO;
+	const bool fearsFire = (monster.resistance & IMMUNE_FIRE) == 0;
+	const bool fearsLightning = (monster.resistance & IMMUNE_LIGHTNING) == 0;
 
 	return !(fearsFire && HasAnyOf(dFlags[position.x][position.y], DungeonFlag::MissileFireWall))
 	    && !(fearsLightning && HasAnyOf(dFlags[position.x][position.y], DungeonFlag::MissileLightningWall));
@@ -3506,10 +3503,7 @@ void WeakenNaKrul()
 	Quests[Q_NAKRUL]._qlog = false;
 	if (sgGameInitInfo.nDifficulty != DIFF_HELL) {
 		monster.resistance = 7;
-		monster.armorClass -= 125;
-		monster.maxHitPoints -= 666;
 	} else {
-		monster.armorClass -= 50;
 		monster.resistance = 75;
 	}
 }
@@ -4305,11 +4299,11 @@ void PrintMonstHistory(int mt)
 		if (maxHP < 1)
 			maxHP = 1;
 
-		int hpBonusNightmare = 100;
-		int hpBonusHell = 200;
+		int hpBonusNightmare = 200;
+		int hpBonusHell = 400;
 		if (gbIsHellfire) {
-			hpBonusNightmare = (!gbIsMultiplayer ? 50 : 100);
-			hpBonusHell = (!gbIsMultiplayer ? 100 : 200);
+			hpBonusNightmare = (!gbIsMultiplayer ? 100 : 200);
+			hpBonusHell = (!gbIsMultiplayer ? 200 : 400);
 		}
 		if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 			minHP = 3 * minHP + hpBonusNightmare;
