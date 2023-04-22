@@ -20,7 +20,7 @@ android {
 		minSdkVersion 18
 		targetSdkVersion 32
 		versionCode 22
-		versionName "1.0.6"
+		versionName "1.0.7"
 		externalNativeBuild {
 			cmake {
 				arguments "-DANDROID_STL=c++_static"
@@ -34,7 +34,7 @@ android {
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
 	}
-	namespace 'org.diasurgical.devilutionx'
+	namespace 'org.devxmods.wkdmod'
 	applicationVariants.all { variant ->
 		tasks["merge${variant.name.capitalize()}Assets"]
 			.dependsOn("externalNativeBuild${variant.name.capitalize()}")
