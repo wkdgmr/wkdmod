@@ -2862,7 +2862,7 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 		NetSendCmdParam1(true, CMD_PLRDEAD, static_cast<uint16_t>(deathReason));
 	}
 
-	const bool dropGold = !gbIsMultiplayer || !(player.isOnLevel(16) || player.isOnArenaLevel());
+	const bool dropGold = !gbIsMultiplayer || player.isOnArenaLevel();
 	const bool dropItems = dropGold && deathReason == DeathReason::MonsterOrTrap || deathReason == DeathReason::Player;
 	const bool dropEar = dropGold && deathReason == DeathReason::Player;
 
@@ -2919,8 +2919,19 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 				player._pExperience -= pExperience_penalty;
 			} else {
 				DropHalfPlayersGold(player);
-				int pExperience_penalty = round(player._pExperience / 100);
-				player._pExperience -= pExperience_penalty;
+				if (!player.isOnArenaLevel()) {
+					int pExperience_penalty = round(player._pExperience / 100);
+					player._pExperience -= pExperience_penalty;
+					if (dropItems) {
+						Direction pdd = player._pdir;
+						for (auto &item : player.InvBody) {
+							pdd = Left(pdd);
+							DeadItem(player, item.pop(), Displacement(pdd));
+						}
+	
+						CalcPlrInv(player, false);
+					}
+				}
 				if (dropEar) {
 					Item ear;
 					InitializeItem(ear, IDI_EAR);
@@ -2948,23 +2959,9 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 					if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
 						DeadItem(player, std::move(ear), { 0, 0 });
 					}
-					Direction pdd = player._pdir;
-					for (auto &item : player.InvBody) {
-						pdd = Left(pdd);
-						DeadItem(player, item.pop(), Displacement(pdd));
-					}
 
 					CalcPlrInv(player, false);
 
-				}
-				if (dropItems) {
-					Direction pdd = player._pdir;
-					for (auto &item : player.InvBody) {
-						pdd = Left(pdd);
-						DeadItem(player, item.pop(), Displacement(pdd));
-					}
-
-					CalcPlrInv(player, false);
 				}
 			}
 		}
