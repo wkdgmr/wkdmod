@@ -1130,7 +1130,6 @@ void DamageParryItem(Player &player)
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
 			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			player.InvBody[INVLOC_HAND_LEFT]._itype = ItemType::None;
 			CalcPlrInv(player, true);
 		}
 	}
@@ -1140,7 +1139,6 @@ void DamageParryItem(Player &player)
 			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
 				player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-				player.InvBody[INVLOC_HAND_RIGHT]._itype = ItemType::None;
 				CalcPlrInv(player, true);
 			}
 		}
