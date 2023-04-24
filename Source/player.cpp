@@ -2912,13 +2912,13 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 				DeadItem(player, std::move(player.HoldItem), { 0, 0 });
 				NewCursor(CURSOR_HAND);
 			}
-
-			if (!*sgOptions.Gameplay.friendlyFire) {
+			if (dropGold) {
 				DropHalfPlayersGold(player);
+			}
+			if (!*sgOptions.Gameplay.friendlyFire) {
 				int pExperience_penalty = round(player._pExperience / 100);
 				player._pExperience -= pExperience_penalty;
 			} else {
-				DropHalfPlayersGold(player);
 				if (!player.isOnArenaLevel()) {
 					int pExperience_penalty = round(player._pExperience / 100);
 					player._pExperience -= pExperience_penalty;
