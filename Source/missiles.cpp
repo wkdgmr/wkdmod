@@ -884,8 +884,9 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = *mind + (myPlayer._pMagic / 4);
 		break;
 	case SpellID::HolyBolt:
-		*mind = myPlayer._pLevel + 9;
-		*maxd = *mind + 9;
+		int base = (2 * myPlayer._pLevel) + 4;
+		*mind = ScaleSpellEffect(base, sl);
+		*maxd = ScaleSpellEffect(base + 36, sl);
 		break;
 	case SpellID::BloodStar:
 		*mind = (myPlayer._pMagic / 2) + 3 * sl - (myPlayer._pMagic / 8);
@@ -2606,6 +2607,13 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 		dst += parameter.midir;
 	}
 	int sp = 16;
+	if (missile._micaster == TARGET_MONSTERS) {
+		sp += std::min(missile._mispllvl * 2, 34);
+		Player &player = Players[missile._misource];
+
+		int dmg = 2 * (player._pLevel + GenerateRndSum(10, 2)) + 4;
+		missile._midam = ScaleSpellEffect(dmg, missile._mispllvl);
+	}
 	if (!missile.IsTrap()) {
 		sp += std::min(missile._mispllvl * 2, 47);
 	}
@@ -3937,8 +3945,9 @@ void ProcessHolyBolt(Missile &missile)
 {
 	missile._mirange--;
 	if (missile._miAnimType != MissileGraphicID::HolyBoltExplosion) {
-		int dam = missile._midam;
-		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), dam, dam, true, true);
+		int minDam = missile._midam;
+		int maxDam = missile._midam;
+		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDam, maxDam, true, true);
 		if (missile._mirange == 0) {
 			missile._mimfnum = 0;
 			SetMissAnim(missile, MissileGraphicID::HolyBoltExplosion);
