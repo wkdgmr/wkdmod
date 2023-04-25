@@ -52,8 +52,6 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
   - Oil of Skill QLVL 10
   - Oil of Permanence QLVL 40 / 10% Chance of Success / Acts like Fortitude on Fail
   - Oil of Death QLVL 10 / 50% Chance of Success / Acts like Sharpening on Fail
-- Buffed Nakrul drops slightly (drops 7 items) and Hell Nakrul now has a 10% chance to drop an Oil of Permanence.
-- Buffed Defiler Drops (drops 4 items)
 - Monk is now buffed when wearing Unique, Medium, and Light Armor.  However receives a debuff when wearing non-Unique Heavy Armor (same as Bard).
 - Buffed Monk's abilities with barehanded and 2H Sword
 - Monk now has Infravision as a class skill
