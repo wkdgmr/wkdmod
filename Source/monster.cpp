@@ -851,8 +851,6 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 		if (gbIsHellfire) {
-			CreateMagicWeapon(diablo.position.tile, ItemType::Misc, IMISC_OILPERM, sendmsg, false);
-			CreateMagicWeapon(diablo.position.tile, ItemType::Misc, IMISC_OILDEATH, sendmsg, false);
 			CreateSpellBook(diablo.position.tile, SpellID::Apocalypse, sendmsg, false);
 		}
 	}
@@ -935,8 +933,6 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
 
 		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-			CreateMagicWeapon(monster.position.tile, ItemType::Misc, IMISC_OILPERM, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Misc, IMISC_OILDEATH, sendmsg, false);
 			CreateSpellBook(monster.position.tile, SpellID::Apocalypse, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
