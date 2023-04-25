@@ -883,11 +883,11 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*mind = 1;
 		*maxd = *mind + (myPlayer._pMagic / 4);
 		break;
-	case SpellID::HolyBolt:
+	case SpellID::HolyBolt: {
 		int base = (2 * myPlayer._pLevel) + 4;
 		*mind = ScaleSpellEffect(base, sl);
 		*maxd = ScaleSpellEffect(base + 36, sl);
-		break;
+	} break;
 	case SpellID::BloodStar:
 		*mind = (myPlayer._pMagic / 2) + 3 * sl - (myPlayer._pMagic / 8);
 		*maxd = *mind;
