@@ -155,8 +155,8 @@ bool itemhold[3][3];
 /** Specifies the number of active item get records. */
 int gnNumGetRecords;
 
-int OilLevels[] = { 1, 10, 1, 10, 4, 1, 5, 17, 1, 10 };
-int OilValues[] = { 500, 2500, 500, 2500, 1500, 100, 2500, 15000, 500, 2500 };
+int OilLevels[] = { 1, 10, 1, 20, 10, 1, 5, 40, 1, 20, 30 };
+int OilValues[] = { 500, 2500, 500, 2500, 1500, 100, 2500, 15000, 500, 2500, 2500 };
 item_misc_id OilMagic[] = {
 	IMISC_OILACC,
 	IMISC_OILMAST,
@@ -168,8 +168,9 @@ item_misc_id OilMagic[] = {
 	IMISC_OILPERM,
 	IMISC_OILHARD,
 	IMISC_OILIMP,
+	IMISC_OILFIRE,
 };
-char OilNames[10][25] = {
+char OilNames[11][25] = {
 	N_("Oil of Accuracy"),
 	N_("Oil of Mastery"),
 	N_("Oil of Sharpness"),
@@ -179,7 +180,8 @@ char OilNames[10][25] = {
 	N_("Oil of Fortitude"),
 	N_("Oil of Permanence"),
 	N_("Oil of Hardening"),
-	N_("Oil of Imperviousness")
+	N_("Oil of Imperviousness"),
+	N_("Oil of Fire"),
 };
 
 /** Map of item type .cel file names. */
@@ -1733,6 +1735,10 @@ void PrintItemOil(char iDidx)
 		AddPanelString(_("greatly increase AC"));
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
+	case IMISC_OILFIRE:
+		AddPanelString(_("increase fire DMG min/max"));
+		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
+		break;
 	case IMISC_RUNEF:
 		AddPanelString(_("sets fire trap"));
 		break;
@@ -2279,12 +2285,12 @@ StringOrView GetTranslatedItemName(const Item &item)
 	} else if (item._iMiscId == IMISC_EAR) {
 		return fmt::format(fmt::runtime(_(/* TRANSLATORS: {:s} will be a Character Name */ "Ear of {:s}")), item._iIName);
 	} else if (item._iMiscId > IMISC_OILFIRST && item._iMiscId < IMISC_OILLAST) {
-		for (size_t i = 0; i < 10; i++) {
+		for (size_t i = 0; i < 11; i++) {
 			if (OilMagic[i] != item._iMiscId)
 				continue;
 			return _(OilNames[i]);
 		}
-		app_fatal("unkown oil");
+		app_fatal("unknown oil");
 	} else if (item._itype == ItemType::Staff && item._iSpell != SpellID::Null && item._iMagical != ITEM_QUALITY_UNIQUE) {
 		return GenerateStaffName(baseItemData, item._iSpell, true);
 	} else {
@@ -2449,11 +2455,6 @@ bool IsItemAvailable(int i)
 	           i != IDI_MAPOFDOOM                   // Cathedral Map
 	           && i != IDI_LGTFORGE                 // Bovine Plate
 	           && (i < IDI_OIL || i > IDI_GREYSUIT) // Hellfire exclusive items
-	           && (i < 83 || i > 86)                // Oils
-	           && i != 92                           // Oil of Permanence
-	           && i != 93                           // Oil of Imperviousness
-	           && i != 97                           // Oil of Death
-	           && i != 99                           // Oil of Skill
 	           && (i < 161 || i > 165)              // Runes
 	           && i != IDI_SORCERER                 // Short Staff of Mana
 	           )
@@ -4230,6 +4231,7 @@ void UseItem(size_t pnum, item_misc_id mid, SpellID spellID, int spellFrom)
 	case IMISC_OILPERM:
 	case IMISC_OILHARD:
 	case IMISC_OILIMP:
+	case IMISC_OILFIRE:
 		player._pOilType = mid;
 		if (&player != MyPlayer) {
 			return;
@@ -4993,7 +4995,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			return false;
 		}
 		break;
-	case IMISC_OILDEATH:
+	case IMISC_OILDEATH || IMISC_OILFIRE:
 		if (item._iClass == ICLASS_ARMOR) {
 			return false;
 		}
@@ -5091,6 +5093,19 @@ bool ApplyOilToItem(Item &item, Player &player)
 		} else {
 			if (item._iAC < 60) {
 				item._iAC += GenerateRnd(2) + 1;
+			}
+			break;
+		}
+	case IMISC_OILFIRE:
+		if ((int)(rand()%2 + 1) == 1) {
+			if (item._iFMaxDam - item._iFMinDam < 30 && item._iFMaxDam < 254) {
+				item._iFMinDam = item._iFMinDam + 1;
+				item._iFMaxDam = item._iFMaxDam + 2;
+			}
+			break;
+		} else {
+			if (item._iFMaxDam - item._iFMinDam < 30 && item._iFMaxDam < 255) {
+				item._iFMaxDam = item._iFMaxDam + 1;
 			}
 			break;
 		}
