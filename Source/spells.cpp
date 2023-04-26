@@ -206,12 +206,6 @@ void ConsumeSpell(Player &player, SpellID sn)
 		RedrawComponent(PanelDrawComponent::Mana);
 		break;
 	}
-	if (sn == SpellID::BloodStar) {
-		ApplyPlrDamage(DamageType::Physical, player, 5);
-	}
-	if (sn == SpellID::BoneSpirit) {
-		ApplyPlrDamage(DamageType::Physical, player, 6);
-	}
 }
 
 void EnsureValidReadiedSpell(Player &player)

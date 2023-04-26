@@ -235,11 +235,7 @@ bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Miss
 	}
 
 	int dam;
-	if (t == MissileID::BoneSpirit) {
-		dam = monster.hitPoints / 3 >> 6;
-	} else {
-		dam = mindam + GenerateRnd(maxdam - mindam + 1);
-	}
+	dam = mindam + GenerateRnd(maxdam - mindam + 1);
 
 	if (missileData.isArrow() && damageType == DamageType::Physical) {
 		dam = player._pIBonusDamMod + dam * player._pIBonusDam / 100 + dam;
@@ -350,15 +346,12 @@ bool Plr2PlrMHit(const Player &player, int p, int mindam, int maxdam, int dist, 
 	blk = clamp(blk, 0, 100);
 
 	int dam;
-	if (mtype == MissileID::BoneSpirit) {
-		dam = target._pHitPoints / 3;
-	} else {
-		dam = mindam + GenerateRnd(maxdam - mindam + 1);
-		if (missileData.isArrow() && damageType == DamageType::Physical)
-			dam += player._pIBonusDamMod + player._pDamageMod + dam * player._pIBonusDam / 100;
-		if (!shift)
-			dam <<= 6;
-	}
+	dam = mindam + GenerateRnd(maxdam - mindam + 1);
+	if (missileData.isArrow() && damageType == DamageType::Physical)
+		dam += player._pIBonusDamMod + player._pDamageMod + dam * player._pIBonusDam / 100;
+	if (!shift)
+		dam <<= 6;
+
 	if (!missileData.isArrow())
 		dam /= 2;
 	if (resper > 0) {
@@ -819,7 +812,6 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 	case SpellID::TrapDisarm:
 	case SpellID::Resurrect:
 	case SpellID::Telekinesis:
-	case SpellID::BoneSpirit:
 	case SpellID::Warp:
 	case SpellID::Reflect:
 	case SpellID::Berserk:
@@ -828,6 +820,10 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*mind = -1;
 		*maxd = -1;
 		break;
+	case SpellID::BoneSpirit:
+		int base = (2 * myPlayer._pLevel) + (myPlayer._pMagic / 8) + 4;
+		*mind = ScaleSpellEffect(base, sl);
+		*maxd = ScaleSpellEffect(base + 36, sl);
 	case SpellID::FireWall:
 	case SpellID::LightningWall:
 	case SpellID::RingOfFire:
@@ -884,14 +880,14 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = *mind + (myPlayer._pMagic / 4);
 		break;
 	case SpellID::HolyBolt: {
+		*mind = myPlayer._pLevel + 9;
+		*maxd = *mind + myPlayer._pLevel + 9;
+		break;
+	case SpellID::BloodStar: {
 		int base = (2 * myPlayer._pLevel) + 4;
 		*mind = ScaleSpellEffect(base, sl);
 		*maxd = ScaleSpellEffect(base + 36, sl);
 	} break;
-	case SpellID::BloodStar:
-		*mind = (myPlayer._pMagic / 2) + 3 * sl - (myPlayer._pMagic / 8);
-		*maxd = *mind;
-		break;
 	default:
 		break;
 	}
@@ -1059,10 +1055,7 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 	}
 
 	int dam;
-	if (mtype == MissileID::BoneSpirit) {
-		dam = player._pHitPoints / 3;
-	} else {
-		if (!shift) {
+	if (!shift) {
 			dam = (mind << 6) + GenerateRnd(((maxd - mind) << 6) + 1);
 			if (monster == nullptr)
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::HalfTrapDamage))
@@ -1075,9 +1068,7 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 					dam /= 2;
 			dam += player._pIGetHit;
 		}
-
 		dam = std::max(dam, 64);
-	}
 
 	if ((resper <= 0 && blk < blkper)
 		|| (resper <= 0 && blk < blkper && mtype == MissileID::Arrow))
@@ -2607,13 +2598,6 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 		dst += parameter.midir;
 	}
 	int sp = 16;
-	if (missile._micaster == TARGET_MONSTERS) {
-		sp += std::min(missile._mispllvl * 2, 34);
-		Player &player = Players[missile._misource];
-
-		int dmg = 2 * (player._pLevel + GenerateRndSum(10, 2)) + 4;
-		missile._midam = ScaleSpellEffect(dmg, missile._mispllvl);
-	}
 	if (!missile.IsTrap()) {
 		sp += std::min(missile._mispllvl * 2, 47);
 	}
@@ -3945,9 +3929,8 @@ void ProcessHolyBolt(Missile &missile)
 {
 	missile._mirange--;
 	if (missile._miAnimType != MissileGraphicID::HolyBoltExplosion) {
-		int minDam = missile._midam;
-		int maxDam = missile._midam;
-		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDam, maxDam, true, true);
+		int dam = missile._midam;
+		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), dam, dam, true, true);
 		if (missile._mirange == 0) {
 			missile._mimfnum = 0;
 			SetMissAnim(missile, MissileGraphicID::HolyBoltExplosion);
@@ -4035,7 +4018,8 @@ void ProcessElemental(Missile &missile)
 void ProcessBoneSpirit(Missile &missile)
 {
 	missile._mirange--;
-	int dam = missile._midam;
+	int minDam = missile._midam;
+	int maxDam = missile._midam;
 	if (missile._mimfnum == 8) {
 		ChangeLight(missile._mlid, missile.position.tile, missile._miAnimFrame);
 		if (missile._mirange == 0) {
@@ -4044,7 +4028,7 @@ void ProcessBoneSpirit(Missile &missile)
 		}
 		PutMissile(missile);
 	} else {
-		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), dam, dam, false, false);
+		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDam, maxDam, false, false);
 		Point c = missile.position.tile;
 		if (missile.var3 == 0 && c == Point { missile.var4, missile.var5 })
 			missile.var3 = 1;
@@ -4053,7 +4037,6 @@ void ProcessBoneSpirit(Missile &missile)
 			missile._mirange = 255;
 			auto *monster = FindClosest(c, 19);
 			if (monster != nullptr) {
-				missile._midam = monster->hitPoints >> 7;
 				SetMissDir(missile, GetDirection(c, monster->position.tile));
 				UpdateMissileVelocity(missile, monster->position.tile, 16);
 			} else {
