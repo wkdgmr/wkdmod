@@ -295,7 +295,7 @@ bool Plr2PlrMHit(const Player &player, int p, int mindam, int maxdam, int dist, 
 		return false;
 	}
 
-	if (mtype == MissileID::HolyBolt) {
+	if (mtype == MissileID::HolyBolt && sgGameInitInfo.bFriendlyFire == 0 && player.friendlyMode) {
 		return false;
 	}
 

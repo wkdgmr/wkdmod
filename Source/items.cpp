@@ -4995,7 +4995,8 @@ bool ApplyOilToItem(Item &item, Player &player)
 			return false;
 		}
 		break;
-	case IMISC_OILDEATH || IMISC_OILFIRE:
+	case IMISC_OILFIRE:
+	case IMISC_OILDEATH:
 		if (item._iClass == ICLASS_ARMOR) {
 			return false;
 		}
