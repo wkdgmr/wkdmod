@@ -820,10 +820,6 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*mind = -1;
 		*maxd = -1;
 		break;
-	case SpellID::BoneSpirit:
-		int base = (2 * myPlayer._pLevel) + (myPlayer._pMagic / 8) + 4;
-		*mind = ScaleSpellEffect(base, sl);
-		*maxd = ScaleSpellEffect(base + 36, sl);
 	case SpellID::FireWall:
 	case SpellID::LightningWall:
 	case SpellID::RingOfFire:
@@ -831,6 +827,7 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = *mind + 36;
 		break;
 	case SpellID::Fireball:
+	case SpellID::BloodStar:
 	case SpellID::RuneOfFire: {
 		int base = (2 * myPlayer._pLevel) + 4;
 		*mind = ScaleSpellEffect(base, sl);
@@ -879,15 +876,10 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*mind = 1;
 		*maxd = *mind + (myPlayer._pMagic / 4);
 		break;
-	case SpellID::HolyBolt: {
+	case SpellID::HolyBolt:
 		*mind = myPlayer._pLevel + 9;
 		*maxd = *mind + myPlayer._pLevel + 9;
 		break;
-	case SpellID::BloodStar: {
-		int base = (2 * myPlayer._pLevel) + 4;
-		*mind = ScaleSpellEffect(base, sl);
-		*maxd = ScaleSpellEffect(base + 36, sl);
-	} break;
 	default:
 		break;
 	}
