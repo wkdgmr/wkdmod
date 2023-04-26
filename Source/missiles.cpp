@@ -827,9 +827,13 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = *mind + 36;
 		break;
 	case SpellID::Fireball:
-	case SpellID::BloodStar:
 	case SpellID::RuneOfFire: {
 		int base = (2 * myPlayer._pLevel) + 4;
+		*mind = ScaleSpellEffect(base, sl);
+		*maxd = ScaleSpellEffect(base + 36, sl);
+	} break;
+	case SpellID::BloodStar: {
+		int base = (2 * (sl * 3)) + 4;
 		*mind = ScaleSpellEffect(base, sl);
 		*maxd = ScaleSpellEffect(base + 36, sl);
 	} break;
