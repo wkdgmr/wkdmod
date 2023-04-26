@@ -881,7 +881,7 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = *mind + myPlayer._pLevel + 9;
 		break;
 	case SpellID::BoneSpirit: {
-		int base = (2 * myPlayer._pLevel) + myPlayer._pMagic + 4;
+		int base = ((sl * 3) + (myPlayer._pMagic / 3) + 4);
 		*mind = ScaleSpellEffect(base, sl);
 		*maxd = ScaleSpellEffect(base + 36, sl);
 	} break;
@@ -2645,7 +2645,7 @@ void AddBoneSpirit(Missile &missile, AddMissileParameter &parameter)
 		dst += parameter.midir;
 	}
 	Player &player = Players[missile._misource];
-	int dmg = 2 * (player._pLevel + player._pMagic + GenerateRndSum(10, 2)) + 4;
+	int dmg = 2 * ((missile._mispllvl * 3) + (player._pMagic / 3) + GenerateRndSum(10, 2)) + 4;
 	missile._midam = ScaleSpellEffect(dmg, missile._mispllvl);
 	UpdateMissileVelocity(missile, dst, 16);
 	SetMissDir(missile, GetDirection(missile.position.start, dst));
@@ -4046,7 +4046,7 @@ void ProcessBoneSpirit(Missile &missile)
 			auto *monster = FindClosest(c, 19);
 			if (monster != nullptr) {
 				Player &player = Players[missile._misource];
-				int dmg = 2 * (player._pLevel + player._pMagic + GenerateRndSum(10, 2)) + 4;
+				int dmg = 2 * ((missile._mispllvl * 3) + (player._pMagic / 3) + GenerateRndSum(10, 2)) + 4;
 				missile._midam = ScaleSpellEffect(dmg, missile._mispllvl);
 				SetMissDir(missile, GetDirection(c, monster->position.tile));
 				UpdateMissileVelocity(missile, monster->position.tile, 16);

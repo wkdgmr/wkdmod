@@ -166,19 +166,15 @@ void DrawSpellBook(const Surface &out)
 				if (lvl == 0) {
 					PrintSBookStr(out, line1, _("Unusable"), UiFlags::AlignRight);
 				} else {
-					if (sn != SpellID::BoneSpirit) {
-						int min;
-						int max;
-						GetDamageAmt(sn, &min, &max);
-						if (min != -1) {
-							if (sn == SpellID::Healing || sn == SpellID::HealOther) {
-								PrintSBookStr(out, line1, fmt::format(fmt::runtime(_(/* TRANSLATORS: UI constraints, keep short please.*/ "Heals: {:d} - {:d}")), min, max), UiFlags::AlignRight);
-							} else {
-								PrintSBookStr(out, line1, fmt::format(fmt::runtime(_(/* TRANSLATORS: UI constraints, keep short please.*/ "Damage: {:d} - {:d}")), min, max), UiFlags::AlignRight);
-							}
+					int min;
+					int max;
+					GetDamageAmt(sn, &min, &max);
+					if (min != -1) {
+						if (sn == SpellID::Healing || sn == SpellID::HealOther) {
+							PrintSBookStr(out, line1, fmt::format(fmt::runtime(_(/* TRANSLATORS: UI constraints, keep short please.*/ "Heals: {:d} - {:d}")), min, max), UiFlags::AlignRight);
+						} else {
+							PrintSBookStr(out, line1, fmt::format(fmt::runtime(_(/* TRANSLATORS: UI constraints, keep short please.*/ "Damage: {:d} - {:d}")), min, max), UiFlags::AlignRight);
 						}
-					} else {
-						PrintSBookStr(out, line1, _(/* TRANSLATORS: UI constraints, keep short please.*/ "Dmg: 1/3 target hp"), UiFlags::AlignRight);
 					}
 					PrintSBookStr(out, line1, fmt::format(fmt::runtime(pgettext(/* TRANSLATORS: UI constraints, keep short please.*/ "spellbook", "Mana: {:d}")), mana));
 				}
