@@ -178,12 +178,12 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 		else
 			monster.maxHitPoints += 200 << 6;
 		monster.hitPoints = monster.maxHitPoints;
-		monster.toHit += (NightmareToHitBonus + 40);
+		monster.toHit += (NightmareToHitBonus * 2);
 		monster.minDamage = 2 * (monster.minDamage + 2);
 		monster.maxDamage = 2 * (monster.maxDamage + 2);
 		monster.minDamageSpecial = 2 * (monster.minDamageSpecial + 2);
 		monster.maxDamageSpecial = 2 * (monster.maxDamageSpecial + 2);
-		monster.armorClass += (NightmareAcBonus + 40);
+		monster.armorClass += (NightmareAcBonus * 2);
 	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 		monster.maxHitPoints = 4 * monster.maxHitPoints;
 		if (gbIsHellfire)
@@ -191,12 +191,12 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 		else
 			monster.maxHitPoints += 400 << 6;
 		monster.hitPoints = monster.maxHitPoints;
-		monster.toHit += (HellToHitBonus + 80);
+		monster.toHit += (HellToHitBonus * 2);
 		monster.minDamage = 4 * monster.minDamage + 6;
 		monster.maxDamage = 4 * monster.maxDamage + 6;
 		monster.minDamageSpecial = 4 * monster.minDamageSpecial + 6;
 		monster.maxDamageSpecial = 4 * monster.maxDamageSpecial + 6;
-		monster.armorClass += (HellAcBonus + 80);
+		monster.armorClass += (HellAcBonus * 2) + 40;
 		monster.resistance = monster.data().resistanceHell;
 	}
 }
@@ -850,9 +850,6 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
-		if (gbIsHellfire) {
-			CreateSpellBook(diablo.position.tile, SpellID::Apocalypse, sendmsg, false);
-		}
 	}
 
 	Player &myPlayer = *MyPlayer;
