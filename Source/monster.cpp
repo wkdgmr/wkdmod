@@ -4583,8 +4583,8 @@ void SpawnGolem(Player &player, Monster &golem, Point position, Missile &missile
 	golem.hitPoints = golem.maxHitPoints;
 	golem.armorClass = player._pVitality + (20 * missile._mispllvl);
 	golem.toHit = 5 * (missile._mispllvl * 2) + 3 * player._pLevel;
-	golem.minDamage = 2 * (missile._mispllvl + 4) + player._pLevel;
-	golem.maxDamage = 2 * (missile._mispllvl + 8) + 2 * player._pLevel;
+	golem.minDamage = 2 * (missile._mispllvl) + player._pLevel;
+	golem.maxDamage = 2 * (missile._mispllvl * 2) + (2 * player._pLevel);
 	golem.resistance = 7;
 	golem.flags |= MFLAG_GOLEM;
 	StartSpecialStand(golem, Direction::South);

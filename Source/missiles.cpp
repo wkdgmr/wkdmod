@@ -863,8 +863,8 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd += *maxd / 2;
 		break;
 	case SpellID::Golem:
-		*mind = 11;
-		*maxd = 17;
+		*mind = 2 * (sl) + myPlayer._pLevel;
+		*maxd = 2 * (sl * 2) + (myPlayer._pLevel * 2);
 		break;
 	case SpellID::Apocalypse:
 		*mind = myPlayer._pLevel;
