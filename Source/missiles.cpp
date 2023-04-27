@@ -2611,7 +2611,7 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 	missile.var1 = missile.position.start.x;
 	missile.var2 = missile.position.start.y;
 	missile._mlid = AddLight(missile.position.start, 8);
-	missile._midam = GenerateRnd(10) + player._pLevel + 9;
+	missile._midam = GenerateRnd(10) + (player._pLevel * 2) + 9;
 }
 
 void AddResurrect(Missile &missile, AddMissileParameter & /*parameter*/)
