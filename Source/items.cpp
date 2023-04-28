@@ -5072,6 +5072,26 @@ bool ApplyOilToItem(Item &item, Player &player)
 		} else {
 			break;
 		}
+	case IMISC_OILFIRE:
+		if ((int)(rand()%2 + 1) == 1) {
+			if (item._iFMaxDam - item._iFMinDam < 30 && item._iFMaxDam < 254) {
+				item._iFMinDam = item._iFMinDam + 1;
+				item._iFMaxDam = item._iFMaxDam + 2;
+			}
+			break;
+		} else {
+			break;
+		}
+	case IMISC_OILCOND:
+		if ((int)(rand()%2 + 1) == 1) {
+			if (item._iLMaxDam - item._iLMinDam < 30 && item._iLMaxDam < 254) {
+				item._iLMinDam = item._iLMinDam + 1;
+				item._iLMaxDam = item._iLMaxDam + 2;
+			}
+			break;
+		} else {
+			break;
+		}
 	case IMISC_OILSKILL:
 		r = GenerateRnd(6) + 5;
 		item._iMinStr = std::max(0, item._iMinStr - r);
@@ -5127,26 +5147,6 @@ bool ApplyOilToItem(Item &item, Player &player)
 			if (item._iAC < 60) {
 				item._iAC += GenerateRnd(2) + 1;
 			}
-			break;
-		}
-	case IMISC_OILFIRE:
-		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iFMaxDam - item._iFMinDam < 30 && item._iFMaxDam < 254) {
-				item._iFMinDam = item._iFMinDam + 1;
-				item._iFMaxDam = item._iFMaxDam + 2;
-			}
-			break;
-		} else {
-			break;
-		}
-	case IMISC_OILCOND:
-		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iLMaxDam - item._iLMinDam < 30 && item._iLMaxDam < 254) {
-				item._iLMinDam = item._iLMinDam + 1;
-				item._iLMaxDam = item._iLMaxDam + 2;
-			}
-			break;
-		} else {
 			break;
 		}
 	default:
