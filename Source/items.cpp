@@ -2301,7 +2301,7 @@ StringOrView GetTranslatedItemName(const Item &item)
 	} else if (item._iMiscId == IMISC_EAR) {
 		return fmt::format(fmt::runtime(_(/* TRANSLATORS: {:s} will be a Character Name */ "Ear of {:s}")), item._iIName);
 	} else if (item._iMiscId > IMISC_OILFIRST && item._iMiscId < IMISC_OILLAST) {
-		for (size_t i = 0; i < 11; i++) {
+		for (size_t i = 0; i < 14; i++) {
 			if (OilMagic[i] != item._iMiscId)
 				continue;
 			return _(OilNames[i]);
