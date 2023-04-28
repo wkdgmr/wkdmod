@@ -4691,8 +4691,8 @@ bool Monster::isWalking() const
 bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 {
 	if (((resistance & IMMUNE_MAGIC) != 0 && missileElement == DamageType::Magic)
-	    || ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+	    || ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire && missileType != MissileID::FireArrow && !IPL_FIREDAM)
+	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType != MissileID::LightningArrow && !IPL_LIGHTDAM)
 	    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid))
 		return true;
 	return false;
