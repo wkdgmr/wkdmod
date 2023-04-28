@@ -3313,7 +3313,7 @@ void GetItemAttrs(Item &item, _item_indexes itemData, int lvl)
 	if (item._iMiscId == IMISC_BOOK)
 		GetBookSpell(item, lvl);
 
-	if (gbIsHellfire && item._iMiscId == IMISC_OILOF)
+	if (item._iMiscId == IMISC_OILOF)
 		GetOilType(item, lvl);
 
 	if (item._itype != ItemType::Gold)
