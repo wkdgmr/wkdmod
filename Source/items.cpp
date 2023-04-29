@@ -1713,10 +1713,11 @@ void PrintItemOil(char iDidx)
 		AddPanelString(_("weapon's chance to hit"));
 		break;
 	case IMISC_OILSHARP:
-		AddPanelString(_("increase weapon DMG max"));
+		AddPanelString(_("increase weapon DMG min"));
+		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 25%"));
 		break;
 	case IMISC_OILDEATH:
-		AddPanelString(_("increase weapon DMG min/max"));
+		AddPanelString(_("increase weapon DMG max"));
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILSKILL:
@@ -1743,17 +1744,19 @@ void PrintItemOil(char iDidx)
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILWICK:
-		AddPanelString(_("increase fire DMG max"));
+		AddPanelString(_("increase fire DMG min"));
+		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILMAGN:
-		AddPanelString(_("increase lightning DMG max"));
+		AddPanelString(_("increase lightning DMG min"));
+		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILFIRE:
-		AddPanelString(_("increase fire DMG min/max"));
+		AddPanelString(_("increase fire DMG max"));
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILCOND:
-		AddPanelString(_("increase lightning DMG min/max"));
+		AddPanelString(_("increase lightning DMG max"));
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_RUNEF:
@@ -5073,14 +5076,14 @@ bool ApplyOilToItem(Item &item, Player &player)
 			break;
 		}
 	case IMISC_OILWICK:
-		if ((int)(rand()%4 + 1) == 1) {
+		if ((int)(rand()%2 + 1) == 1) {
 			if (item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam) {
 				item._iFMinDam = item._iFMinDam + 1;
 			}
 			break;
 		}
 	case IMISC_OILMAGN:
-		if ((int)(rand()%4 + 1) == 1) {
+		if ((int)(rand()%2 + 1) == 1) {
 			if (item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam) {
 				item._iLMinDam = item._iLMinDam + 1;
 			}
@@ -5149,50 +5152,71 @@ bool ApplyOilToItem(Item &item, Player &player)
 		if (item._iDurability < item._iMaxDur) {
 			item._iDurability = (item._iMaxDur + 4) / 5 + item._iDurability;
 			item._iDurability = std::min<int>(item._iDurability, item._iMaxDur);
+			break;
 		} else {
 			if (item._iMaxDur >= 100) {
 				return true;
 			}
 			item._iMaxDur++;
 			item._iDurability = item._iMaxDur;
+			break;
 		}
-		break;
 	case IMISC_OILFORT:
 		if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur < 200) {
 			r = GenerateRnd(41) + 10;
 			item._iMaxDur += r;
 			item._iDurability += r;
-		}
-		break;
-	case IMISC_OILPERM:
-		if ((int)(rand()%10 + 1) == 1) {
-			item._iDurability = DUR_INDESTRUCTIBLE;
-			item._iMaxDur = DUR_INDESTRUCTIBLE;
 			break;
 		} else {
-			if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur < 200) {
+			break;
+		}
+	case IMISC_OILPERM:
+		if ((int)(rand()%10 + 1) == 1) {
+			if (item._iMaxDur != DUR_INDESTRUCTIBLE) {
+				item._iDurability = DUR_INDESTRUCTIBLE;
+				item._iMaxDur = DUR_INDESTRUCTIBLE;
+				break;
+			} else {
+				break;
+			}
+		} else {
+			if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur < 255) {
 				r = GenerateRnd(41) + 10;
 				item._iMaxDur += r;
 				item._iDurability += r;
+				if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur >= 255) {
+					item._iDurability = DUR_INDESTRUCTIBLE;
+					item._iMaxDur = DUR_INDESTRUCTIBLE;
+					break;
+				} else {
+					break;
+				}
+			} else {
 				break;
 			}
 		}
 	case IMISC_OILHARD:
 		if (item._iAC < 60) {
 			item._iAC += GenerateRnd(2) + 1;
+			break;
+		} else {
+			break;
 		}
-		break;
 	case IMISC_OILIMP:
 		if ((int)(rand()%2 + 1) == 1) {
 			if (item._iAC <= 120) {
 				item._iAC += GenerateRnd(3) + 3;
+				break;
+			} else {
+				break;
 			}
-			break;
 		} else {
 			if (item._iAC < 60) {
 				item._iAC += GenerateRnd(2) + 1;
+				break;
+			} else {
+				break;
 			}
-			break;
 		}
 	default:
 		return false;
