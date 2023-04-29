@@ -947,7 +947,7 @@ bool DoAttack(Player &player)
 				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
 				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
 					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-					&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+					&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0))
 		    || (player._pClass == HeroClass::Bard
 				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
 				&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0
