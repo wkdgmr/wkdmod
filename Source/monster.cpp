@@ -61,11 +61,11 @@ bool sgbSaveSoundOn;
 
 namespace {
 
-constexpr int NightmareToHitBonus = 85;
-constexpr int HellToHitBonus = 120;
+constexpr int NightmareToHitBonus = 120;
+constexpr int HellToHitBonus = 240;
 
-constexpr int NightmareAcBonus = 50;
-constexpr int HellAcBonus = 80;
+constexpr int NightmareAcBonus = 70;
+constexpr int HellAcBonus = 130;
 
 /** Tracks which missile files are already loaded */
 size_t totalmonsters;
@@ -178,12 +178,12 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 		else
 			monster.maxHitPoints += 200 << 6;
 		monster.hitPoints = monster.maxHitPoints;
-		monster.toHit += (NightmareToHitBonus * 2);
+		monster.toHit += NightmareToHitBonus;
 		monster.minDamage = 2 * (monster.minDamage + 2);
 		monster.maxDamage = 2 * (monster.maxDamage + 2);
 		monster.minDamageSpecial = 2 * (monster.minDamageSpecial + 2);
 		monster.maxDamageSpecial = 2 * (monster.maxDamageSpecial + 2);
-		monster.armorClass += (NightmareAcBonus * 2);
+		monster.armorClass += NightmareAcBonus;
 	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 		monster.maxHitPoints = 4 * monster.maxHitPoints;
 		if (gbIsHellfire)
@@ -191,12 +191,12 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 		else
 			monster.maxHitPoints += 400 << 6;
 		monster.hitPoints = monster.maxHitPoints;
-		monster.toHit += (HellToHitBonus * 2);
+		monster.toHit += HellToHitBonus;
 		monster.minDamage = 4 * monster.minDamage + 6;
 		monster.maxDamage = 4 * monster.maxDamage + 6;
 		monster.minDamageSpecial = 4 * monster.minDamageSpecial + 6;
 		monster.maxDamageSpecial = 4 * monster.maxDamageSpecial + 6;
-		monster.armorClass += (HellAcBonus * 2) + 40;
+		monster.armorClass += HellAcBonus;
 		monster.resistance = monster.data().resistanceHell;
 	}
 }
@@ -589,7 +589,7 @@ void StartMonsterGotHit(Monster &monster)
 {
 	if (monster.type().type != MT_GOLEM) {
 		auto animationFlags = gGameLogicStep < GameLogicStep::ProcessMonsters ? AnimationDistributionFlags::ProcessAnimationPending : AnimationDistributionFlags::None;
-		int8_t numSkippedFrames = (gbIsHellfire && monster.type().type == MT_DIABLO) ? 4 : 0;
+		int8_t numSkippedFrames = (gbIsHellfire && monster.type().type == MT_DIABLO) ? 4 : 4;
 		NewMonsterAnim(monster, MonsterGraphic::GotHit, monster.direction, animationFlags, numSkippedFrames);
 		monster.mode = MonsterMode::HitRecovery;
 	}
@@ -4691,8 +4691,10 @@ bool Monster::isWalking() const
 bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 {
 	if (((resistance & IMMUNE_MAGIC) != 0 && missileElement == DamageType::Magic)
-	    || ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+	    || ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire && missileType != MissileID::FireArrow
+		&& missileType != MissileID::WeaponExplosion)
+	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType != MissileID::LightningArrow
+		&& missileType != MissileID::WeaponExplosion)
 	    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid))
 		return true;
 	return false;
@@ -4701,8 +4703,14 @@ bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 bool Monster::isResistant(MissileID missileType, DamageType missileElement) const
 {
 	if (((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
-	    || ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-	    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning))
+	    || ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::WeaponExplosion)
+		|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::FireArrow)
+	    || ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::WeaponExplosion)
+		|| ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::FireArrow)
+	    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType == MissileID::WeaponExplosion)
+		|| ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType == MissileID::LightningArrow)
+	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType == MissileID::WeaponExplosion)
+		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType == MissileID::LightningArrow))
 		return true;
 	return false;
 }

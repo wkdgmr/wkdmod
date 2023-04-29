@@ -155,8 +155,8 @@ bool itemhold[3][3];
 /** Specifies the number of active item get records. */
 int gnNumGetRecords;
 
-int OilLevels[] = { 1, 10, 1, 20, 10, 1, 5, 40, 1, 20, 30 };
-int OilValues[] = { 500, 2500, 500, 2500, 1500, 100, 2500, 15000, 500, 2500, 2500 };
+int OilLevels[] = { 1, 10, 1, 20, 10, 1, 5, 40, 1, 20, 12, 12, 24, 24 };
+int OilValues[] = { 500, 2500, 500, 2500, 1500, 100, 2500, 15000, 500, 2500, 1750, 1750, 3500, 3500 };
 item_misc_id OilMagic[] = {
 	IMISC_OILACC,
 	IMISC_OILMAST,
@@ -168,9 +168,12 @@ item_misc_id OilMagic[] = {
 	IMISC_OILPERM,
 	IMISC_OILHARD,
 	IMISC_OILIMP,
+	IMISC_OILWICK,
+	IMISC_OILMAGN,
 	IMISC_OILFIRE,
+	IMISC_OILCOND,
 };
-char OilNames[11][25] = {
+char OilNames[14][25] = {
 	N_("Oil of Accuracy"),
 	N_("Oil of Mastery"),
 	N_("Oil of Sharpness"),
@@ -181,7 +184,10 @@ char OilNames[11][25] = {
 	N_("Oil of Permanence"),
 	N_("Oil of Hardening"),
 	N_("Oil of Imperviousness"),
-	N_("Oil of Fire"),
+	N_("Oil of Wickening"),
+	N_("Oil of Magnetism"),
+	N_("Oil of Flammability"),
+	N_("Oil of Conduction"),
 };
 
 /** Map of item type .cel file names. */
@@ -1735,8 +1741,18 @@ void PrintItemOil(char iDidx)
 		AddPanelString(_("greatly increase AC"));
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
+	case IMISC_OILWICK:
+		AddPanelString(_("increase fire DMG max"));
+		break;
+	case IMISC_OILMAGN:
+		AddPanelString(_("increase lightning DMG max"));
+		break;
 	case IMISC_OILFIRE:
 		AddPanelString(_("increase fire DMG min/max"));
+		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
+		break;
+	case IMISC_OILCOND:
+		AddPanelString(_("increase lightning DMG min/max"));
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_RUNEF:
@@ -2285,7 +2301,7 @@ StringOrView GetTranslatedItemName(const Item &item)
 	} else if (item._iMiscId == IMISC_EAR) {
 		return fmt::format(fmt::runtime(_(/* TRANSLATORS: {:s} will be a Character Name */ "Ear of {:s}")), item._iIName);
 	} else if (item._iMiscId > IMISC_OILFIRST && item._iMiscId < IMISC_OILLAST) {
-		for (size_t i = 0; i < 11; i++) {
+		for (size_t i = 0; i < 14; i++) {
 			if (OilMagic[i] != item._iMiscId)
 				continue;
 			return _(OilNames[i]);
@@ -3297,7 +3313,7 @@ void GetItemAttrs(Item &item, _item_indexes itemData, int lvl)
 	if (item._iMiscId == IMISC_BOOK)
 		GetBookSpell(item, lvl);
 
-	if (gbIsHellfire && item._iMiscId == IMISC_OILOF)
+	if (item._iMiscId == IMISC_OILOF)
 		GetOilType(item, lvl);
 
 	if (item._itype != ItemType::Gold)
@@ -4231,7 +4247,10 @@ void UseItem(size_t pnum, item_misc_id mid, SpellID spellID, int spellFrom)
 	case IMISC_OILPERM:
 	case IMISC_OILHARD:
 	case IMISC_OILIMP:
+	case IMISC_OILWICK:
+	case IMISC_OILMAGN:
 	case IMISC_OILFIRE:
+	case IMISC_OILCOND:
 		player._pOilType = mid;
 		if (&player != MyPlayer) {
 			return;
@@ -4991,11 +5010,10 @@ bool ApplyOilToItem(Item &item, Player &player)
 	case IMISC_OILACC:
 	case IMISC_OILMAST:
 	case IMISC_OILSHARP:
-		if (item._iClass == ICLASS_ARMOR) {
-			return false;
-		}
-		break;
+	case IMISC_OILWICK:
+	case IMISC_OILMAGN:
 	case IMISC_OILFIRE:
+	case IMISC_OILCOND:
 	case IMISC_OILDEATH:
 		if (item._iClass == ICLASS_ARMOR) {
 			return false;
@@ -5003,7 +5021,14 @@ bool ApplyOilToItem(Item &item, Player &player)
 		break;
 	case IMISC_OILHARD:
 	case IMISC_OILIMP:
-		if (item._iClass == ICLASS_WEAPON) {
+		if (item._itype == ItemType::Staff
+		|| item._itype == ItemType::Shield 
+		|| item._itype == ItemType::HeavyArmor
+		|| item._itype == ItemType::MediumArmor
+		|| item._itype == ItemType::LightArmor
+		|| item._itype == ItemType::Helm) {
+			break;
+		} else if (item._iClass == ICLASS_WEAPON && item._itype != ItemType::Staff) {
 			return false;
 		}
 		break;
@@ -5027,6 +5052,16 @@ bool ApplyOilToItem(Item &item, Player &player)
 			item._iMaxDam = item._iMaxDam + 1;
 		}
 		break;
+	case IMISC_OILWICK:
+		if (item._iFMaxDam - item._iFMinDam < 30 && item._iFMaxDam < 255) {
+			item._iFMaxDam = item._iFMaxDam + 1;
+		}
+		break;
+	case IMISC_OILMAGN:
+		if (item._iLMaxDam - item._iLMinDam < 30 && item._iLMaxDam < 255) {
+			item._iLMaxDam = item._iLMaxDam + 1;
+		}
+		break;
 	case IMISC_OILDEATH:
 		if ((int)(rand()%2 + 1) == 1) {
 			if (item._iMaxDam - item._iMinDam < 30 && item._iMaxDam < 254) {
@@ -5035,9 +5070,26 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 			break;
 		} else {
-			if (item._iMaxDam - item._iMinDam < 30 && item._iMaxDam < 255) {
-				item._iMaxDam = item._iMaxDam + 1;
+			break;
+		}
+	case IMISC_OILFIRE:
+		if ((int)(rand()%2 + 1) == 1) {
+			if (item._iFMaxDam - item._iFMinDam < 30 && item._iFMaxDam < 254) {
+				item._iFMinDam = item._iFMinDam + 1;
+				item._iFMaxDam = item._iFMaxDam + 2;
 			}
+			break;
+		} else {
+			break;
+		}
+	case IMISC_OILCOND:
+		if ((int)(rand()%2 + 1) == 1) {
+			if (item._iLMaxDam - item._iLMinDam < 30 && item._iLMaxDam < 254) {
+				item._iLMinDam = item._iLMinDam + 1;
+				item._iLMaxDam = item._iLMaxDam + 2;
+			}
+			break;
+		} else {
 			break;
 		}
 	case IMISC_OILSKILL:
@@ -5094,19 +5146,6 @@ bool ApplyOilToItem(Item &item, Player &player)
 		} else {
 			if (item._iAC < 60) {
 				item._iAC += GenerateRnd(2) + 1;
-			}
-			break;
-		}
-	case IMISC_OILFIRE:
-		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iFMaxDam - item._iFMinDam < 30 && item._iFMaxDam < 254) {
-				item._iFMinDam = item._iFMinDam + 1;
-				item._iFMaxDam = item._iFMaxDam + 2;
-			}
-			break;
-		} else {
-			if (item._iFMaxDam - item._iFMinDam < 30 && item._iFMaxDam < 255) {
-				item._iFMaxDam = item._iFMaxDam + 1;
 			}
 			break;
 		}

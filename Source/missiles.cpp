@@ -658,7 +658,7 @@ bool GuardianTryFireAt(Missile &missile, Point target)
 		return false;
 
 	Player &player = Players[missile._misource];
-	int dmg = GenerateRnd(10) + (player._pLevel / 2) + 1;
+	int dmg = GenerateRnd(10) + player._pLevel + 1;
 	dmg = ScaleSpellEffect(dmg, missile._mispllvl);
 
 	Direction dir = GetDirection(position, target);
@@ -777,7 +777,7 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 	switch (i) {
 	case SpellID::Firebolt:
 		*mind = (myPlayer._pMagic / 8) + sl + 1;
-		*maxd = *mind + 9;
+		*maxd = *mind + myPlayer._pLevel + 9;
 		break;
 	case SpellID::Healing:
 	case SpellID::HealOther:
@@ -838,7 +838,7 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = ScaleSpellEffect(base + 36, sl);
 	} break;
 	case SpellID::Guardian: {
-		int base = (myPlayer._pLevel / 2) + 1;
+		int base = myPlayer._pLevel + 1;
 		*mind = ScaleSpellEffect(base, sl);
 		*maxd = ScaleSpellEffect(base + 9, sl);
 	} break;
@@ -878,7 +878,7 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		break;
 	case SpellID::ChargedBolt:
 		*mind = 1;
-		*maxd = *mind + (myPlayer._pMagic / 4);
+		*maxd = *mind + (myPlayer._pMagic / 4) + myPlayer._pLevel;
 		break;
 	case SpellID::HolyBolt:
 		*mind = myPlayer._pLevel + 9;
@@ -1760,7 +1760,7 @@ void AddFirebolt(Missile &missile, AddMissileParameter &parameter)
 		switch (missile.sourceType()) {
 		case MissileSource::Player: {
 			const Player &player = *missile.sourcePlayer();
-			missile._midam = GenerateRnd(10) + (player._pMagic / 8) + missile._mispllvl + 1;
+			missile._midam = GenerateRnd(10) + (player._pMagic / 8) + player._pLevel + missile._mispllvl + 1;
 		} break;
 
 		case MissileSource::Monster:
@@ -2577,8 +2577,9 @@ void AddInfernoControl(Missile &missile, AddMissileParameter &parameter)
 void AddChargedBolt(Missile &missile, AddMissileParameter &parameter)
 {
 	Point dst = parameter.dst;
+	Player &player = Players[missile._misource];
 	missile._mirnd = GenerateRnd(15) + 1;
-	missile._midam = (missile._micaster == TARGET_MONSTERS) ? (GenerateRnd(Players[missile._misource]._pMagic / 4) + 1) : 15;
+	missile._midam = (missile._micaster == TARGET_MONSTERS) ? (GenerateRnd(Players[missile._misource]._pMagic / 4) + player._pLevel + 1) : 15;
 
 	if (missile.position.start == dst) {
 		dst += parameter.midir;
