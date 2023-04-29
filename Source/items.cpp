@@ -1892,7 +1892,7 @@ void PrintItemMisc(const Item &item)
 		return;
 	}
 	if (item._iMiscId == IMISC_AURIC) {
-		AddPanelString(_("Increases gold capacity 10x"));
+		AddPanelString(_("doubles gold pile capacity"));
 		return;
 	}
 	const bool isOil = (item._iMiscId >= IMISC_USEFIRST && item._iMiscId <= IMISC_USELAST)
@@ -3026,12 +3026,12 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	if (&player == MyPlayer) {
 		if (!HasInventoryItemWithId(player, IDI_AURIC)) {
 			int half = MaxGold;
-			MaxGold = GOLD_MAX_LIMIT;
+			MaxGold = GOLD_MAX_LIMIT * 2;
 
 			if (half != MaxGold)
 				StripTopGold(player);
 		} else {
-			MaxGold = GOLD_MAX_LIMIT * 10;
+			MaxGold = MaxGold * 2;
 		}
 	}
 
