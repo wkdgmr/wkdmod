@@ -989,7 +989,7 @@ bool DoAttack(Player &player)
 							&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
 							|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
 							&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-		                		&& !(player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)))	
+		                		&& !(player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield))))	
 		{	
 			// playing as a class/weapon with cleave
 			position = player.position.tile + Right(player._pdir);
