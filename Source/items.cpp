@@ -3026,12 +3026,12 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	if (&player == MyPlayer) {
 		if (!HasInventoryItemWithId(player, IDI_AURIC)) {
 			int half = MaxGold;
-			MaxGold = GOLD_MAX_LIMIT * 2;
+			MaxGold = GOLD_MAX_LIMIT;
 
 			if (half != MaxGold)
 				StripTopGold(player);
 		} else {
-			MaxGold = MaxGold * 2;
+			MaxGold = GOLD_MAX_LIMIT * 2;
 		}
 	}
 
