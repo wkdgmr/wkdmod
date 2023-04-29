@@ -28,6 +28,7 @@
 #include "engine/render/clx_render.hpp"
 #include "engine/render/text_render.hpp"
 #include "init.h"
+#include "inv.h"
 #include "inv_iterators.hpp"
 #include "levels/town.h"
 #include "lighting.h"
@@ -3020,7 +3021,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	}
 
 	if (&player == MyPlayer) {
-		if (player.InvBody[INVLOC_AMULET].isEmpty() || player.InvBody[INVLOC_AMULET].IDidx != IDI_AURIC) {
+		if (!HasInventoryItemWithId(player, IDI_AURIC)) {
 			int half = MaxGold;
 			MaxGold = GOLD_MAX_LIMIT;
 
@@ -5048,34 +5049,79 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 		break;
 	case IMISC_OILSHARP:
-		if (item._iMaxDam - item._iMinDam < 30 && item._iMaxDam < 255) {
-			item._iMaxDam = item._iMaxDam + 1;
+		if ((int)(rand()%4 + 1) == 1) {
+			if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow) {
+				if (item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
+					item._iMinDam = item._iMinDam + 1;
+				}
+				break;
+			} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
+				if (item._iMinDam < 15 && item._iMinDam < item._iMaxDam) {
+					item._iMinDam = item._iMinDam + 1;
+				}
+				break;
+			} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
+			|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
+				if (item._iMinDam < 20 && item._iMinDam < item._iMaxDam) {
+					item._iMinDam = item._iMinDam + 1;
+				}
+				break;
+			} else {
+				break;
+			}
+		} else {
+			break;
 		}
-		break;
 	case IMISC_OILWICK:
-		if (item._iFMaxDam - item._iFMinDam < 30 && item._iFMaxDam < 255) {
-			item._iFMaxDam = item._iFMaxDam + 1;
-		}
-		break;
-	case IMISC_OILMAGN:
-		if (item._iLMaxDam - item._iLMinDam < 30 && item._iLMaxDam < 255) {
-			item._iLMaxDam = item._iLMaxDam + 1;
-		}
-		break;
-	case IMISC_OILDEATH:
-		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iMaxDam - item._iMinDam < 30 && item._iMaxDam < 254) {
-				item._iMinDam = item._iMinDam + 1;
-				item._iMaxDam = item._iMaxDam + 2;
+		if ((int)(rand()%4 + 1) == 1) {
+			if (item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam) {
+				item._iFMinDam = item._iFMinDam + 1;
 			}
 			break;
+		}
+	case IMISC_OILMAGN:
+		if ((int)(rand()%4 + 1) == 1) {
+			if (item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam) {
+				item._iLMinDam = item._iLMinDam + 1;
+			}
+			break;
+		}
+	case IMISC_OILDEATH:
+		if ((int)(rand()%2 + 1) == 1) {
+			if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow) {
+				if (item._iMaxDam < 60) {
+					item._iMaxDam = item._iMaxDam + 2;
+					if (item._iMaxDam >= 60) {
+						item._iMaxDam = 60;
+					}
+					break;
+				}
+				break;
+			} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
+				if (item._iMaxDam < 30) {
+					item._iMaxDam = item._iMaxDam + 2;
+					if (item._iMaxDam >= 30) {
+						item._iMaxDam = 30;
+					}
+					break;
+				}
+				break;
+			} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
+			|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
+				item._iMaxDam = item._iMaxDam + 2;
+				if (item._iMaxDam >= 35) {
+					item._iMaxDam = 35;
+				}
+				break;
+			} else {
+				break;
+			}
 		} else {
 			break;
 		}
 	case IMISC_OILFIRE:
 		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iFMaxDam - item._iFMinDam < 30 && item._iFMaxDam < 254) {
-				item._iFMinDam = item._iFMinDam + 1;
+			if (item._iFMaxDam < 200) {
 				item._iFMaxDam = item._iFMaxDam + 2;
 			}
 			break;
@@ -5084,8 +5130,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 	case IMISC_OILCOND:
 		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iLMaxDam - item._iLMinDam < 30 && item._iLMaxDam < 254) {
-				item._iLMinDam = item._iLMinDam + 1;
+			if (item._iLMaxDam < 200) {
 				item._iLMaxDam = item._iLMaxDam + 2;
 			}
 			break;

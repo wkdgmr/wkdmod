@@ -946,12 +946,8 @@ bool DoAttack(Player &player)
 		if ((player._pClass == HeroClass::Monk
 				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
 				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-				|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
-				&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0
 					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
 					&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-					|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
-					&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0))
 		    || (player._pClass == HeroClass::Bard
 				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
 				&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0
@@ -964,8 +960,6 @@ bool DoAttack(Player &player)
 			|| (player._pClass == HeroClass::Warrior
 				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
 				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-				|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
-				&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0
 					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
 					&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
 					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
@@ -977,9 +971,7 @@ bool DoAttack(Player &player)
 			|| (player._pClass == HeroClass::Sorcerer
 				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
 				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-				|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
-				&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-			|| (player.plrlevel == 40)
+			|| (player.plrlevel == 40 && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow)
 			|| (player._pClass == HeroClass::Barbarian
 				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
 				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
