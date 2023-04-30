@@ -3812,6 +3812,8 @@ bool DoOil(Player &player, int cii)
 	return true;
 }
 
+Player &myPlayer = *MyPlayer;
+
 [[nodiscard]] StringOrView PrintItemPower(char plidx, const Item &item)
 {
 	switch (plidx) {
@@ -3925,9 +3927,8 @@ bool DoOil(Player &player, int cii)
 			return fmt::format(fmt::runtime(_("fireball damage: {:d}")), item._iFMinDam);
 		else
 			return fmt::format(fmt::runtime(_("fireball damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
-	case IPL_THORNS:
-		Player &myPlayer = *MyPlayer;
-		return fmt::format(fmt::runtime(_("attacker takes {:d}-{:d} fire damage")), myPlayer._pIFMinDam, myPlayer._pIFMaxDam);
+	case IPL_THORNS: 
+		return fmt::format(fmt::runtime(_("attacker takes {:d}-{:d} total fire dmg")), myPlayer._pIFMinDam, myPlayer._pIFMaxDam);
 	case IPL_NOMANA:
 		return _("user loses all mana");
 	case IPL_ABSHALFTRAP:
