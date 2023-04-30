@@ -156,15 +156,14 @@ bool itemhold[3][3];
 /** Specifies the number of active item get records. */
 int gnNumGetRecords;
 
-int OilLevels[] = { 1, 10, 1, 20, 10, 1, 5, 40, 1, 20, 12, 12, 24, 24 };
-int OilValues[] = { 500, 2500, 500, 2500, 1500, 100, 2500, 15000, 500, 2500, 1750, 1750, 3500, 3500 };
+int OilLevels[] = { 1, 10, 1, 20, 10, 5, 40, 1, 20, 12, 12, 24, 24 };
+int OilValues[] = { 500, 2500, 500, 2500, 1500, 2500, 15000, 500, 2500, 1750, 1750, 3500, 3500 };
 item_misc_id OilMagic[] = {
 	IMISC_OILACC,
 	IMISC_OILMAST,
 	IMISC_OILSHARP,
 	IMISC_OILDEATH,
 	IMISC_OILSKILL,
-	IMISC_OILBSMTH,
 	IMISC_OILFORT,
 	IMISC_OILPERM,
 	IMISC_OILHARD,
@@ -174,13 +173,12 @@ item_misc_id OilMagic[] = {
 	IMISC_OILFIRE,
 	IMISC_OILCOND,
 };
-char OilNames[14][25] = {
+char OilNames[13][25] = {
 	N_("Oil of Accuracy"),
 	N_("Oil of Mastery"),
 	N_("Oil of Sharpness"),
 	N_("Oil of Death"),
 	N_("Oil of Skill"),
-	N_("Blacksmith Oil"),
 	N_("Oil of Fortitude"),
 	N_("Oil of Permanence"),
 	N_("Oil of Hardening"),
@@ -1714,19 +1712,13 @@ void PrintItemOil(char iDidx)
 		break;
 	case IMISC_OILSHARP:
 		AddPanelString(_("increase weapon DMG min"));
-		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 25%"));
 		break;
 	case IMISC_OILDEATH:
 		AddPanelString(_("increase weapon DMG max"));
-		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILSKILL:
 		AddPanelString(_("reduces attributes needed"));
 		AddPanelString(_("to use armor or weapons"));
-		break;
-	case IMISC_OILBSMTH:
-		AddPanelString(/*xgettext:no-c-format*/ _("restores 20% of an"));
-		AddPanelString(_("item's durability"));
 		break;
 	case IMISC_OILFORT:
 		AddPanelString(_("increases an item's"));
@@ -1741,23 +1733,18 @@ void PrintItemOil(char iDidx)
 		break;
 	case IMISC_OILIMP:
 		AddPanelString(_("greatly increase AC"));
-		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILWICK:
 		AddPanelString(_("increase fire DMG min"));
-		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILMAGN:
 		AddPanelString(_("increase lightning DMG min"));
-		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILFIRE:
 		AddPanelString(_("increase fire DMG max"));
-		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_OILCOND:
 		AddPanelString(_("increase lightning DMG max"));
-		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 50%"));
 		break;
 	case IMISC_RUNEF:
 		AddPanelString(_("sets fire trap"));
@@ -2305,7 +2292,7 @@ StringOrView GetTranslatedItemName(const Item &item)
 	} else if (item._iMiscId == IMISC_EAR) {
 		return fmt::format(fmt::runtime(_(/* TRANSLATORS: {:s} will be a Character Name */ "Ear of {:s}")), item._iIName);
 	} else if (item._iMiscId > IMISC_OILFIRST && item._iMiscId < IMISC_OILLAST) {
-		for (size_t i = 0; i < 14; i++) {
+		for (size_t i = 0; i < 13; i++) {
 			if (OilMagic[i] != item._iMiscId)
 				continue;
 			return _(OilNames[i]);
@@ -4246,7 +4233,6 @@ void UseItem(size_t pnum, item_misc_id mid, SpellID spellID, int spellFrom)
 	case IMISC_OILSHARP:
 	case IMISC_OILDEATH:
 	case IMISC_OILSKILL:
-	case IMISC_OILBSMTH:
 	case IMISC_OILFORT:
 	case IMISC_OILPERM:
 	case IMISC_OILHARD:
@@ -5052,115 +5038,80 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 		break;
 	case IMISC_OILSHARP:
-		if ((int)(rand()%4 + 1) == 1) {
-			if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow) {
-				if (item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
-					item._iMinDam = item._iMinDam + 1;
-				}
-				break;
-			} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
-				if (item._iMinDam < 15 && item._iMinDam < item._iMaxDam) {
-					item._iMinDam = item._iMinDam + 1;
-				}
-				break;
-			} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
-			|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
-				if (item._iMinDam < 20 && item._iMinDam < item._iMaxDam) {
-					item._iMinDam = item._iMinDam + 1;
-				}
-				break;
-			} else {
-				break;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow) {
+			if (item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
+				item._iMinDam = item._iMinDam + 1;
 			}
+			break;
+		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
+			if (item._iMinDam < 15 && item._iMinDam < item._iMaxDam) {
+				item._iMinDam = item._iMinDam + 1;
+			}
+			break;
+		} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
+		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
+			if (item._iMinDam < 20 && item._iMinDam < item._iMaxDam) {
+				item._iMinDam = item._iMinDam + 1;
+			}
+			break;
 		} else {
 			break;
 		}
 	case IMISC_OILWICK:
-		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam) {
-				item._iFMinDam = item._iFMinDam + 1;
-			}
-			break;
+		if (item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam) {
+			item._iFMinDam = item._iFMinDam + 1;
 		}
+		break;
 	case IMISC_OILMAGN:
-		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam) {
-				item._iLMinDam = item._iLMinDam + 1;
+		if (item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam) {
+			item._iLMinDam = item._iLMinDam + 1;
+		}
+		break;
+	case IMISC_OILDEATH:
+		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow) {
+			if (item._iMaxDam < 60) {
+				item._iMaxDam = item._iMaxDam + 2;
+				if (item._iMaxDam >= 60) {
+					item._iMaxDam = 60;
+				}
+				break;
 			}
 			break;
-		}
-	case IMISC_OILDEATH:
-		if ((int)(rand()%2 + 1) == 1) {
-			if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow) {
-				if (item._iMaxDam < 60) {
-					item._iMaxDam = item._iMaxDam + 2;
-					if (item._iMaxDam >= 60) {
-						item._iMaxDam = 60;
-					}
-					break;
-				}
-				break;
-			} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
-				if (item._iMaxDam < 30) {
-					item._iMaxDam = item._iMaxDam + 2;
-					if (item._iMaxDam >= 30) {
-						item._iMaxDam = 30;
-					}
-					break;
-				}
-				break;
-			} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
-			|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
+		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
+			if (item._iMaxDam < 30) {
 				item._iMaxDam = item._iMaxDam + 2;
-				if (item._iMaxDam >= 35) {
-					item._iMaxDam = 35;
+				if (item._iMaxDam >= 30) {
+					item._iMaxDam = 30;
 				}
-				break;
-			} else {
 				break;
 			}
+			break;
+		} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
+		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
+			item._iMaxDam = item._iMaxDam + 2;
+			if (item._iMaxDam >= 35) {
+				item._iMaxDam = 35;
+			}
+			break;
 		} else {
 			break;
 		}
 	case IMISC_OILFIRE:
-		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iFMaxDam < 200) {
-				item._iFMaxDam = item._iFMaxDam + 2;
-			}
-			break;
-		} else {
-			break;
+		if (item._iFMaxDam < 200) {
+			item._iFMaxDam = item._iFMaxDam + 2;
 		}
+		break;
 	case IMISC_OILCOND:
-		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iLMaxDam < 200) {
-				item._iLMaxDam = item._iLMaxDam + 2;
-			}
-			break;
-		} else {
-			break;
+		if (item._iLMaxDam < 200) {
+			item._iLMaxDam = item._iLMaxDam + 2;
 		}
+		break;
 	case IMISC_OILSKILL:
 		r = GenerateRnd(6) + 5;
 		item._iMinStr = std::max(0, item._iMinStr - r);
 		item._iMinMag = std::max(0, item._iMinMag - r);
 		item._iMinDex = std::max(0, item._iMinDex - r);
 		break;
-	case IMISC_OILBSMTH:
-		if (item._iMaxDur == DUR_INDESTRUCTIBLE)
-			return true;
-		if (item._iDurability < item._iMaxDur) {
-			item._iDurability = (item._iMaxDur + 4) / 5 + item._iDurability;
-			item._iDurability = std::min<int>(item._iDurability, item._iMaxDur);
-			break;
-		} else {
-			if (item._iMaxDur >= 100) {
-				return true;
-			}
-			item._iMaxDur++;
-			item._iDurability = item._iMaxDur;
-			break;
-		}
 	case IMISC_OILFORT:
 		if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur < 200) {
 			r = GenerateRnd(41) + 10;
@@ -5203,20 +5154,11 @@ bool ApplyOilToItem(Item &item, Player &player)
 			break;
 		}
 	case IMISC_OILIMP:
-		if ((int)(rand()%2 + 1) == 1) {
-			if (item._iAC <= 120) {
-				item._iAC += GenerateRnd(3) + 3;
-				break;
-			} else {
-				break;
-			}
+		if (item._iAC <= 120) {
+			item._iAC += GenerateRnd(3) + 3;
+			break;
 		} else {
-			if (item._iAC < 60) {
-				item._iAC += GenerateRnd(2) + 1;
-				break;
-			} else {
-				break;
-			}
+			break;
 		}
 	default:
 		return false;
