@@ -3926,7 +3926,8 @@ bool DoOil(Player &player, int cii)
 		else
 			return fmt::format(fmt::runtime(_("fireball damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_THORNS:
-		return fmt::format(fmt::runtime(_("attacker takes {:d}-{:d} damage")), item._iFMinDam, item._iFMaxDam);
+		Player &myPlayer = *MyPlayer;
+		return fmt::format(fmt::runtime(_("attacker takes {:d}-{:d} fire damage")), myPlayer._pIFMinDam, myPlayer._pIFMaxDam);
 	case IPL_NOMANA:
 		return _("user loses all mana");
 	case IPL_ABSHALFTRAP:
@@ -5004,9 +5005,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 	case IMISC_OILACC:
 	case IMISC_OILMAST:
 	case IMISC_OILSHARP:
-	case IMISC_OILWICK:
 	case IMISC_OILMAGN:
-	case IMISC_OILFIRE:
 	case IMISC_OILCOND:
 	case IMISC_OILDEATH:
 		if (item._iClass == ICLASS_ARMOR) {
