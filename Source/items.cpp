@@ -3922,7 +3922,7 @@ bool DoOil(Player &player, int cii)
 		else
 			return fmt::format(fmt::runtime(_("fireball damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_THORNS:
-		return _("attacker takes 1-3 damage");
+		return fmt::format(fmt::runtime(_("attacker takes {:d}-{:d} damage")), item._iMinDam, item._iMaxDam);
 	case IPL_NOMANA:
 		return _("user loses all mana");
 	case IPL_ABSHALFTRAP:
