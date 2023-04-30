@@ -919,6 +919,10 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		break;
 	case IPL_THORNS:
 		item._iFlags |= ItemSpecialEffect::Thorns;
+		item._iFMinDam = power.param1;
+		item._iFMaxDam = power.param2;
+		item._iLMinDam = 0;
+		item._iLMaxDam = 0;
 		break;
 	case IPL_NOMANA:
 		item._iFlags |= ItemSpecialEffect::NoMana;
@@ -3922,7 +3926,7 @@ bool DoOil(Player &player, int cii)
 		else
 			return fmt::format(fmt::runtime(_("fireball damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_THORNS:
-		return fmt::format(fmt::runtime(_("attacker takes {:d}-{:d} damage")), item._iMinDam, item._iMaxDam);
+		return fmt::format(fmt::runtime(_("attacker takes {:d}-{:d} damage")), item._iFMinDam, item._iFMaxDam);
 	case IPL_NOMANA:
 		return _("user loses all mana");
 	case IPL_ABSHALFTRAP:
