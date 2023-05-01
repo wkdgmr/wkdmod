@@ -2007,7 +2007,7 @@ void SpawnOnePremium(Item &premiumItem, int plvl, const Player &player)
 	dexterity += dexterity / 5;
 	magic += magic / 5;
 
-	plvl = clamp(plvl, 1, 30);
+	plvl = clamp(plvl, 1, 35);
 
 	int maxCount = 150;
 	const bool unlimited = !gbIsHellfire; // TODO: This could lead to an infinite loop if a suitable item can never be generated
@@ -3416,6 +3416,15 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg)
 	int8_t mLevel = monster.data().level;
 	if (!gbIsHellfire && monster.type().type == MT_DIABLO)
 		mLevel -= 15;
+
+	switch (sgGameInitInfo.nDifficulty) {
+	case DIFF_NIGHTMARE:
+		mLevel += 8;
+		break;
+	case DIFF_HELL:
+		mLevel += 16;
+		break;
+	}
 
 	SetupAllItems(*MyPlayer, item, idx, AdvanceRndSeed(), mLevel, uper, onlygood, false, false);
 
