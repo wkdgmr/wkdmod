@@ -5073,12 +5073,12 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 	case IMISC_OILWICK:
 		if (item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam) {
-			item._iFMinDam = item._iFMinDam + 1;
+			item._iFMinDam = item._iFMinDam + 2;
 		}
 		break;
 	case IMISC_OILMAGN:
 		if (item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam) {
-			item._iLMinDam = item._iLMinDam + 1;
+			item._iLMinDam = item._iLMinDam + 2;
 		}
 		break;
 	case IMISC_OILDEATH:
@@ -5112,12 +5112,12 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 	case IMISC_OILFIRE:
 		if (item._iFMaxDam < 200) {
-			item._iFMaxDam = item._iFMaxDam + 2;
+			item._iFMaxDam = item._iFMaxDam + 4;
 		}
 		break;
 	case IMISC_OILCOND:
 		if (item._iLMaxDam < 200) {
-			item._iLMaxDam = item._iLMaxDam + 2;
+			item._iLMaxDam = item._iLMaxDam + 4;
 		}
 		break;
 	case IMISC_OILSKILL:
