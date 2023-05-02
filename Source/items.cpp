@@ -1011,18 +1011,18 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iCurs = power.param1;
 		break;
 	case IPL_ADDACLIFE:
-		item._iFlags |= ItemSpecialEffect::LightningArrows;
-		item._iLMinDam = power.param1;
-		item._iLMaxDam = power.param2;
-		item._iFMinDam = 0;
-		item._iFMaxDam = 0;
+		item._iFlags |= (ItemSpecialEffect::LightningArrows | ItemSpecialEffect::FireArrows);
+		item._iFMinDam = power.param1;
+		item._iFMaxDam = power.param2;
+		item._iLMinDam = 1;
+		item._iLMaxDam = 0;
 		break;
 	case IPL_ADDMANAAC:
-		item._iFlags |= ItemSpecialEffect::LightningDamage;
-		item._iLMinDam = power.param1;
-		item._iLMaxDam = power.param2;
-		item._iFMinDam = 0;
-		item._iFMaxDam = 0;
+		item._iFlags |= (ItemSpecialEffect::LightningDamage | ItemSpecialEffect::FireDamage);
+		item._iFMinDam = power.param1;
+		item._iFMaxDam = power.param2;
+		item._iLMinDam = 2;
+		item._iLMaxDam = 0;
 		break;
 	case IPL_FIRERES_CURSE:
 		item._iPLFR -= r;
@@ -3936,9 +3936,9 @@ bool DoOil(Player &player, int cii)
 			return fmt::format(fmt::runtime(_("fireball damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_THORNS: 
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("attacker takes {:d} fire dmg")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("holy fire damage: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("attacker takes {:d}-{:d} fire dmg")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("holy fire damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_NOMANA:
 		return _("user loses all mana");
 	case IPL_ABSHALFTRAP:
@@ -4002,15 +4002,12 @@ bool DoOil(Player &player, int cii)
 	case IPL_INVCURS:
 		return { string_view(" ") };
 	case IPL_ADDACLIFE:
-		if (item._iLMinDam == item._iLMaxDam)
-			return fmt::format(fmt::runtime(_("lightning damage: {:d}")), item._iLMinDam);
+		if (item._iFMinDam == item._iFMaxDam)
+			return fmt::format(fmt::runtime(_("lightning damage: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("lightning damage: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
+			return fmt::format(fmt::runtime(_("lightning damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_ADDMANAAC:
-		if (item._iLMinDam == item._iLMaxDam)
-			return fmt::format(fmt::runtime(_("charged bolts on hits: {:d} dmg")), item._iLMinDam);
-		else
-			return fmt::format(fmt::runtime(_("charged bolts on hits: {:d}-{:d} dmg")), item._iLMinDam, item._iLMaxDam);
+		return _("charged bolts on hits");
 	case IPL_DEVASTATION:
 		return _("occasional triple damage");
 	case IPL_DECAY:
