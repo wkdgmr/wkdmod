@@ -156,8 +156,8 @@ bool itemhold[3][3];
 /** Specifies the number of active item get records. */
 int gnNumGetRecords;
 
-int OilLevels[] = { 1, 10, 1, 20, 10, 5, 40, 1, 20, 12, 12, 24, 24 };
-int OilValues[] = { 500, 2500, 500, 2500, 1500, 2500, 15000, 500, 2500, 1750, 1750, 3500, 3500 };
+int OilLevels[] = { 1, 10, 1, 20, 10, 5, 40, 1, 20, 12, 12, 24, 24, 1 };
+int OilValues[] = { 500, 2500, 500, 2500, 1500, 2500, 15000, 500, 2500, 1750, 1750, 3500, 3500, 1 };
 item_misc_id OilMagic[] = {
 	IMISC_OILACC,
 	IMISC_OILMAST,
@@ -172,8 +172,9 @@ item_misc_id OilMagic[] = {
 	IMISC_OILMAGN,
 	IMISC_OILFIRE,
 	IMISC_OILCOND,
+	IMISC_OILDEBUG,
 };
-char OilNames[13][25] = {
+char OilNames[14][25] = {
 	N_("Oil of Accuracy"),
 	N_("Oil of Mastery"),
 	N_("Oil of Sharpness"),
@@ -187,6 +188,7 @@ char OilNames[13][25] = {
 	N_("Oil of Magnetism"),
 	N_("Oil of Flammability"),
 	N_("Oil of Conduction"),
+	N_("Oil of Legitness"),
 };
 
 /** Map of item type .cel file names. */
@@ -724,13 +726,6 @@ int CalculateToHitBonus(int level)
 
 int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 {
-	if (!gbIsHellfire) {
-		if (power.type == IPL_TARGAC) {
-			power.param1 = 1 << power.param1;
-			power.param2 = 3 << power.param2;
-		}
-	}
-
 	int r = RndPL(power.param1, power.param2);
 
 	switch (power.type) {
@@ -955,10 +950,7 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		RedrawComponent(PanelDrawComponent::Health);
 		break;
 	case IPL_TARGAC:
-		if (gbIsHellfire)
-			item._iPLEnAc = power.param1;
-		else
-			item._iPLEnAc += r;
+		item._iPLEnAc = power.param1;
 		break;
 	case IPL_FASTATTACK:
 		if (power.param1 == 1)
@@ -1750,6 +1742,10 @@ void PrintItemOil(char iDidx)
 	case IMISC_OILCOND:
 		AddPanelString(_("increase lightning DMG max"));
 		break;
+	case IMISC_OILDEBUG:
+		AddPanelString(_("totally legit"));
+		AddPanelString(_("not a cheat code"));
+		break;
 	case IMISC_RUNEF:
 		AddPanelString(_("sets fire trap"));
 		break;
@@ -2296,7 +2292,7 @@ StringOrView GetTranslatedItemName(const Item &item)
 	} else if (item._iMiscId == IMISC_EAR) {
 		return fmt::format(fmt::runtime(_(/* TRANSLATORS: {:s} will be a Character Name */ "Ear of {:s}")), item._iIName);
 	} else if (item._iMiscId > IMISC_OILFIRST && item._iMiscId < IMISC_OILLAST) {
-		for (size_t i = 0; i < 13; i++) {
+		for (size_t i = 0; i < 14; i++) {
 			if (OilMagic[i] != item._iMiscId)
 				continue;
 			return _(OilNames[i]);
@@ -4257,6 +4253,7 @@ void UseItem(size_t pnum, item_misc_id mid, SpellID spellID, int spellFrom)
 	case IMISC_OILMAGN:
 	case IMISC_OILFIRE:
 	case IMISC_OILCOND:
+	case IMISC_OILDEBUG:
 		player._pOilType = mid;
 		if (&player != MyPlayer) {
 			return;
@@ -5082,7 +5079,8 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 		break;
 	case IMISC_OILDEATH:
-		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow
+		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Bow) {
 			if (item._iMaxDam < 60) {
 				item._iMaxDam = item._iMaxDam + 2;
 				if (item._iMaxDam >= 60) {
@@ -5118,6 +5116,49 @@ bool ApplyOilToItem(Item &item, Player &player)
 	case IMISC_OILCOND:
 		if (item._iLMaxDam < 200) {
 			item._iLMaxDam = item._iLMaxDam + 4;
+		}
+		break;
+	case IMISC_OILDEBUG:
+		if (item._iFMinDam > 0 && item._iFMinDam < 200) {
+			item._iFMinDam = 200;
+		}
+		if (item._iFMaxDam > 0 && item._iFMaxDam < 200) {
+			item._iFMaxDam = 200;
+		}
+		if (item._iLMinDam > 0 && item._iLMinDam < 200) {
+			item._iLMinDam = 200;
+		}
+		if (item._iLMaxDam > 0 && item._iLMaxDam < 200) {
+			item._iLMaxDam = 200;
+		}
+		if (item._iMaxDur != DUR_INDESTRUCTIBLE) {
+			item._iDurability = DUR_INDESTRUCTIBLE;
+			item._iMaxDur = DUR_INDESTRUCTIBLE;
+		if (item._iAC > 0 && item._iAC < 120) {
+			item._iAC = 120;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow
+		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Bow) {
+			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
+				item._iMaxDam = 60;
+			}
+			if (item._iMinDam > 0 && item._iMinDam < 30) {
+				item._iMinDam = 30;
+			}
+		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
+			if (item._iMaxDam > 0 && item._iMaxDam < 30) {
+				item._iMaxDam = 30;
+			}
+			if (item._iMinDam > 0 && item._iMinDam < 15) {
+				item._iMinDam = 15;
+			}
+		} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
+		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
+			if (item._iMaxDam > 0 && item._iMaxDam < 35) {
+				item._iMaxDam = 35;
+			}
+			if (item._iMinDam > 0 && item._iMinDam < 20) {
+				item._iMinDam = 20;
+			}
 		}
 		break;
 	case IMISC_OILSKILL:
