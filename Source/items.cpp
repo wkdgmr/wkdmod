@@ -5134,8 +5134,10 @@ bool ApplyOilToItem(Item &item, Player &player)
 		if (item._iMaxDur != DUR_INDESTRUCTIBLE) {
 			item._iDurability = DUR_INDESTRUCTIBLE;
 			item._iMaxDur = DUR_INDESTRUCTIBLE;
+		}
 		if (item._iAC > 0 && item._iAC < 120) {
 			item._iAC = 120;
+		}
 		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow
 		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
