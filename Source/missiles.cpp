@@ -717,23 +717,39 @@ void SpawnLightning(Missile &missile, int dam)
 	int pn = dPiece[position.x][position.y];
 	if (!TileHasAny(pn, TileProperties::BlockMissile)) {
 		if (position != Point { missile.var1, missile.var2 } && InDungeonBounds(position)) {
-			MissileID type = MissileID::Lightning;
-			if (missile.sourceType() == MissileSource::Monster
-			    && IsAnyOf(missile.sourceMonster()->type().type, MT_STORM, MT_RSTORM, MT_STORML, MT_MAEL)) {
-				type = MissileID::ThinLightning;
+			if (missile._mitype == MissileID::LightningBow) {
+				MissileID type = MissileID::LightningBow;
+				AddMissile(
+				    position,
+				    missile.position.start,
+				    Direction::South,
+				    type,
+				    missile._micaster,
+				    missile._misource,
+				    dam,
+				    missile._mispllvl,
+				    &missile);
+				missile.var1 = position.x;
+				missile.var2 = position.y;
+			} else {
+				MissileID type = MissileID::Lightning;
+				if (missile.sourceType() == MissileSource::Monster
+				    && IsAnyOf(missile.sourceMonster()->type().type, MT_STORM, MT_RSTORM, MT_STORML, MT_MAEL)) {
+					type = MissileID::ThinLightning;
+				}
+				AddMissile(
+				    position,
+				    missile.position.start,
+				    Direction::South,
+				    type,
+				    missile._micaster,
+				    missile._misource,
+				    dam,
+				    missile._mispllvl,
+				    &missile);
+				missile.var1 = position.x;
+				missile.var2 = position.y;
 			}
-			AddMissile(
-			    position,
-			    missile.position.start,
-			    Direction::South,
-			    type,
-			    missile._micaster,
-			    missile._misource,
-			    dam,
-			    missile._mispllvl,
-			    &missile);
-			missile.var1 = position.x;
-			missile.var2 = position.y;
 		}
 	}
 
