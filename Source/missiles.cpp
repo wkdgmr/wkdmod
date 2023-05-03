@@ -718,7 +718,7 @@ void SpawnLightning(Missile &missile, int dam)
 	if (!TileHasAny(pn, TileProperties::BlockMissile)) {
 		if (position != Point { missile.var1, missile.var2 } && InDungeonBounds(position)) {
 			if (missile._mitype == MissileID::LightningBow) {
-				MissileID type = MissileID::LightningBow;
+				MissileID type = MissileID::LightningArrow;
 				AddMissile(
 				    position,
 				    missile.position.start,
