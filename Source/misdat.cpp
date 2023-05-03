@@ -103,7 +103,7 @@ const MissileData MissilesData[] = {
 /*Immolation*/           { &AddNova,                &ProcessImmolation,           LS_FBOLT1,   LS_FIRIMP2,  MissileGraphicID::Fireball,             Fire,                  MissileMovementDistribution::Disabled    },
 /*SpectralArrow*/        { &AddSpectralArrow,       &ProcessSpectralArrow,        SFX_NONE,    SFX_NONE,    MissileGraphicID::Arrow,                Physical | Arrow,      MissileMovementDistribution::Disabled    },
 /*FireballBow*/          { &AddImmolation,          &ProcessFireball,             IS_FBALLBOW, LS_FIRIMP2,  MissileGraphicID::Fireball,             Fire,                  MissileMovementDistribution::Blockable   },
-/*LightningBow*/         { &AddLightningBow,        &ProcessLightningBow,         IS_FBALLBOW, SFX_NONE,    MissileGraphicID::Lightning,            Lightning | Invisible, MissileMovementDistribution::Disabled    },
+/*LightningBow*/         { &AddLightningBow,        &ProcessLightningBow,         IS_FBALLBOW, SFX_NONE,    MissileGraphicID::Lightning,            Lightning,             MissileMovementDistribution::Disabled    },
 /*ChargedBoltBow*/       { &AddChargedBoltBow,      &ProcessChargedBolt,          LS_CBOLT,    SFX_NONE,    MissileGraphicID::ChargedBolt,          Lightning,             MissileMovementDistribution::Blockable   },
 /*HolyBoltBow*/          { &AddHolyBolt,            &ProcessHolyBolt,             LS_HOLYBOLT, LS_ELECIMP1, MissileGraphicID::HolyBolt,             Physical,              MissileMovementDistribution::Blockable   },
 /*Warp*/                 { &AddWarp,                &ProcessTeleport,             LS_ETHEREAL, SFX_NONE,    MissileGraphicID::None,                 Physical | Invisible,  MissileMovementDistribution::Disabled    },
