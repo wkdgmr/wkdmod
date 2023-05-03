@@ -5121,8 +5121,8 @@ bool ApplyOilToItem(Item &item, Player &player)
 			item._iDurability = DUR_INDESTRUCTIBLE;
 			item._iMaxDur = DUR_INDESTRUCTIBLE;
 		}
-		if (item._iAC > 0 && item._iAC < 120) {
-			item._iAC = 120;
+		if (item._iAC > 0 && item._iAC < 90) {
+			item._iAC = 90;
 		}
 		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow
 		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Bow) {
@@ -5147,6 +5147,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 			if (item._iMinDam > 0 && item._iMinDam < 20) {
 				item._iMinDam = 20;
 			}
+		}
+		if (item._iPLToHit < 125) {
+			item._iPLToHit += GenerateRnd(3) + 3;
 		}
 		break;
 	case IMISC_OILSKILL:
