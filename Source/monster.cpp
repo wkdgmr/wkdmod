@@ -4720,6 +4720,7 @@ bool Monster::isResistant(MissileID missileType, DamageType missileElement) cons
 		|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
 	    || ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::WeaponExplosion)
 		|| ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::FireArrow)
+		|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::Fireball)
 		|| ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::FireballBow)
 	    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
 	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType == MissileID::WeaponExplosion)
