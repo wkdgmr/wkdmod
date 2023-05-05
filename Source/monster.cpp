@@ -1222,10 +1222,10 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 #endif
 	int ac = player.GetArmor();
 	if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::ACAgainstDemons) && monster.data().monsterClass == MonsterClass::Demon)
-		ac += 40;
+		ac += 100;
 	if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::ACAgainstUndead) && monster.data().monsterClass == MonsterClass::Undead)
-		ac += 20;
-	hit += 2 * (monster.level(sgGameInitInfo.nDifficulty) - (player._pLevel + player.GetBlockChance()))
+		ac += 100;
+	hit += 2 * (monster.level(sgGameInitInfo.nDifficulty) - player._pLevel)
 	    + 30
 	    - ac;
 	int minhit = GetMinHit();
