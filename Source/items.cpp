@@ -4457,7 +4457,7 @@ void SpawnBoy(int lvl)
 		}
 	} while (keepgoing
 	    || ((
-	            boyitem._iIvalue > 200000
+	            boyitem._iIvalue > 300000
 	            || boyitem._iMinStr > strength
 	            || boyitem._iMinMag > magic
 	            || boyitem._iMinDex > dexterity
