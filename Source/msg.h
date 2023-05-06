@@ -63,15 +63,10 @@ enum _cmd_id : uint8_t {
 	//
 	// body (TCmdPItem)
 	CMD_PUTITEM,
-	// Spawn item on ground (place quest items).
-	//
+	// Spawn item on ground (place quest items, drop dead player item, or drop
+	// attempted loot item when inventory is full).
 	// body (TCmdPItem)
 	CMD_SPAWNITEM,
-	// Respawn item on ground (drop dead player item, or drop attempted loot item
-	// when inventory is full).
-	//
-	// body (TCmdPItem)
-	CMD_RESPAWNITEM,
 	// Attack target location.
 	//
 	// body (TCmdLoc)
@@ -532,13 +527,13 @@ struct TCmdQuest {
 struct TItemDef {
 	_item_indexes wIndx;
 	uint16_t wCI;
-	int32_t dwSeed;
+	uint32_t dwSeed;
 };
 
 struct TItem {
 	_item_indexes wIndx;
 	uint16_t wCI;
-	int32_t dwSeed;
+	uint32_t dwSeed;
 	uint8_t bId;
 	uint8_t bDur;
 	uint8_t bMDur;
@@ -557,7 +552,7 @@ struct TItem {
 struct TEar {
 	_item_indexes wIndx;
 	uint16_t wCI;
-	int32_t dwSeed;
+	uint32_t dwSeed;
 	uint8_t bCursval;
 	char heroname[17];
 };

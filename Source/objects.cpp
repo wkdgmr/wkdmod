@@ -3600,7 +3600,8 @@ void SyncLever(const Object &lever)
 void SyncQSTLever(const Object &qstLever)
 {
 	if (qstLever._oAnimFrame == qstLever._oVar6) {
-		ObjChangeMapResync(qstLever._oVar1, qstLever._oVar2, qstLever._oVar3, qstLever._oVar4);
+		if (qstLever._otype != OBJ_BLOODBOOK)
+			ObjChangeMapResync(qstLever._oVar1, qstLever._oVar2, qstLever._oVar3, qstLever._oVar4);
 		if (qstLever._otype == OBJ_BLINDBOOK) {
 			auto tren = TransVal;
 			TransVal = 9;
@@ -3640,6 +3641,25 @@ void SyncDoor(Object &door)
 		SetDoorStateClosed(door);
 	} else {
 		SetDoorStateOpen(door);
+	}
+}
+
+void ResyncDoors(WorldTilePosition p1, WorldTilePosition p2, bool sendmsg)
+{
+	const WorldTileSize size { static_cast<WorldTileCoord>(p2.x - p1.x), static_cast<WorldTileCoord>(p2.y - p1.y) };
+	const WorldTileRectangle area { p1, size };
+
+	for (WorldTilePosition p : PointsInRectangleRange<WorldTileCoord> { area }) {
+		Object *obj = FindObjectAtPosition(p);
+		if (obj == nullptr)
+			continue;
+		if (IsNoneOf(obj->_otype, OBJ_L1LDOOR, OBJ_L1RDOOR, OBJ_L2LDOOR, OBJ_L2RDOOR, OBJ_L3LDOOR, OBJ_L3RDOOR, OBJ_L5LDOOR, OBJ_L5RDOOR))
+			continue;
+		SyncDoor(*obj);
+		if (sendmsg) {
+			bool isOpen = obj->_oVar4 == DOOR_OPEN;
+			NetSendCmdLoc(MyPlayerId, true, isOpen ? CMD_OPENDOOR : CMD_CLOSEDOOR, obj->position);
+		}
 	}
 }
 
@@ -3849,7 +3869,7 @@ void InitObjects()
 	if (currlevel == 16) {
 		AddDiabObjs();
 	} else {
-		AdvanceRndSeed();
+		DiscardRandomValues(1);
 		if (currlevel == 9 && !UseMultiplayerQuests())
 			AddSlainHero();
 		if (Quests[Q_MUSHROOM].IsAvailable())
@@ -4348,20 +4368,26 @@ void ObjChangeMap(int x1, int y1, int x2, int y2)
 			dungeon[i][j] = pdungeon[i][j];
 		}
 	}
+
+	WorldTilePosition mega1 { static_cast<WorldTileCoord>(x1), static_cast<WorldTileCoord>(y1) };
+	WorldTilePosition mega2 { static_cast<WorldTileCoord>(x2), static_cast<WorldTileCoord>(y2) };
+	WorldTilePosition world1 = mega1.megaToWorld();
+	WorldTilePosition world2 = mega2.megaToWorld() + Displacement { 1, 1 };
 	if (leveltype == DTYPE_CATHEDRAL) {
-		ObjL1Special(2 * x1 + 16, 2 * y1 + 16, 2 * x2 + 17, 2 * y2 + 17);
-		AddL1Objs(2 * x1 + 16, 2 * y1 + 16, 2 * x2 + 17, 2 * y2 + 17);
+		ObjL1Special(world1.x, world1.y, world2.x, world2.y);
+		AddL1Objs(world1.x, world1.y, world2.x, world2.y);
 	}
 	if (leveltype == DTYPE_CATACOMBS) {
-		ObjL2Special(2 * x1 + 16, 2 * y1 + 16, 2 * x2 + 17, 2 * y2 + 17);
-		AddL2Objs(2 * x1 + 16, 2 * y1 + 16, 2 * x2 + 17, 2 * y2 + 17);
+		ObjL2Special(world1.x, world1.y, world2.x, world2.y);
+		AddL2Objs(world1.x, world1.y, world2.x, world2.y);
 	}
 	if (leveltype == DTYPE_CAVES) {
-		AddL3Objs(2 * x1 + 16, 2 * y1 + 16, 2 * x2 + 17, 2 * y2 + 17);
+		AddL3Objs(world1.x, world1.y, world2.x, world2.y);
 	}
 	if (leveltype == DTYPE_CRYPT) {
-		AddCryptObjects(2 * x1 + 16, 2 * y1 + 16, 2 * x2 + 17, 2 * y2 + 17);
+		AddCryptObjects(world1.x, world1.y, world2.x, world2.y);
 	}
+	ResyncDoors(world1, world2, true);
 }
 
 void ObjChangeMapResync(int x1, int y1, int x2, int y2)
@@ -4372,12 +4398,18 @@ void ObjChangeMapResync(int x1, int y1, int x2, int y2)
 			dungeon[i][j] = pdungeon[i][j];
 		}
 	}
+
+	WorldTilePosition mega1 { static_cast<WorldTileCoord>(x1), static_cast<WorldTileCoord>(y1) };
+	WorldTilePosition mega2 { static_cast<WorldTileCoord>(x2), static_cast<WorldTileCoord>(y2) };
+	WorldTilePosition world1 = mega1.megaToWorld();
+	WorldTilePosition world2 = mega2.megaToWorld() + Displacement { 1, 1 };
 	if (leveltype == DTYPE_CATHEDRAL) {
-		ObjL1Special(2 * x1 + 16, 2 * y1 + 16, 2 * x2 + 17, 2 * y2 + 17);
+		ObjL1Special(world1.x, world1.y, world2.x, world2.y);
 	}
 	if (leveltype == DTYPE_CATACOMBS) {
-		ObjL2Special(2 * x1 + 16, 2 * y1 + 16, 2 * x2 + 17, 2 * y2 + 17);
+		ObjL2Special(world1.x, world1.y, world2.x, world2.y);
 	}
+	ResyncDoors(world1, world2, false);
 }
 
 _item_indexes ItemMiscIdIdx(item_misc_id imiscid)
@@ -4436,7 +4468,8 @@ void OperateObject(Player &player, Object &object)
 	case OBJ_BLINDBOOK:
 	case OBJ_BLOODBOOK:
 	case OBJ_STEELTOME:
-		OperateBookLever(object, sendmsg);
+		if (sendmsg)
+			OperateBookLever(object, sendmsg);
 		break;
 	case OBJ_SHRINEL:
 	case OBJ_SHRINER:
@@ -4633,7 +4666,10 @@ void SyncOpObject(Player &player, int cmd, Object &object)
 	case OBJ_BLINDBOOK:
 	case OBJ_BLOODBOOK:
 	case OBJ_STEELTOME:
-		OperateBookLever(object, sendmsg);
+		if (sendmsg)
+			break;
+		object._oAnimFrame = object._oVar6;
+		SyncQSTLever(object);
 		break;
 	case OBJ_SHRINEL:
 	case OBJ_SHRINER:

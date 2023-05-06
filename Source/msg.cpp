@@ -1136,7 +1136,7 @@ size_t OnRequestGetItem(const TCmd *pCmd, Player &player)
 
 	if (gbBufferMsgs != 1 && IOwnLevel(player) && IsGItemValid(message)) {
 		const Point position { message.x, message.y };
-		const int32_t dwSeed = SDL_SwapLE32(message.def.dwSeed);
+		const uint32_t dwSeed = SDL_SwapLE32(message.def.dwSeed);
 		const uint16_t wCI = SDL_SwapLE16(message.def.wCI);
 		const _item_indexes wIndx = static_cast<_item_indexes>(SDL_SwapLE16(message.def.wIndx));
 		if (GetItemRecord(dwSeed, wCI, wIndx)) {
@@ -1180,7 +1180,7 @@ size_t OnGetItem(const TCmd *pCmd, size_t pnum)
 		SendPacket(pnum, &message, sizeof(message));
 	} else if (IsGItemValid(message)) {
 		const Point position { message.x, message.y };
-		const int32_t dwSeed = SDL_SwapLE32(message.def.dwSeed);
+		const uint32_t dwSeed = SDL_SwapLE32(message.def.dwSeed);
 		const uint16_t wCI = SDL_SwapLE16(message.def.wCI);
 		const _item_indexes wIndx = static_cast<_item_indexes>(SDL_SwapLE16(message.def.wIndx));
 		if (DeltaGetItem(message, message.bLevel)) {
@@ -1228,7 +1228,7 @@ size_t OnRequestAutoGetItem(const TCmd *pCmd, Player &player)
 
 	if (gbBufferMsgs != 1 && IOwnLevel(player) && IsGItemValid(message)) {
 		const Point position { message.x, message.y };
-		const int32_t dwSeed = SDL_SwapLE32(message.def.dwSeed);
+		const uint32_t dwSeed = SDL_SwapLE32(message.def.dwSeed);
 		const uint16_t wCI = SDL_SwapLE16(message.def.wCI);
 		const _item_indexes wIndx = static_cast<_item_indexes>(SDL_SwapLE16(message.def.wIndx));
 		if (GetItemRecord(dwSeed, wCI, wIndx)) {
@@ -1359,27 +1359,6 @@ size_t OnSyncPutItem(const TCmd *pCmd, size_t pnum)
 			if (&player == MyPlayer)
 				pfile_update(true);
 		}
-	}
-
-	return sizeof(message);
-}
-
-size_t OnRespawnItem(const TCmd *pCmd, size_t pnum)
-{
-	const auto &message = *reinterpret_cast<const TCmdPItem *>(pCmd);
-
-	if (gbBufferMsgs == 1) {
-		SendPacket(pnum, &message, sizeof(message));
-	} else if (IsPItemValid(message)) {
-		Player &player = Players[pnum];
-		if (player.isOnActiveLevel() && &player != MyPlayer) {
-			SyncDropItem(message);
-		}
-		const int32_t dwSeed = SDL_SwapLE32(message.def.dwSeed);
-		const uint16_t wCI = SDL_SwapLE16(message.def.wCI);
-		const _item_indexes wIndx = static_cast<_item_indexes>(SDL_SwapLE16(message.def.wIndx));
-		PutItemRecord(dwSeed, wCI, wIndx);
-		DeltaPutItem(message, { message.x, message.y }, player);
 	}
 
 	return sizeof(message);
@@ -2577,7 +2556,7 @@ void DeltaAddItem(int ii)
 		if (item.bCmd != CMD_INVALID
 		    && static_cast<_item_indexes>(SDL_SwapLE16(item.def.wIndx)) == Items[ii].IDidx
 		    && SDL_SwapLE16(item.def.wCI) == Items[ii]._iCreateInfo
-		    && static_cast<int32_t>(SDL_SwapLE32(item.def.dwSeed)) == Items[ii]._iSeed
+		    && static_cast<uint32_t>(SDL_SwapLE32(item.def.dwSeed)) == Items[ii]._iSeed
 		    && IsAnyOf(item.bCmd, TCmdPItem::PickedUpItem, TCmdPItem::FloorItem)) {
 			return;
 		}
@@ -3166,8 +3145,6 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 		return OnSyncPutItem(pCmd, pnum);
 	case CMD_SPAWNITEM:
 		return OnSpawnItem(pCmd, pnum);
-	case CMD_RESPAWNITEM:
-		return OnRespawnItem(pCmd, pnum);
 	case CMD_ATTACKXY:
 		return OnAttackTile(pCmd, player);
 	case CMD_SATTACKXY:

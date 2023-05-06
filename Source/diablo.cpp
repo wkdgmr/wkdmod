@@ -2816,12 +2816,11 @@ void LoadGameLevel(bool firstflag, lvl_entry lvldir)
 #ifdef _DEBUG
 				SetDebugLevelSeedInfos(mid1Seed, mid2Seed, mid3Seed, GetLCGEngineState());
 #endif
+				SavePreLighting();
+				IncProgress();
 
 				if (gbIsMultiplayer)
 					DeltaLoadLevel();
-
-				IncProgress();
-				SavePreLighting();
 			} else {
 				HoldThemeRooms();
 				InitGolems();
@@ -2916,7 +2915,8 @@ void LoadGameLevel(bool firstflag, lvl_entry lvldir)
 	for (Player &player : Players) {
 		if (player.plractive && player.isOnActiveLevel() && (!player._pLvlChanging || &player == MyPlayer)) {
 			if (player._pHitPoints > 0) {
-				SyncInitPlrPos(player);
+				if (lvldir != ENTRY_LOAD)
+					SyncInitPlrPos(player);
 			} else {
 				dFlags[player.position.tile.x][player.position.tile.y] |= DungeonFlag::DeadPlayer;
 			}
