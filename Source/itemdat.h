@@ -73,8 +73,9 @@ enum _item_indexes : int16_t { // TODO defines all indexes in AllItemsList
 	IDI_RUNEOFSTONE = 165,
 	IDI_SORCERER_DIABLO,
 	IDI_ARENAPOT,
+	IDI_OILDEBUG,
 
-	IDI_LAST = IDI_ARENAPOT,
+	IDI_LAST = IDI_OILDEBUG,
 	IDI_NONE = -1,
 };
 
