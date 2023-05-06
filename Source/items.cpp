@@ -5044,10 +5044,10 @@ bool ApplyOilToItem(Item &item, Player &player)
 			break;
 		}
 	case IMISC_OILWICK:
-		if (item._iFMinDam > 0 && item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam) {
+		if (item._iFMinDam > 0 && item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam && item._iFMaxDam > 0) {
 			item._iFMinDam = item._iFMinDam + 2;
 		}
-		if ( item._iLMinDam > 0 && item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam) {
+		if ( item._iLMinDam > 0 && item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam && item._iLMaxDam > 0) {
 			item._iLMinDam = item._iLMinDam + 2;
 		}
 		break;
@@ -5060,13 +5060,13 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 		break;
 	case IMISC_OILDEBUG:
-		if (item._iFMinDam > 0 && item._iFMinDam < 200) {
+		if (item._iFMinDam > 0 && item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam && item._iFMaxDam > 0) {
 			item._iFMinDam = 200;
 		}
 		if (item._iFMaxDam > 0 && item._iFMaxDam < 200) {
 			item._iFMaxDam = 200;
 		}
-		if (item._iLMinDam > 0 && item._iLMinDam < 200) {
+		if (item._iLMinDam > 0 && item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam && item._iLMaxDam > 0) {
 			item._iLMinDam = 200;
 		}
 		if (item._iLMaxDam > 0 && item._iLMaxDam < 200) {
@@ -5104,7 +5104,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 		}
 		if (item._iPLToHit < 125) {
-			item._iPLToHit += GenerateRnd(3) + 3;
+			item._iPLToHit = 125;
 		}
 		break;
 	default:
