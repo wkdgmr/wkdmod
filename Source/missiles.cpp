@@ -999,6 +999,11 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 	int hper = 40;
 	if (missileData.isArrow()) {
 		int tac = player.GetArmor();
+		if (player.GetBlockChance() > 0) {
+			tac += (player.GetBlockChance() / 2);
+		} else {
+			tac += 25;
+		}
 		if (monster != nullptr) {
 			hper = monster->toHit
 			    + ((monster->level(sgGameInitInfo.nDifficulty) - player._pLevel) * 2)
@@ -1008,7 +1013,13 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 			hper = 100 - (tac / 2) - (dist * 2);
 		}
 	} else if (monster != nullptr) {
-		hper += (monster->level(sgGameInitInfo.nDifficulty) * 2) - ((player._pLevel * 2) + player.GetBlockChance()) - (dist * 2);
+		if (damageType == DamageType::Fire) {
+			hper += (monster->level(sgGameInitInfo.nDifficulty) * 2) - ((player._pLevel * 2) + player._pFireResist) - (dist * 2);
+		} else if (damageType == DamageType::Lightning) {
+			hper += (monster->level(sgGameInitInfo.nDifficulty) * 2) - ((player._pLevel * 2) + player._pLghtResist) - (dist * 2);
+		} else if (damageType == DamageType::Magic) {
+			hper += (monster->level(sgGameInitInfo.nDifficulty) * 2) - ((player._pLevel * 2) + player._pMagResist) - (dist * 2);
+		}
 	}
 
 	int minhit = 10;
