@@ -4713,11 +4713,16 @@ bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 bool Monster::isResistant(MissileID missileType, DamageType missileElement) const
 {
 	if (((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
-		|| ((resistance & IMMUNE_MAGIC) != 0 && missileElement == DamageType::Magic)
+		|| ((resistance & IMMUNE_MAGIC) != 0 && missileElement == DamageType::Magic && missileType == MissileID::HolyBoltBow)
 		|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-	    || ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
+	    || ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::FireArrow)
+		|| ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::WeaponExplosion)
+		|| ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire && missileType == MissileID::FireballBow)
 	    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning))
+	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType == MissileID::LightningArrow)
+		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType == MissileID::WeaponExplosion)
+		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType == MissileID::LightningBow)
+		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning && missileType == MissileID::ChargedBoltBow))
 		return true;
 	return false;
 }
