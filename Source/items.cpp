@@ -4928,14 +4928,14 @@ bool ApplyOilToItem(Item &item, Player &player)
 
 	switch (player._pOilType) {
 	case IMISC_OILACC:
-		if (item._iPLToHit < 75) {
+		if (item._iPLToHit < 60) {
 			item._iPLToHit += GenerateRnd(2) + 1;
 		}
 		break;
 	case IMISC_OILDEATH:
 		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow
 		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Bow) {
-			if (item._iMaxDam < 60) {
+			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
 				item._iMaxDam = item._iMaxDam + 2;
 				if (item._iMaxDam >= 60) {
 					item._iMaxDam = 60;
@@ -4944,7 +4944,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 			break;
 		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
-			if (item._iMaxDam < 30) {
+			if (item._iMaxDam > 0 && item._iMaxDam < 30) {
 				item._iMaxDam = item._iMaxDam + 2;
 				if (item._iMaxDam >= 30) {
 					item._iMaxDam = 30;
@@ -4954,9 +4954,12 @@ bool ApplyOilToItem(Item &item, Player &player)
 			break;
 		} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
 		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
-			item._iMaxDam = item._iMaxDam + 2;
-			if (item._iMaxDam >= 35) {
-				item._iMaxDam = 35;
+			if (item._iMaxDam > 0 && item._iMaxDam < 35) {	
+				item._iMaxDam = item._iMaxDam + 2;
+				if (item._iMaxDam > 0 && item._iMaxDam >= 35) {
+					item._iMaxDam = 35;
+				}
+				break;
 			}
 			break;
 		} else {
@@ -4964,18 +4967,18 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 	case IMISC_OILSHARP:
 		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow) {
-			if (item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
+			if (item._iMinDam > 0 && item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
 			}
 			break;
 		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
-			if (item._iMinDam < 15 && item._iMinDam < item._iMaxDam) {
+			if (item._iMinDam > 0 && item._iMinDam < 15 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
 			}
 			break;
 		} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
 		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
-			if (item._iMinDam < 20 && item._iMinDam < item._iMaxDam) {
+			if (item._iMinDam > 0 && item._iMinDam < 20 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
 			}
 			break;
@@ -5081,6 +5084,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
 				item._iMaxDam = 60;
+			if (item._iPLToHit < 125) {
+				item._iPLToHit = 125;
+			}
 			}
 			if (item._iMinDam > 0 && item._iMinDam < 30) {
 				item._iMinDam = 30;
@@ -5088,6 +5094,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 30) {
 				item._iMaxDam = 30;
+			}
+			if (item._iPLToHit < 125) {
+				item._iPLToHit = 125;
 			}
 			if (item._iMinDam > 0 && item._iMinDam < 15) {
 				item._iMinDam = 15;
@@ -5097,12 +5106,12 @@ bool ApplyOilToItem(Item &item, Player &player)
 			if (item._iMaxDam > 0 && item._iMaxDam < 35) {
 				item._iMaxDam = 35;
 			}
+			if (item._iPLToHit < 125) {
+				item._iPLToHit = 125;
+			}
 			if (item._iMinDam > 0 && item._iMinDam < 20) {
 				item._iMinDam = 20;
 			}
-		}
-		if (item._iPLToHit < 125) {
-			item._iPLToHit = 125;
 		}
 		break;
 	default:
