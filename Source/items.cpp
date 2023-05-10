@@ -4941,7 +4941,6 @@ bool ApplyOilToItem(Item &item, Player &player)
 				if (item._iMaxDam >= 60) {
 					item._iMaxDam = 60;
 				}
-				break;
 			}
 			break;
 		} else if (item._itype == ItemType::Bow) {
@@ -4950,14 +4949,13 @@ bool ApplyOilToItem(Item &item, Player &player)
 				if (item._iMaxDam >= 30) {
 					item._iMaxDam = 30;
 				}
-				break;
 			}
 			break;
 		} else {
-			if (item._iMaxDam > 0 && item._iMaxDam >= 30) {
+			if (item._iMaxDam > 0 && item._iMaxDam >= 35) {
 				item._iMaxDam = item._iMaxDam + 2;
-				if (item._iMaxDam >= 30) {
-					item._iMaxDam = 30;
+				if (item._iMaxDam >= 35) {
+					item._iMaxDam = 35;
 				}
 			}
 			break;
@@ -5097,8 +5095,8 @@ bool ApplyOilToItem(Item &item, Player &player)
 				item._iMinDam = 15;
 			}
 		} else {
-			if (item._iMaxDam > 0 && item._iMaxDam < 30) {
-				item._iMaxDam = 30;
+			if (item._iMaxDam > 0 && item._iMaxDam < 35) {
+				item._iMaxDam = 35;
 			}
 			if (item._iPLToHit < 125) {
 				item._iPLToHit = 125;
