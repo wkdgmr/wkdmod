@@ -1014,11 +1014,11 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 		}
 	} else if (monster != nullptr) {
 		if (damageType == DamageType::Fire) {
-			hper += (monster->level(sgGameInitInfo.nDifficulty) * 2) - ((player._pLevel * 2) + player._pFireResist) - (dist * 2);
+			hper += (monster->level(sgGameInitInfo.nDifficulty) * 2) - ((player._pLevel * 2) + (player._pFireResist / 2)) - (dist * 2);
 		} else if (damageType == DamageType::Lightning) {
-			hper += (monster->level(sgGameInitInfo.nDifficulty) * 2) - ((player._pLevel * 2) + player._pLghtResist) - (dist * 2);
+			hper += (monster->level(sgGameInitInfo.nDifficulty) * 2) - ((player._pLevel * 2) + (player._pLghtResist / 2)) - (dist * 2);
 		} else if (damageType == DamageType::Magic) {
-			hper += (monster->level(sgGameInitInfo.nDifficulty) * 2) - ((player._pLevel * 2) + player._pMagResist) - (dist * 2);
+			hper += (monster->level(sgGameInitInfo.nDifficulty) * 2) - ((player._pLevel * 2) + (player._pMagResist / 2)) - (dist * 2);
 		}
 	}
 
