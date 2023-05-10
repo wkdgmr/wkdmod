@@ -4933,8 +4933,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 		break;
 	case IMISC_OILDEATH:
-		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow
-		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Bow) {
+		if (item._itype == ItemType::Axe
+		|| item._itype == ItemType::Staff
+		|| player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && item._itype == ItemType::Sword) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
 				item._iMaxDam = item._iMaxDam + 2;
 				if (item._iMaxDam >= 60) {
@@ -4943,7 +4944,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 				break;
 			}
 			break;
-		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
+		} else if (item._itype == ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 30) {
 				item._iMaxDam = item._iMaxDam + 2;
 				if (item._iMaxDam >= 30) {
@@ -4952,37 +4953,32 @@ bool ApplyOilToItem(Item &item, Player &player)
 				break;
 			}
 			break;
-		} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
-		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
-			if (item._iMaxDam > 0 && item._iMaxDam < 35) {	
-				item._iMaxDam = item._iMaxDam + 2;
-				if (item._iMaxDam > 0 && item._iMaxDam >= 35) {
-					item._iMaxDam = 35;
-				}
-				break;
-			}
-			break;
 		} else {
+			if (item._iMaxDam > 0 && item._iMaxDam >= 30) {
+				item._iMaxDam = item._iMaxDam + 2;
+				if (item._iMaxDam >= 30) {
+					item._iMaxDam = 30;
+				}
+			}
 			break;
 		}
 	case IMISC_OILSHARP:
-		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow) {
+		if (item._itype == ItemType::Axe
+		|| item._itype == ItemType::Staff
+		|| player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && item._itype == ItemType::Sword) {
 			if (item._iMinDam > 0 && item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
 			}
 			break;
-		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
+		} else if (item._itype == ItemType::Bow) {
 			if (item._iMinDam > 0 && item._iMinDam < 15 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
 			}
 			break;
-		} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
-		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
+		} else {
 			if (item._iMinDam > 0 && item._iMinDam < 20 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
 			}
-			break;
-		} else {
 			break;
 		}
 	case IMISC_OILMAST:
@@ -5080,18 +5076,17 @@ bool ApplyOilToItem(Item &item, Player &player)
 		if (item._iAC > 0 && item._iAC < 90) {
 			item._iAC = 90;
 		}
-		if (player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow
-		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND && player.InvBody[INVLOC_HAND_RIGHT]._itype != ItemType::Bow) {
-			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
+		if (item._itype == ItemType::Axe
+		|| item._itype == ItemType::Staff
+		|| player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && item._itype == ItemType::Sword) {
 				item._iMaxDam = 60;
 			if (item._iPLToHit < 125) {
 				item._iPLToHit = 125;
 			}
-			}
 			if (item._iMinDam > 0 && item._iMinDam < 30) {
 				item._iMinDam = 30;
 			}
-		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow) {
+		} else if (item._itype == ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 30) {
 				item._iMaxDam = 30;
 			}
@@ -5101,10 +5096,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 			if (item._iMinDam > 0 && item._iMinDam < 15) {
 				item._iMinDam = 15;
 			}
-		} else if (player.InvBody[INVLOC_HAND_LEFT]._iLoc != ILOC_TWOHAND
-		|| player.InvBody[INVLOC_HAND_RIGHT]._iLoc != ILOC_TWOHAND) {
-			if (item._iMaxDam > 0 && item._iMaxDam < 35) {
-				item._iMaxDam = 35;
+		} else {
+			if (item._iMaxDam > 0 && item._iMaxDam < 30) {
+				item._iMaxDam = 30;
 			}
 			if (item._iPLToHit < 125) {
 				item._iPLToHit = 125;
