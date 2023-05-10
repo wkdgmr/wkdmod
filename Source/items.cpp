@@ -4935,7 +4935,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 	case IMISC_OILDEATH:
 		if (item._itype == ItemType::Axe
 		|| item._itype == ItemType::Staff
-		|| player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && item._itype == ItemType::Sword) {
+		|| item._iLoc == ILOC_TWOHAND) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
 				item._iMaxDam = item._iMaxDam + 2;
 				if (item._iMaxDam >= 60) {
@@ -4965,7 +4965,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 	case IMISC_OILSHARP:
 		if (item._itype == ItemType::Axe
 		|| item._itype == ItemType::Staff
-		|| player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && item._itype == ItemType::Sword) {
+		|| item._iLoc == ILOC_TWOHAND) {
 			if (item._iMinDam > 0 && item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
 			}
@@ -5078,7 +5078,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 		if (item._itype == ItemType::Axe
 		|| item._itype == ItemType::Staff
-		|| player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND && item._itype == ItemType::Sword) {
+		|| item._iLoc == ILOC_TWOHAND) {
 				item._iMaxDam = 60;
 			if (item._iPLToHit < 125) {
 				item._iPLToHit = 125;
