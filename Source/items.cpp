@@ -4933,9 +4933,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 		break;
 	case IMISC_OILDEATH:
-		if (item._itype == ItemType::Axe
-		|| item._itype == ItemType::Staff
-		|| item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Bow) {
+		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
 				item._iMaxDam = item._iMaxDam + 2;
 				if (item._iMaxDam >= 60) {
@@ -4961,9 +4959,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			break;
 		}
 	case IMISC_OILSHARP:
-		if (item._itype == ItemType::Axe
-		|| item._itype == ItemType::Staff
-		|| item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Bow) {
+		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Bow) {
 			if (item._iMinDam > 0 && item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
 			}
@@ -5074,9 +5070,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 		if (item._iAC > 0 && item._iAC < 90) {
 			item._iAC = 90;
 		}
-		if (item._itype == ItemType::Axe
-		|| item._itype == ItemType::Staff
-		|| item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Bow) {
+		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Bow) {
 				item._iMaxDam = 60;
 			if (item._iPLToHit < 125) {
 				item._iPLToHit = 125;
