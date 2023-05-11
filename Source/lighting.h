@@ -6,6 +6,7 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 #include <vector>
 
 #include <function_ref.hpp>
@@ -29,7 +30,7 @@ struct LightPosition {
 	WorldTilePosition tile;
 	/** Pixel offset from tile. */
 	DisplacementOf<int8_t> offset;
-	/** Prevous position. */
+	/** Previous position. */
 	WorldTilePosition old;
 };
 
