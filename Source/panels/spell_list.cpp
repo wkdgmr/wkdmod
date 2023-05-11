@@ -154,6 +154,12 @@ void DrawSpellList(const Surface &out)
 			}
 			PrintSBookSpellType(out, spellListItem.location, _("Spell"), spellColor);
 			InfoString = fmt::format(fmt::runtime(_("{:s} Spell")), pgettext("spell", spellDataItem.sNameText));
+			if (spellId == SpellID::Firebolt 
+			|| spellId == SpellID::ChargedBolt
+			|| spellId == SpellID::Lightning
+			|| spellId == SpellID::Guardian) {
+				AddPanelString(_("Pierces immunes"));
+			}
 			if (spellLevel == 0)
 				AddPanelString(_("Spell Level 0 - Unusable"));
 			else
