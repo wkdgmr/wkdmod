@@ -4730,7 +4730,9 @@ bool Monster::isResistant(MissileID missileType, DamageType missileElement) cons
 	|| (missileType == MissileID::ChargedBolt)
 	|| (missileType == MissileID::Lightning)) {
 		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-		    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
+		    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+			|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
+		    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
 			return true;
 		} else {
 			return false;
