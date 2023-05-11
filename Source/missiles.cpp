@@ -1239,10 +1239,6 @@ void AddBerserk(Missile &missile, AddMissileParameter &parameter)
 			    return false;
 		    if (IsAnyOf(monster.mode, MonsterMode::FadeIn, MonsterMode::FadeOut, MonsterMode::Charge))
 			    return false;
-		    if ((monster.resistance & IMMUNE_MAGIC) != 0)
-			    return false;
-		    if ((monster.resistance & RESIST_MAGIC) != 0 && ((monster.resistance & RESIST_MAGIC) != 1 || !FlipCoin()))
-			    return false;
 
 		    return true;
 	    },
@@ -1253,10 +1249,10 @@ void AddBerserk(Missile &missile, AddMissileParameter &parameter)
 		Player &player = *missile.sourcePlayer();
 		const int slvl = player.GetSpellLevel(SpellID::Berserk);
 		monster.flags |= MFLAG_BERSERK | MFLAG_GOLEM;
-		monster.minDamage = (GenerateRnd(10) + 120) * monster.minDamage / 100 + slvl;
-		monster.maxDamage = (GenerateRnd(10) + 120) * monster.maxDamage / 100 + slvl;
-		monster.minDamageSpecial = (GenerateRnd(10) + 120) * monster.minDamageSpecial / 100 + slvl;
-		monster.maxDamageSpecial = (GenerateRnd(10) + 120) * monster.maxDamageSpecial / 100 + slvl;
+		monster.minDamage = (GenerateRnd(10) + 120) * monster.minDamage / 100 + slvl + player._pLevel;
+		monster.maxDamage = (GenerateRnd(10) + 120) * monster.maxDamage / 100 + slvl + player._pLevel;
+		monster.minDamageSpecial = (GenerateRnd(10) + 120) * monster.minDamageSpecial / 100 + slvl + player._pLevel;
+		monster.maxDamageSpecial = (GenerateRnd(10) + 120) * monster.maxDamageSpecial / 100 + slvl + player._pLevel;
 		int lightRadius = leveltype == DTYPE_NEST ? 9 : 3;
 		monster.lightId = AddLight(monster.position.tile, lightRadius);
 		parameter.spellFizzled = false;

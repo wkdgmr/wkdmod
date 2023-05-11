@@ -5071,9 +5071,11 @@ bool ApplyOilToItem(Item &item, Player &player)
 			item._iAC = 90;
 		}
 		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Bow) {
+			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
 				item._iMaxDam = 60;
-			if (item._iPLToHit < 125) {
-				item._iPLToHit = 125;
+				if (item._iPLToHit < 125) {
+					item._iPLToHit = 125;
+				}	
 			}
 			if (item._iMinDam > 0 && item._iMinDam < 30) {
 				item._iMinDam = 30;
@@ -5081,19 +5083,21 @@ bool ApplyOilToItem(Item &item, Player &player)
 		} else if (item._itype == ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 30) {
 				item._iMaxDam = 30;
-			}
-			if (item._iPLToHit < 125) {
-				item._iPLToHit = 125;
+				if (item._iPLToHit < 125) {
+					item._iPLToHit = 125;
+				}				
 			}
 			if (item._iMinDam > 0 && item._iMinDam < 15) {
 				item._iMinDam = 15;
 			}
 		} else {
-			if (item._iMaxDam > 0 && item._iMaxDam < 35) {
+			if (item._iMaxDam > 0 && item._iMaxDam < 35 && item._itype != ItemType::HeavyArmor
+			|| item._itype != ItemType::MediumArmor || item._itype != ItemType::LightArmor
+			|| item._itype != ItemType::Helm) {
 				item._iMaxDam = 35;
-			}
-			if (item._iPLToHit < 125) {
-				item._iPLToHit = 125;
+				if (item._iPLToHit < 125) {
+					item._iPLToHit = 125;
+				}	
 			}
 			if (item._iMinDam > 0 && item._iMinDam < 20) {
 				item._iMinDam = 20;
