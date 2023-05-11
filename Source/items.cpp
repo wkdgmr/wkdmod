@@ -4950,7 +4950,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 			break;
 		} else {
-			if (item._iMaxDam > 0 && item._iMaxDam >= 35) {
+			if (item._iMaxDam > 0 && item._iMaxDam < 35) {
 				item._iMaxDam = item._iMaxDam + 2;
 				if (item._iMaxDam >= 35) {
 					item._iMaxDam = 35;
