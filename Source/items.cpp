@@ -4933,11 +4933,19 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 		break;
 	case IMISC_OILDEATH:
-		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Bow) {
+		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Axe && item._itype != ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
 				item._iMaxDam = item._iMaxDam + 2;
 				if (item._iMaxDam >= 60) {
 					item._iMaxDam = 60;
+				}
+			}
+			break;
+		} else if (item._itype == ItemType::Axe) {
+			if (item._iMaxDam > 0 && item._iMaxDam < 80) {
+				item._iMaxDam = item._iMaxDam + 2;
+				if (item._iMaxDam >= 80) {
+					item._iMaxDam = 80;
 				}
 			}
 			break;
@@ -4959,8 +4967,13 @@ bool ApplyOilToItem(Item &item, Player &player)
 			break;
 		}
 	case IMISC_OILSHARP:
-		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Bow) {
+		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Axe && item._itype != ItemType::Bow) {
 			if (item._iMinDam > 0 && item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
+				item._iMinDam = item._iMinDam + 1;
+			}
+			break;
+		} else if (item._itype == ItemType::Axe) {
+			if (item._iMinDam > 0 && item._iMinDam < 40 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
 			}
 			break;
@@ -5070,15 +5083,25 @@ bool ApplyOilToItem(Item &item, Player &player)
 		if (item._iAC > 0 && item._iAC < 90) {
 			item._iAC = 90;
 		}
-		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Bow) {
+		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Axe && item._itype != ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
 				item._iMaxDam = 60;
 				if (item._iPLToHit < 125) {
 					item._iPLToHit = 125;
 				}	
 			}
-			if (item._iMinDam > 0 && item._iMinDam < 30) {
+			if (item._iMinDam > 0 && item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = 30;
+			}
+		} else if (item._itype == ItemType::Axe) {
+			if (item._iMaxDam > 0 && item._iMaxDam < 80) {
+				item._iMaxDam = 80;
+				if (item._iPLToHit < 125) {
+					item._iPLToHit = 125;
+				}				
+			}
+			if (item._iMinDam > 0 && item._iMinDam < 40 && item._iMinDam < item._iMaxDam) {
+				item._iMinDam = 40;
 			}
 		} else if (item._itype == ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 30) {
@@ -5087,7 +5110,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 					item._iPLToHit = 125;
 				}				
 			}
-			if (item._iMinDam > 0 && item._iMinDam < 15) {
+			if (item._iMinDam > 0 && item._iMinDam < 15 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = 15;
 			}
 		} else {
@@ -5100,9 +5123,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 						item._iPLToHit = 125;
 					}
 				}
-			}
-			if (item._iMinDam > 0 && item._iMinDam < 20) {
-				item._iMinDam = 20;
+				if (item._iMinDam > 0 && item._iMinDam < 20 && item._iMinDam < item._iMaxDam) {
+					item._iMinDam = 20;
+				}
 			}
 		}
 		break;
