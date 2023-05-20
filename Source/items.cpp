@@ -1452,36 +1452,28 @@ _item_indexes RndTypeItems(ItemType itemType, int imid, int lvl)
 
 _unique_items CheckUnique(Item &item, int lvl, int uper, bool recreate)
 {
-	std::bitset<128> uok = {};
+	std::vector<uint8_t> potentialUniques;
 
 	if (GenerateRnd(100) > uper)
 		return UITEM_INVALID;
 
-	int numu = 0;
-	for (int j = 0; UniqueItems[j].UIItemId != UITYPE_INVALID; j++) {
+	int idata = item.IDidx;  // moved this line from below for reuse
+	for (uint8_t j = 0; UniqueItems[j].UIItemId != UITYPE_INVALID; j++) {
 		if (!IsUniqueAvailable(j))
 			break;
-		if (UniqueItems[j].UIItemId == AllItemsList[item.IDidx].iItemId
+		if (UniqueItems[j].UIItemId == AllItemsList[idata].iItemId
 		    && lvl >= UniqueItems[j].UIMinLvl
 		    && (recreate || !UniqueItemFlags[j] || gbIsMultiplayer)) {
-			uok[j] = true;
-			numu++;
+			potentialUniques.push_back(j);
 		}
 	}
 
-	if (numu == 0)
+	if (potentialUniques.empty())
 		return UITEM_INVALID;
 
-	DiscardRandomValues(1);
-	uint8_t itemData = 0;
-	while (numu > 0) {
-		if (uok[itemData])
-			numu--;
-		if (numu > 0)
-			itemData = (itemData + 1) % 128;
-	}
+	int index = GenerateRnd(potentialUniques.size());
 
-	return (_unique_items)itemData;
+	return (_unique_items)potentialUniques[index];
 }
 
 void GetUniqueItem(const Player &player, Item &item, _unique_items uid)
@@ -2473,7 +2465,7 @@ uint8_t GetOutlineColor(const Item &item, bool checkReq)
 
 bool IsUniqueAvailable(int i)
 {
-	return gbIsHellfire || i <= 94;
+	return gbIsHellfire || i <= 89;
 }
 
 void InitItemGFX()
