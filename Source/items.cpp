@@ -5016,8 +5016,11 @@ bool ApplyOilToItem(Item &item, Player &player)
 		item._iMinDex = std::max(0, item._iMinDex - r);
 		break;
 	case IMISC_OILIMP:
-		if (item._iAC <= 90) {
+		if (item._iAC > 0 && item._iAC < 90) {
 			item._iAC += GenerateRnd(3) + 3;
+			if (item._iAC >= 90) {
+				item._iAC = 90;
+			}
 			break;
 		} else {
 			break;
@@ -5032,8 +5035,8 @@ bool ApplyOilToItem(Item &item, Player &player)
 				break;
 			}
 		} else {
-			if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur < 255) {
-				r = GenerateRnd(41) + 10;
+			if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur < 255 && item._iMaxDur >= 200) {
+				r = GenerateRnd(2) + 1;
 				item._iMaxDur += r;
 				item._iDurability += r;
 				if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur >= 255) {
@@ -5048,7 +5051,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 		}
 	case IMISC_OILHARD:
-		if (item._iAC < 45) {
+		if (item._iAC > 0 && item._iAC < 45) {
 			item._iAC += GenerateRnd(2) + 1;
 			break;
 		} else {
