@@ -5055,7 +5055,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 		}
 	case IMISC_OILHARD:
-		if (item._iAC > 0 && item._iAC < 45) {
+		if (item._iAC > 0 && item._iAC < 60) {
 			item._iAC += GenerateRnd(2) + 1;
 			break;
 		} else {
