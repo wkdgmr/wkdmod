@@ -1005,11 +1005,7 @@ bool DoRangeAttack(Player &player)
 {
 	int arrows = 0;
 	if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
-		arrows = 1;
-	}
-
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows) && player.AnimInfo.currentFrame == player._pAFNum + 1) {
-		arrows = 2;
+    	arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows) ? 3 : 1;
 	}
 
 	for (int arrow = 0; arrow < arrows; arrow++) {
