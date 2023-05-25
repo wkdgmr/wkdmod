@@ -5009,7 +5009,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			break;
 		}
 	case IMISC_OILMAST:
-		if (item._iPLToHit < 125) {
+		if (item._iPLToHit < 120) {
 			item._iPLToHit += GenerateRnd(3) + 3;
 		}
 		break;
