@@ -1000,10 +1000,10 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 	int hper = 40;
 	if (missileData.isArrow()) {
 		int tac = player.GetArmor();
-		if (player.GetBlockChance() > 0) {
-			tac += (player.GetBlockChance() / 2);
+		if (player._pLevel > 19) {
+			tac += (int)(rand()%player._pLevel + 20);
 		} else {
-			tac += 25;
+			tac += (int)(rand()%player._pLevel + 1);
 		}
 		if (monster != nullptr) {
 			hper = monster->toHit
