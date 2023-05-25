@@ -1005,21 +1005,22 @@ bool DoRangeAttack(Player &player)
 {
 	int arrows = 0;
 	if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
-    	arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows) ? 3 : 1;
+	    arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows) ? 3 : 1;
 	}
 
 	for (int arrow = 0; arrow < arrows; arrow++) {
-		int xoff = 0;
-		int yoff = 0;
-		if (arrows != 1) {
-			int angle = arrow == 0 ? -1 : 1;
-			int x = player.position.temp.x - player.position.tile.x;
-			if (x != 0)
-				yoff = x < 0 ? angle : -angle;
-			int y = player.position.temp.y - player.position.tile.y;
-			if (y != 0)
-				xoff = y < 0 ? -angle : angle;
-		}
+	    int xoff = 0;
+	    int yoff = 0;
+
+	    if (arrows == 3) {
+	        int angle = arrow - 1;  // This will result in -1, 0, or 1
+	        int x = player.position.temp.x - player.position.tile.x;
+	        if (x != 0)
+	            yoff = x < 0 ? angle : -angle;
+	        int y = player.position.temp.y - player.position.tile.y;
+	        if (y != 0)
+	            xoff = y < 0 ? -angle : angle;
+	    }
 
 		int dmg = 4;
 		MissileID mistype = MissileID::Arrow;
