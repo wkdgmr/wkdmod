@@ -1045,9 +1045,13 @@ bool DoRangeAttack(Player &player)
 		    dmg,
 		    0);
 
-		if (arrow == 0 && mistype != MissileID::SpectralArrow) {
-			PlaySfxLoc(arrows != 1 ? IS_STING1 : PS_BFIRE, player.position.tile);
-		}
+    	if (mistype != MissileID::SpectralArrow) {
+    	    if (arrow == 0) {
+    	        PlaySfxLoc(PS_BFIRE, player.position.tile);
+    	    } else if (arrow == 1) {
+    	        PlaySfxLoc(IS_STING1, player.position.tile);
+    	    }
+    	}
 
 		if (DamageWeapon(player, 40)) {
 			StartStand(player, player._pdir);
