@@ -3942,9 +3942,9 @@ bool DoOil(Player &player, int cii)
 	case IPL_ACUNDEAD:
 		return _("extra AC vs undead");
 	case IPL_MANATOLIFE:
-		return _("50% Mana moved to Health");
+		return _("50% base Mana to Health");
 	case IPL_LIFETOMANA:
-		return _("40% Health moved to Mana");
+		return _("40% base Health to Mana");
 	default:
 		return _("Another ability (NW)");
 	}
