@@ -77,17 +77,17 @@ Once the App is installed, launch it once. It will say that it cannot find the d
 
 There are 3 way to get install the MPQs. Make sure to have installed the app and have launched it once before attempting to copy over the MPQ files.
 
-Method 1: Using the files.app
+~~Method 1~~ (***May no longer work***): ~~Using the files.app~~
 
-- Using the files.app, navigate to "On My iPhone / On My iPad"
+~~- Using the files.app, navigate to "On My iPhone / On My iPad"~~
 
 ![ios_mpq_files01](https://user-images.githubusercontent.com/1339414/145088910-5664aed6-3a53-43f4-8088-834796792f68.png)
 
-- Copy the MPQs to the devilutionx directory. Your directory should look like on the picture below
+~~- Copy the MPQs to the devilutionx directory. Your directory should look like on the picture below~~
 
 ![ios_mpq_files02](https://user-images.githubusercontent.com/1339414/145089068-2c87887b-58c3-4759-9270-9d8934fe90bb.png)
 
-- Go back to your home screen and launch the game
+~~- Go back to your home screen and launch the game~~
 
 Method 2: Using Finder (MacOS)
 
@@ -122,7 +122,7 @@ This file will be used later to install the game on the 3DS console.
 
 Copy the MPQ files to the `devilutionx` subfolder under the `3ds` folder on your SD card (`/3ds/devilutionx`). The game will read these files from this location.
 You do not need a copy of `devilutionx.mpq` on your SD card to run the game on 3DS.
-To avoid errors when you run the game, if you have an old version of `devilutionx.mpq` in the folder, you should remove it now.
+To avoid errors when you run the game, if you have an old version of `devilutionx.mpq` in the folder, you should remove it now. Note, all file and folder names should be lowercase, as shown in the example screenshot below.
 
 ![image](https://user-images.githubusercontent.com/9203145/141046152-61be39dc-d14e-4b10-accf-1755a93972f7.png)
 

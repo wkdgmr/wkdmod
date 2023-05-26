@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '*.md'
   pull_request:
     types: [opened, synchronize]
+    paths-ignore:
+      - '*.md'
   release:
     types: [published]
+    paths-ignore:
+      - '*.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -38,15 +44,15 @@ jobs:
 
     - name: Upload-Package
       if: ${{ !env.ACT }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: devilutionx-ps4.pkg
+        name: wkdmod-ps4.pkg
         path: build-ps4/devilutionx.pkg
 
     - name: Update Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
       uses: svenstaro/upload-release-action@v2
       with:
-        asset_name: devilutionx-ps4.pkg
+        asset_name: wkdmod-ps4.pkg
         file: build-ps4/devilutionx.pkg
         overwrite: true

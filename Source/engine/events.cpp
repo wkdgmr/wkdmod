@@ -1,10 +1,13 @@
 #include "engine/events.hpp"
 
+#include <cstdint>
+
 #include "controls/input.h"
 #include "engine.h"
 #include "engine/demomode.h"
 #include "interfac.h"
 #include "movie.h"
+#include "options.h"
 #include "utils/log.hpp"
 
 #ifdef USE_SDL1
@@ -149,6 +152,8 @@ EventHandler CurrentEventHandler;
 
 EventHandler SetEventHandler(EventHandler eventHandler)
 {
+	sgOptions.Padmapper.ReleaseAllActiveButtons();
+
 	EventHandler previousHandler = CurrentEventHandler;
 	CurrentEventHandler = eventHandler;
 	return previousHandler;

@@ -6,6 +6,7 @@
 #include "stores.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include <fmt/format.h>
 
@@ -119,11 +120,6 @@ int8_t stextscrldbtn;
 
 /** Remember current store while displaying a dialog */
 TalkID stextshold;
-
-/** Start of possible gossip dialogs for current store */
-_speech_id gossipstart;
-/** End of possible gossip dialogs for current store */
-_speech_id gossipend;
 
 /** Temporary item used to hold the the item being traided */
 Item StoreItem;
@@ -377,13 +373,7 @@ void ScrollSmithBuy(int idx)
 	for (int l = 5; l < 20; l += 4) {
 		if (!smithitem[idx].isEmpty()) {
 			UiFlags itemColor = smithitem[idx].getTextColorWithStatCheck();
-
-			if (smithitem[idx]._iMagical != ITEM_QUALITY_NORMAL) {
-				AddSText(20, l, smithitem[idx]._iIName, itemColor, true, smithitem[idx]._iCurs, true);
-			} else {
-				AddSText(20, l, smithitem[idx]._iName, itemColor, true, smithitem[idx]._iCurs, true);
-			}
-
+			AddSText(20, l, smithitem[idx].getName(), itemColor, true, smithitem[idx]._iCurs, true);
 			AddSTextVal(l, smithitem[idx]._iIvalue);
 			PrintStoreItem(smithitem[idx], l + 1, itemColor, true);
 			stextdown = l;
@@ -444,7 +434,7 @@ void ScrollSmithPremiumBuy(int boughtitems)
 	for (int l = 5; l < 20 && idx < SMITH_PREMIUM_ITEMS; l += 4) {
 		if (!premiumitems[idx].isEmpty()) {
 			UiFlags itemColor = premiumitems[idx].getTextColorWithStatCheck();
-			AddSText(20, l, premiumitems[idx]._iIName, itemColor, true, premiumitems[idx]._iCurs, true);
+			AddSText(20, l, premiumitems[idx].getName(), itemColor, true, premiumitems[idx]._iCurs, true);
 			AddSTextVal(l, premiumitems[idx]._iIvalue);
 			PrintStoreItem(premiumitems[idx], l + 1, itemColor, true);
 			stextdown = l;
@@ -531,10 +521,10 @@ void ScrollSmithSell(int idx)
 			UiFlags itemColor = storehold[idx].getTextColorWithStatCheck();
 
 			if (storehold[idx]._iMagical != ITEM_QUALITY_NORMAL && storehold[idx]._iIdentified) {
-				AddSText(20, l, storehold[idx]._iIName, itemColor, true, storehold[idx]._iCurs, true);
+				AddSText(20, l, storehold[idx].getName(), itemColor, true, storehold[idx]._iCurs, true);
 				AddSTextVal(l, storehold[idx]._iIvalue);
 			} else {
-				AddSText(20, l, storehold[idx]._iName, itemColor, true, storehold[idx]._iCurs, true);
+				AddSText(20, l, storehold[idx].getName(), itemColor, true, storehold[idx]._iCurs, true);
 				AddSTextVal(l, storehold[idx]._ivalue);
 			}
 
@@ -730,13 +720,7 @@ void ScrollWitchBuy(int idx)
 	for (int l = 5; l < 20; l += 4) {
 		if (!witchitem[idx].isEmpty()) {
 			UiFlags itemColor = witchitem[idx].getTextColorWithStatCheck();
-
-			if (witchitem[idx]._iMagical != ITEM_QUALITY_NORMAL) {
-				AddSText(20, l, witchitem[idx]._iIName, itemColor, true, witchitem[idx]._iCurs, true);
-			} else {
-				AddSText(20, l, witchitem[idx]._iName, itemColor, true, witchitem[idx]._iCurs, true);
-			}
-
+			AddSText(20, l, witchitem[idx].getName(), itemColor, true, witchitem[idx]._iCurs, true);
 			AddSTextVal(l, witchitem[idx]._iIvalue);
 			PrintStoreItem(witchitem[idx], l + 1, itemColor, true);
 			stextdown = l;
@@ -752,8 +736,8 @@ void WitchBookLevel(Item &bookItem)
 {
 	if (bookItem._iMiscId != IMISC_BOOK)
 		return;
-	bookItem._iMinMag = GetSpellData(bookItem._iSpell).sMinInt;
-	int8_t spellLevel = MyPlayer->_pSplLvl[static_cast<int8_t>(bookItem._iSpell)];
+	bookItem._iMinMag = GetSpellData(bookItem._iSpell).minInt;
+	uint8_t spellLevel = MyPlayer->_pSplLvl[static_cast<int8_t>(bookItem._iSpell)];
 	while (spellLevel > 0) {
 		bookItem._iMinMag += 20 * bookItem._iMinMag / 100;
 		spellLevel--;
@@ -901,7 +885,7 @@ bool WitchRechargeOk(int i)
 void AddStoreHoldRecharge(Item itm, int8_t i)
 {
 	storehold[storenumh] = itm;
-	storehold[storenumh]._ivalue += GetSpellData(itm._iSpell).sStaffCost;
+	storehold[storenumh]._ivalue += GetSpellData(itm._iSpell).staffCost();
 	storehold[storenumh]._ivalue = storehold[storenumh]._ivalue * (storehold[storenumh]._iMaxCharges - storehold[storenumh]._iCharges) / (storehold[storenumh]._iMaxCharges * 2);
 	storehold[storenumh]._iIvalue = storehold[storenumh]._ivalue;
 	storehidx[storenumh] = i;
@@ -981,26 +965,7 @@ void StoreConfirm(Item &item)
 	ClearSText(5, 23);
 
 	UiFlags itemColor = item.getTextColorWithStatCheck();
-
-	bool idprint = item._iMagical != ITEM_QUALITY_NORMAL;
-
-	if (stextshold == TalkID::StorytellerIdentify)
-		idprint = false;
-	if (item._iMagical != ITEM_QUALITY_NORMAL && !item._iIdentified) {
-		if (stextshold == TalkID::SmithSell)
-			idprint = false;
-		if (stextshold == TalkID::WitchSell)
-			idprint = false;
-		if (stextshold == TalkID::SmithRepair)
-			idprint = false;
-		if (stextshold == TalkID::WitchRecharge)
-			idprint = false;
-	}
-	if (idprint)
-		AddSText(20, 8, item._iIName, itemColor, false);
-	else
-		AddSText(20, 8, item._iName, itemColor, false);
-
+	AddSText(20, 8, item.getName(), itemColor, false);
 	AddSTextVal(8, item._iIvalue);
 	PrintStoreItem(item, 9, itemColor);
 
@@ -1067,12 +1032,7 @@ void SStartBoyBuy()
 
 	boyitem._iStatFlag = MyPlayer->CanUseItem(boyitem);
 	UiFlags itemColor = boyitem.getTextColorWithStatCheck();
-
-	if (boyitem._iMagical != ITEM_QUALITY_NORMAL)
-		AddSText(20, 10, boyitem._iIName, itemColor, true, boyitem._iCurs, true);
-	else
-		AddSText(20, 10, boyitem._iName, itemColor, true, boyitem._iCurs, true);
-
+	AddSText(20, 10, boyitem.getName(), itemColor, true, boyitem._iCurs, true);
 	if (gbIsHellfire)
 		AddSTextVal(10, boyitem._iIvalue - (boyitem._iIvalue / 4));
 	else
@@ -1123,8 +1083,7 @@ void ScrollHealerBuy(int idx)
 	for (int l = 5; l < 20; l += 4) {
 		if (!healitem[idx].isEmpty()) {
 			UiFlags itemColor = healitem[idx].getTextColorWithStatCheck();
-
-			AddSText(20, l, healitem[idx]._iName, itemColor, true, healitem[idx]._iCurs, true);
+			AddSText(20, l, healitem[idx].getName(), itemColor, true, healitem[idx]._iCurs, true);
 			AddSTextVal(l, healitem[idx]._iIvalue);
 			PrintStoreItem(healitem[idx], l + 1, itemColor, true);
 			stextdown = l;
@@ -1288,7 +1247,7 @@ void StartStorytellerIdentifyShow(Item &item)
 	UiFlags itemColor = item.getTextColorWithStatCheck();
 
 	AddSText(0, 7, _("This item is:"), UiFlags::ColorWhite | UiFlags::AlignCenter, false);
-	AddSText(20, 11, item._iIName, itemColor, false);
+	AddSText(20, 11, item.getName(), itemColor, false);
 	PrintStoreItem(item, 12, itemColor);
 	AddSText(0, 18, _("Done"), UiFlags::ColorWhite | UiFlags::AlignCenter, true);
 }
@@ -1381,8 +1340,6 @@ void SmithEnter()
 		talker = TOWN_SMITH;
 		stextlhold = 10;
 		stextshold = TalkID::Smith;
-		gossipstart = TEXT_GRISWOLD2;
-		gossipend = TEXT_GRISWOLD13;
 		StartStore(TalkID::Gossip);
 		break;
 	case 12:
@@ -1598,10 +1555,12 @@ void SmithRepairItem(int price)
 			myPlayer.InvBody[INVLOC_HAND_LEFT]._iDurability = myPlayer.InvBody[INVLOC_HAND_LEFT]._iMaxDur;
 		if (i == -4)
 			myPlayer.InvBody[INVLOC_HAND_RIGHT]._iDurability = myPlayer.InvBody[INVLOC_HAND_RIGHT]._iMaxDur;
+		CalcPlrInv(myPlayer, true);
 		return;
 	}
 
 	myPlayer.InvList[i]._iDurability = myPlayer.InvList[i]._iMaxDur;
+	CalcPlrInv(myPlayer, true);
 }
 
 void SmithRepairEnter()
@@ -1634,8 +1593,6 @@ void WitchEnter()
 		stextlhold = 12;
 		talker = TOWN_WITCH;
 		stextshold = TalkID::Witch;
-		gossipstart = TEXT_ADRIA2;
-		gossipend = TEXT_ADRIA13;
 		StartStore(TalkID::Gossip);
 		break;
 	case 14:
@@ -1744,10 +1701,13 @@ void WitchRechargeItem(int price)
 	Player &myPlayer = *MyPlayer;
 
 	int8_t i = storehidx[idx];
-	if (i < 0)
+	if (i < 0) {
 		myPlayer.InvBody[INVLOC_HAND_LEFT]._iCharges = myPlayer.InvBody[INVLOC_HAND_LEFT]._iMaxCharges;
-	else
+		NetSendCmdChItem(true, INVLOC_HAND_LEFT);
+	} else {
 		myPlayer.InvList[i]._iCharges = myPlayer.InvList[i]._iMaxCharges;
+		NetSyncInvItem(myPlayer, i);
+	}
 
 	CalcPlrInv(myPlayer, true);
 }
@@ -1798,8 +1758,6 @@ void BoyEnter()
 	talker = TOWN_PEGBOY;
 	stextshold = TalkID::Boy;
 	stextlhold = stextsel;
-	gossipstart = TEXT_WIRT2;
-	gossipend = TEXT_WIRT12;
 	StartStore(TalkID::Gossip);
 }
 
@@ -1968,8 +1926,6 @@ void HealerEnter()
 		stextlhold = 12;
 		talker = TOWN_HEALER;
 		stextshold = TalkID::Healer;
-		gossipstart = TEXT_PEPIN2;
-		gossipend = TEXT_PEPIN11;
 		StartStore(TalkID::Gossip);
 		break;
 	case 14:
@@ -2016,8 +1972,6 @@ void StorytellerEnter()
 		stextlhold = 12;
 		talker = TOWN_STORY;
 		stextshold = TalkID::Storyteller;
-		gossipstart = TEXT_STORY2;
-		gossipend = TEXT_STORY11;
 		StartStore(TalkID::Gossip);
 		break;
 	case 14:
@@ -2074,9 +2028,9 @@ void TalkEnter()
 	}
 
 	if (stextsel == sn - 2) {
-		SetRndSeed(Towners[talker].seed);
-		auto tq = static_cast<_speech_id>(gossipstart + GenerateRnd(gossipend - gossipstart + 1));
-		InitQTextMsg(tq);
+		Towner *target = GetTowner(talker);
+		assert(target != nullptr);
+		InitQTextMsg(target->gossip);
 		return;
 	}
 
@@ -2097,8 +2051,6 @@ void TavernEnter()
 		stextlhold = 12;
 		talker = TOWN_TAVERN;
 		stextshold = TalkID::Tavern;
-		gossipstart = TEXT_OGDEN2;
-		gossipend = TEXT_OGDEN10;
 		StartStore(TalkID::Gossip);
 		break;
 	case 18:
@@ -2114,8 +2066,6 @@ void BarmaidEnter()
 		stextlhold = 12;
 		talker = TOWN_BMAID;
 		stextshold = TalkID::Barmaid;
-		gossipstart = TEXT_GILLIAN2;
-		gossipend = TEXT_GILLIAN10;
 		StartStore(TalkID::Gossip);
 		break;
 	case 14:
@@ -2142,8 +2092,6 @@ void DrunkEnter()
 		stextlhold = 12;
 		talker = TOWN_DRUNK;
 		stextshold = TalkID::Drunk;
-		gossipstart = TEXT_FARNHAM2;
-		gossipend = TEXT_FARNHAM13;
 		StartStore(TalkID::Gossip);
 		break;
 	case 18:
@@ -2365,7 +2313,7 @@ void StartStore(TalkID s)
 	}
 	sbookflag = false;
 	CloseInventory();
-	chrflag = false;
+	CloseCharPanel();
 	RenderGold = false;
 	QuestLogIsOpen = false;
 	CloseGoldDrop();

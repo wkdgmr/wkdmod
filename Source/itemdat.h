@@ -72,8 +72,10 @@ enum _item_indexes : int16_t { // TODO defines all indexes in AllItemsList
 	IDI_BARBARIAN = 139,
 	IDI_RUNEOFSTONE = 165,
 	IDI_SORCERER_DIABLO,
+	IDI_ARENAPOT,
+	IDI_OILDEBUG,
 
-	IDI_LAST = IDI_SORCERER_DIABLO,
+	IDI_LAST = IDI_OILDEBUG,
 	IDI_NONE = -1,
 };
 
@@ -116,6 +118,7 @@ enum item_cursor_graphic : uint8_t {
 	ICURS_RING_OF_TRUTH               = 10,
 	ICURS_RING                        = 12,
 	ICURS_SPECTRAL_ELIXIR             = 15,
+	ICURS_ARENA_POTION                = 16,
 	ICURS_GOLDEN_ELIXIR               = 17,
 	ICURS_EMPYREAN_BAND               = 18,
 	ICURS_EAR_SORCERER                = 19,
@@ -409,15 +412,17 @@ enum item_misc_id : int8_t {
 	IMISC_OILFIRST,
 	IMISC_OILOF, /* oils are beta or hellfire only */
 	IMISC_OILACC,
-	IMISC_OILMAST,
-	IMISC_OILSHARP,
 	IMISC_OILDEATH,
+	IMISC_OILSHARP,
+	IMISC_OILMAST,
 	IMISC_OILSKILL,
-	IMISC_OILBSMTH,
-	IMISC_OILFORT,
+	IMISC_OILIMP,
 	IMISC_OILPERM,
 	IMISC_OILHARD,
-	IMISC_OILIMP,
+	IMISC_OILFORT,
+	IMISC_OILWICK,
+	IMISC_OILFIRE,
+	IMISC_OILDEBUG,
 	IMISC_OILLAST,
 	IMISC_MAPOFDOOM,
 	IMISC_EAR,
@@ -432,6 +437,7 @@ enum item_misc_id : int8_t {
 	IMISC_RUNELAST,
 	IMISC_AURIC,
 	IMISC_NOTE,
+	IMISC_ARENAPOT,
 	IMISC_INVALID = -1,
 };
 
@@ -455,7 +461,7 @@ struct ItemData {
 	uint8_t iMinDex;
 	ItemSpecialEffect iFlags; // ItemSpecialEffect as bit flags
 	enum item_misc_id iMiscId;
-	enum SpellID iSpell;
+	SpellID iSpell;
 	bool iUsable;
 	uint16_t iValue;
 };

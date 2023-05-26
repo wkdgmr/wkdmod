@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 #include <deque>
 #include <map>
 #include <memory>
@@ -69,6 +70,7 @@ protected:
 		uint32_t roundTripLatency = {};
 	};
 
+	seq_t current_turn = 0;
 	seq_t next_turn = 0;
 	message_t message_last;
 	std::deque<message_t> message_queue;

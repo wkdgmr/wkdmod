@@ -419,9 +419,9 @@ struct Monster { // note: missing field _mAFNum
 	/**
 	 * @brief Is the monster currently walking?
 	 */
-	bool isWalking() const;
-	bool isImmune(MissileID mitype) const;
-	bool isResistant(MissileID mitype) const;
+	[[nodiscard]] bool isWalking() const;
+	[[nodiscard]] bool isImmune(MissileID mitype, DamageType missileElement) const;
+	[[nodiscard]] bool isResistant(MissileID mitype, DamageType missileElement) const;
 
 	/**
 	 * Is this a player's golem?
@@ -443,7 +443,7 @@ extern size_t LevelMonsterTypeCount;
 extern Monster Monsters[MaxMonsters];
 extern int ActiveMonsters[MaxMonsters];
 extern size_t ActiveMonsterCount;
-extern int MonsterKillCounts[MaxMonsters];
+extern int MonsterKillCounts[NUM_MTYPES];
 extern bool sgbSaveSoundOn;
 
 void PrepareUniqueMonst(Monster &monster, UniqueMonsterType monsterType, size_t miniontype, int bosspacksize, const UniqueMonsterData &uniqueMonsterData);

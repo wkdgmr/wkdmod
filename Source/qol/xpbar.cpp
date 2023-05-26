@@ -6,6 +6,7 @@
 #include "xpbar.h"
 
 #include <array>
+#include <cstdint>
 
 #include <fmt/core.h>
 
@@ -15,6 +16,7 @@
 #include "engine/point.hpp"
 #include "engine/render/clx_render.hpp"
 #include "options.h"
+#include "playerdat.hpp"
 #include "utils/format_int.hpp"
 #include "utils/language.h"
 

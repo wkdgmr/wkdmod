@@ -540,6 +540,8 @@ struct GameplayOptions : OptionCategoryBase {
 	OptionEntryBoolean cowQuest;
 	/** @brief Will players still damage other players in non-PvP mode. */
 	OptionEntryBoolean friendlyFire;
+	/** @brief Enables the full/uncut singleplayer version of quests. */
+	OptionEntryBoolean multiplayerFullQuests;
 	/** @brief Enable the bard hero class. */
 	OptionEntryBoolean testBard;
 	/** @brief Enable the babarian hero class. */
@@ -594,6 +596,8 @@ struct GameplayOptions : OptionCategoryBase {
 	OptionEntryInt<int> numFullRejuPotionPickup;
 	/** @brief Enable floating numbers. */
 	OptionEntryEnum<FloatingNumbers> enableFloatingNumbers;
+	/** @brief Allow items to reach 0 Current Durability */
+	OptionEntryBoolean allowZeroDurabilityItems;
 };
 
 struct ControllerOptions : OptionCategoryBase {
@@ -727,6 +731,7 @@ struct PadmapperOptions : OptionCategoryBase {
 		void SaveToIni(string_view category) const override;
 
 		[[nodiscard]] string_view GetValueDescription() const override;
+		[[nodiscard]] string_view GetValueDescription(bool useShortName) const;
 
 		bool SetValue(ControllerButtonCombo value);
 
@@ -738,11 +743,13 @@ struct PadmapperOptions : OptionCategoryBase {
 		ControllerButtonCombo boundInput {};
 		mutable GamepadLayout boundInputDescriptionType = GamepadLayout::Generic;
 		mutable std::string boundInputDescription;
+		mutable std::string boundInputShortDescription;
 		unsigned dynamicIndex;
 		std::string dynamicKey;
 		mutable std::string dynamicName;
 
 		void UpdateValueDescription() const;
+		string_view Shorten(string_view buttonName) const;
 
 		friend struct PadmapperOptions;
 	};
@@ -759,9 +766,10 @@ struct PadmapperOptions : OptionCategoryBase {
 	void CommitActions();
 	void ButtonPressed(ControllerButton button);
 	void ButtonReleased(ControllerButton button, bool invokeAction = true);
+	void ReleaseAllActiveButtons();
 	bool IsActive(string_view actionName) const;
 	string_view ActionNameTriggeredByButtonEvent(ControllerButtonEvent ctrlEvent) const;
-	string_view InputNameForAction(string_view actionName) const;
+	string_view InputNameForAction(string_view actionName, bool useShortName = false) const;
 	ControllerButtonCombo ButtonComboForAction(string_view actionName) const;
 
 private:
@@ -772,6 +780,7 @@ private:
 	bool committed = false;
 
 	const Action *FindAction(ControllerButton button) const;
+	bool CanDeferToMovementHandler(const Action &action) const;
 };
 
 struct Options {

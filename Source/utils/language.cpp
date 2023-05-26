@@ -1,5 +1,6 @@
 #include "utils/language.h"
 
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -378,6 +379,8 @@ void LanguageInitialize()
 		        "Please download fonts.mpq from:\n"
 		        "github.com/diasurgical/\ndevilutionx-assets/releases"));
 		forceLocale = "en";
+		GetLocalPluralId = PluralIfNotOne;
+		return;
 	}
 
 	AssetHandle handle;

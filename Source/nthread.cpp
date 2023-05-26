@@ -5,6 +5,8 @@
  */
 #include "nthread.h"
 
+#include <cstdint>
+
 #include <fmt/core.h>
 
 #include "diablo.h"
@@ -212,7 +214,7 @@ void nthread_ignore_mutex(bool bStart)
 	sgbThreadIsRunning = bStart;
 }
 
-bool nthread_has_500ms_passed()
+bool nthread_has_500ms_passed(bool *drawGame /*= nullptr*/)
 {
 	int currentTickCount = SDL_GetTicks();
 	int ticksElapsed = currentTickCount - last_tick;
@@ -233,6 +235,13 @@ bool nthread_has_500ms_passed()
 			last_tick = currentTickCount;
 			ticksElapsed = 0;
 		}
+	}
+	if (drawGame != nullptr) {
+		// Check if we missed a game tick.
+		// This can happen when we run a low-end device that can't render fast enough (typically 20fps).
+		// If this happens, try to speed-up the game by skipping the rendering.
+		// This avoids desyncs and hourglasses when running multiplayer and slowdowns in singleplayer.
+		*drawGame = ticksElapsed <= gnTickDelay;
 	}
 	return ticksElapsed >= 0;
 }

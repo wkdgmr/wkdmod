@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include <fmt/format.h>
@@ -38,6 +39,7 @@
 #include "panels/spell_book.hpp"
 #include "panels/spell_icons.hpp"
 #include "panels/spell_list.hpp"
+#include "playerdat.hpp"
 #include "qol/stash.h"
 #include "qol/xpbar.h"
 #include "stores.h"
@@ -276,9 +278,12 @@ int CapStatPointsToAdd(int remainingStatPoints, const Player &player, CharacterA
 
 int DrawDurIcon4Item(const Surface &out, Item &pItem, int x, int c)
 {
+	const int durabilityThresholdGold = 5;
+	const int durabilityThresholdRed = 2;
+
 	if (pItem.isEmpty())
 		return x;
-	if (pItem._iDurability > 5)
+	if (pItem._iDurability > durabilityThresholdGold)
 		return x;
 	if (c == 0) {
 		switch (pItem._itype) {
@@ -303,10 +308,27 @@ int DrawDurIcon4Item(const Surface &out, Item &pItem, int x, int c)
 			break;
 		}
 	}
-	if (pItem._iDurability > 2)
-		c += 8;
-	ClxDraw(out, { x, -17 + GetMainPanel().position.y }, (*pDurIcons)[c]);
-	return x - 32 - 8;
+
+	// Calculate how much of the icon should be gold and red
+	int height = (*pDurIcons)[c].height(); // Height of durability icon CEL
+	int partition = 0;
+	if (pItem._iDurability > durabilityThresholdRed) {
+		int current = pItem._iDurability - durabilityThresholdRed;
+		partition = (height * current) / (durabilityThresholdGold - durabilityThresholdRed);
+	}
+
+	// Draw icon
+	int y = -17 + GetMainPanel().position.y;
+	if (partition > 0) {
+		const Surface stenciledBuffer = out.subregionY(y - partition, partition);
+		ClxDraw(stenciledBuffer, { x, partition }, (*pDurIcons)[c + 8]); // Gold icon
+	}
+	if (partition != height) {
+		const Surface stenciledBuffer = out.subregionY(y - height, height - partition);
+		ClxDraw(stenciledBuffer, { x, height }, (*pDurIcons)[c]); // Red icon
+	}
+
+	return x - (*pDurIcons)[c].height() - 8; // Add in spacing for the next durability icon
 }
 
 struct TextCmdItem {
@@ -382,9 +404,69 @@ std::string TextCmdArena(const string_view parameter)
 	return ret;
 }
 
+std::string TextCmdArenaPot(const string_view parameter)
+{
+	std::string ret;
+	if (!gbIsMultiplayer) {
+		StrAppend(ret, _("Arenas are only supported in multiplayer."));
+		return ret;
+	}
+
+	Player &myPlayer = *MyPlayer;
+
+	for (int potNumber = std::max(1, atoi(parameter.data())); potNumber > 0; potNumber--) {
+		Item item {};
+		InitializeItem(item, IDI_ARENAPOT);
+		GenerateNewSeed(item);
+		item.updateRequiredStatsCacheForPlayer(myPlayer);
+
+		if (!AutoPlaceItemInBelt(myPlayer, item, true) && !AutoPlaceItemInInventory(myPlayer, item, true)) {
+			break; // inventory is full
+		}
+	}
+
+	return ret;
+}
+
+std::string TextCmdInspect(const string_view parameter)
+{
+	std::string ret;
+	if (!gbIsMultiplayer) {
+		StrAppend(ret, _("Inspecting only supported in multiplayer."));
+		return ret;
+	}
+
+	if (parameter.empty()) {
+		StrAppend(ret, _("Stopped inspecting players."));
+		InspectPlayer = MyPlayer;
+		return ret;
+	}
+
+	std::string param { parameter.data() };
+	std::transform(param.begin(), param.end(), param.begin(), [](unsigned char c) { return std::tolower(c); });
+	for (auto &player : Players) {
+		std::string playerName { player._pName };
+		std::transform(playerName.begin(), playerName.end(), playerName.begin(), [](unsigned char c) { return std::tolower(c); });
+		if (playerName.find(param) != std::string::npos) {
+			InspectPlayer = &player;
+			StrAppend(ret, _("Inspecting player: "));
+			StrAppend(ret, player._pName);
+			OpenCharPanel();
+			if (!sbookflag)
+				invflag = true;
+			RedrawEverything();
+			return ret;
+		}
+	}
+	StrAppend(ret, _("No players found with such a name"));
+	return ret;
+}
+
 std::vector<TextCmdItem> TextCmdList = {
 	{ N_("/help"), N_("Prints help overview or help for a specific command."), N_("({command})"), &TextCmdHelp },
-	{ N_("/arena"), N_("Enter a PvP Arena."), N_("{arena-number}"), &TextCmdArena }
+	{ N_("/arena"), N_("Enter a PvP Arena."), N_("{arena-number}"), &TextCmdArena },
+	{ N_("/arenapot"), N_("Gives Arena Potions."), N_("{number}"), &TextCmdArenaPot },
+	{ N_("/inspect"), N_("Inspects stats and equipment of another player."), N_("{player name}"), &TextCmdInspect },
 };
 
 bool CheckTextCommand(const string_view text)
@@ -572,6 +654,32 @@ void FocusOnCharInfo()
 	SetCursorPos(ChrBtnsRect[stat].Center());
 }
 
+void OpenCharPanel()
+{
+	QuestLogIsOpen = false;
+	CloseGoldWithdraw();
+	IsStashOpen = false;
+	chrflag = true;
+}
+
+void CloseCharPanel()
+{
+	chrflag = false;
+	if (IsInspectingPlayer()) {
+		InspectPlayer = MyPlayer;
+		RedrawEverything();
+		InitDiabloMsg(_("Stopped inspecting players."));
+	}
+}
+
+void ToggleCharPanel()
+{
+	if (chrflag)
+		CloseCharPanel();
+	else
+		OpenCharPanel();
+}
+
 void AddPanelString(string_view str)
 {
 	if (InfoString.empty())
@@ -716,7 +824,7 @@ void InitControlPan()
 	InfoString = {};
 	RedrawComponent(PanelDrawComponent::Health);
 	RedrawComponent(PanelDrawComponent::Mana);
-	chrflag = false;
+	CloseCharPanel();
 	spselflag = false;
 	sbooktab = 0;
 	sbookflag = false;
@@ -919,13 +1027,10 @@ void CheckBtnUp()
 
 		switch (i) {
 		case PanelButtonCharinfo:
-			QuestLogIsOpen = false;
-			CloseGoldWithdraw();
-			IsStashOpen = false;
-			chrflag = !chrflag;
+			ToggleCharPanel();
 			break;
 		case PanelButtonQlog:
-			chrflag = false;
+			CloseCharPanel();
 			CloseGoldWithdraw();
 			IsStashOpen = false;
 			if (!QuestLogIsOpen)
@@ -998,7 +1103,7 @@ void FreeControlPan()
 void DrawInfoBox(const Surface &out)
 {
 	DrawPanelBox(out, { 177, 62, 288, 63 }, GetMainPanel().position + Displacement { 177, 46 });
-	if (!panelflag && !trigflag && pcursinvitem == -1 && pcursstashitem == uint16_t(-1) && !spselflag) {
+	if (!panelflag && !trigflag && pcursinvitem == -1 && pcursstashitem == StashStruct::EmptyCell && !spselflag) {
 		InfoString = {};
 		InfoColor = UiFlags::ColorWhite;
 	}
@@ -1012,10 +1117,7 @@ void DrawInfoBox(const Surface &out)
 		} else if (!myPlayer.CanUseItem(myPlayer.HoldItem)) {
 			InfoString = _("Requirements not met");
 		} else {
-			if (myPlayer.HoldItem._iIdentified)
-				InfoString = string_view(myPlayer.HoldItem._iIName);
-			else
-				InfoString = string_view(myPlayer.HoldItem._iName);
+			InfoString = myPlayer.HoldItem.getName();
 			InfoColor = myPlayer.HoldItem.getTextColor();
 		}
 	} else {
@@ -1042,7 +1144,7 @@ void DrawInfoBox(const Surface &out)
 			InfoColor = UiFlags::ColorWhitegold;
 			auto &target = Players[pcursplr];
 			InfoString = string_view(target._pName);
-			AddPanelString(fmt::format(fmt::runtime(_("{:s}, Level: {:d}")), _(ClassStrTbl[static_cast<std::size_t>(target._pClass)]), target._pLevel));
+			AddPanelString(fmt::format(fmt::runtime(_("{:s}, Level: {:d}")), _(PlayersData[static_cast<std::size_t>(target._pClass)].className), target._pLevel));
 			AddPanelString(fmt::format(fmt::runtime(_("Hit Points {:d} of {:d}")), target._pHitPoints >> 6, target._pMaxHP >> 6));
 		}
 	}
@@ -1065,10 +1167,7 @@ void ReleaseLvlBtn()
 {
 	const Point mainPanelPosition = GetMainPanel().position;
 	if (MousePosition.x >= 40 + mainPanelPosition.x && MousePosition.x <= 81 + mainPanelPosition.x && MousePosition.y >= -39 + mainPanelPosition.y && MousePosition.y <= -17 + mainPanelPosition.y) {
-		QuestLogIsOpen = false;
-		CloseGoldWithdraw();
-		IsStashOpen = false;
-		chrflag = true;
+		OpenCharPanel();
 	}
 	lvlbtndown = false;
 }
@@ -1264,15 +1363,23 @@ void DrawTalkPan(const Surface &out)
 		UiFlags color = player.friendlyMode ? UiFlags::ColorWhitegold : UiFlags::ColorRed;
 		const Point talkPanPosition = mainPanelPosition + Displacement { 172, 84 + 18 * talkBtn };
 		if (WhisperList[i]) {
+			// the normal (unpressed) voice button is pre-rendered on the panel, only need to draw over it when the button is held
 			if (TalkButtonsDown[talkBtn]) {
-				ClxDraw(out, talkPanPosition, (*talkButtons)[talkBtn != 0 ? 3 : 2]);
+				unsigned spriteIndex = talkBtn == 0 ? 2 : 3; // the first button sprite includes a tip from the devils wing so is different to the rest.
+				ClxDraw(out, talkPanPosition, (*talkButtons)[spriteIndex]);
+
+				// Draw the translated string over the top of the default (english) button. This graphic is inset to avoid overlapping the wingtip, letting
+				// the first button be treated the same as the other two further down the panel.
 				RenderClxSprite(out, (*TalkButton)[2], talkPanPosition + Displacement { 4, -15 });
 			}
 		} else {
-			int nCel = talkBtn != 0 ? 1 : 0;
+			unsigned spriteIndex = talkBtn == 0 ? 0 : 1; // the first button sprite includes a tip from the devils wing so is different to the rest.
 			if (TalkButtonsDown[talkBtn])
-				nCel += 4;
-			ClxDraw(out, talkPanPosition, (*talkButtons)[nCel]);
+				spriteIndex += 4; // held button sprites are at index 4 and 5 (with and without wingtip respectively)
+			ClxDraw(out, talkPanPosition, (*talkButtons)[spriteIndex]);
+
+			// Draw the translated string over the top of the default (english) button. This graphic is inset to avoid overlapping the wingtip, letting
+			// the first button be treated the same as the other two further down the panel.
 			RenderClxSprite(out, (*TalkButton)[TalkButtonsDown[talkBtn] ? 1 : 0], talkPanPosition + Displacement { 4, -15 });
 		}
 		if (player.plractive) {

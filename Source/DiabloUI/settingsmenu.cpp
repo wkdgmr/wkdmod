@@ -1,5 +1,7 @@
 #include "selstart.h"
 
+#include <cstdint>
+
 #include <function_ref.hpp>
 
 #include "DiabloUI/diabloui.h"
@@ -78,7 +80,7 @@ std::vector<DrawStringFormatArg> CreateDrawStringFormatArgForEntry(OptionEntryBa
 /** @brief Check if the option text can't fit in one list line (list width minus drawn selector) */
 bool NeedsTwoLinesToDisplayOption(std::vector<DrawStringFormatArg> &formatArgs)
 {
-	return GetLineWidth("{}: {}", formatArgs.data(), formatArgs.size(), GameFontTables::GameFont24, 1) >= (rectList.size.width - 90);
+	return GetLineWidth("{}: {}", formatArgs.data(), formatArgs.size(), 0, GameFontTables::GameFont24, 1) >= (rectList.size.width - 90);
 }
 
 void CleanUpSettingsUI()
@@ -176,6 +178,8 @@ void ItemFocused(int value)
 		auto *pOption = vecOptions[vecItem->m_value];
 		UpdateDescription(*pOption);
 	} break;
+	default:
+		break;
 	}
 }
 
@@ -316,7 +320,7 @@ void FullscreenChanged()
 
 	for (auto &vecItem : vecDialogItems) {
 		int vecItemValue = vecItem->m_value;
-		if (vecItemValue < 0)
+		if (vecItemValue < 0 || vecItemValue >= vecOptions.size())
 			continue;
 
 		auto *pOption = vecOptions[vecItemValue];
@@ -477,7 +481,7 @@ void UiSettingsMenu()
 
 				StaticVector<ControllerButtonEvent, 4> ctrlEvents = ToControllerButtonEvents(event);
 				for (ControllerButtonEvent ctrlEvent : ctrlEvents) {
-					bool isGamepadMotion = ProcessControllerMotion(event, ctrlEvent);
+					bool isGamepadMotion = IsControllerMotion(event);
 					DetectInputMethod(event, ctrlEvent);
 					if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE) {
 						StopPadEntryTimer();

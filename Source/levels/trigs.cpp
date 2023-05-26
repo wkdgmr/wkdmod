@@ -5,6 +5,8 @@
  */
 #include "levels/trigs.h"
 
+#include <cstdint>
+
 #include <fmt/format.h>
 
 #include "control.h"
@@ -881,7 +883,7 @@ void CheckTriggers()
 			StartNewLvl(myPlayer, trigs[i]._tmsg, currlevel - 1);
 			break;
 		case WM_DIABRTNLVL:
-			StartNewLvl(myPlayer, trigs[i]._tmsg, ReturnLevel);
+			StartNewLvl(myPlayer, trigs[i]._tmsg, GetMapReturnLevel());
 			break;
 		case WM_DIABTOWNWARP:
 			if (gbIsMultiplayer) {

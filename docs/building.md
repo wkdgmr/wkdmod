@@ -5,12 +5,6 @@ all the dependencies that must be vendored, the version information, and `devilu
 This is the version most appropriate for packaging DevilutionX for Linux distributions.
 For other use cases, use the git repository.
 
-Note: If you do not use git or `devilutionx-src.tar.xz` to get the source you must provide the version to CMake manually:
-
-```bash
-cmake -S. -Bbuild -DVERSION_NUM=1.0.0 -DVERSION_SUFFIX=FFFFFFF -DCMAKE_BUILD_TYPE=Release
-```
-
 <details><summary>Linux</summary>
 
 Note that ```pkg-config``` is an optional dependency for finding libsodium, although we have a fallback if necessary.
@@ -44,6 +38,24 @@ sudo dnf install cmake gcc-c++ glibc-devel libstdc++-static SDL2-devel SDL2_imag
 ```bash
 cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j $(getconf _NPROCESSORS_ONLN)
+```
+
+### Cross-compiling for arm64 (aarch64) on Debian or Ubuntu
+
+First, set up the dependencies for cross-compilation:
+
+```bash
+Packaging/nix/debian-cross-aarch64-prep.sh
+```
+
+Then, build DevilutionX using the cross-compilation CMake toolchain file:
+
+```bash
+cmake -S. -Bbuild-aarch64-rel \
+  -DCMAKE_TOOLCHAIN_FILE=../CMake/platforms/aarch64-linux-gnu.toolchain.cmake \
+  -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCPACK=ON \
+  -DDEVILUTIONX_SYSTEM_LIBFMT=OFF
+cmake --build build-aarch64-rel -j $(getconf _NPROCESSORS_ONLN) --target package
 ```
 
 </details>
@@ -133,6 +145,31 @@ cmake --build build -j $(sysctl -n hw.ncpuonline)
 </details>
 
 <details><summary>Windows via MinGW</summary>
+
+<details><summary>Installing Windows Subsystem for Linux</summary>
+
+If you are building on Windows and do not have WSL already setup this will install WSL and Ubuntu by default (Requires Windows 10 2004 or higher or Windows 11)
+
+In an Administrator Command Prompt or Powershell
+
+```wsl --install```
+
+Reboot
+
+Wait for Command Prompt to pop up and say installing when complete enter your new Linux password
+
+You can launch WSL anytime by typing wsl or ubuntu in a Command Prompt or Powershell or in the Start Menu launch the Ubuntu App
+
+### Setup git and clone DevilutionX
+
+In a WSL terminal run these commands to get the source code for DevilutionX
+
+```
+sudo apt install git
+git clone https://github.com/diasurgical/devilutionx
+cd devilutionx
+```
+</details>
 
 ### Installing dependencies on WSL, Debian and Ubuntu
 
@@ -356,33 +393,38 @@ cmake --build build -j $(getconf _NPROCESSORS_ONLN)
 
 <details><summary>OpenDingux / RetroFW</summary>
 
-DevilutionX uses buildroot to build packages for OpenDingux and RetroFW.
+DevilutionX uses buildroot-based toolchains to build packages for OpenDingux and RetroFW.
 
-The build script does the following:
+For OpenDingux / RetroFW builds, `mksquashfs` needs to be installed on your machine.
 
-1. Downloads and configures the buildroot if necessary.
-2. Builds the executable (using CMake).
-3. Packages the executable and all related resources into an `.ipk` or `.opk` package.
-
-The buildroot uses ~2.5 GiB of disk space and can take 20 minutes to build.
-
-For OpenDingux builds `mksquashfs` needs to be installed.
-
-To build, run the following command
+To build, run the following command:
 
 ~~~ bash
-Packaging/OpenDingux/build.sh <platform>
+TOOLCHAIN=<path/to/toolchain> Packaging/OpenDingux/build.sh <platform>
 ~~~
 
-Replace `<platform>` with one of: `retrofw`, `rg350`, or `gkd350h`.
+Replace `<platform>` with one of: `lepus`, `retrofw`, `rg99`, `rg350`, or `gkd350h`.
 
-This prepares and uses the buildroot at `$HOME/buildroot-$PLATFORM-devilutionx`.
+For example:
 
-End-user manuals are available here:
+~~~ bash
+TOOLCHAIN=/opt/gcw0-toolchain Packaging/OpenDingux/build.sh rg350
+~~~
 
-* [RetroFW manual](docs/manual/platforms/retrofw.md)
-* [RG-350 manual](docs/manual/platforms/rg350.md)
-* [GKD350h manual](docs/manual/platforms/gkd350h.md)
+You can download the prebuilt toolchains for `x86_64` hosts here:
+
+* OpenDingux: https://github.com/OpenDingux/buildroot/releases
+* RetroFW: https://github.com/Poligraf/retrofw_buildroot_gcc11/releases
+
+Remember to run `./relocate-sdk.sh` in the toolchain directory after unpacking it.
+
+Alternatively, if you do not set `TOOLCHAIN`, the script will
+download and compile a partial buildroot toolchain for you
+(stored at `$HOME/buildroot-$PLATFORM-devilutionx`).
+This requires 8 GiB+ disk space and takes a while.
+
+End-user manuals are available [here](manual/platforms) and
+in the package help section.
 
 </details>
 

@@ -6,8 +6,8 @@
 
 #ifdef _DEBUG
 
-#include <fstream>
-#include <sstream>
+#include <cstdint>
+#include <cstdio>
 
 #include "debug.h"
 
@@ -29,9 +29,11 @@
 #include "spells.h"
 #include "towners.h"
 #include "utils/endian_stream.hpp"
+#include "utils/file_util.h"
 #include "utils/language.h"
 #include "utils/log.hpp"
 #include "utils/str_cat.hpp"
+#include "utils/str_split.hpp"
 
 namespace devilution {
 
@@ -40,6 +42,7 @@ OptionalOwnedClxSpriteList pSquareCel;
 bool DebugToggle = false;
 bool DebugGodMode = false;
 bool DebugVision = false;
+bool DebugPath = false;
 bool DebugGrid = false;
 std::unordered_map<int, Point> DebugCoordsMap;
 bool DebugScrollViewEnabled = false;
@@ -81,19 +84,15 @@ DebugGridTextItem SelectedDebugGridTextItem;
 
 int DebugMonsterId;
 
+std::vector<std::string> SearchMonsters;
+std::vector<std::string> SearchItems;
+std::vector<std::string> SearchObjects;
+
 // Used for debugging level generation
 uint32_t glMid1Seed[NUMLEVELS];
 uint32_t glMid2Seed[NUMLEVELS];
 uint32_t glMid3Seed[NUMLEVELS];
 uint32_t glEndSeed[NUMLEVELS];
-
-void SetSpellLevelCheat(SpellID spl, int spllvl)
-{
-	Player &myPlayer = *MyPlayer;
-
-	myPlayer._pMemSpells |= GetSpellBitmask(spl);
-	myPlayer._pSplLvl[static_cast<int8_t>(spl)] = spllvl;
-}
 
 void PrintDebugMonster(const Monster &monster)
 {
@@ -114,20 +113,6 @@ void PrintDebugMonster(const Monster &monster)
 	}
 
 	EventPlrMsg(StrCat("Active List = ", bActive ? 1 : 0, ", Squelch = ", monster.activeForTicks), UiFlags::ColorWhite);
-}
-
-void ProcessMessages()
-{
-	SDL_Event event;
-	uint16_t modState;
-	while (FetchMessage(&event, &modState)) {
-		if (event.type == SDL_QUIT) {
-			gbRunGameResult = false;
-			gbRunGame = false;
-			break;
-		}
-		HandleMessage(event, modState);
-	}
 }
 
 struct DebugCmdItem {
@@ -237,16 +222,6 @@ std::string DebugCmdLoadQuestMap(const string_view parameter)
 		if (level != quest._qslvl)
 			continue;
 
-		if (!MyPlayer->isOnLevel(quest._qlevel)) {
-			StartNewLvl(*MyPlayer, (quest._qlevel != 21) ? interface_mode::WM_DIABNEXTLVL : interface_mode::WM_DIABTOWNWARP, quest._qlevel);
-			ProcessMessages();
-			// Workaround for SDL_PollEvent:
-			// StartNewLvl pushes a new event with SDL_PushEvent.
-			// ProcessMessages calls SDL_PollEvent but SDL ignores the new pushed event.
-			// Calling SDL_PollEvent again fixes this.
-			ProcessMessages();
-		}
-
 		setlvltype = quest._qlvltype;
 		StartNewLvl(*MyPlayer, WM_DIABSETLVL, level);
 
@@ -262,21 +237,20 @@ std::string DebugCmdLoadMap(const string_view parameter)
 	int mapType = 0;
 	Point spawn = {};
 
-	std::stringstream paramsStream(parameter.data());
 	int count = 0;
-	for (std::string tmp; std::getline(paramsStream, tmp, ' ');) {
+	for (string_view arg : SplitByChar(parameter, ' ')) {
 		switch (count) {
 		case 0:
-			TestMapPath = StrCat(tmp, ".dun");
+			TestMapPath = StrCat(arg, ".dun");
 			break;
 		case 1:
-			mapType = atoi(tmp.c_str());
+			mapType = atoi(std::string(arg).c_str());
 			break;
 		case 2:
-			spawn.x = atoi(tmp.c_str());
+			spawn.x = atoi(std::string(arg).c_str());
 			break;
 		case 3:
-			spawn.y = atoi(tmp.c_str());
+			spawn.y = atoi(std::string(arg).c_str());
 			break;
 		}
 		count++;
@@ -284,10 +258,6 @@ std::string DebugCmdLoadMap(const string_view parameter)
 
 	if (TestMapPath.empty() || mapType < DTYPE_CATHEDRAL || mapType > DTYPE_LAST || !InDungeonBounds(spawn))
 		return "Directions not understood";
-
-	ReturnLvlPosition = ViewPosition;
-	ReturnLevel = currlevel;
-	ReturnLevelType = leveltype;
 
 	setlvltype = static_cast<dungeon_type>(mapType);
 	ViewPosition = spawn;
@@ -299,11 +269,9 @@ std::string DebugCmdLoadMap(const string_view parameter)
 
 std::string ExportDun(const string_view parameter)
 {
-	std::ofstream dunFile;
-
 	std::string levelName = StrCat(currlevel, "-", glSeedTbl[currlevel], ".dun");
 
-	dunFile.open(levelName, std::ios::out | std::ios::app | std::ios::binary);
+	FILE *dunFile = OpenFile(levelName.c_str(), "ab");
 
 	WriteLE16(dunFile, DMAXX);
 	WriteLE16(dunFile, DMAXY);
@@ -361,7 +329,7 @@ std::string ExportDun(const string_view parameter)
 			WriteLE16(dunFile, dTransVal[x][y]);
 		}
 	}
-	dunFile.close();
+	std::fclose(dunFile);
 
 	return StrCat(levelName, " saved. Happy mapping!");
 }
@@ -424,18 +392,18 @@ std::string DebugCmdResetLevel(const string_view parameter)
 {
 	Player &myPlayer = *MyPlayer;
 
-	std::stringstream paramsStream(parameter.data());
-	std::string singleParameter;
-	if (!std::getline(paramsStream, singleParameter, ' '))
+	auto args = SplitByChar(parameter, ' ');
+	auto it = args.begin();
+	if (it == args.end())
 		return "What level do you want to visit?";
-	auto level = atoi(singleParameter.c_str());
+	auto level = atoi(std::string(*it).c_str());
 	if (level < 0 || level > (gbIsHellfire ? 24 : 16))
 		return StrCat("Level ", level, " is not known. Do you want to write an extension mod?");
 	myPlayer._pLvlVisited[level] = false;
 	DeltaClearLevel(level);
 
-	if (std::getline(paramsStream, singleParameter, ' ')) {
-		uint32_t seed = static_cast<uint32_t>(std::stoul(singleParameter));
+	if (++it != args.end()) {
+		const auto seed = static_cast<uint32_t>(std::stoul(std::string(*it)));
 		glSeedTbl[level] = seed;
 	}
 
@@ -484,6 +452,15 @@ std::string DebugCmdVision(const string_view parameter)
 		return "You see as I do.";
 
 	return "My path is set.";
+}
+
+std::string DebugCmdPath(const string_view parameter)
+{
+	DebugPath = !DebugPath;
+	if (DebugPath)
+		return "The mushroom trail.";
+
+	return "The path is hidden.";
 }
 
 std::string DebugCmdQuest(const string_view parameter)
@@ -555,10 +532,10 @@ std::string DebugCmdMinStats(const string_view parameter)
 
 std::string DebugCmdSetSpellsLevel(const string_view parameter)
 {
-	int level = std::max(0, atoi(parameter.data()));
-	for (int i = static_cast<int8_t>(SpellID::Firebolt); i < MAX_SPELLS; i++) {
+	uint8_t level = static_cast<uint8_t>(std::max(0, atoi(parameter.data())));
+	for (uint8_t i = static_cast<uint8_t>(SpellID::Firebolt); i < MAX_SPELLS; i++) {
 		if (GetSpellBookLevel(static_cast<SpellID>(i)) != -1) {
-			SetSpellLevelCheat(static_cast<SpellID>(i), level);
+			NetSendCmdParam2(true, CMD_CHANGE_SPELL_LEVEL, i, level);
 		}
 	}
 	if (level == 0)
@@ -592,7 +569,7 @@ std::string DebugCmdChangeHealth(const string_view parameter)
 	int newHealth = myPlayer._pHitPoints + (change * 64);
 	SetPlayerHitPoints(myPlayer, newHealth);
 	if (newHealth <= 0)
-		SyncPlrKill(myPlayer, 0);
+		SyncPlrKill(myPlayer, DeathReason::MonsterOrTrap);
 
 	return "Health has changed.";
 }
@@ -682,15 +659,16 @@ std::string DebugCmdSpawnUniqueMonster(const string_view parameter)
 	if (leveltype == DTYPE_TOWN)
 		return "Do you want to kill the towners?!?";
 
-	std::stringstream paramsStream(parameter.data());
 	std::string name;
 	int count = 1;
-	for (std::string tmp; std::getline(paramsStream, tmp, ' '); name += tmp + " ") {
-		int num = atoi(tmp.c_str());
+	for (string_view arg : SplitByChar(parameter, ' ')) {
+		const int num = atoi(std::string(arg).c_str());
 		if (num > 0) {
 			count = num;
 			break;
 		}
+		AppendStrView(name, arg);
+		name += ' ';
 	}
 	if (name.empty())
 		return "Monster name cannot be empty. Duh.";
@@ -769,15 +747,16 @@ std::string DebugCmdSpawnMonster(const string_view parameter)
 	if (leveltype == DTYPE_TOWN)
 		return "Do you want to kill the towners?!?";
 
-	std::stringstream paramsStream(parameter.data());
 	std::string name;
 	int count = 1;
-	for (std::string tmp; std::getline(paramsStream, tmp, ' '); name += tmp + " ") {
-		int num = atoi(tmp.c_str());
+	for (string_view arg : SplitByChar(parameter, ' ')) {
+		const int num = atoi(std::string(arg).c_str());
 		if (num > 0) {
 			count = num;
 			break;
 		}
+		AppendStrView(name, arg);
+		name += ' ';
 	}
 	if (name.empty())
 		return "Monster name cannot be empty. Duh.";
@@ -979,21 +958,22 @@ std::string DebugCmdToggleFPS(const string_view parameter)
 
 std::string DebugCmdChangeTRN(const string_view parameter)
 {
-	std::stringstream paramsStream(parameter.data());
-	std::string first;
 	std::string out;
-	if (std::getline(paramsStream, first, ' ')) {
-		std::string second;
-		if (std::getline(paramsStream, second, ' ')) {
-			std::string prefix;
+	const auto parts = SplitByChar(parameter, ' ');
+	auto it = parts.begin();
+	if (it != parts.end()) {
+		const string_view first = *it;
+		if (++it != parts.end()) {
+			const string_view second = *it;
+			string_view prefix;
 			if (first == "mon") {
 				prefix = "monsters\\monsters\\";
 			} else if (first == "plr") {
 				prefix = "plrgfx\\";
 			}
-			debugTRN = prefix + second + ".trn";
+			debugTRN = StrCat(prefix, second, ".trn");
 		} else {
-			debugTRN = first + ".trn";
+			debugTRN = StrCat(first, ".trn");
 		}
 		out = fmt::format("I am a pretty butterfly. \n(Loading TRN: {:s})", debugTRN);
 	} else {
@@ -1004,6 +984,80 @@ std::string DebugCmdChangeTRN(const string_view parameter)
 	InitPlayerGFX(player);
 	StartStand(player, player._pdir);
 	return out;
+}
+
+std::string DebugCmdSearchMonster(const string_view parameter)
+{
+	if (parameter.empty()) {
+		std::string ret = "What should I search? I'm too lazy to search for everything... you must provide a monster name!";
+		return ret;
+	}
+
+	std::string name;
+	AppendStrView(name, parameter);
+	std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+	SearchMonsters.push_back(name);
+
+	return "We will find this bastard!";
+}
+
+std::string DebugCmdSearchItem(const string_view parameter)
+{
+	if (parameter.empty()) {
+		std::string ret = "What should I search? I'm too lazy to search for everything... you must provide a item name!";
+		return ret;
+	}
+
+	std::string name;
+	AppendStrView(name, parameter);
+	std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+	SearchItems.push_back(name);
+
+	return "Are you greedy? Anyway I will help you.";
+}
+
+std::string DebugCmdSearchObject(const string_view parameter)
+{
+	if (parameter.empty()) {
+		std::string ret = "What should I search? I'm too lazy to search for everything... you must provide a object name!";
+		return ret;
+	}
+
+	std::string name;
+	AppendStrView(name, parameter);
+	std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+	SearchObjects.push_back(name);
+
+	return "I will look for the pyramids. Oh sorry, I'm looking for what you want, of course.";
+}
+
+std::string DebugCmdClearSearch(const string_view parameter)
+{
+	SearchMonsters.clear();
+	SearchItems.clear();
+	SearchObjects.clear();
+
+	return "Now you have to find it yourself.";
+}
+
+std::string DebugCmdLegitOil(const string_view parameter)
+{
+	Player &myPlayer = *MyPlayer;
+
+	for (int potNumber = std::max(1, atoi(parameter.data())); potNumber > 0; potNumber--) {
+		Item &item = myPlayer.InvList[myPlayer._pNumInv];
+		InitializeItem(item, IDI_OILDEBUG);
+		GenerateNewSeed(item);
+		item.updateRequiredStatsCacheForPlayer(myPlayer);
+
+		if (!AutoPlaceItemInBelt(myPlayer, item, true) && !AutoPlaceItemInInventory(myPlayer, item, true)) {
+			break; // inventory is full
+		}
+	}
+
+	std::string ret;
+	StrAppend(ret, _("The most legitimate oil ever conceived."));
+	return ret;
 }
 
 std::vector<DebugCmdItem> DebugCmdList = {
@@ -1025,6 +1079,7 @@ std::vector<DebugCmdItem> DebugCmdList = {
 	{ "restart", "Resets specified {level}.", "{level} ({seed})", &DebugCmdResetLevel },
 	{ "god", "Toggles godmode.", "", &DebugCmdGodMode },
 	{ "drawvision", "Toggles vision debug rendering.", "", &DebugCmdVision },
+	{ "drawpath", "Toggles path debug rendering.", "", &DebugCmdPath },
 	{ "fullbright", "Toggles whether light shading is in effect.", "", &DebugCmdLighting },
 	{ "fill", "Refills health and mana.", "", &DebugCmdRefillHealthMana },
 	{ "changehp", "Changes health by {value} (Use a negative value to remove health).", "{value}", &DebugCmdChangeHealth },
@@ -1045,6 +1100,11 @@ std::vector<DebugCmdItem> DebugCmdList = {
 	{ "playerinfo", "Shows info of player.", "{playerid}", &DebugCmdPlayerInfo },
 	{ "fps", "Toggles displaying FPS", "", &DebugCmdToggleFPS },
 	{ "trn", "Makes player use TRN {trn} - Write 'plr' before it to look in plrgfx\\ or 'mon' to look in monsters\\monsters\\ - example: trn plr infra is equal to 'plrgfx\\infra.trn'", "{trn}", &DebugCmdChangeTRN },
+	{ "searchmonster", "Searches the automap for {monster}", "{monster}", &DebugCmdSearchMonster },
+	{ "searchitem", "Searches the automap for {item}", "{item}", &DebugCmdSearchItem },
+	{ "searchobject", "Searches the automap for {object}", "{object}", &DebugCmdSearchObject },
+	{ "clearsearch", "Search in the auto map is cleared", "", &DebugCmdClearSearch },
+	{ "legitoil", "debug oil max all applicable item stats", "", &DebugCmdLegitOil },
 };
 
 } // namespace
@@ -1126,6 +1186,7 @@ bool IsDebugGridInMegatiles()
 bool GetDebugGridText(Point dungeonCoords, char *debugGridTextBuffer)
 {
 	int info = 0;
+	int blankValue = 0;
 	Point megaCoords = dungeonCoords.worldToMega();
 	switch (SelectedDebugGridTextItem) {
 	case DebugGridTextItem::coords:
@@ -1152,9 +1213,11 @@ bool GetDebugGridText(Point dungeonCoords, char *debugGridTextBuffer)
 		break;
 	case DebugGridTextItem::dLight:
 		info = dLight[dungeonCoords.x][dungeonCoords.y];
+		blankValue = LightsMax;
 		break;
 	case DebugGridTextItem::dPreLight:
 		info = dPreLight[dungeonCoords.x][dungeonCoords.y];
+		blankValue = LightsMax;
 		break;
 	case DebugGridTextItem::dFlags:
 		info = static_cast<int>(dFlags[dungeonCoords.x][dungeonCoords.y]);
@@ -1201,10 +1264,52 @@ bool GetDebugGridText(Point dungeonCoords, char *debugGridTextBuffer)
 	case DebugGridTextItem::None:
 		return false;
 	}
-	if (info == 0)
+	if (info == blankValue)
 		return false;
 	*BufCopy(debugGridTextBuffer, info) = '\0';
 	return true;
+}
+
+bool IsDebugAutomapHighlightNeeded()
+{
+	return SearchMonsters.size() > 0 || SearchItems.size() > 0 || SearchObjects.size() > 0;
+}
+
+bool ShouldHighlightDebugAutomapTile(Point position)
+{
+	auto matchesSearched = [](const string_view name, const std::vector<std::string> &searchedNames) {
+		std::string nameToLower;
+		StrAppend(nameToLower, name);
+		std::transform(nameToLower.begin(), nameToLower.end(), nameToLower.begin(), [](unsigned char c) { return std::tolower(c); });
+		for (const auto &searchedName : searchedNames) {
+			if (nameToLower.find(searchedName) != std::string::npos) {
+				return true;
+			}
+		}
+		return false;
+	};
+
+	if (SearchMonsters.size() > 0 && dMonster[position.x][position.y] != 0) {
+		const int mi = abs(dMonster[position.x][position.y]) - 1;
+		const Monster &monster = Monsters[mi];
+		if (matchesSearched(monster.name(), SearchMonsters))
+			return true;
+	}
+
+	if (SearchItems.size() > 0 && dItem[position.x][position.y] != 0) {
+		const int itemId = abs(dItem[position.x][position.y]) - 1;
+		const Item &item = Items[itemId];
+		if (matchesSearched(item.getName(), SearchItems))
+			return true;
+	}
+
+	if (SearchObjects.size() > 0 && IsObjectAtPosition(position)) {
+		const Object &object = ObjectAtPosition(position);
+		if (matchesSearched(object.name(), SearchObjects))
+			return true;
+	}
+
+	return false;
 }
 
 } // namespace devilution

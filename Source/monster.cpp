@@ -6,11 +6,12 @@
 #include "monster.h"
 
 #include <climits>
+#include <cstdint>
 
 #include <algorithm>
 #include <array>
 
-#include <fmt/compile.h>
+#include <fmt/core.h>
 #include <fmt/format.h>
 
 #include "control.h"
@@ -55,18 +56,17 @@ size_t LevelMonsterTypeCount;
 Monster Monsters[MaxMonsters];
 int ActiveMonsters[MaxMonsters];
 size_t ActiveMonsterCount;
-// BUGFIX: replace MonsterKillCounts[MaxMonsters] with MonsterKillCounts[NUM_MTYPES].
 /** Tracks the total number of monsters killed per monster_id. */
-int MonsterKillCounts[MaxMonsters];
+int MonsterKillCounts[NUM_MTYPES];
 bool sgbSaveSoundOn;
 
 namespace {
 
-constexpr int NightmareToHitBonus = 85;
-constexpr int HellToHitBonus = 120;
+constexpr int NightmareToHitBonus = 120;
+constexpr int HellToHitBonus = 240;
 
-constexpr int NightmareAcBonus = 50;
-constexpr int HellAcBonus = 80;
+constexpr int NightmareAcBonus = 70;
+constexpr int HellAcBonus = 130;
 
 /** Tracks which missile files are already loaded */
 size_t totalmonsters;
@@ -133,9 +133,6 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 	monster.animInfo.currentFrame = GenerateRnd(monster.animInfo.numberOfFrames - 1);
 
 	int maxhp = monster.data().hitPointsMinimum + GenerateRnd(monster.data().hitPointsMaximum - monster.data().hitPointsMinimum + 1);
-	if (monster.type().type == MT_DIABLO && !gbIsHellfire) {
-		maxhp /= 2;
-	}
 	monster.maxHitPoints = maxhp << 6;
 
 	if (!gbIsMultiplayer)
@@ -152,7 +149,7 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 	monster.isInvalid = false;
 	monster.uniqueType = UniqueMonsterType::None;
 	monster.activeForTicks = 0;
-	monster.lightId = NO_LIGHT; // BUGFIX monsters initial light id should be -1 (fixed)
+	monster.lightId = NO_LIGHT;
 	monster.rndItemSeed = AdvanceRndSeed();
 	monster.aiSeed = AdvanceRndSeed();
 	monster.whoHit = 0;
@@ -178,9 +175,9 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 	if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 		monster.maxHitPoints = 3 * monster.maxHitPoints;
 		if (gbIsHellfire)
-			monster.maxHitPoints += (gbIsMultiplayer ? 100 : 50) << 6;
+			monster.maxHitPoints += (gbIsMultiplayer ? 200 : 100) << 6;
 		else
-			monster.maxHitPoints += 64;
+			monster.maxHitPoints += 200 << 6;
 		monster.hitPoints = monster.maxHitPoints;
 		monster.toHit += NightmareToHitBonus;
 		monster.minDamage = 2 * (monster.minDamage + 2);
@@ -191,9 +188,9 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 		monster.maxHitPoints = 4 * monster.maxHitPoints;
 		if (gbIsHellfire)
-			monster.maxHitPoints += (gbIsMultiplayer ? 200 : 100) << 6;
+			monster.maxHitPoints += (gbIsMultiplayer ? 400 : 200) << 6;
 		else
-			monster.maxHitPoints += 192;
+			monster.maxHitPoints += 400 << 6;
 		monster.hitPoints = monster.maxHitPoints;
 		monster.toHit += HellToHitBonus;
 		monster.minDamage = 4 * monster.minDamage + 6;
@@ -827,58 +824,122 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 	PlaySFX(USFX_DIABLOD);
 	auto &quest = Quests[Q_DIABLO];
 	quest._qactive = QUEST_DONE;
+
 	if (sendmsg)
 		NetSendCmdQuest(true, quest);
-	sgbSaveSoundOn = gbSoundOn;
-	gbProcessPlayers = false;
-	for (size_t i = 0; i < ActiveMonsterCount; i++) {
-		int monsterId = ActiveMonsters[i];
-		Monster &monster = Monsters[monsterId];
-		if (monster.type().type == MT_DIABLO || diablo.activeForTicks == 0)
-			continue;
 
-		NewMonsterAnim(monster, MonsterGraphic::Death, monster.direction);
-		monster.mode = MonsterMode::Death;
-		monster.var1 = 0;
-		monster.position.tile = monster.position.old;
-		monster.position.future = monster.position.tile;
-		M_ClearSquares(monster);
-		dMonster[monster.position.tile.x][monster.position.tile.y] = monsterId + 1;
+	if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BROAD_AXE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
+
+	} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
+
+	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 	}
-	AddLight(diablo.position.tile, 8);
-	DoVision(diablo.position.tile, 8, MAP_EXP_NONE, true);
-	int dist = diablo.position.tile.WalkingDistance(ViewPosition);
-	if (dist > 20)
-		dist = 20;
-	diablo.var3 = ViewPosition.x << 16;
-	diablo.position.temp.x = ViewPosition.y << 16;
-	diablo.position.temp.y = (int)((diablo.var3 - (diablo.position.tile.x << 16)) / (double)dist);
-	if (!gbIsMultiplayer) {
-		Player &myPlayer = *MyPlayer;
-		myPlayer.pDiabloKillLevel = std::max(myPlayer.pDiabloKillLevel, static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1));
-	}
+
+	Player &myPlayer = *MyPlayer;
+	myPlayer.pDiabloKillLevel = std::max(myPlayer.pDiabloKillLevel, static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1));
 }
 
 void SpawnLoot(Monster &monster, bool sendmsg)
 {
 	if (monster.type().type == MT_HORKSPWN) {
-		return;
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+		}
 	}
 
 	if (Quests[Q_GARBUD].IsAvailable() && monster.uniqueType == UniqueMonsterType::Garbud) {
+		
 		CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+
 	} else if (monster.uniqueType == UniqueMonsterType::Defiler) {
+
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		SpawnItem(monster, monster.position.tile, sendmsg);
+
 		if (effect_is_playing(USFX_DEFILER8))
 			stream_stop();
 		Quests[Q_DEFILER]._qlog = false;
 		SpawnMapOfDoom(monster.position.tile, sendmsg);
+		
 	} else if (monster.uniqueType == UniqueMonsterType::HorkDemon) {
 		if (sgGameInitInfo.bTheoQuest != 0) {
 			SpawnTheodore(monster.position.tile, sendmsg);
 		} else {
-			CreateAmulet(monster.position.tile, 13, sendmsg, false);
+			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+				CreateAmulet(monster.position.tile, 15, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+
+			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+				CreateAmulet(monster.position.tile, 20, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+
+			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+				CreateAmulet(monster.position.tile, 30, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+			}
 		}
 	} else if (monster.type().type == MT_NAKRUL) {
+
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_TWO_HANDED_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_BROAD_AXE, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			CreateSpellBook(monster.position.tile, SpellID::Apocalypse, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
+		}
+		
 		int nSFX = IsUberRoomOpened ? USFX_NAKRUL4 : USFX_NAKRUL5;
 		if (sgGameInitInfo.bCowQuest != 0)
 			nSFX = USFX_NAKRUL6;
@@ -886,12 +947,20 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			stream_stop();
 		Quests[Q_NAKRUL]._qlog = false;
 		UberDiabloMonsterIndex = -2;
-		CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
-		CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
-		CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
-		CreateSpellBook(monster.position.tile, SpellID::Apocalypse, sendmsg, false);
+
 	} else if (!monster.isPlayerMinion()) {
-		SpawnItem(monster, monster.position.tile, sendmsg);
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+		}
 	}
 }
 
@@ -1013,7 +1082,10 @@ void StartHeal(Monster &monster)
 
 void SyncLightPosition(Monster &monster)
 {
-	Displacement offset = monster.position.CalculateWalkingOffset(monster.direction, monster.animInfo);
+	if (monster.lightId == NO_LIGHT)
+		return;
+
+	const WorldTileDisplacement offset = monster.isWalking() ? monster.position.CalculateWalkingOffset(monster.direction, monster.animInfo) : WorldTileDisplacement {};
 	ChangeLightOffset(monster.lightId, offset.screenToLight());
 }
 
@@ -1067,7 +1139,7 @@ bool MonsterWalk(Monster &monster, MonsterMode variant)
 		}
 	}
 
-	if (monster.lightId != NO_LIGHT) // BUGFIX: change uniqtype check to lightId check like it is in all other places (fixed)
+	if (monster.lightId != NO_LIGHT)
 		SyncLightPosition(monster);
 
 	return isAnimationEnd;
@@ -1151,9 +1223,9 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 #endif
 	int ac = player.GetArmor();
 	if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::ACAgainstDemons) && monster.data().monsterClass == MonsterClass::Demon)
-		ac += 40;
+		ac += 100;
 	if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::ACAgainstUndead) && monster.data().monsterClass == MonsterClass::Undead)
-		ac += 20;
+		ac += 100;
 	hit += 2 * (monster.level(sgGameInitInfo.nDifficulty) - player._pLevel)
 	    + 30
 	    - ac;
@@ -1177,20 +1249,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		}
 		return;
 	}
-	if (monster.type().type == MT_YZOMBIE && &player == MyPlayer) {
-		if (player._pMaxHP > 64) {
-			if (player._pMaxHPBase > 64) {
-				player._pMaxHP -= 64;
-				if (player._pHitPoints > player._pMaxHP) {
-					player._pHitPoints = player._pMaxHP;
-				}
-				player._pMaxHPBase -= 64;
-				if (player._pHPBase > player._pMaxHPBase) {
-					player._pHPBase = player._pMaxHPBase;
-				}
-			}
-		}
-	}
+
 	int dam = (minDam << 6) + GenerateRnd(((maxDam - minDam) << 6) + 1);
 	dam = std::max(dam + (player._pIGetHit << 6), 64);
 	if (&player == MyPlayer) {
@@ -1203,7 +1262,11 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 
 	// Reflect can also kill a monster, so make sure the monster is still alive
 	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
-		int mdam = (GenerateRnd(3) + 1) << 6;
+		int eMind;
+		int eMaxd;
+		eMind = player._pIFMinDam;
+		eMaxd = player._pIFMaxDam;
+		int mdam = (GenerateRnd(eMaxd) + eMind) << 6;
 		ApplyMonsterDamage(DamageType::Physical, monster, mdam);
 		if (monster.hitPoints >> 6 <= 0)
 			M_StartKill(monster, player);
@@ -1211,8 +1274,11 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 			M_StartHit(monster, player, mdam);
 	}
 
-	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING && gbIsMultiplayer)
+	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING
+	|| (monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_YZOMBIE
+	|| (monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_GOLEM)
 		monster.hitPoints += dam;
+
 	if (player._pHitPoints >> 6 <= 0) {
 		if (gbIsHellfire)
 			M_StartStand(monster, monster.direction);
@@ -1405,24 +1471,6 @@ void MonsterTalk(Monster &monster)
 	if (effect_is_playing(Speeches[monster.talkMsg].sfxnr))
 		return;
 	InitQTextMsg(monster.talkMsg);
-	if (monster.uniqueType == UniqueMonsterType::Garbud) {
-		if (monster.talkMsg == TEXT_GARBUD1) {
-			Quests[Q_GARBUD]._qactive = QUEST_ACTIVE;
-			Quests[Q_GARBUD]._qlog = true; // BUGFIX: (?) for other quests qactive and qlog go together, maybe this should actually go into the if above (fixed)
-		}
-		if (monster.talkMsg == TEXT_GARBUD2 && (monster.flags & MFLAG_QUEST_COMPLETE) == 0) {
-			SpawnItem(monster, monster.position.tile + Displacement { 1, 1 }, true);
-			monster.flags |= MFLAG_QUEST_COMPLETE;
-		}
-	}
-	if (monster.uniqueType == UniqueMonsterType::Zhar
-	    && monster.talkMsg == TEXT_ZHAR1
-	    && (monster.flags & MFLAG_QUEST_COMPLETE) == 0) {
-		Quests[Q_ZHAR]._qactive = QUEST_ACTIVE;
-		Quests[Q_ZHAR]._qlog = true;
-		CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, false, ItemType::Misc, IMISC_BOOK, true, false);
-		monster.flags |= MFLAG_QUEST_COMPLETE;
-	}
 	if (monster.uniqueType == UniqueMonsterType::SnotSpill) {
 		if (monster.talkMsg == TEXT_BANNER10 && (monster.flags & MFLAG_QUEST_COMPLETE) == 0) {
 			ObjChangeMap(SetPiece.position.x, SetPiece.position.y, SetPiece.position.x + (SetPiece.size.width / 2) + 2, SetPiece.position.y + (SetPiece.size.height / 2) - 2);
@@ -1444,14 +1492,13 @@ void MonsterTalk(Monster &monster)
 		if (monster.talkMsg == TEXT_VEIL9) {
 			Quests[Q_VEIL]._qactive = QUEST_ACTIVE;
 			Quests[Q_VEIL]._qlog = true;
-		}
-		if (monster.talkMsg == TEXT_VEIL11 && (monster.flags & MFLAG_QUEST_COMPLETE) == 0) {
-			SpawnUnique(UITEM_STEELVEIL, monster.position.tile + Direction::South);
-			monster.flags |= MFLAG_QUEST_COMPLETE;
+			NetSendCmdQuest(true, Quests[Q_VEIL]);
 		}
 	}
-	if (monster.uniqueType == UniqueMonsterType::WarlordOfBlood)
-		Quests[Q_WARLORD]._qvar1 = 2;
+	if (monster.uniqueType == UniqueMonsterType::WarlordOfBlood) {
+		Quests[Q_WARLORD]._qvar1 = QS_WARLORD_TALKING;
+		NetSendCmdQuest(true, Quests[Q_WARLORD]);
+	}
 	if (monster.uniqueType == UniqueMonsterType::Lazarus && UseMultiplayerQuests()) {
 		Quests[Q_BETRAYER]._qvar1 = 6;
 		monster.goal = MonsterGoal::Normal;
@@ -1491,26 +1538,13 @@ void ShrinkLeaderPacksize(const Monster &monster)
 void MonsterDeath(Monster &monster)
 {
 	monster.var1++;
-	if (monster.type().type == MT_DIABLO) {
-		if (monster.position.tile.x < ViewPosition.x) {
-			ViewPosition.x--;
-		} else if (monster.position.tile.x > ViewPosition.x) {
-			ViewPosition.x++;
+	if (monster.animInfo.isLastFrame()) {
+		if (monster.type().type != MT_DIABLO) {
+			if (monster.isUnique())
+				AddCorpse(monster.position.tile, monster.corpseId, monster.direction);
+			else
+				AddCorpse(monster.position.tile, monster.type().corpseId, monster.direction);
 		}
-
-		if (monster.position.tile.y < ViewPosition.y) {
-			ViewPosition.y--;
-		} else if (monster.position.tile.y > ViewPosition.y) {
-			ViewPosition.y++;
-		}
-
-		if (monster.var1 == 140)
-			PrepDoEnding();
-	} else if (monster.animInfo.isLastFrame()) {
-		if (monster.isUnique())
-			AddCorpse(monster.position.tile, monster.corpseId, monster.direction);
-		else
-			AddCorpse(monster.position.tile, monster.type().corpseId, monster.direction);
 
 		dMonster[monster.position.tile.x][monster.position.tile.y] = 0;
 		monster.isInvalid = true;
@@ -1688,8 +1722,8 @@ bool IsTileSafe(const Monster &monster, Point position)
 	if (!InDungeonBounds(position))
 		return false;
 
-	const bool fearsFire = (monster.resistance & IMMUNE_FIRE) == 0 || monster.type().type == MT_DIABLO;
-	const bool fearsLightning = (monster.resistance & IMMUNE_LIGHTNING) == 0 || monster.type().type == MT_DIABLO;
+	const bool fearsFire = (monster.resistance & IMMUNE_FIRE) == 0;
+	const bool fearsLightning = (monster.resistance & IMMUNE_LIGHTNING) == 0;
 
 	return !(fearsFire && HasAnyOf(dFlags[position.x][position.y], DungeonFlag::MissileFireWall))
 	    && !(fearsLightning && HasAnyOf(dFlags[position.x][position.y], DungeonFlag::MissileLightningWall));
@@ -2098,7 +2132,6 @@ std::optional<Point> ScavengerFindCorpse(const Monster &scavenger)
 	for (int y = first; y <= last; y += increment) {
 		for (int x = first; x <= last; x += increment) {
 			Point position = scavenger.position.tile + Displacement { x, y };
-			// BUGFIX: incorrect check of offset against limits of the dungeon (fixed)
 			if (!InDungeonBounds(position))
 				continue;
 			if (dCorpse[position.x][position.y] == 0)
@@ -2505,12 +2538,18 @@ void GharbadAi(Monster &monster)
 		switch (monster.talkMsg) {
 		case TEXT_GARBUD1:
 			monster.talkMsg = TEXT_GARBUD2;
+			Quests[Q_GARBUD]._qvar1 = QS_GHARBAD_FIRST_ITEM_READY;
+			NetSendCmdQuest(true, Quests[Q_GARBUD]);
 			break;
 		case TEXT_GARBUD2:
 			monster.talkMsg = TEXT_GARBUD3;
+			Quests[Q_GARBUD]._qvar1 = QS_GHARBAD_SECOND_ITEM_NEARLY_DONE;
+			NetSendCmdQuest(true, Quests[Q_GARBUD]);
 			break;
 		case TEXT_GARBUD3:
 			monster.talkMsg = TEXT_GARBUD4;
+			Quests[Q_GARBUD]._qvar1 = QS_GHARBAD_SECOND_ITEM_READY;
+			NetSendCmdQuest(true, Quests[Q_GARBUD]);
 			break;
 		default:
 			break;
@@ -2523,6 +2562,8 @@ void GharbadAi(Monster &monster)
 				monster.goal = MonsterGoal::Normal;
 				monster.activeForTicks = UINT8_MAX;
 				monster.talkMsg = TEXT_NONE;
+				Quests[Q_GARBUD]._qvar1 = QS_GHARBAD_ATTACKING;
+				NetSendCmdQuest(true, Quests[Q_GARBUD]);
 			}
 		}
 	}
@@ -2698,6 +2739,8 @@ void ZharAi(Monster &monster)
 	if (monster.talkMsg == TEXT_ZHAR1 && !IsTileVisible(monster.position.tile) && monster.goal == MonsterGoal::Talking) {
 		monster.talkMsg = TEXT_ZHAR2;
 		monster.goal = MonsterGoal::Inquiring;
+		Quests[Q_ZHAR]._qvar1 = QS_ZHAR_ANGRY;
+		NetSendCmdQuest(true, Quests[Q_ZHAR]);
 	}
 
 	if (IsTileVisible(monster.position.tile)) {
@@ -2706,6 +2749,8 @@ void ZharAi(Monster &monster)
 				monster.activeForTicks = UINT8_MAX;
 				monster.talkMsg = TEXT_NONE;
 				monster.goal = MonsterGoal::Normal;
+				Quests[Q_ZHAR]._qvar1 = QS_ZHAR_ATTACKING;
+				NetSendCmdQuest(true, Quests[Q_ZHAR]);
 			}
 		}
 	}
@@ -2860,6 +2905,8 @@ void LachdananAi(Monster &monster)
 	if (monster.talkMsg == TEXT_VEIL9 && !IsTileVisible(monster.position.tile) && monster.goal == MonsterGoal::Talking) {
 		monster.talkMsg = TEXT_VEIL10;
 		monster.goal = MonsterGoal::Inquiring;
+		Quests[Q_VEIL]._qvar2 = QS_VEIL_EARLY_RETURN;
+		NetSendCmdQuest(true, Quests[Q_VEIL]);
 	}
 
 	if (IsTileVisible(monster.position.tile)) {
@@ -2867,7 +2914,10 @@ void LachdananAi(Monster &monster)
 			if (!effect_is_playing(USFX_LACH3) && monster.goal == MonsterGoal::Talking) {
 				monster.talkMsg = TEXT_NONE;
 				Quests[Q_VEIL]._qactive = QUEST_DONE;
+				NetSendCmdQuest(true, Quests[Q_VEIL]);
 				MonsterDeath(monster, monster.direction, true);
+				delta_kill_monster(monster, monster.position.tile, *MyPlayer);
+				NetSendCmdLocParam1(false, CMD_MONSTDEATH, monster.position.tile, monster.getId());
 			}
 		}
 	}
@@ -2889,6 +2939,8 @@ void WarlordAi(Monster &monster)
 			monster.activeForTicks = UINT8_MAX;
 			monster.talkMsg = TEXT_NONE;
 			monster.goal = MonsterGoal::Normal;
+			Quests[Q_WARLORD]._qvar1 = QS_WARLORD_ATTACKING;
+			NetSendCmdQuest(true, Quests[Q_WARLORD]);
 		}
 	}
 
@@ -3125,7 +3177,7 @@ void PrepareUniqueMonst(Monster &monster, UniqueMonsterType monsterType, size_t 
 	monster.resistance = uniqueMonsterData.mMagicRes;
 	monster.talkMsg = uniqueMonsterData.mtalkmsg;
 	if (monsterType == UniqueMonsterType::HorkDemon)
-		monster.lightId = NO_LIGHT; // BUGFIX monsters initial light id should be -1 (fixed)
+		monster.lightId = NO_LIGHT;
 	else
 		monster.lightId = AddLight(monster.position.tile, 3);
 
@@ -3146,7 +3198,7 @@ void PrepareUniqueMonst(Monster &monster, UniqueMonsterType monsterType, size_t 
 		if (gbIsHellfire)
 			monster.maxHitPoints += (gbIsMultiplayer ? 100 : 50) << 6;
 		else
-			monster.maxHitPoints += 64;
+			monster.maxHitPoints += 100 << 6;
 		monster.hitPoints = monster.maxHitPoints;
 		monster.minDamage = 2 * (monster.minDamage + 2);
 		monster.maxDamage = 2 * (monster.maxDamage + 2);
@@ -3157,7 +3209,7 @@ void PrepareUniqueMonst(Monster &monster, UniqueMonsterType monsterType, size_t 
 		if (gbIsHellfire)
 			monster.maxHitPoints += (gbIsMultiplayer ? 200 : 100) << 6;
 		else
-			monster.maxHitPoints += 192;
+			monster.maxHitPoints += 200 << 6;
 		monster.hitPoints = monster.maxHitPoints;
 		monster.minDamage = 4 * monster.minDamage + 6;
 		monster.maxDamage = 4 * monster.maxDamage + 6;
@@ -3429,11 +3481,11 @@ void WeakenNaKrul()
 	auto &monster = Monsters[UberDiabloMonsterIndex];
 	PlayEffect(monster, MonsterSound::Death);
 	Quests[Q_NAKRUL]._qlog = false;
-	monster.armorClass -= 50;
-	int hp = monster.maxHitPoints / 2;
-	monster.resistance = 0;
-	monster.hitPoints = hp;
-	monster.maxHitPoints = hp;
+	if (sgGameInitInfo.nDifficulty != DIFF_HELL) {
+		monster.resistance = 7;
+	} else {
+		monster.resistance = 75;
+	}
 }
 
 void InitGolems()
@@ -3668,9 +3720,9 @@ void MonsterDeath(Monster &monster, Direction md, bool sendmsg)
 
 	SpawnLoot(monster, sendmsg);
 
-	if (monster.type().type == MT_DIABLO)
+	if (monster.type().type == MT_DIABLO) {
 		DiabloDeath(monster, true);
-	else
+	} else
 		PlayEffect(monster, MonsterSound::Death);
 
 	if (monster.mode != MonsterMode::Petrified) {
@@ -3678,6 +3730,8 @@ void MonsterDeath(Monster &monster, Direction md, bool sendmsg)
 			md = Direction::South;
 		NewMonsterAnim(monster, MonsterGraphic::Death, md, gGameLogicStep < GameLogicStep::ProcessMonsters ? AnimationDistributionFlags::ProcessAnimationPending : AnimationDistributionFlags::None);
 		monster.mode = MonsterMode::Death;
+	} else if (monster.isUnique()) {
+		AddUnLight(monster.lightId);
 	}
 	monster.goal = MonsterGoal::None;
 	monster.var1 = 0;
@@ -3869,9 +3923,13 @@ void GolumAi(Monster &golem)
 				enemy.position.last = golem.position.tile;
 				for (int j = 0; j < 5; j++) {
 					for (int k = 0; k < 5; k++) {
-						int enemyId = dMonster[golem.position.tile.x + k - 2][golem.position.tile.y + j - 2]; // BUGFIX: Check if indexes are between 0 and 112
+						int mx = golem.position.tile.x + k - 2;
+						int my = golem.position.tile.y + j - 2;
+						if (!InDungeonBounds({ mx, my }))
+							continue;
+						int enemyId = dMonster[mx][my];
 						if (enemyId > 0)
-							Monsters[enemyId - 1].activeForTicks = UINT8_MAX; // BUGFIX: should be `Monsters[enemy-1]`, not Monsters[enemy]. (fixed)
+							Monsters[enemyId - 1].activeForTicks = UINT8_MAX;
 					}
 				}
 			}
@@ -4223,11 +4281,11 @@ void PrintMonstHistory(int mt)
 		if (maxHP < 1)
 			maxHP = 1;
 
-		int hpBonusNightmare = 1;
-		int hpBonusHell = 3;
+		int hpBonusNightmare = 200;
+		int hpBonusHell = 400;
 		if (gbIsHellfire) {
-			hpBonusNightmare = (!gbIsMultiplayer ? 50 : 100);
-			hpBonusHell = (!gbIsMultiplayer ? 100 : 200);
+			hpBonusNightmare = (!gbIsMultiplayer ? 100 : 200);
+			hpBonusHell = (!gbIsMultiplayer ? 200 : 400);
 		}
 		if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 			minHP = 3 * minHP + hpBonusNightmare;
@@ -4472,7 +4530,8 @@ Monster *PreSpawnSkeleton()
 void TalktoMonster(Player &player, Monster &monster)
 {
 	monster.mode = MonsterMode::Talk;
-	if (monster.ai != MonsterAIID::Snotspill && monster.ai != MonsterAIID::Lachdanan) {
+
+	if (IsNoneOf(monster.ai, MonsterAIID::Snotspill, MonsterAIID::Lachdanan, MonsterAIID::Zhar, MonsterAIID::Gharbad)) {
 		return;
 	}
 
@@ -4485,26 +4544,60 @@ void TalktoMonster(Player &player, Monster &monster)
 		}
 	}
 	if (Quests[Q_VEIL].IsAvailable() && monster.talkMsg >= TEXT_VEIL9) {
-		if (RemoveInventoryItemById(player, IDI_GLDNELIX)) {
+		if (RemoveInventoryItemById(player, IDI_GLDNELIX) && (monster.flags & MFLAG_QUEST_COMPLETE) == 0) {
 			monster.talkMsg = TEXT_VEIL11;
 			monster.goal = MonsterGoal::Inquiring;
+			monster.flags |= MFLAG_QUEST_COMPLETE;
+			if (MyPlayer == &player) {
+				SpawnUnique(UITEM_STEELVEIL, monster.position.tile + Direction::South);
+				Quests[Q_VEIL]._qvar2 = QS_VEIL_ITEM_SPAWNED;
+				NetSendCmdQuest(true, Quests[Q_VEIL]);
+			}
+		}
+	}
+	if (monster.uniqueType == UniqueMonsterType::Zhar
+	    && monster.talkMsg == TEXT_ZHAR1
+	    && (monster.flags & MFLAG_QUEST_COMPLETE) == 0) {
+		if (MyPlayer == &player) {
+			Quests[Q_ZHAR]._qactive = QUEST_ACTIVE;
+			Quests[Q_ZHAR]._qlog = true;
+			Quests[Q_ZHAR]._qvar1 = QS_ZHAR_ITEM_SPAWNED;
+			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, false, ItemType::Misc, IMISC_BOOK, false, false, true);
+			monster.flags |= MFLAG_QUEST_COMPLETE;
+			NetSendCmdQuest(true, Quests[Q_ZHAR]);
+		}
+	}
+
+	if (monster.uniqueType == UniqueMonsterType::Garbud && MyPlayer == &player) {
+		if (monster.talkMsg == TEXT_GARBUD1) {
+			Quests[Q_GARBUD]._qactive = QUEST_ACTIVE;
+			Quests[Q_GARBUD]._qlog = true;
+			NetSendCmdQuest(true, Quests[Q_GARBUD]);
+		}
+		if (monster.talkMsg == TEXT_GARBUD2 && (monster.flags & MFLAG_QUEST_COMPLETE) == 0) {
+			SpawnItem(monster, monster.position.tile + Displacement { 1, 1 }, false, true);
+			monster.flags |= MFLAG_QUEST_COMPLETE;
+			Quests[Q_GARBUD]._qvar1 = QS_GHARBAD_FIRST_ITEM_SPAWNED;
+			NetSendCmdQuest(true, Quests[Q_GARBUD]);
 		}
 	}
 }
 
 void SpawnGolem(Player &player, Monster &golem, Point position, Missile &missile)
 {
+	Player &myPlayer = *MyPlayer;
 	dMonster[position.x][position.y] = golem.getId() + 1;
 	golem.position.tile = position;
 	golem.position.future = position;
 	golem.position.old = position;
 	golem.pathCount = 0;
-	golem.maxHitPoints = 2 * (320 * missile._mispllvl + player._pMaxMana / 3);
+	golem.maxHitPoints = (100 * missile._mispllvl + player._pMaxMana + player._pMaxHP);
 	golem.hitPoints = golem.maxHitPoints;
-	golem.armorClass = 25;
-	golem.toHit = 5 * (missile._mispllvl + 8) + 2 * player._pLevel;
-	golem.minDamage = 2 * (missile._mispllvl + 4);
-	golem.maxDamage = 2 * (missile._mispllvl + 8);
+	golem.armorClass = player._pVitality + (20 * missile._mispllvl);
+	golem.toHit = 5 * (missile._mispllvl * 2) + 3 * player._pLevel;
+	golem.minDamage = 2 * (missile._mispllvl) + player._pLevel;
+	golem.maxDamage = 2 * (missile._mispllvl * 2) + (2 * player._pLevel);
+	golem.resistance = 7;
 	golem.flags |= MFLAG_GOLEM;
 	StartSpecialStand(golem, Direction::South);
 	UpdateEnemy(golem);
@@ -4607,31 +4700,55 @@ bool Monster::isWalking() const
 	}
 }
 
-bool Monster::isImmune(MissileID missileType) const
+bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 {
-	DamageType missileElement = GetMissileData(missileType).damageType();
-
-	if (((resistance & IMMUNE_MAGIC) != 0 && missileElement == DamageType::Magic)
-	    || ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-	    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid))
-		return true;
-	if (missileType == MissileID::HolyBolt && type().type != MT_DIABLO && data().monsterClass != MonsterClass::Undead)
-		return true;
-	return false;
+	if ((missileType == MissileID::FireArrow)
+	|| (missileType == MissileID::WeaponExplosion)
+	|| (missileType == MissileID::FireballBow)
+	|| (missileType == MissileID::LightningArrow)
+	|| (missileType == MissileID::ChargedBoltBow)
+	|| (missileType == MissileID::Firebolt)
+	|| (missileType == MissileID::ChargedBolt)
+	|| (missileType == MissileID::Lightning)) {
+		return false;
+	} else {
+		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
+		    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
-bool Monster::isResistant(MissileID missileType) const
+bool Monster::isResistant(MissileID missileType, DamageType missileElement) const
 {
-	DamageType missileElement = GetMissileData(missileType).damageType();
-
-	if (((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
-	    || ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-	    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning))
-		return true;
-	if (gbIsHellfire && missileType == MissileID::HolyBolt && IsAnyOf(type().type, MT_DIABLO, MT_BONEDEMN))
-		return true;
-	return false;
+	if ((missileType == MissileID::FireArrow)
+	|| (missileType == MissileID::WeaponExplosion)
+	|| (missileType == MissileID::FireballBow)
+	|| (missileType == MissileID::LightningArrow)
+	|| (missileType == MissileID::ChargedBoltBow)
+	|| (missileType == MissileID::Firebolt)
+	|| (missileType == MissileID::ChargedBolt)
+	|| (missileType == MissileID::Lightning)) {
+		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
+		    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+			|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
+		    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		if (((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
+			|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
+		    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
 bool Monster::isPlayerMinion() const

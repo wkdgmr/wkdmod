@@ -7,7 +7,7 @@ target_include_directories(libdevilutionx_so INTERFACE "${PROJECT_SOURCE_DIR}/So
 set_target_properties(libdevilutionx_so PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_library(test_main STATIC main.cpp)
-target_link_libraries(test_main PUBLIC libdevilutionx_so GTest::gtest)
+target_link_libraries(test_main PUBLIC libdevilutionx_so GTest::gtest GTest::gmock)
 
 set(tests
   animationinfo_test
@@ -37,6 +37,7 @@ set(tests
   rectangle_test
   scrollrt_test
   stores_test
+  str_cat_test
   timedemo_test
   utf8_test
   writehero_test

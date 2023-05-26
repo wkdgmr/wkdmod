@@ -5,9 +5,12 @@
  */
 #include "pack.h"
 
+#include <cstdint>
+
 #include "engine/random.hpp"
 #include "init.h"
 #include "loadsave.h"
+#include "playerdat.hpp"
 #include "stores.h"
 #include "utils/endian.hpp"
 
@@ -38,7 +41,8 @@ void VerifyGoldSeeds(Player &player)
 void PackItem(ItemPack &packedItem, const Item &item, bool isHellfire)
 {
 	packedItem = {};
-	if (item.isEmpty()) {
+	// Arena potions don't exist in vanilla so don't save them to stay backward compatible
+	if (item.isEmpty() || item._iMiscId == IMISC_ARENAPOT) {
 		packedItem.idx = 0xFFFF;
 	} else {
 		auto idx = item.IDidx;
@@ -257,7 +261,7 @@ bool UnPackPlayer(const PlayerPack *pPack, Player &player, bool netSync)
 	player._pGold = SDL_SwapLE32(pPack->pGold);
 	player._pMaxHPBase = SDL_SwapLE32(pPack->pMaxHPBase);
 	player._pHPBase = SDL_SwapLE32(pPack->pHPBase);
-	player._pBaseToBlk = BlockBonuses[static_cast<std::size_t>(player._pClass)];
+	player._pBaseToBlk = PlayersData[static_cast<std::size_t>(player._pClass)].blockBonus;
 	if (!netSync)
 		if ((int)(player._pHPBase & 0xFFFFFFC0) < 64)
 			player._pHPBase = 64;

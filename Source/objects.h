@@ -16,6 +16,7 @@
 #include "objdat.h"
 #include "textdat.h"
 #include "utils/attributes.h"
+#include "utils/string_or_view.hpp"
 
 namespace devilution {
 
@@ -23,7 +24,7 @@ namespace devilution {
 
 struct Object {
 	_object_id _otype = OBJ_NULL;
-	bool _oLight = false;
+	bool applyLighting = false;
 	bool _oTrapFlag = false;
 	bool _oDoorFlag = false;
 
@@ -246,13 +247,18 @@ struct Object {
 	{
 		return IsAnyOf(_otype, _object_id::OBJ_TRAPL, _object_id::OBJ_TRAPR);
 	}
+
+	/**
+	 * @brief Returns the name of the object as shown in the info box
+	 */
+	[[nodiscard]] StringOrView name() const;
 };
 
 extern DVL_API_FOR_TEST Object Objects[MAXOBJECTS];
 extern int AvailableObjects[MAXOBJECTS];
 extern int ActiveObjects[MAXOBJECTS];
 extern int ActiveObjectCount;
-extern bool ApplyObjectLighting;
+/** @brief Indicates that objects are being loaded during gameplay and pre calculated data should be updated. */
 extern bool LoadingMapObjects;
 
 /**
@@ -321,6 +327,7 @@ void SyncOpObject(Player &player, int cmd, Object &object);
 void BreakObjectMissile(const Player *player, Object &object);
 void BreakObject(const Player &player, Object &object);
 void DeltaSyncOpObject(Object &object);
+void DeltaSyncCloseObj(Object &object);
 void DeltaSyncBreakObj(Object &object);
 void SyncBreakObj(const Player &player, Object &object);
 void SyncObjectAnim(Object &object);

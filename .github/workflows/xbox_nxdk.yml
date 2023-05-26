@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '*.md'
   pull_request:
     types: [opened, synchronize]
+    paths-ignore:
+      - '*.md'
   release:
     types: [published]
+    paths-ignore:
+      - '*.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -51,17 +57,17 @@ jobs:
       if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v3
       with:
-        name: devilutionx-xbox
+        name: wkdmod-xbox
         path: build-xbox/pkg/
 
     - name: Package Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
       working-directory: ${{github.workspace}}/build-xbox/pkg
-      run: zip -r ../../devilutionx-xbox.zip .
+      run: zip -r ../../wkdmod-xbox.zip .
 
     - name: Update Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
       uses: svenstaro/upload-release-action@v2
       with:
-        file: devilutionx-xbox.zip
+        file: wkdmod-xbox.zip
         overwrite: true

@@ -4,6 +4,7 @@
  * Implementation of functionality for syncing game state with other players.
  */
 #include <climits>
+#include <cstdint>
 
 #include "levels/gendung.h"
 #include "monster.h"
@@ -252,6 +253,9 @@ uint32_t sync_all_monsters(byte *pbBuf, uint32_t dwMaxLen)
 		return dwMaxLen;
 	}
 	if (dwMaxLen < sizeof(TSyncHeader) + sizeof(TSyncMonster)) {
+		return dwMaxLen;
+	}
+	if (MyPlayer->_pLvlChanging) {
 		return dwMaxLen;
 	}
 

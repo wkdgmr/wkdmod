@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '*.md'
   pull_request:
     types: [opened, synchronize]
+    paths-ignore:
+      - '*.md'
   release:
     types: [published]
+    paths-ignore:
+      - '*.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,16 +28,16 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
     - name: Cache CMake build folder
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: build
-        key: ios-cmake-v3-${{ github.sha }}
-        restore-keys: ios-cmake-v3-
+        key: ${{ github.workflow }}-v2-${{ github.sha }}
+        restore-keys: ${{ github.workflow }}-v2-
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
@@ -46,21 +52,23 @@ jobs:
       run: >
         cmake --build build -j $(sysctl -n hw.physicalcpu) --config Release &&
         cd build &&
-        rm -rf Payload devilutionx.ipa &&
         mkdir Payload &&
         mv devilutionx.app Payload &&
-        zip -r devilutionx.ipa Payload
+        zip -r devilutionx-iOS.ipa Payload
 
     - name: Upload-Package
       if: ${{ !env.ACT }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: devilutionx.ipa
-        path: build/devilutionx.ipa
+        name: devilutionx-iOS.ipa
+        path: build/devilutionx-iOS.ipa
 
     - name: Update Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
       uses: svenstaro/upload-release-action@v2
       with:
-        file: build/devilutionx.ipa
+        file: build/devilutionx-iOS.ipa
         overwrite: true
+
+    - name: Clean up artifacts
+      run: rm -rf build/Payload build/*.ipa

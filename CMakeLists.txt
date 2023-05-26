@@ -48,27 +48,30 @@ include(VcPkgManifestFeatures)
 # 2. Toolchain file is evaluated, required for `Platforms.cmake`,
 #    which can override the options.
 if(NOT VERSION_NUM)
-  include(functions/git)
-  get_git_tag(VERSION_NUM)
-  if(NOT "${VERSION_NUM}" STREQUAL "")
-    string(REGEX MATCH "([0-9]+\\.[0-9]+\\.[0-9]+)" VERSION_NUM ${VERSION_NUM} )
-  endif()
-  if(NOT VERSION_SUFFIX)
-    get_git_commit_hash(GIT_COMMIT_HASH)
-    set(VERSION_SUFFIX "${GIT_COMMIT_HASH}")
+  file(STRINGS "VERSION" VERSION_STR)
+  if(NOT "${VERSION_STR}" STREQUAL "")
+    string(REGEX MATCH "([0-9]+\\.[0-9]+\\.[0-9]+)(.*)?" VERSION_PREFIX ${VERSION_STR})
+    set(VERSION_NUM ${CMAKE_MATCH_1})
   endif()
 endif()
+
 if(NOT VERSION_SUFFIX)
-  set(VERSION_SUFFIX "debug")
+  set(VERSION_SUFFIX "-$<CONFIG>")
+  if(VERSION_PREFIX MATCHES "-")
+    if(NOT GIT_COMMIT_HASH)
+      include(functions/git)
+      get_git_commit_hash(GIT_COMMIT_HASH)
+    endif()
+    if(GIT_COMMIT_HASH)
+      set(VERSION_SUFFIX "${VERSION_SUFFIX}-${GIT_COMMIT_HASH}")
+    endif()
+  endif()
 endif()
-if(VERSION_NUM MATCHES untagged)
-  project(DevilutionX LANGUAGES C CXX)
-else()
-  project(DevilutionX
-    VERSION ${VERSION_NUM}
-    LANGUAGES C CXX)
-endif()
-set(PROJECT_VERSION_WITH_SUFFIX "${PROJECT_VERSION}$<$<CONFIG:Debug>:-${VERSION_SUFFIX}>")
+
+project(wkdmod
+  VERSION ${VERSION_NUM}
+  LANGUAGES C CXX)
+set(PROJECT_VERSION_WITH_SUFFIX "${VERSION_PREFIX}$<$<NOT:$<CONFIG:Release>>:${VERSION_SUFFIX}>")
 
 # Platform definitions can override options and we want `cmake_dependent_option` to see the effects.
 # Note that a few options are still defined before this because they're needed by `VcPkgManifestFeatures.cmake`.
@@ -139,18 +142,29 @@ mark_as_advanced(DEVILUTIONX_PALETTE_TRANSPARENCY_BLACK_16_LUT)
 option(DISABLE_DEMOMODE "Disable demo mode support" OFF)
 option(DISCORD_INTEGRATION "Build with Discord SDK for rich presence support" OFF)
 
-# By default, devilutionx.mpq is built only if smpq is installed.
-if(NOT DEFINED BUILD_ASSETS_MPQ AND NOT SRC_DIST)
-  find_program(SMPQ smpq)
-elseif(BUILD_ASSETS_MPQ)
-  find_program(SMPQ smpq REQUIRED)
-endif()
-if(SMPQ)
-  set(_has_smpq ON)
+# If both UNPACKED_MPQS and UNPACKED_SAVES are enabled, we completely remove MPQ support.
+if(UNPACKED_MPQS AND UNPACKED_SAVES)
+  set(SUPPORTS_MPQ OFF)
 else()
-  set(_has_smpq OFF)
+  set(SUPPORTS_MPQ ON)
 endif()
-option(BUILD_ASSETS_MPQ "If true, assets are packaged into devilutionx.mpq." ${_has_smpq})
+
+# By default, devilutionx.mpq is built only if smpq is installed and MPQ support is enabled.
+if(SUPPORTS_MPQ)
+  if(NOT DEFINED BUILD_ASSETS_MPQ AND NOT SRC_DIST)
+    find_program(SMPQ smpq)
+  elseif(BUILD_ASSETS_MPQ)
+    find_program(SMPQ smpq REQUIRED)
+  endif()
+  if(SMPQ)
+    set(_has_smpq ON)
+  else()
+    set(_has_smpq OFF)
+  endif()
+  option(BUILD_ASSETS_MPQ "If true, assets are packaged into devilutionx.mpq." ${_has_smpq})
+else()
+  set(BUILD_ASSETS_MPQS OFF)
+endif()
 
 # === Option overrides ===
 # TSAN is not compatible with ASAN.
@@ -229,6 +243,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND NOT PS4)
   endif()
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  # -fipa-pta and -fdevirtualize-at-ltrans improve performance.
+  add_compile_options("$<$<NOT:$<CONFIG:Debug>>:-fipa-pta;-fdevirtualize-at-ltrans>")
+endif()
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   add_compile_options("$<$<BOOL:${DEVILUTIONX_PROFILE_GENERATE}>:-fprofile-generate>")
   add_link_options("$<$<BOOL:${DEVILUTIONX_PROFILE_GENERATE}>:-fprofile-generate>")
@@ -284,7 +303,7 @@ include(Dependencies)
 
 add_subdirectory(Source)
 
-set(BIN_TARGET devilutionx)
+set(BIN_TARGET wkdmod)
 if(NINTENDO_3DS)
   set(BIN_TARGET ${BIN_TARGET}.elf)
 endif()
@@ -341,10 +360,10 @@ set_relative_file_macro(${BIN_TARGET})
 
 if(APPLE)
   set_source_files_properties("./Packaging/apple/AppIcon.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-  set(MACOSX_BUNDLE_GUI_IDENTIFIER com.diasurgical.devilutionx)
+  set(MACOSX_BUNDLE_GUI_IDENTIFIER com.devxmods.wkdmod)
   set(MACOSX_BUNDLE_COPYRIGHT Unlicense)
   set(MACOSX_BUNDLE_BUNDLE_NAME devilutionx)
-  set(MACOSX_BUNDLE_DISPLAY_NAME DevilutionX)
+  set(MACOSX_BUNDLE_DISPLAY_NAME wkdmod)
   set(MACOSX_BUNDLE_INFO_STRING ${PROJECT_VERSION})
   set(MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION})
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION})
@@ -382,8 +401,8 @@ endif()
 
 if(NINTENDO_SWITCH)
   nx_generate_nacp (${BIN_TARGET}.nacp
-    NAME    "DevilutionX"
-    AUTHOR  "Devilution Team"
+    NAME    "wkdmod"
+    AUTHOR  "wkdgmr"
     VERSION "${PROJECT_VERSION}"
   )
 
@@ -395,7 +414,7 @@ if(NINTENDO_SWITCH)
 endif()
 
 if(VITA)
-  set(VITA_APP_NAME "devilutionX")
+  set(VITA_APP_NAME "wkdmod")
   set(VITA_TITLEID  "DVLX00001")
   set(VITA_VERSION  "01.00")
   set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1")
@@ -426,13 +445,13 @@ if(PS4)
     COMMAND ${CMAKE_COMMAND} -E copy ${DEVILUTIONX_MPQ} "${PROJECT_SOURCE_DIR}/Packaging/ps4/")
   add_self(${BIN_TARGET})
   add_pkg(${BIN_TARGET} "${PROJECT_SOURCE_DIR}/Packaging/ps4"
-    "DVLX00001" "DevilutionX" "${PROJECT_VERSION}")
+    "DVLX00001" "wkdmod" "${PROJECT_VERSION}")
 endif()
 
 if(NINTENDO_3DS)
-  set(APP_TITLE       "DevilutionX")
-  set(APP_DESCRIPTION "DevilutionX port for 3DS")
-  set(APP_AUTHOR      "Diasurgical Team")
+  set(APP_TITLE       "wkdmod")
+  set(APP_DESCRIPTION "wkdmod a DevilutionX mod")
+  set(APP_AUTHOR      "wkdgmr")
   set(APP_ICON        "${PROJECT_SOURCE_DIR}/Packaging/ctr/icon.png")
   set(APP_BANNER      "${PROJECT_SOURCE_DIR}/Packaging/ctr/banner.png")
   set(APP_AUDIO       "${CMAKE_BINARY_DIR}/banner_audio.wav")
@@ -565,6 +584,9 @@ if(CPACK AND (APPLE OR BUILD_ASSETS_MPQ OR SRC_DIST))
       DESTINATION "share/metainfo"
       RENAME "${project_name}.metainfo.xml"
     )
+    if(DISCORD_SHARED_LIB)
+      install(FILES "${DISCORD_SHARED_LIB}" DESTINATION "lib")
+    endif()
 
     # -G DEB
     set(CPACK_PACKAGE_CONTACT "anders@jenbo.dk")

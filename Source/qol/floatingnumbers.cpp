@@ -1,5 +1,6 @@
 #include "floatingnumbers.h"
 
+#include <cstdint>
 #include <ctime>
 #include <deque>
 #include <fmt/format.h>
@@ -7,6 +8,7 @@
 
 #include "engine/render/text_render.hpp"
 #include "options.h"
+#include "utils/str_cat.hpp"
 
 namespace devilution {
 
@@ -61,9 +63,10 @@ UiFlags GetFontSizeByDamage(int value)
 
 void UpdateFloatingData(FloatingNumber &num)
 {
-	num.text = fmt::format("{:d}", num.value >> 6);
 	if (num.value > 0 && num.value < 64) {
 		num.text = fmt::format("{:.2f}", num.value / 64.0);
+	} else {
+		num.text = StrCat(num.value >> 6);
 	}
 
 	num.style &= ~(UiFlags::FontSize12 | UiFlags::FontSize24 | UiFlags::FontSize30);

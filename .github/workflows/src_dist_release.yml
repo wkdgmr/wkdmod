@@ -3,6 +3,8 @@ name: Build source tarball
 on:
   release:
     types: [published]
+    paths-ignore:
+      - '*.md'
   workflow_dispatch:
 
 concurrency:
@@ -14,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -25,27 +27,27 @@ jobs:
 
     - name: Build
       working-directory: ${{github.workspace}}
-      run: tools/make_src_dist.py && mv build-src-dist/devilutionx-*.tar.xz devilutionx-src.tar.xz
+      run: tools/make_src_dist.py && mv build-src-dist/devilutionx-*.tar.xz wkdmod-src.tar.xz
 
     - name: Upload-Package
       if: ${{ !env.ACT }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: devilutionx-src.tar.xz
-        path: devilutionx-src.tar.xz
+        name: wkdmod-src.tar.xz
+        path: wkdmod-src.tar.xz
 
     - name: Update Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
       uses: svenstaro/upload-release-action@v2
       with:
-        file: "devilutionx-src.tar.xz"
+        file: "wkdmod-src.tar.xz"
         overwrite: true
 
   make_src_dist_fully_vendored:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -56,18 +58,18 @@ jobs:
 
     - name: Build
       working-directory: ${{github.workspace}}
-      run: tools/make_src_dist.py --fully_vendored && mv build-src-dist/devilutionx-*.tar.xz devilutionx-src-fully-vendored.tar.xz
+      run: tools/make_src_dist.py --fully_vendored && mv build-src-dist/devilutionx-*.tar.xz wkdmod-src-fully-vendored.tar.xz
 
     - name: Upload-Package
       if: ${{ !env.ACT }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: devilutionx-src-fully-vendored.tar.xz
-        path: devilutionx-src-fully-vendored.tar.xz
+        name: wkdmod-src-fully-vendored.tar.xz
+        path: wkdmod-src-fully-vendored.tar.xz
 
     - name: Update Release
       if: ${{ github.event_name == 'release' && !env.ACT }}
       uses: svenstaro/upload-release-action@v2
       with:
-        file: "devilutionx-src-fully-vendored.tar.xz"
+        file: "wkdmod-src-fully-vendored.tar.xz"
         overwrite: true

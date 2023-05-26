@@ -1,15 +1,16 @@
-#include "selhero.h"
+#include "DiabloUI/hero/selhero.h"
 
 #include <algorithm>
 #include <chrono>
+#include <cstdint>
 #include <random>
 
 #include <fmt/format.h>
 
 #include "DiabloUI/diabloui.h"
 #include "DiabloUI/dialogs.h"
+#include "DiabloUI/multi/selgame.h"
 #include "DiabloUI/scrollbar.h"
-#include "DiabloUI/selgame.h"
 #include "DiabloUI/selok.h"
 #include "DiabloUI/selyesno.h"
 #include "control.h"
@@ -177,6 +178,7 @@ void SelheroListSelect(int value)
 		selhero_heroInfo.saveNumber = pfile_ui_get_first_unused_save_num();
 		SelheroSetStats();
 		title = selhero_isMultiPlayer ? _("New Multi Player Hero").data() : _("New Single Player Hero").data();
+		selhero_isSavegame = false;
 		return;
 	}
 

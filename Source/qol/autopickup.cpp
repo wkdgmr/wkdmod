@@ -70,7 +70,6 @@ bool DoPickup(Item item)
 		case IMISC_OILSHARP:
 		case IMISC_OILDEATH:
 		case IMISC_OILSKILL:
-		case IMISC_OILBSMTH:
 		case IMISC_OILFORT:
 		case IMISC_OILPERM:
 		case IMISC_OILHARD:

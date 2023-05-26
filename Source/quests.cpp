@@ -5,6 +5,8 @@
  */
 #include "quests.h"
 
+#include <cstdint>
+
 #include <fmt/format.h>
 
 #include "DiabloUI/ui_flags.hpp"
@@ -337,8 +339,7 @@ void CheckQuests()
 	    && quest._qvar1 >= 2
 	    && (quest._qactive == QUEST_ACTIVE || quest._qactive == QUEST_DONE)
 	    && (quest._qvar2 == 0 || quest._qvar2 == 2)) {
-		// Move the quest trigger into world space, then spawn a portal at the same location
-		quest.position = quest.position.megaToWorld();
+		// Spawn a portal at the quest trigger location
 		AddMissile(quest.position, quest.position, Direction::South, MissileID::RedPortal, TARGET_MONSTERS, MyPlayerId, 0, 0);
 		quest._qvar2 = 1;
 		if (quest._qactive == QUEST_ACTIVE && quest._qvar1 == 2) {
@@ -356,13 +357,15 @@ void CheckQuests()
 	}
 
 	if (setlevel) {
-		if (setlvlnum == Quests[Q_PWATER]._qslvl
-		    && Quests[Q_PWATER]._qactive != QUEST_INIT
-		    && leveltype == Quests[Q_PWATER]._qlvltype
+		Quest &poisonWater = Quests[Q_PWATER];
+		if (setlvlnum == poisonWater._qslvl
+		    && poisonWater._qactive != QUEST_INIT
+		    && leveltype == poisonWater._qlvltype
 		    && ActiveMonsterCount == 4
-		    && Quests[Q_PWATER]._qactive != QUEST_DONE) {
-			Quests[Q_PWATER]._qactive = QUEST_DONE;
-			NetSendCmdQuest(true, Quests[Q_PWATER]);
+		    && poisonWater._qactive != QUEST_DONE) {
+			poisonWater._qactive = QUEST_DONE;
+			poisonWater._qlog = true; // even if the player skips talking to Pepin completely they should at least notice the water being purified once they cleanse the level
+			NetSendCmdQuest(true, poisonWater);
 			StartPWaterPurify();
 		}
 	} else if (MyPlayer->_pmode == PM_STAND) {
@@ -426,9 +429,11 @@ void CheckQuestKill(const Monster &monster, bool sendmsg)
 			NetSendCmdQuest(true, quest);
 	} else if (monster.uniqueType == UniqueMonsterType::Garbud) { //"Gharbad the Weak"
 		Quests[Q_GARBUD]._qactive = QUEST_DONE;
+		NetSendCmdQuest(true, Quests[Q_GARBUD]);
 		myPlayer.Say(HeroSpeech::ImNotImpressed, 30);
 	} else if (monster.uniqueType == UniqueMonsterType::Zhar) { //"Zhar the Mad"
 		Quests[Q_ZHAR]._qactive = QUEST_DONE;
+		NetSendCmdQuest(true, Quests[Q_ZHAR]);
 		myPlayer.Say(HeroSpeech::ImSorryDidIBreakYourConcentration, 30);
 	} else if (monster.uniqueType == UniqueMonsterType::Lazarus) { //"Arch-Bishop Lazarus"
 		auto &betrayerQuest = Quests[Q_BETRAYER];
@@ -448,17 +453,18 @@ void CheckQuestKill(const Monster &monster, bool sendmsg)
 					}
 				}
 			}
-			if (sendmsg) {
-				NetSendCmdQuest(true, betrayerQuest);
-				NetSendCmdQuest(true, diabloQuest);
-			}
 		} else {
 			InitVPTriggers();
 			betrayerQuest._qvar2 = 4;
 			AddMissile({ 35, 32 }, { 35, 32 }, Direction::South, MissileID::RedPortal, TARGET_MONSTERS, MyPlayerId, 0, 0);
 		}
+		if (sendmsg) {
+			NetSendCmdQuest(true, betrayerQuest);
+			NetSendCmdQuest(true, diabloQuest);
+		}
 	} else if (monster.uniqueType == UniqueMonsterType::WarlordOfBlood) {
 		Quests[Q_WARLORD]._qactive = QUEST_DONE;
+		NetSendCmdQuest(true, Quests[Q_WARLORD]);
 		myPlayer.Say(HeroSpeech::YourReignOfPainHasEnded, 30);
 	}
 }
@@ -496,50 +502,36 @@ void DRLG_CheckQuests(Point position)
 	}
 }
 
-void SetReturnLvlPos()
+int GetMapReturnLevel()
 {
 	switch (setlvlnum) {
 	case SL_SKELKING:
-		ReturnLvlPosition = Quests[Q_SKELKING].position + Direction::SouthEast;
-		ReturnLevel = Quests[Q_SKELKING]._qlevel;
-		ReturnLevelType = DTYPE_CATHEDRAL;
-		break;
+		return Quests[Q_SKELKING]._qlevel;
 	case SL_BONECHAMB:
-		ReturnLvlPosition = Quests[Q_SCHAMB].position + Direction::SouthEast;
-		ReturnLevel = Quests[Q_SCHAMB]._qlevel;
-		ReturnLevelType = DTYPE_CATACOMBS;
-		break;
-	case SL_MAZE:
-		break;
+		return Quests[Q_SCHAMB]._qlevel;
 	case SL_POISONWATER:
-		ReturnLvlPosition = Quests[Q_PWATER].position + Direction::SouthWest;
-		ReturnLevel = Quests[Q_PWATER]._qlevel;
-		ReturnLevelType = DTYPE_CATHEDRAL;
-		break;
+		return Quests[Q_PWATER]._qlevel;
 	case SL_VILEBETRAYER:
-		ReturnLvlPosition = Quests[Q_BETRAYER].position + Direction::South;
-		ReturnLevel = Quests[Q_BETRAYER]._qlevel;
-		ReturnLevelType = DTYPE_HELL;
-		break;
-	case SL_NONE:
-		break;
+		return Quests[Q_BETRAYER]._qlevel;
 	default:
-		if (IsArenaLevel(setlvlnum)) {
-			ReturnLvlPosition = Towners[TOWN_DRUNK].position + Displacement { 1, 0 };
-			ReturnLevel = 0;
-			ReturnLevelType = DTYPE_TOWN;
-		}
-		break;
+		return 0;
 	}
 }
 
-void GetReturnLvlPos()
+Point GetMapReturnPosition()
 {
-	if (Quests[Q_BETRAYER]._qactive == QUEST_DONE)
-		Quests[Q_BETRAYER]._qvar2 = 2;
-	ViewPosition = ReturnLvlPosition;
-	currlevel = ReturnLevel;
-	leveltype = ReturnLevelType;
+	switch (setlvlnum) {
+	case SL_SKELKING:
+		return Quests[Q_SKELKING].position + Direction::SouthEast;
+	case SL_BONECHAMB:
+		return Quests[Q_SCHAMB].position + Direction::SouthEast;
+	case SL_POISONWATER:
+		return Quests[Q_PWATER].position + Direction::SouthWest;
+	case SL_VILEBETRAYER:
+		return Quests[Q_BETRAYER].position + Direction::South;
+	default:
+		return Towners[TOWN_DRUNK].position + Displacement { 1, 0 };
+	}
 }
 
 void LoadPWaterPalette()
@@ -616,6 +608,8 @@ void ResyncQuests()
 	if (gbIsSpawn)
 		return;
 
+	LoadingMapObjects = true;
+
 	if (Quests[Q_LTBANNER].IsAvailable()) {
 		Monster *snotSpill = FindUniqueMonster(UniqueMonsterType::SnotSpill);
 		if (Quests[Q_LTBANNER]._qvar1 == 1) {
@@ -677,9 +671,10 @@ void ResyncQuests()
 			}
 		}
 	}
-	if (currlevel == Quests[Q_VEIL]._qlevel + 1 && Quests[Q_VEIL]._qactive == QUEST_ACTIVE && Quests[Q_VEIL]._qvar1 == 0) {
+	if (currlevel == Quests[Q_VEIL]._qlevel + 1 && Quests[Q_VEIL]._qactive == QUEST_ACTIVE && Quests[Q_VEIL]._qvar1 == 0 && !gbIsMultiplayer) {
 		Quests[Q_VEIL]._qvar1 = 1;
-		SpawnQuestItem(IDI_GLDNELIX, { 0, 0 }, 5, 1, false);
+		SpawnQuestItem(IDI_GLDNELIX, { 0, 0 }, 5, 1, true);
+		NetSendCmdQuest(true, Quests[Q_VEIL]);
 	}
 	if (setlevel && setlvlnum == SL_VILEBETRAYER) {
 		if (Quests[Q_BETRAYER]._qvar1 >= 4)
@@ -720,6 +715,86 @@ void ResyncQuests()
 	    && gbIsMultiplayer) {
 		CleanTownFountain();
 	}
+	if (Quests[Q_GARBUD].IsAvailable() && gbIsMultiplayer) {
+		Monster *garbud = FindUniqueMonster(UniqueMonsterType::Garbud);
+		if (garbud != nullptr && Quests[Q_GARBUD]._qvar1 != QS_GHARBAD_INIT) {
+			switch (Quests[Q_GARBUD]._qvar1) {
+			case QS_GHARBAD_FIRST_ITEM_READY:
+				garbud->goal = MonsterGoal::Inquiring;
+				break;
+			case QS_GHARBAD_FIRST_ITEM_SPAWNED:
+				garbud->talkMsg = TEXT_GARBUD2;
+				garbud->flags |= MFLAG_QUEST_COMPLETE;
+				garbud->goal = MonsterGoal::Talking;
+				break;
+			case QS_GHARBAD_SECOND_ITEM_NEARLY_DONE:
+				garbud->talkMsg = TEXT_GARBUD3;
+				garbud->flags |= MFLAG_QUEST_COMPLETE;
+				garbud->goal = MonsterGoal::Inquiring;
+				break;
+			case QS_GHARBAD_SECOND_ITEM_READY:
+				garbud->talkMsg = TEXT_GARBUD4;
+				garbud->flags |= MFLAG_QUEST_COMPLETE;
+				garbud->goal = MonsterGoal::Inquiring;
+				break;
+			case QS_GHARBAD_ATTACKING:
+				garbud->talkMsg = TEXT_NONE;
+				garbud->flags |= MFLAG_QUEST_COMPLETE;
+				garbud->goal = MonsterGoal::Normal;
+				garbud->activeForTicks = UINT8_MAX;
+				break;
+			}
+		}
+	}
+	if (Quests[Q_ZHAR].IsAvailable() && gbIsMultiplayer) {
+		Monster *zhar = FindUniqueMonster(UniqueMonsterType::Zhar);
+		if (zhar != nullptr && Quests[Q_ZHAR]._qvar1 != QS_ZHAR_INIT) {
+			zhar->flags |= MFLAG_QUEST_COMPLETE;
+
+			switch (Quests[Q_ZHAR]._qvar1) {
+			case QS_ZHAR_ITEM_SPAWNED:
+				zhar->goal = MonsterGoal::Talking;
+				break;
+			case QS_ZHAR_ANGRY:
+				zhar->talkMsg = TEXT_ZHAR2;
+				zhar->goal = MonsterGoal::Inquiring;
+				break;
+			case QS_ZHAR_ATTACKING:
+				zhar->talkMsg = TEXT_NONE;
+				zhar->goal = MonsterGoal::Normal;
+				zhar->activeForTicks = UINT8_MAX;
+				break;
+			}
+		}
+	}
+	if (Quests[Q_WARLORD].IsAvailable() && gbIsMultiplayer) {
+		Monster *warlord = FindUniqueMonster(UniqueMonsterType::WarlordOfBlood);
+		if (warlord != nullptr && Quests[Q_WARLORD]._qvar1 == QS_WARLORD_ATTACKING) {
+			warlord->activeForTicks = UINT8_MAX;
+			warlord->talkMsg = TEXT_NONE;
+			warlord->goal = MonsterGoal::Normal;
+		}
+	}
+	if (Quests[Q_VEIL].IsAvailable() && gbIsMultiplayer) {
+		Monster *lachdan = FindUniqueMonster(UniqueMonsterType::Lachdan);
+		if (lachdan != nullptr) {
+			switch (Quests[Q_VEIL]._qvar2) {
+			case QS_VEIL_EARLY_RETURN:
+				lachdan->talkMsg = TEXT_VEIL10;
+				lachdan->goal = MonsterGoal::Inquiring;
+				break;
+			case QS_VEIL_ITEM_SPAWNED:
+				if (lachdan->talkMsg == TEXT_VEIL11)
+					break;
+				lachdan->talkMsg = TEXT_VEIL11;
+				lachdan->flags |= MFLAG_QUEST_COMPLETE;
+				lachdan->goal = MonsterGoal::Inquiring;
+				break;
+			}
+		}
+	}
+
+	LoadingMapObjects = false;
 }
 
 void DrawQuestLog(const Surface &out)
@@ -863,7 +938,7 @@ void SetMultiQuest(int q, quest_state s, bool log, int v1, int v2, int16_t qmsg)
 
 bool UseMultiplayerQuests()
 {
-	return gbIsMultiplayer;
+	return sgGameInitInfo.fullQuests == 0;
 }
 
 bool Quest::IsAvailable()

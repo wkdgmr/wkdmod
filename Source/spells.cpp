@@ -65,45 +65,6 @@ void ClearReadiedSpell(Player &player)
 	}
 }
 
-void PlacePlayer(Player &player)
-{
-	if (!player.isOnActiveLevel())
-		return;
-
-	Point newPosition = [&]() {
-		Point okPosition = {};
-
-		for (int i = 0; i < 8; i++) {
-			okPosition = player.position.tile + Displacement { plrxoff2[i], plryoff2[i] };
-			if (PosOkPlayer(player, okPosition))
-				return okPosition;
-		}
-
-		for (int max = 1, min = -1; min > -50; max++, min--) {
-			for (int y = min; y <= max; y++) {
-				okPosition.y = player.position.tile.y + y;
-
-				for (int x = min; x <= max; x++) {
-					okPosition.x = player.position.tile.x + x;
-
-					if (PosOkPlayer(player, okPosition))
-						return okPosition;
-				}
-			}
-		}
-
-		return okPosition;
-	}();
-
-	player.position.tile = newPosition;
-
-	dPlayer[newPosition.x][newPosition.y] = player.getId() + 1;
-
-	if (&player == MyPlayer) {
-		ViewPosition = newPosition;
-	}
-}
-
 } // namespace
 
 bool IsValidSpell(SpellID spl)
@@ -111,6 +72,17 @@ bool IsValidSpell(SpellID spl)
 	return spl > SpellID::Null
 	    && spl <= SpellID::LAST
 	    && (spl <= SpellID::LastDiablo || gbIsHellfire);
+}
+
+bool IsValidSpellFrom(int spellFrom)
+{
+	if (spellFrom == 0)
+		return true;
+	if (spellFrom >= INVITEM_INV_FIRST && spellFrom <= INVITEM_INV_LAST)
+		return true;
+	if (spellFrom >= INVITEM_BELT_FIRST && spellFrom <= INVITEM_BELT_LAST)
+		return true;
+	return false;
 }
 
 bool IsWallSpell(SpellID spl)
@@ -195,12 +167,6 @@ void ConsumeSpell(Player &player, SpellID sn)
 		RedrawComponent(PanelDrawComponent::Mana);
 		break;
 	}
-	if (sn == SpellID::BloodStar) {
-		ApplyPlrDamage(DamageType::Physical, player, 5);
-	}
-	if (sn == SpellID::BoneSpirit) {
-		ApplyPlrDamage(DamageType::Physical, player, 6);
-	}
 }
 
 void EnsureValidReadiedSpell(Player &player)
@@ -245,8 +211,9 @@ void CastSpell(int id, SpellID spl, int sx, int sy, int dx, int dy, int spllvl)
 	}
 
 	bool fizzled = false;
-	for (int i = 0; i < 3 && GetSpellData(spl).sMissiles[i] != MissileID::Null; i++) {
-		Missile *missile = AddMissile({ sx, sy }, { dx, dy }, dir, GetSpellData(spl).sMissiles[i], TARGET_MONSTERS, id, 0, spllvl);
+	const SpellData &spellData = GetSpellData(spl);
+	for (size_t i = 0; i < sizeof(spellData.sMissiles) / sizeof(spellData.sMissiles[0]) && spellData.sMissiles[i] != MissileID::Null; i++) {
+		Missile *missile = AddMissile({ sx, sy }, { dx, dy }, dir, spellData.sMissiles[i], TARGET_MONSTERS, id, 0, spllvl);
 		fizzled |= (missile == nullptr);
 	}
 	if (spl == SpellID::ChargedBolt) {
@@ -281,7 +248,7 @@ void DoResurrect(size_t pnum, Player &target)
 	ClrPlrPath(target);
 	target.destAction = ACTION_NONE;
 	target._pInvincible = false;
-	PlacePlayer(target);
+	SyncInitPlrPos(target);
 
 	int hp = 10 << 6;
 	if (target._pMaxHPBase < (10 << 6)) {

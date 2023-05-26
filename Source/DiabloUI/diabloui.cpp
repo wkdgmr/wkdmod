@@ -1,6 +1,7 @@
 #include "DiabloUI/diabloui.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <string>
 
 #include "DiabloUI/button.h"
@@ -10,6 +11,7 @@
 #include "controls/input.h"
 #include "controls/menu_controls.h"
 #include "controls/plrctrls.h"
+#include "diablo.h"
 #include "discord/discord.h"
 #include "engine/assets.hpp"
 #include "engine/clx_sprite.hpp"
@@ -329,11 +331,11 @@ void UiOnBackgroundChange()
 	fadeTc = 0;
 	fadeValue = 0;
 
+	BlackPalette();
+
 	if (IsHardwareCursorEnabled() && ArtCursor && ControlDevice == ControlTypes::KeyboardAndMouse && GetCurrentCursorInfo().type() != CursorType::UserInterface) {
 		SetHardwareCursor(CursorInfo::UserInterfaceCursor());
 	}
-
-	BlackPalette();
 
 	SDL_FillRect(DiabloUiSurface(), nullptr, 0x000000);
 	if (DiabloUiSurface() == PalSurface)
@@ -461,6 +463,11 @@ void UiHandleEvents(SDL_Event *event)
 		return;
 	}
 
+	if (event->type == SDL_KEYUP && event->key.keysym.sym == SDLK_PRINTSCREEN) {
+		PrintScreen(SDLK_PRINTSCREEN);
+		return;
+	}
+
 	if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_RETURN) {
 		const Uint8 *state = SDLC_GetKeyState();
 		if (state[SDLC_KEYSTATE_LALT] != 0 || state[SDLC_KEYSTATE_RALT] != 0) {
@@ -479,12 +486,17 @@ void UiHandleEvents(SDL_Event *event)
 	HandleControllerAddedOrRemovedEvent(*event);
 
 	if (event->type == SDL_WINDOWEVENT) {
-		if (event->window.event == SDL_WINDOWEVENT_SHOWN) {
+		if (IsAnyOf(event->window.event, SDL_WINDOWEVENT_SHOWN, SDL_WINDOWEVENT_EXPOSED)) {
 			gbActive = true;
-		} else if (event->window.event == SDL_WINDOWEVENT_HIDDEN) {
+		} else if (IsAnyOf(event->window.event, SDL_WINDOWEVENT_HIDDEN, SDL_WINDOWEVENT_MINIMIZED)) {
 			gbActive = false;
 		} else if (event->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-			ReinitializeHardwareCursor();
+			// We reinitialize immediately (by calling `DoReinitializeHardwareCursor` instead of `ReinitializeHardwareCursor`)
+			// because the cursor's Enabled state may have changed, resulting in changes to visibility.
+			//
+			// For example, if the previous size was too large for a hardware cursor then it was invisible
+			// but may now become visible.
+			DoReinitializeHardwareCursor();
 		} else if (event->window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
 			music_mute();
 		} else if (event->window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
@@ -737,8 +749,10 @@ void UiFadeIn()
 			fadeValue = 256;
 			fadeTc = 0;
 		}
-		if (fadeValue != prevFadeValue)
-			SetFadeLevel(fadeValue);
+		if (fadeValue != prevFadeValue) {
+			// We can skip hardware cursor update for fade level 0 (everything is black).
+			SetFadeLevel(fadeValue, /*updateHardwareCursor=*/fadeValue != 0);
+		}
 	}
 
 	if (DiabloUiSurface() == PalSurface)
@@ -784,8 +798,9 @@ void UiPollAndRender(std::optional<tl::function_ref<bool(SDL_Event &)>> eventHan
 	DrawMouse();
 	UiFadeIn();
 
-	// Must happen after the very first UiFadeIn, which sets the cursor.
-	if (IsHardwareCursor())
+	// Must happen after at least one call to `UiFadeIn` with non-zero fadeValue.
+	// `UiFadeIn` calls `SetFadeLevel` which reinitializes the hardware cursor.
+	if (IsHardwareCursor() && fadeValue != 0)
 		SetHardwareCursorVisible(ControlDevice == ControlTypes::KeyboardAndMouse);
 
 #ifdef __3DS__

@@ -5,7 +5,10 @@
  */
 #include "misdat.h"
 
+#include <cstdint>
+
 #include "engine/load_cl2.hpp"
+#include "engine/load_clx.hpp"
 #include "missiles.h"
 #include "mpq/mpq_common.hpp"
 #include "utils/file_name_generator.hpp"
@@ -24,7 +27,7 @@ constexpr auto Invisible = MissileDataFlags::Invisible;
 } // namespace
 
 /** Data related to each missile ID. */
-MissileData MissilesData[] = {
+const MissileData MissilesData[] = {
 	// clang-format off
 // id                      mAddProc,                mProc,                        mlSFX,       miSFX,       mFileNum,                               flags,                 MovementDistribution;
 /*Arrow*/                { &AddArrow,               &ProcessArrow,                SFX_NONE,    SFX_NONE,    MissileGraphicID::Arrow,                Physical | Arrow,      MissileMovementDistribution::Blockable   },
@@ -80,7 +83,7 @@ MissileData MissilesData[] = {
 /*FireMan*/              { nullptr,                 nullptr,                      SFX_NONE,    SFX_NONE,    MissileGraphicID::None,                 Physical,              MissileMovementDistribution::Blockable   },
 /*Krull*/                { nullptr,                 nullptr,                      SFX_NONE,    SFX_NONE,    MissileGraphicID::Krull,                Fire | Arrow,          MissileMovementDistribution::Blockable   },
 /*ChargedBolt*/          { &AddChargedBolt,         &ProcessChargedBolt,          LS_CBOLT,    SFX_NONE,    MissileGraphicID::ChargedBolt,          Lightning,             MissileMovementDistribution::Blockable   },
-/*HolyBolt*/             { &AddHolyBolt,            &ProcessHolyBolt,             LS_HOLYBOLT, LS_ELECIMP1, MissileGraphicID::HolyBolt,             Physical,              MissileMovementDistribution::Blockable   },
+/*HolyBolt*/             { &AddHolyBolt,            &ProcessHolyBolt,             LS_HOLYBOLT, LS_ELECIMP1, MissileGraphicID::HolyBolt,             Magic,                 MissileMovementDistribution::Blockable   },
 /*Resurrect*/            { &AddResurrect,           nullptr,                      SFX_NONE,    LS_RESUR,    MissileGraphicID::None,                 Magic | Invisible,     MissileMovementDistribution::Disabled    },
 /*Telekinesis*/          { &AddTelekinesis,         nullptr,                      LS_ETHEREAL, SFX_NONE,    MissileGraphicID::None,                 Physical | Invisible,  MissileMovementDistribution::Disabled    },
 /*LightningArrow*/       { &AddElementalArrow,      &ProcessElementalArrow,       SFX_NONE,    SFX_NONE,    MissileGraphicID::LightningArrow,       Lightning | Arrow,     MissileMovementDistribution::Blockable   },
@@ -104,7 +107,7 @@ MissileData MissilesData[] = {
 /*FireballBow*/          { &AddImmolation,          &ProcessFireball,             IS_FBALLBOW, LS_FIRIMP2,  MissileGraphicID::Fireball,             Fire,                  MissileMovementDistribution::Blockable   },
 /*LightningBow*/         { &AddLightningBow,        &ProcessLightningBow,         IS_FBALLBOW, SFX_NONE,    MissileGraphicID::Lightning,            Lightning | Invisible, MissileMovementDistribution::Disabled    },
 /*ChargedBoltBow*/       { &AddChargedBoltBow,      &ProcessChargedBolt,          LS_CBOLT,    SFX_NONE,    MissileGraphicID::ChargedBolt,          Lightning,             MissileMovementDistribution::Blockable   },
-/*HolyBoltBow*/          { &AddHolyBolt,            &ProcessHolyBolt,             LS_HOLYBOLT, LS_ELECIMP1, MissileGraphicID::HolyBolt,             Physical,              MissileMovementDistribution::Blockable   },
+/*HolyBoltBow*/          { &AddHolyBolt,            &ProcessHolyBolt,             LS_HOLYBOLT, LS_ELECIMP1, MissileGraphicID::HolyBolt,             Magic,                 MissileMovementDistribution::Blockable   },
 /*Warp*/                 { &AddWarp,                &ProcessTeleport,             LS_ETHEREAL, SFX_NONE,    MissileGraphicID::None,                 Physical | Invisible,  MissileMovementDistribution::Disabled    },
 /*Reflect*/              { &AddReflect,             nullptr,                      LS_MSHIELD,  SFX_NONE,    MissileGraphicID::Reflect,              Physical | Invisible,  MissileMovementDistribution::Disabled    },
 /*Berserk*/              { &AddBerserk,             nullptr,                      SFX_NONE,    SFX_NONE,    MissileGraphicID::None,                 Physical | Invisible,  MissileMovementDistribution::Disabled    },
@@ -286,6 +289,11 @@ void MissileFileData::LoadGFX()
 	if (name[0] == '\0')
 		return;
 
+#ifdef UNPACKED_MPQS
+	char path[MaxMpqPathSize];
+	*BufCopy(path, "missiles\\", name, ".clx") = '\0';
+	sprites.emplace(LoadClxListOrSheet(path));
+#else
 	if (animFAmt == 1) {
 		char path[MaxMpqPathSize];
 		*BufCopy(path, "missiles\\", name) = '\0';
@@ -294,6 +302,7 @@ void MissileFileData::LoadGFX()
 		FileNameGenerator pathGenerator({ "missiles\\", name }, DEVILUTIONX_CL2_EXT);
 		sprites.emplace(OwnedClxSpriteListOrSheet { LoadMultipleCl2Sheet<16>(pathGenerator, animFAmt, animWidth) });
 	}
+#endif
 }
 
 void InitMissileGFX(bool loadHellfireGraphics)

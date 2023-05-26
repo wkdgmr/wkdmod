@@ -1,3 +1,86 @@
+# wkdmod is a fork of DevilutionX
+## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.  This modified version of DevilutionX focuses on a more modern and casual approach to ARPG gameplay and mechanics.
+
+This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" target="_blank" rel="noopener noreferrer">wkd1337gmr</a>.
+
+(click the banner for current intro trailer)
+<a href="https://www.youtube.com/watch?v=qGFhbjFcxxQ" target="_blank" rel="noopener noreferrer">
+<img src="https://github.com/wkdgmr/wkdmod/blob/1e45674d564003a906c145185e141bda8ed285d9/wkdmodbanner.jpg" alt="wkdmod banner" width="838">
+</a>
+
+<a href="https://www.youtube.com/watch?v=6lJHouylAdA" target="_blank" rel="noopener noreferrer">wkdmod gameplay trailer</a>
+
+wkdmod is compatible with standard DevilutionX characters. Simply copy your character data and stash data into the **devxmods/wkdmod folder in %appdata%/roaming/**
+
+wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
+
+### **DevX Master** with additional **NEW** features:
+
+**[GLOBAL]**
+- When Diablo is killed the game does not end and he drops loot (drops 5 items).
+- Buffed loot drop chances 300% in Hell, 200% in Nightmare, Normal is unchanged.
+- When killing Diablo, Nakrul, Hork Demon or Defiler loot drop tiers are determined by difficulty.  Best drops from these bosses will be found on Hell difficulty.
+- Diablo and Nakrul have been buffed and are much more difficult to defeat.
+- Nightmare and Hell monster HP/AC/ToHit has been increased
+- Items are no longer destroyed at 0 durability, they become disabled and you must repair.
+- Players do not drop items on death, unless you enable **INVADER** mode, more details below.  -1% TOTAL CHARACTER Experience upon death.
+- Shared XP in multiplayer games.
+- Black Deaths no longer permanently damage your character, HOWEVER, they have been given the same LIFESTEAL mechanic as the Skeleton King.
+- Warrior, Barbarian, and Bard have all received a melee and ranged ToHit buff and are no longer desperate for Dexterity/ToHit gear.
+- Barbarian no longer takes damage from the Rage skill, it will drain mana instead if the Barbarian has any
+- Buffed Barbarian's passive bonuses to include 2H Axes, 2H Maces, Staffs, 2H Swords
+- Buffed Bard's passive bonuses with dual wielding any combination of 1H weapons
+- Bard is now buffed when wearing Unique, Medium, and Light Armor.  However receives a debuff when wearing non-Unique Heavy Armor (same as Monk).
+- Golem has been buffed significantly and can no longer take Friendly Fire damage.
+- Rogue gains +100 on Normal, +500 on Nightmare, or +1000 on Hell experience points when disarming a trap
+- Nerfed Apocalypse in Diablo so it acts like its Hellfire counterpart
+- Chance to Block is now added against Monster Spell Damage
+- When Full Quests in Multiplayer is enabled, Unique Quest items originally exclusive to Single Player can now drop.
+- Swapped some scrolls out for the four oils I added in Hellfire, nobody will miss them
+
+**Splash damage now does damage to two extra tiles** (so its more like a U instead of a T, the shape of the splash), and can be accessed with the following classes/weapons (and thanks to DevX is applied in both Diablo and Hellfire gamemodes):
+- **Monk:** Staff, 2H Sword
+- **Warrior:** 2H Sword, 1H Sword + Shield, 1H Mace + Shield (must have Shield equipped for splash to work with 1H)
+- **Barbarian:** 2H Sword, 2H Axe, Staff, 2H Mace
+- **Bard:** 2x 1H Sword, 2x 1H Mace, or 1H Sword + 1H Mace
+- **Sorcerer:** Staff
+- **WEAPONS EXPERT** (unlocked at Lvl 40) All classes gain access to splash damage on all melee weapons and barehanded.
+
+**[HELLFIRE ONLY]**
+- The following OILS can now drop in SINGLEPLAYER and MULTIPLAYER:
+  - Oil of Imperviousness QLVL 10 / 50% Chance of Success / Acts like Hardening on Fail
+  - Oil of Skill QLVL 10
+  - Oil of Permanence QLVL 40 / 10% Chance of Success / Acts like Fortitude on Fail
+  - Oil of Death QLVL 10 / 50% Chance of Success / Acts like Sharpening on Fail
+- Monk is now buffed when wearing Unique, Medium, and Light Armor.  However receives a debuff when wearing non-Unique Heavy Armor (same as Bard).
+- Buffed Monk's abilities with barehanded and 2H Sword
+- Monk now has Infravision as a class skill
+- Search Books and Search Scrolls no longer drop
+- Hork Demon amulet drop is now a higher item level depending on difficulty (Normal: ilvl 15, Nightmare: ilvl 20, Hell: ilvl 30) and he drops more or less items depending on difficulty.
+- Hellfire spell blocking has been completely removed.
+- Hork Spawn now drop items like normal monsters.
+- Hell Diablo will drop a book of Nova when killed.
+- Fixed Hellfire Arrow behavior to be like Diablo
+
+**[INVADER]**
+- INVADER is a stand alone game mode within wkdmod.  It's just your standard wkdmod Diablo or Hellfire... but with a twist...
+- If you toggle Friendly Fire ON within wkdmod, you will no longer have access to your normal characters and stash.  Instead, you will have access to your INVADER characters and stash.  
+- INVADER characters and stash ARE NOT MEANT TO BE BACKED UP.  This is not enforceable, but if you play this mode and back up your files you are a wussy... especially because I already give you the chance to play with FF off and not lose your shit!
+- INVADER characters are meant to be played in public games, and are encouraged to kill each other and take each others items.
+
+**RECOMMENDED GAME SETTINGS FOR WKDMOD**
+- <a href="https://github.com/wkdgmr/wkdmod/blob/5d408772fc32f20652193196221e57e9a8e1692b/diablo.ini" target="_blank" rel="noopener noreferrer">DOWNLOAD PRECONFIGURED SETTINGS FILE</a> place this file into the **devxmods/wkdmod folder in %appdata%/roaming/** (or whatever location the game data is located depending on device you are playing on)
+- Multiplayer (Select Loopback to play solo offline)
+- SP QUESTS IN MP On* but only while playing in Normal.  Turn off for NM and Hell.
+- Crippling Shrines OFF
+- (Hellfire) Theo OFF* optional, I prefer it off.
+- (Hellfire) Cow Quest can be turned on if you want to score some backstage tickets to Aerosmith at the coliseum and get an OP mid-game chest armor
+- Friendly Fire OFF* Friendly Fire ON now enables INVADER game mode.  You will drop items upon death at the hands of monsters and players.
+- **DEVIATE FROM THESE RECOMMENDATIONS AT YOUR PERIL**
+- Please feel free to change any setting not mentioned here to your preference.
+
+### Please see below this point for more information on the DevilutionX project.
+
 <p align="center">
 <img width="554" src="https://user-images.githubusercontent.com/204594/113575181-c946a400-961d-11eb-8347-a8829fa3830c.png">
 </p>
@@ -47,9 +130,11 @@ If you want to help test the latest development stage of the next version (make 
 
 *Note: You must be logged into GitHub to download the attachments!*
 
+[![Linux x86_64](https://github.com/diasurgical/devilutionX/actions/workflows/Linux_x86_64.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/Linux_x86_64.yml?query=branch%3Amaster)
+[![Linux aarch64](https://github.com/diasurgical/devilutionX/actions/workflows/Linux_aarch64.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/Linux_aarch64.yml?query=branch%3Amaster)
 [![Linux x86](https://github.com/diasurgical/devilutionX/actions/workflows/Linux_x86.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/Linux_x86.yml?query=branch%3Amaster)
-[![Linux x86-64 SDL1](https://github.com/diasurgical/devilutionX/actions/workflows/Linux_x86_64_SDL1.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/Linux_x86_64_SDL1.yml?query=branch%3Amaster)
-[![MacOSX](https://github.com/diasurgical/devilutionX/actions/workflows/MacOSX.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/MacOSX.yml?query=branch%3Amaster)
+[![Linux x86_64 SDL1](https://github.com/diasurgical/devilutionX/actions/workflows/Linux_x86_64_SDL1.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/Linux_x86_64_SDL1.yml?query=branch%3Amaster)
+[![macOS x86_64](https://github.com/diasurgical/devilutionX/actions/workflows/macOS_x86_64.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/macOS_x86_64.yml?query=branch%3Amaster)
 [![Windows x64](https://github.com/diasurgical/devilutionX/actions/workflows/Windows_MSVC_x64.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/Windows_MSVC_x64.yml?query=branch%3Amaster)
 [![Windows MinGW x64](https://github.com/diasurgical/devilutionX/actions/workflows/Windows_MinGW_x64.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/Windows_MinGW_x64.yml?query=branch%3Amaster)
 [![Windows MinGW x86](https://github.com/diasurgical/devilutionX/actions/workflows/Windows_MinGW_x86.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/Windows_MinGW_x86.yml?query=branch%3Amaster)
@@ -59,7 +144,7 @@ If you want to help test the latest development stage of the next version (make 
 [![Original Xbox](https://github.com/diasurgical/devilutionX/actions/workflows/xbox_nxdk.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/xbox_nxdk.yml?query=branch%3Amaster)
 [![Xbox One/Series](https://github.com/diasurgical/devilutionX/actions/workflows/xbox_one.yml/badge.svg)](https://github.com/diasurgical/devilutionX/actions/workflows/xbox_one.yml?query=branch%3Amaster)
 
-Linux x86-64, Switch, Vita, 3DS, Amiga, [![CircleCI](https://circleci.com/gh/diasurgical/devilutionX.svg?style=shield)](https://app.circleci.com/pipelines/github/diasurgical/devilutionX?branch=master)
+Switch, Vita, 3DS, Amiga: [![CircleCI](https://circleci.com/gh/diasurgical/devilutionX.svg?style=shield)](https://app.circleci.com/pipelines/github/diasurgical/devilutionX?branch=master)
 
 # Building from Source
 

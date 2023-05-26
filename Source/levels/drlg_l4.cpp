@@ -5,6 +5,8 @@
  */
 #include "levels/drlg_l4.h"
 
+#include <cstdint>
+
 #include "engine/load_file.hpp"
 #include "engine/random.hpp"
 #include "levels/gendung.h"
@@ -251,7 +253,6 @@ void FirstRoom()
 	WorldTileRectangle room { { 0, 0 }, { 14, 14 } };
 	if (currlevel != 16) {
 		if (currlevel == Quests[Q_WARLORD]._qlevel && Quests[Q_WARLORD]._qactive != QUEST_NOTAVAIL) {
-			assert(!gbIsMultiplayer);
 			room.size = { 11, 11 };
 		} else if (currlevel == Quests[Q_BETRAYER]._qlevel && UseMultiplayerQuests()) {
 			room.size = { 11, 11 };
@@ -447,7 +448,7 @@ void AddWall()
 			}
 			for (auto d : { 10, 12, 13, 15, 16, 21, 22 }) {
 				if (d == dungeon[i][j]) {
-					AdvanceRndSeed();
+					DiscardRandomValues(1);
 					int x = HorizontalWallOk(i, j);
 					if (x != -1) {
 						HorizontalWall(i, j, x);
@@ -456,7 +457,7 @@ void AddWall()
 			}
 			for (auto d : { 8, 9, 11, 14, 15, 16, 21, 23 }) {
 				if (d == dungeon[i][j]) {
-					AdvanceRndSeed();
+					DiscardRandomValues(1);
 					int y = VerticalWallOk(i, j);
 					if (y != -1) {
 						VerticalWall(i, j, y);
@@ -862,7 +863,9 @@ void PrepareInnerBorders()
 			if (!DungeonMask.test(x, y)) {
 				hallok[y] = false;
 			} else {
-				hallok[y] = x + 1 < DMAXX / 2 && y + 1 < DMAXY / 2 && DungeonMask.test(x, y + 1) && !DungeonMask.test(x + 1, y + 1);
+				bool hasSouthWestRoom = y + 1 < DMAXY / 2 && DungeonMask.test(x, y + 1);
+				bool hasSouthRoom = x + 1 < DMAXX / 2 && y + 1 < DMAXY / 2 && DungeonMask.test(x + 1, y + 1);
+				hallok[y] = hasSouthWestRoom && !hasSouthRoom;
 				x = 0;
 			}
 		}
@@ -893,7 +896,9 @@ void PrepareInnerBorders()
 			if (!DungeonMask.test(x, y)) {
 				hallok[x] = false;
 			} else {
-				hallok[x] = x + 1 < DMAXX / 2 && y + 1 < DMAXY / 2 && DungeonMask.test(x + 1, y) && !DungeonMask.test(x + 1, y + 1);
+				bool hasSouthEastRoom = x + 1 < DMAXX / 2 && DungeonMask.test(x + 1, y);
+				bool hasSouthRoom = x + 1 < DMAXX / 2 && y + 1 < DMAXY / 2 && DungeonMask.test(x + 1, y + 1);
+				hallok[x] = hasSouthEastRoom && !hasSouthRoom;
 				y = 0;
 			}
 		}
@@ -1189,7 +1194,7 @@ void GenerateLevel(lvl_entry entry)
 				if (IsAnyOf(dungeon[i][j], 98, 107)) {
 					Make_SetPC({ WorldTilePosition(i - 1, j - 1), { 5, 5 } });
 					// Set the portal position to the location of the northmost pentagram tile.
-					Quests[Q_BETRAYER].position = { i, j };
+					Quests[Q_BETRAYER].position = Point(i, j).megaToWorld();
 				}
 			}
 		}

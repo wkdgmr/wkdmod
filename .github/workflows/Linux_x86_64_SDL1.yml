@@ -4,8 +4,12 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '*.md'
   pull_request:
     types: [ opened, synchronize ]
+    paths-ignore:
+      - '*.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,7 +20,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -26,11 +30,11 @@ jobs:
         sudo apt-get install -y cmake file g++ git libfmt-dev libsdl1.2-dev libsodium-dev libpng-dev libbz2-dev rpm smpq
 
     - name: Cache CMake build folder
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: build
-        key: linux-x86_64-sdl1-cmake-v5-${{ github.sha }}
-        restore-keys: linux-x86_64-sdl1-cmake-v5-
+        key: ${{ github.workflow }}-v2-${{ github.sha }}
+        restore-keys: ${{ github.workflow }}-v2-
 
     - name: Configure CMake
       shell: bash
@@ -47,7 +51,10 @@ jobs:
 
     - name: Upload-Package
       if: ${{ !env.ACT }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: devilutionx_linux_x86_64_SDL1.tar.xz
         path: devilutionx.tar.xz
+
+    - name: Clean up artifacts
+      run: rm -rf build/_CPack_Packages build/package build/*.deb build/*.rpm build/*.appimage build/*.tar.xz

@@ -1,8 +1,11 @@
 #include "panels/spell_list.hpp"
 
+#include <cstdint>
+
 #include <fmt/format.h>
 
 #include "control.h"
+#include "controls/plrctrls.h"
 #include "engine.h"
 #include "engine/backbuffer_state.hpp"
 #include "engine/palette.h"
@@ -61,13 +64,15 @@ bool GetSpellListSelection(SpellID &pSpell, SpellType &pSplType)
 	return false;
 }
 
-std::optional<string_view> GetHotkeyName(SpellID spellId, SpellType spellType)
+std::optional<string_view> GetHotkeyName(SpellID spellId, SpellType spellType, bool useShortName = false)
 {
 	Player &myPlayer = *MyPlayer;
 	for (size_t t = 0; t < NumHotkeys; t++) {
 		if (myPlayer._pSplHotKey[t] != spellId || myPlayer._pSplTHotKey[t] != spellType)
 			continue;
 		auto quickSpellActionKey = StrCat("QuickSpell", t + 1);
+		if (ControlMode == ControlTypes::Gamepad)
+			return sgOptions.Padmapper.InputNameForAction(quickSpellActionKey, useShortName);
 		return sgOptions.Keymapper.KeyNameForAction(quickSpellActionKey);
 	}
 	return {};
@@ -94,14 +99,14 @@ void DrawSpell(const Surface &out)
 			st = SpellType::Invalid;
 	}
 
-	if (leveltype == DTYPE_TOWN && st != SpellType::Invalid && !GetSpellData(spl).sTownSpell)
+	if (leveltype == DTYPE_TOWN && st != SpellType::Invalid && !GetSpellData(spl).isAllowedInTown())
 		st = SpellType::Invalid;
 
 	SetSpellTrans(st);
 	const Point position = GetMainPanel().position + Displacement { 565, 119 };
 	DrawLargeSpellIcon(out, position, spl);
 
-	std::optional<string_view> hotkeyName = GetHotkeyName(spl, myPlayer._pRSplType);
+	std::optional<string_view> hotkeyName = GetHotkeyName(spl, myPlayer._pRSplType, true);
 	if (hotkeyName)
 		PrintSBookHotkey(out, position, *hotkeyName);
 }
@@ -117,7 +122,7 @@ void DrawSpellList(const Surface &out)
 		SpellType transType = spellListItem.type;
 		int spellLevel = 0;
 		const SpellData &spellDataItem = GetSpellData(spellListItem.id);
-		if (leveltype == DTYPE_TOWN && !spellDataItem.sTownSpell) {
+		if (leveltype == DTYPE_TOWN && !spellDataItem.isAllowedInTown()) {
 			transType = SpellType::Invalid;
 		}
 		if (spellListItem.type == SpellType::Spell) {
@@ -129,10 +134,10 @@ void DrawSpellList(const Surface &out)
 		SetSpellTrans(transType);
 		DrawLargeSpellIcon(out, spellListItem.location, spellId);
 
-		std::optional<string_view> hotkeyName = GetHotkeyName(spellId, spellListItem.type);
+		std::optional<string_view> shortHotkeyName = GetHotkeyName(spellId, spellListItem.type, true);
 
-		if (hotkeyName)
-			PrintSBookHotkey(out, spellListItem.location, *hotkeyName);
+		if (shortHotkeyName)
+			PrintSBookHotkey(out, spellListItem.location, *shortHotkeyName);
 
 		if (!spellListItem.isSelected)
 			continue;
@@ -151,8 +156,11 @@ void DrawSpellList(const Surface &out)
 			}
 			PrintSBookSpellType(out, spellListItem.location, _("Spell"), spellColor);
 			InfoString = fmt::format(fmt::runtime(_("{:s} Spell")), pgettext("spell", spellDataItem.sNameText));
-			if (spellId == SpellID::HolyBolt) {
-				AddPanelString(_("Damages undead only"));
+			if (spellId == SpellID::Firebolt 
+			|| spellId == SpellID::ChargedBolt
+			|| spellId == SpellID::Lightning
+			|| spellId == SpellID::Guardian) {
+				AddPanelString(_("Pierces immunes"));
 			}
 			if (spellLevel == 0)
 				AddPanelString(_("Spell Level 0 - Unusable"));
@@ -183,8 +191,9 @@ void DrawSpellList(const Surface &out)
 		case SpellType::Invalid:
 			break;
 		}
-		if (hotkeyName) {
-			AddPanelString(fmt::format(fmt::runtime(_("Spell Hotkey {:s}")), *hotkeyName));
+		std::optional<string_view> fullHotkeyName = GetHotkeyName(spellId, spellListItem.type);
+		if (fullHotkeyName) {
+			AddPanelString(fmt::format(fmt::runtime(_("Spell Hotkey {:s}")), *fullHotkeyName));
 		}
 	}
 }

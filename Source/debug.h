@@ -5,6 +5,7 @@
  */
 #pragma once
 
+#include <cstdint>
 #include <unordered_map>
 
 #include "engine.h"
@@ -18,6 +19,7 @@ extern OptionalOwnedClxSpriteList pSquareCel;
 extern bool DebugToggle;
 extern bool DebugGodMode;
 extern bool DebugVision;
+extern bool DebugPath;
 extern bool DebugGrid;
 extern std::unordered_map<int, Point> DebugCoordsMap;
 extern bool DebugScrollViewEnabled;
@@ -32,5 +34,7 @@ bool CheckDebugTextCommand(const string_view text);
 bool IsDebugGridTextNeeded();
 bool IsDebugGridInMegatiles();
 bool GetDebugGridText(Point dungeonCoords, char *debugGridTextBuffer);
+bool IsDebugAutomapHighlightNeeded();
+bool ShouldHighlightDebugAutomapTile(Point position);
 
 } // namespace devilution
