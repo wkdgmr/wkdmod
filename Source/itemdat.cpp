@@ -542,7 +542,7 @@ const UniqueItem UniqueItems[] = {
 { N_("Demon Plate Armor"),       UITYPE_FULLPLATE,          25,        3,    80000, { { IPL_SETAC,          120,      120 }, { IPL_ACDEMON                       }, { IPL_INVCURS,        225           }, {                                   }, {                                   }, {                                   } }  },
 { N_("Acolyte's Amulet"),        UITYPE_AMULET,             10,        6,    10000, { { IPL_MANATOLIFE,      60,       60 }, { IPL_MANA,            50,       50 }, { IPL_STEALMANA,        3,        3 }, { IPL_GETHIT,          10,       10 }, { IPL_AC_CURSE,        25,       25 }, { IPL_INVCURS,         183          } }  },
 	// TRANSLATORS: Unique Item section end.
-{ N_("Gladiator's Ring"),        UITYPE_RING,               10,        3,    10000, { { IPL_LIFETOMANA,      60,       60 }, { IPL_VIT,            50,       50 }, {  IPL_INVCURS,        186          }, {                                   }, {                                   }, {                                   } }  },
+{ N_("Gladiator's Ring"),        UITYPE_RING,               10,        2,    10000, { { IPL_LIFETOMANA,      60,       60 }, { IPL_INVCURS,        186          }, {                                   }, {                                   }, {                                   }, {                                   } }  },
 { "",                            UITYPE_INVALID,             0,        0,        0, { {                                   }, {                                   }, {                                   }, {                                   }, {                                   }, {                                   } }  },
 	// clang-format on
 };
