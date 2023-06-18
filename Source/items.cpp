@@ -3902,7 +3902,7 @@ bool DoOil(Player &player, int cii)
 	case IPL_RNDARROWVEL:
 		return _("fires random speed arrows");
 	case IPL_SETDAM:
-		return _("unusual item damage");
+		return _("modified base weapon damage");
 	case IPL_SETDUR:
 		return _("altered durability");
 	case IPL_ONEHAND:
