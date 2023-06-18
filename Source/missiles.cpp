@@ -860,9 +860,9 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = ScaleSpellEffect((myPlayer._pLevel + 30) / 2, sl) * 5;
 		break;
 	case SpellID::Inferno:
-		*mind = 3;
-		*maxd = myPlayer._pLevel + 4;
-		*maxd += *maxd / 2;
+		*mind = sl + myPlayer._pLevel / 2;
+		*maxd = (sl * 2) + myPlayer._pLevel;
+		*maxd += (*maxd / 2) + (myPlayer._pMagic / 2);
 		break;
 	case SpellID::Golem:
 		*mind = 2 * (sl) + myPlayer._pLevel;
@@ -2567,8 +2567,8 @@ void AddInferno(Missile &missile, AddMissileParameter &parameter)
 	missile._mirange = missile.var2 + 20;
 	missile._mlid = AddLight(missile.position.start, 1);
 	if (missile._micaster == TARGET_MONSTERS) {
-		int i = GenerateRnd(Players[missile._misource]._pLevel) + GenerateRnd(2);
-		missile._midam = 8 * i + 16 + ((8 * i + 16) / 2);
+		int i = GenerateRnd(Players[missile._misource]._pLevel / 2) + GenerateRnd(missile._mispllvl);
+		missile._midam = ((i + (i * 2)) + (i + (Players[missile._misource]._pMagic / 2)));
 	} else {
 		auto &monster = Monsters[missile._misource];
 		missile._midam = monster.minDamage + GenerateRnd(monster.maxDamage - monster.minDamage + 1);

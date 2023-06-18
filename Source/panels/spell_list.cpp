@@ -159,6 +159,7 @@ void DrawSpellList(const Surface &out)
 			if (spellId == SpellID::Firebolt 
 			|| spellId == SpellID::ChargedBolt
 			|| spellId == SpellID::Lightning
+			|| spellId == SpellID::Inferno
 			|| spellId == SpellID::Guardian) {
 				AddPanelString(_("Pierces immunes"));
 			}
