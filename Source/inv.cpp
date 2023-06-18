@@ -260,7 +260,7 @@ void ChangeEquipment(Player &player, inv_body_loc bodyLocation, const Item &item
 	player.InvBody[bodyLocation] = item;
 
 	if (&player == MyPlayer) {
-		NetSendCmdChItem(false, bodyLocation);
+		NetSendCmdChItem(false, bodyLocation, true);
 	}
 }
 
@@ -867,7 +867,9 @@ void CheckQuestItem(Player &player, Item &questItem)
 {
 	Player &myPlayer = *MyPlayer;
 
-	if (questItem.IDidx == IDI_OPTAMULET && Quests[Q_BLIND]._qactive == QUEST_ACTIVE) {
+	if (Quests[Q_BLIND]._qactive == QUEST_ACTIVE
+	    && (questItem.IDidx == IDI_OPTAMULET
+	        || (gbIsMultiplayer && Quests[Q_BLIND].IsAvailable() && questItem.position == (SetPiece.position.megaToWorld() + Displacement { 5, 5 })))) {
 		Quests[Q_BLIND]._qactive = QUEST_DONE;
 		NetSendCmdQuest(true, Quests[Q_BLIND]);
 	}
@@ -902,14 +904,15 @@ void CheckQuestItem(Player &player, Item &questItem)
 		}
 	}
 
-	if (questItem.IDidx == IDI_ARMOFVAL && Quests[Q_BLOOD]._qactive == QUEST_ACTIVE) {
+	if (Quests[Q_BLOOD]._qactive == QUEST_ACTIVE
+	    && (questItem.IDidx == IDI_ARMOFVAL
+	        || (gbIsMultiplayer && Quests[Q_BLOOD].IsAvailable() && questItem.position == (SetPiece.position.megaToWorld() + Displacement { 9, 3 })))) {
 		Quests[Q_BLOOD]._qactive = QUEST_DONE;
 		NetSendCmdQuest(true, Quests[Q_BLOOD]);
 		myPlayer.Say(HeroSpeech::MayTheSpiritOfArkaineProtectMe, 20);
 	}
 
 	if (questItem.IDidx == IDI_MAPOFDOOM) {
-		Quests[Q_GRAVE]._qlog = false;
 		Quests[Q_GRAVE]._qactive = QUEST_ACTIVE;
 		if (Quests[Q_GRAVE]._qvar1 != 1) {
 			MyPlayer->Say(HeroSpeech::UhHuh, 10);
@@ -2078,8 +2081,35 @@ bool UseInvItem(int cii)
 void CloseInventory()
 {
 	CloseGoldWithdraw();
-	IsStashOpen = false;
+	CloseStash();
 	invflag = false;
+}
+
+void CloseStash()
+{
+	if (!IsStashOpen)
+		return;
+
+	Player &myPlayer = *MyPlayer;
+	if (!myPlayer.HoldItem.isEmpty()) {
+		std::optional<Point> itemTile = FindAdjacentPositionForItem(myPlayer.position.future, myPlayer._pdir);
+		if (itemTile) {
+			NetSendCmdPItem(true, CMD_PUTITEM, *itemTile, myPlayer.HoldItem);
+		} else {
+			if (!AutoPlaceItemInBelt(myPlayer, myPlayer.HoldItem, true)
+			    && !AutoPlaceItemInInventory(myPlayer, myPlayer.HoldItem, true)
+			    && !AutoPlaceItemInStash(myPlayer, myPlayer.HoldItem, true)) {
+				// This can fail for max gold, arena potions and a stash that has been arranged
+				// to not have room for the item all 3 cases are extremely unlikely
+				app_fatal(_("No room for item"));
+			}
+			PlaySFX(ItemInvSnds[ItemCAnimTbl[myPlayer.HoldItem._iCurs]]);
+		}
+		myPlayer.HoldItem.clear();
+		NewCursor(CURSOR_HAND);
+	}
+
+	IsStashOpen = false;
 }
 
 void DoTelekinesis()

@@ -152,11 +152,13 @@ void LoadCutsceneBackground(interface_mode uMsg)
 		progress_id = 1;
 		break;
 	case CutLevel5:
+		ArtCutsceneWidescreen = LoadOptionalClx("nlevels\\cutl5w.clx");
 		celPath = "nlevels\\cutl5";
 		palPath = "nlevels\\cutl5.pal";
 		progress_id = 1;
 		break;
 	case CutLevel6:
+		ArtCutsceneWidescreen = LoadOptionalClx("nlevels\\cutl6w.clx");
 		celPath = "nlevels\\cutl6";
 		palPath = "nlevels\\cutl6.pal";
 		progress_id = 1;
@@ -198,6 +200,7 @@ void DrawCutsceneBackground()
 {
 	const Rectangle &uiRectangle = GetUIRectangle();
 	const Surface &out = GlobalBackBuffer();
+	SDL_FillRect(out.surface, nullptr, 0x000000);
 	if (ArtCutsceneWidescreen) {
 		const ClxSprite sprite = (*ArtCutsceneWidescreen)[0];
 		RenderClxSprite(out, sprite, { uiRectangle.position.x - (sprite.width() - uiRectangle.size.width) / 2, uiRectangle.position.y });

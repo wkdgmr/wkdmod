@@ -1907,7 +1907,7 @@ size_t OnChangePlayerItems(const TCmd *pCmd, size_t pnum)
 		CheckInvSwap(player, bodyLocation);
 	}
 
-	player.ReadySpellFromEquipment(bodyLocation);
+	player.ReadySpellFromEquipment(bodyLocation, message.forceSpell);
 
 	return sizeof(message);
 }
@@ -2635,6 +2635,8 @@ void DeltaLoadLevel()
 				monster.position.tile = position;
 				monster.position.old = position;
 				monster.position.future = position;
+				if (monster.lightId != NO_LIGHT)
+					ChangeLightXY(monster.lightId, position);
 			}
 			if (deltaLevel.monster[i].hitPoints != -1) {
 				monster.hitPoints = deltaLevel.monster[i].hitPoints;
@@ -2990,7 +2992,7 @@ void NetSendCmdPItem(bool bHiPri, _cmd_id bCmd, Point position, const Item &item
 		NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 }
 
-void NetSendCmdChItem(bool bHiPri, uint8_t bLoc)
+void NetSendCmdChItem(bool bHiPri, uint8_t bLoc, bool forceSpellChange)
 {
 	TCmdChItem cmd {};
 
@@ -2998,6 +3000,7 @@ void NetSendCmdChItem(bool bHiPri, uint8_t bLoc)
 
 	cmd.bCmd = CMD_CHANGEPLRITEMS;
 	cmd.bLoc = bLoc;
+	cmd.forceSpell = forceSpellChange;
 	PrepareItemForNetwork(item, cmd);
 
 	if (bHiPri)
