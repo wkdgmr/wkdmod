@@ -32,6 +32,7 @@
 #include "utils/file_util.h"
 #include "utils/language.h"
 #include "utils/log.hpp"
+#include "utils/str_case.hpp"
 #include "utils/str_cat.hpp"
 #include "utils/str_split.hpp"
 
@@ -47,6 +48,12 @@ bool DebugGrid = false;
 std::unordered_map<int, Point> DebugCoordsMap;
 bool DebugScrollViewEnabled = false;
 std::string debugTRN;
+
+// Used for debugging level generation
+uint32_t glMid1Seed[NUMLEVELS];
+uint32_t glMid2Seed[NUMLEVELS];
+uint32_t glMid3Seed[NUMLEVELS];
+uint32_t glEndSeed[NUMLEVELS];
 
 namespace {
 
@@ -87,12 +94,6 @@ int DebugMonsterId;
 std::vector<std::string> SearchMonsters;
 std::vector<std::string> SearchItems;
 std::vector<std::string> SearchObjects;
-
-// Used for debugging level generation
-uint32_t glMid1Seed[NUMLEVELS];
-uint32_t glMid2Seed[NUMLEVELS];
-uint32_t glMid3Seed[NUMLEVELS];
-uint32_t glEndSeed[NUMLEVELS];
 
 void PrintDebugMonster(const Monster &monster)
 {
@@ -649,11 +650,6 @@ std::string DebugCmdShowGrid(const string_view parameter)
 	return "Back to boring.";
 }
 
-std::string DebugCmdLevelSeed(const string_view parameter)
-{
-	return StrCat("Seedinfo for level ", currlevel, "\nseed: ", glSeedTbl[currlevel], "\nMid1: ", glMid1Seed[currlevel], "\nMid2: ", glMid2Seed[currlevel], "\nMid3: ", glMid3Seed[currlevel], "\nEnd: ", glEndSeed[currlevel]);
-}
-
 std::string DebugCmdSpawnUniqueMonster(const string_view parameter)
 {
 	if (leveltype == DTYPE_TOWN)
@@ -674,14 +670,13 @@ std::string DebugCmdSpawnUniqueMonster(const string_view parameter)
 		return "Monster name cannot be empty. Duh.";
 
 	name.pop_back(); // remove last space
-	std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+	AsciiStrToLower(name);
 
 	int mtype = -1;
 	UniqueMonsterType uniqueIndex = UniqueMonsterType::None;
 	for (size_t i = 0; UniqueMonstersData[i].mtype != MT_INVALID; i++) {
 		auto mondata = UniqueMonstersData[i];
-		std::string monsterName(mondata.mName);
-		std::transform(monsterName.begin(), monsterName.end(), monsterName.begin(), [](unsigned char c) { return std::tolower(c); });
+		const std::string monsterName = AsciiStrToLower(mondata.mName);
 		if (monsterName.find(name) == std::string::npos)
 			continue;
 		mtype = mondata.mtype;
@@ -762,14 +757,13 @@ std::string DebugCmdSpawnMonster(const string_view parameter)
 		return "Monster name cannot be empty. Duh.";
 
 	name.pop_back(); // remove last space
-	std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+	AsciiStrToLower(name);
 
 	int mtype = -1;
 
 	for (int i = 0; i < NUM_MTYPES; i++) {
 		auto mondata = MonstersData[i];
-		std::string monsterName(mondata.name);
-		std::transform(monsterName.begin(), monsterName.end(), monsterName.begin(), [](unsigned char c) { return std::tolower(c); });
+		const std::string monsterName = AsciiStrToLower(mondata.name);
 		if (monsterName.find(name) == std::string::npos)
 			continue;
 		mtype = i;
@@ -995,7 +989,7 @@ std::string DebugCmdSearchMonster(const string_view parameter)
 
 	std::string name;
 	AppendStrView(name, parameter);
-	std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+	AsciiStrToLower(name);
 	SearchMonsters.push_back(name);
 
 	return "We will find this bastard!";
@@ -1010,7 +1004,7 @@ std::string DebugCmdSearchItem(const string_view parameter)
 
 	std::string name;
 	AppendStrView(name, parameter);
-	std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+	AsciiStrToLower(name);
 	SearchItems.push_back(name);
 
 	return "Are you greedy? Anyway I will help you.";
@@ -1025,7 +1019,7 @@ std::string DebugCmdSearchObject(const string_view parameter)
 
 	std::string name;
 	AppendStrView(name, parameter);
-	std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+	AsciiStrToLower(name);
 	SearchObjects.push_back(name);
 
 	return "I will look for the pyramids. Oh sorry, I'm looking for what you want, of course.";
@@ -1090,7 +1084,6 @@ std::vector<DebugCmdItem> DebugCmdList = {
 	{ "exit", "Exits the game.", "", &DebugCmdExit },
 	{ "arrow", "Changes arrow effect (normal, fire, lightning, explosion).", "{effect}", &DebugCmdArrow },
 	{ "grid", "Toggles showing grid.", "", &DebugCmdShowGrid },
-	{ "seedinfo", "Show seed infos for current level.", "", &DebugCmdLevelSeed },
 	{ "spawnu", "Spawns unique monster {name}.", "{name} ({count})", &DebugCmdSpawnUniqueMonster },
 	{ "spawn", "Spawns monster {name}.", "{name} ({count})", &DebugCmdSpawnMonster },
 	{ "tiledata", "Toggles showing tile data {name} (leave name empty to see a list).", "{name}", &DebugCmdShowTileData },
@@ -1278,11 +1271,9 @@ bool IsDebugAutomapHighlightNeeded()
 bool ShouldHighlightDebugAutomapTile(Point position)
 {
 	auto matchesSearched = [](const string_view name, const std::vector<std::string> &searchedNames) {
-		std::string nameToLower;
-		StrAppend(nameToLower, name);
-		std::transform(nameToLower.begin(), nameToLower.end(), nameToLower.begin(), [](unsigned char c) { return std::tolower(c); });
+		const std::string lowercaseName = AsciiStrToLower(name);
 		for (const auto &searchedName : searchedNames) {
-			if (nameToLower.find(searchedName) != std::string::npos) {
+			if (lowercaseName.find(searchedName) != std::string::npos) {
 				return true;
 			}
 		}

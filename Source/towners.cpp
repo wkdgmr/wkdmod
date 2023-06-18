@@ -11,6 +11,7 @@
 #include "minitext.h"
 #include "stores.h"
 #include "utils/language.h"
+#include "utils/str_case.hpp"
 
 namespace devilution {
 namespace {
@@ -344,7 +345,7 @@ void TalkToBarOwner(Player &player, Towner &barOwner)
 				bannerQuest._qactive = QUEST_DONE;
 				bannerQuest._qvar1 = 3;
 				NetSendCmdQuest(true, bannerQuest);
-				SpawnUnique(UITEM_HARCREST, barOwner.position + Direction::SouthWest);
+				SpawnUnique(UITEM_HARCREST, barOwner.position + Direction::SouthWest, bannerQuest._qlevel);
 				InitQTextMsg(TEXT_BANNER3);
 				return;
 			}
@@ -377,7 +378,7 @@ void TalkToDeadguy(Player &player, Towner & /*deadguy*/)
 void TalkToBlackSmith(Player &player, Towner &blackSmith)
 {
 	if (Quests[Q_ROCK]._qactive != QUEST_NOTAVAIL) {
-		if (player._pLvlVisited[4] && Quests[Q_ROCK]._qactive != QUEST_DONE) {
+		if ((player._pLvlVisited[4] || player._pLvlVisited[5]) && Quests[Q_ROCK]._qactive != QUEST_DONE) {
 			if (Quests[Q_ROCK]._qvar2 == 0) {
 				Quests[Q_ROCK]._qvar2 = 1;
 				Quests[Q_ROCK]._qlog = true;
@@ -392,7 +393,7 @@ void TalkToBlackSmith(Player &player, Towner &blackSmith)
 			if (Quests[Q_ROCK]._qvar2 == 1 && RemoveInventoryItemById(player, IDI_ROCK)) {
 				Quests[Q_ROCK]._qactive = QUEST_DONE;
 				NetSendCmdQuest(true, Quests[Q_ROCK]);
-				SpawnUnique(UITEM_INFRARING, blackSmith.position + Direction::SouthWest);
+				SpawnUnique(UITEM_INFRARING, blackSmith.position + Direction::SouthWest, Quests[Q_ROCK]._qlevel);
 				InitQTextMsg(TEXT_INFRA7);
 				return;
 			}
@@ -413,7 +414,7 @@ void TalkToBlackSmith(Player &player, Towner &blackSmith)
 		if (Quests[Q_ANVIL]._qvar2 == 1 && RemoveInventoryItemById(player, IDI_ANVIL)) {
 			Quests[Q_ANVIL]._qactive = QUEST_DONE;
 			NetSendCmdQuest(true, Quests[Q_ANVIL]);
-			SpawnUnique(UITEM_GRISWOLD, blackSmith.position + Direction::SouthWest);
+			SpawnUnique(UITEM_GRISWOLD, blackSmith.position + Direction::SouthWest, Quests[Q_ANVIL]._qlevel);
 			InitQTextMsg(TEXT_ANVIL7);
 			return;
 		}
@@ -479,6 +480,7 @@ void TalkToBarmaid(Player &player, Towner & /*barmaid*/)
 		Quests[Q_GRAVE]._qactive = QUEST_ACTIVE;
 		Quests[Q_GRAVE]._qlog = true;
 		Quests[Q_GRAVE]._qmsg = TEXT_GRAVE8;
+		NetSendCmdQuest(true, Quests[Q_GRAVE]);
 		InitQTextMsg(TEXT_GRAVE8);
 		return;
 	}
@@ -510,7 +512,7 @@ void TalkToHealer(Player &player, Towner &healer)
 		if (poisonWater._qactive == QUEST_DONE && poisonWater._qvar1 != 2) {
 			poisonWater._qvar1 = 2;
 			InitQTextMsg(TEXT_POISON5);
-			SpawnUnique(UITEM_TRING, healer.position + Direction::SouthWest);
+			SpawnUnique(UITEM_TRING, healer.position + Direction::SouthWest, poisonWater._qlevel);
 			NetSendCmdQuest(true, poisonWater);
 			return;
 		}
@@ -648,7 +650,6 @@ void TalkToFarmer(Player &player, Towner &farmer)
 		InitQTextMsg(TEXT_FARMER4);
 		SpawnRewardItem(IDI_AURIC, farmer.position + Displacement { 1, 0 }, true);
 		quest._qactive = QUEST_HIVE_DONE;
-		quest._qlog = false;
 		if (gbIsMultiplayer)
 			NetSendCmdQuest(true, quest);
 		break;
@@ -670,12 +671,11 @@ void TalkToCowFarmer(Player &player, Towner &cowFarmer)
 	auto &quest = Quests[Q_JERSEY];
 
 	if (RemoveInventoryItemById(player, IDI_BROWNSUIT)) {
-		SpawnUnique(UITEM_BOVINE, cowFarmer.position + Direction::SouthEast);
+		SpawnUnique(UITEM_BOVINE, cowFarmer.position + Direction::SouthEast, quest._qlevel);
 		InitQTextMsg(TEXT_JERSEY8);
 		quest._qactive = QUEST_DONE;
-		auto curFrame = cowFarmer._tAnimFrame;
-		LoadTownerAnimations(cowFarmer, "towners\\farmer\\mfrmrn2", 15, 3);
-		cowFarmer._tAnimFrame = std::min<uint8_t>(curFrame, cowFarmer._tAnimLen - 1);
+		UpdateCowFarmerAnimAfterQuestComplete();
+		NetSendCmdQuest(true, quest);
 		return;
 	}
 
@@ -685,6 +685,7 @@ void TalkToCowFarmer(Player &player, Towner &cowFarmer)
 		quest._qvar1 = 1;
 		quest._qmsg = TEXT_JERSEY4;
 		quest._qlog = true;
+		NetSendCmdQuest(true, quest);
 		return;
 	}
 
@@ -750,12 +751,9 @@ void TalkToGirl(Player &player, Towner &girl)
 
 	if (quest._qactive != QUEST_DONE && RemoveInventoryItemById(player, IDI_THEODORE)) {
 		InitQTextMsg(TEXT_GIRL4);
-		CreateAmulet(girl.position, 13, true, false);
-		quest._qlog = false;
+		CreateAmulet(girl.position, 13, false, false, true);
 		quest._qactive = QUEST_DONE;
-		auto curFrame = girl._tAnimFrame;
-		LoadTownerAnimations(girl, "towners\\girl\\girls1", 20, 6);
-		girl._tAnimFrame = std::min<uint8_t>(curFrame, girl._tAnimLen - 1);
+		UpdateGirlAnimAfterQuestComplete();
 		if (gbIsMultiplayer)
 			NetSendCmdQuest(true, quest);
 		return;
@@ -918,11 +916,29 @@ void TalkToTowner(Player &player, int t)
 	towner.talk(player, towner);
 }
 
+void UpdateGirlAnimAfterQuestComplete()
+{
+	Towner *girl = GetTowner(TOWN_GIRL);
+	if (girl == nullptr || !girl->ownedAnim)
+		return; // Girl is not spawned in town yet
+	auto curFrame = girl->_tAnimFrame;
+	LoadTownerAnimations(*girl, "towners\\girl\\girls1", 20, 6);
+	girl->_tAnimFrame = std::min<uint8_t>(curFrame, girl->_tAnimLen - 1);
+}
+
+void UpdateCowFarmerAnimAfterQuestComplete()
+{
+	Towner *cowFarmer = GetTowner(TOWN_COWFARM);
+	auto curFrame = cowFarmer->_tAnimFrame;
+	LoadTownerAnimations(*cowFarmer, "towners\\farmer\\mfrmrn2", 15, 3);
+	cowFarmer->_tAnimFrame = std::min<uint8_t>(curFrame, cowFarmer->_tAnimLen - 1);
+}
+
 #ifdef _DEBUG
 bool DebugTalkToTowner(std::string targetName)
 {
 	SetupTownStores();
-	std::transform(targetName.begin(), targetName.end(), targetName.begin(), [](unsigned char c) { return std::tolower(c); });
+	AsciiStrToLower(targetName);
 	Player &myPlayer = *MyPlayer;
 	for (auto &townerData : TownersData) {
 		if (!IsTownerPresent(townerData.type))
@@ -933,8 +949,7 @@ bool DebugTalkToTowner(std::string targetName)
 		Towner fakeTowner;
 		townerData.init(fakeTowner, townerData);
 		fakeTowner.position = myPlayer.position.tile;
-		std::string npcName(fakeTowner.name);
-		std::transform(npcName.begin(), npcName.end(), npcName.begin(), [](unsigned char c) { return std::tolower(c); });
+		const std::string npcName = AsciiStrToLower(fakeTowner.name);
 		if (npcName.find(targetName) != std::string::npos) {
 			townerData.talk(myPlayer, fakeTowner);
 			return true;

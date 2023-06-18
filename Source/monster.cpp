@@ -887,9 +887,9 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 
 		if (effect_is_playing(USFX_DEFILER8))
 			stream_stop();
-		Quests[Q_DEFILER]._qlog = false;
 		SpawnMapOfDoom(monster.position.tile, sendmsg);
-		
+		Quests[Q_DEFILER]._qactive = QUEST_DONE;
+		NetSendCmdQuest(true, Quests[Q_DEFILER]);
 	} else if (monster.uniqueType == UniqueMonsterType::HorkDemon) {
 		if (sgGameInitInfo.bTheoQuest != 0) {
 			SpawnTheodore(monster.position.tile, sendmsg);
@@ -945,7 +945,6 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			nSFX = USFX_NAKRUL6;
 		if (effect_is_playing(nSFX))
 			stream_stop();
-		Quests[Q_NAKRUL]._qlog = false;
 		UberDiabloMonsterIndex = -2;
 
 	} else if (!monster.isPlayerMinion()) {
@@ -3483,8 +3482,6 @@ void WeakenNaKrul()
 	Quests[Q_NAKRUL]._qlog = false;
 	if (sgGameInitInfo.nDifficulty != DIFF_HELL) {
 		monster.resistance = 7;
-	} else {
-		monster.resistance = 75;
 	}
 }
 
@@ -3702,7 +3699,9 @@ void M_StartHit(Monster &monster, const Player &player, int dam)
 		monster.enemy = player.getId();
 		monster.enemyPosition = player.position.future;
 		monster.flags &= ~MFLAG_TARGETS_MONSTER;
-		monster.direction = GetMonsterDirection(monster);
+		if (monster.mode != MonsterMode::Petrified) {
+			monster.direction = GetMonsterDirection(monster);
+		}
 	}
 
 	M_StartHit(monster, dam);
@@ -4197,7 +4196,7 @@ void SyncMonsterAnim(Monster &monster)
 	}
 	MonsterGraphic graphic = MonsterGraphic::Stand;
 
-	switch (monster.mode) {
+	switch (monster.getVisualMonsterMode()) {
 	case MonsterMode::Stand:
 	case MonsterMode::Delay:
 	case MonsterMode::Talk:
@@ -4529,13 +4528,11 @@ Monster *PreSpawnSkeleton()
 
 void TalktoMonster(Player &player, Monster &monster)
 {
-	monster.mode = MonsterMode::Talk;
+	if (&player == MyPlayer)
+		monster.mode = MonsterMode::Talk;
 
-	if (IsNoneOf(monster.ai, MonsterAIID::Snotspill, MonsterAIID::Lachdanan, MonsterAIID::Zhar, MonsterAIID::Gharbad)) {
-		return;
-	}
-
-	if (Quests[Q_LTBANNER].IsAvailable() && Quests[Q_LTBANNER]._qvar1 == 2) {
+	if (monster.uniqueType == UniqueMonsterType::SnotSpill
+	    && Quests[Q_LTBANNER].IsAvailable() && Quests[Q_LTBANNER]._qvar1 == 2) {
 		if (RemoveInventoryItemById(player, IDI_BANNER)) {
 			Quests[Q_LTBANNER]._qactive = QUEST_DONE;
 			monster.talkMsg = TEXT_BANNER12;
@@ -4543,7 +4540,8 @@ void TalktoMonster(Player &player, Monster &monster)
 			NetSendCmdQuest(true, Quests[Q_LTBANNER]);
 		}
 	}
-	if (Quests[Q_VEIL].IsAvailable() && monster.talkMsg >= TEXT_VEIL9) {
+	if (monster.uniqueType == UniqueMonsterType::Lachdan
+	    && Quests[Q_VEIL].IsAvailable() && monster.talkMsg >= TEXT_VEIL9) {
 		if (RemoveInventoryItemById(player, IDI_GLDNELIX) && (monster.flags & MFLAG_QUEST_COMPLETE) == 0) {
 			monster.talkMsg = TEXT_VEIL11;
 			monster.goal = MonsterGoal::Inquiring;
@@ -4690,7 +4688,7 @@ void Monster::petrify()
 
 bool Monster::isWalking() const
 {
-	switch (mode) {
+	switch (getVisualMonsterMode()) {
 	case MonsterMode::MoveNorthwards:
 	case MonsterMode::MoveSouthwards:
 	case MonsterMode::MoveSideways:
@@ -4778,6 +4776,20 @@ bool Monster::tryLiftGargoyle()
 		return true;
 	}
 	return false;
+}
+
+MonsterMode Monster::getVisualMonsterMode() const
+{
+	if (mode != MonsterMode::Petrified)
+		return mode;
+	size_t monsterId = this->getId();
+	for (auto &missile : Missiles) {
+		// Search the missile that will restore the original monster mode and use the saved/original monster mode from it
+		if (missile._mitype == MissileID::StoneCurse && missile.var2 == monsterId) {
+			return static_cast<MonsterMode>(missile.var1);
+		}
+	}
+	return MonsterMode::Petrified;
 }
 
 unsigned int Monster::toHitSpecial(_difficulty difficulty) const

@@ -1933,6 +1933,7 @@ void OperateLever(Object &object, bool sendmsg)
 	if (currlevel == 24) {
 		PlaySfxLoc(IS_CROPEN, { UberRow, UberCol });
 		Quests[Q_NAKRUL]._qactive = QUEST_DONE;
+		NetSendCmdQuest(true, Quests[Q_NAKRUL]);
 	}
 
 	if (sendmsg)
@@ -2041,7 +2042,7 @@ void OperateBookLever(Object &questBook, bool sendmsg)
 				ObjChangeMap(questBook._oVar1, questBook._oVar2, questBook._oVar3, questBook._oVar4);
 			if (questBook._otype == OBJ_BLINDBOOK) {
 				if (sendmsg)
-					SpawnUnique(UITEM_OPTAMULET, SetPiece.position.megaToWorld() + Displacement { 5, 5 });
+					SpawnUnique(UITEM_OPTAMULET, SetPiece.position.megaToWorld() + Displacement { 5, 5 }, std::nullopt, true, true);
 				auto tren = TransVal;
 				TransVal = 9;
 				DRLG_MRectTrans(WorldTilePosition(questBook._oVar1, questBook._oVar2), WorldTilePosition(questBook._oVar3, questBook._oVar4));
@@ -2098,8 +2099,8 @@ void OperateChamberOfBoneBook(Object &questBook, bool sendmsg)
 		Quests[Q_SCHAMB]._qmsg = textdef;
 		NetSendCmdQuest(true, Quests[Q_SCHAMB]);
 		NetSendCmdLoc(MyPlayerId, false, CMD_OPERATEOBJ, questBook.position);
+		InitQTextMsg(textdef);
 	}
-	InitQTextMsg(textdef);
 }
 
 void OperateChest(const Player &player, Object &chest, bool sendLootMsg)
@@ -2328,7 +2329,7 @@ void OperatePedestal(Player &player, Object &pedestal, bool sendmsg)
 		ObjChangeMap(pedestal._oVar1, pedestal._oVar2, pedestal._oVar3, pedestal._oVar4);
 		LoadMapObjects("levels\\l2data\\blood2.dun", SetPiece.position.megaToWorld());
 		if (sendmsg)
-			SpawnUnique(UITEM_ARMOFVAL, SetPiece.position.megaToWorld() + Displacement { 9, 3 });
+			SpawnUnique(UITEM_ARMOFVAL, SetPiece.position.megaToWorld() + Displacement { 9, 3 }, std::nullopt, true, true);
 		pedestal._oSelFlag = 0;
 	}
 }
@@ -2502,6 +2503,8 @@ void OperateShrineStone(Player &player)
 		if (item._itype == ItemType::Staff)
 			item._iCharges = item._iMaxCharges;
 	}
+
+	CalcPlrInv(player, true);
 
 	RedrawEverything();
 
@@ -3210,7 +3213,8 @@ void OperateBookcase(Object &bookcase, bool sendmsg, bool sendLootMsg)
 			zhar.talkMsg = TEXT_ZHAR2;
 			M_StartStand(zhar, zhar.direction); // BUGFIX: first parameter in call to M_StartStand should be MAX_PLRS, not 0. (fixed)
 			zhar.goal = MonsterGoal::Attack;
-			zhar.mode = MonsterMode::Talk;
+			if (sendmsg)
+				zhar.mode = MonsterMode::Talk;
 		}
 	}
 	if (sendmsg)
@@ -3451,6 +3455,7 @@ void OperateStoryBook(Object &storyBook)
 		Quests[Q_NAKRUL]._qactive = QUEST_ACTIVE;
 		Quests[Q_NAKRUL]._qlog = true;
 		Quests[Q_NAKRUL]._qmsg = msg;
+		NetSendCmdQuest(true, Quests[Q_NAKRUL]);
 	}
 	InitQTextMsg(msg);
 	NetSendCmdLoc(MyPlayerId, false, CMD_OPERATEOBJ, storyBook.position);
@@ -4598,6 +4603,10 @@ void DeltaSyncOpObject(Object &object)
 		break;
 	case OBJ_CAULDRON:
 		UpdateState(object, 3);
+		break;
+	case OBJ_STORYBOOK:
+	case OBJ_L5BOOKS:
+		object._oAnimFrame = object._oVar4;
 		break;
 	case OBJ_MUSHPATCH:
 		if (Quests[Q_MUSHROOM]._qvar1 >= QS_MUSHSPAWNED) {
