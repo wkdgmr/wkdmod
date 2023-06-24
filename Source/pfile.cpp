@@ -72,7 +72,7 @@ std::string GetSavePath(uint32_t saveNum, string_view savePrefix = {})
 std::string GetStashSavePath()
 {
 	return StrCat(paths::PrefPath(),
-		 *sgOptions.Gameplay.friendlyFire ? "invader_stash" : "",
+		 *sgOptions.Gameplay.friendlyFire ? "invader_" : "",
 	    gbIsSpawn ? "stash_spawn" : "stash",
 #ifdef UNPACKED_SAVES
 	    gbIsHellfire ? "_hsv" DIRECTORY_SEPARATOR_STR : "_sv" DIRECTORY_SEPARATOR_STR
