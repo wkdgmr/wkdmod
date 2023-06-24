@@ -65,7 +65,8 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Lightning and Fire WEAPON damage pierce enemy immunes and damage is resisted instead of ignored.  This includes the special Hellfire weapons that cast spells based on Weapon element damage.
 
 **OILS**
-All available Oils now drop in Classic and Hellfire multiplayer mode as well as singleplayer mode and added the following NEW Oils with NEW changes to Accuracy, Mastery, Hardening, Imperviousness, Sharpening, Death, Permanence (note Blacksmith Oil has been removed):
+- All available Oils now drop in Classic and Hellfire multiplayer mode as well as singleplayer mode and added the following NEW Oils with NEW changes to 
+  Accuracy, Mastery, Hardening, Imperviousness, Sharpening, Death, Permanence (note Blacksmith Oil has been removed):
 - Oil of Sharpening:  +1 minimum dmg, with 15/20/30/40 being the ceiling for minimum dmg for bows/1h/2h/Axe respectively / Can never exceed Maximum Damage
 - Oil of Death:  +2 maximum dmg, with 30/35/60/80 being the ceiling for maximum dmg for bows/1h/2h/Axe respectively 
 - Oil of Accuracy: Can now increase passive or active ToHit bonus on a weapon to 60
