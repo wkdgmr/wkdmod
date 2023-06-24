@@ -2378,14 +2378,6 @@ void CreatePlayer(Player &player, HeroClass c)
 	player._pBaseVit = PlayersData[static_cast<std::size_t>(c)].baseVit;
 	player._pVitality = player._pBaseVit;
 
-	player._pStatPts = 0;
-	player.pTownWarps = 0;
-	player.pDungMsgs = 0;
-	player.pDungMsgs2 = 0;
-	player.pLvlLoad = 0;
-	player.pDiabloKillLevel = 0;
-	player.pDifficulty = DIFF_NORMAL;
-
 	player._pLevel = 1;
 
 	player._pBaseToBlk = PlayersData[static_cast<std::size_t>(c)].blockBonus;
@@ -2475,7 +2467,6 @@ void CreatePlayer(Player &player, HeroClass c)
 	player._pLvlChanging = false;
 	player.pTownWarps = 0;
 	player.pLvlLoad = 0;
-	player.pBattleNet = false;
 	player.pManaShield = false;
 	player.pDamAcFlags = ItemSpecialEffectHf::None;
 	player.wReflections = 0;

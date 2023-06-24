@@ -486,7 +486,7 @@ void pfile_write_hero(SaveWriter &saveWriter, bool writeGameData)
 	PlayerPack pkplr;
 	Player &myPlayer = *MyPlayer;
 
-	PackPlayer(&pkplr, myPlayer, !gbIsMultiplayer, false);
+	PackPlayer(pkplr, myPlayer);
 	EncodeHero(saveWriter, &pkplr);
 	if (!gbVanilla) {
 		SaveHotkeys(saveWriter, myPlayer);
@@ -649,16 +649,13 @@ bool pfile_ui_set_hero_infos(bool (*uiAddHeroInfo)(_uiheroinfo *))
 
 				Player &player = Players[0];
 
-				player = {};
+				UnPackPlayer(pkplr, player);
+				LoadHeroItems(player);
+				RemoveEmptyInventory(player);
+				CalcPlrInv(player, false);
 
-				if (UnPackPlayer(&pkplr, player, false)) {
-					LoadHeroItems(player);
-					RemoveEmptyInventory(player);
-					CalcPlrInv(player, false);
-
-					Game2UiPlayer(player, &uihero, hasSaveGame);
-					uiAddHeroInfo(&uihero);
-				}
+				Game2UiPlayer(player, &uihero, hasSaveGame);
+				uiAddHeroInfo(&uihero);
 			}
 		}
 	}
@@ -702,7 +699,7 @@ bool pfile_ui_save_create(_uiheroinfo *heroinfo)
 	Player &player = Players[0];
 	CreatePlayer(player, heroinfo->heroclass);
 	CopyUtf8(player._pName, heroinfo->name, PlayerNameLength);
-	PackPlayer(&pkplr, player, true, false);
+	PackPlayer(pkplr, player);
 	EncodeHero(saveWriter, &pkplr);
 	Game2UiPlayer(player, heroinfo, false);
 	if (!gbVanilla) {
@@ -725,8 +722,6 @@ bool pfile_delete_save(_uiheroinfo *heroInfo)
 
 void pfile_read_player_from_save(uint32_t saveNum, Player &player)
 {
-	player = {};
-
 	PlayerPack pkplr;
 	{
 		std::optional<SaveReader> archive = OpenSaveArchive(saveNum);
@@ -740,10 +735,7 @@ void pfile_read_player_from_save(uint32_t saveNum, Player &player)
 			pkplr.bIsHellfire = gbIsHellfireSaveGame ? 1 : 0;
 	}
 
-	if (!UnPackPlayer(&pkplr, player, false)) {
-		return;
-	}
-
+	UnPackPlayer(pkplr, player);
 	LoadHeroItems(player);
 	RemoveEmptyInventory(player);
 	CalcPlrInv(player, false);

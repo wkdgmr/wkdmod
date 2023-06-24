@@ -975,23 +975,6 @@ bool IsPItemValid(const TCmdPItem &message)
 	return IsItemAvailable(static_cast<_item_indexes>(SDL_SwapLE16(message.def.wIndx)));
 }
 
-void PrepareItemForNetwork(const Item &item, TItem &messageItem)
-{
-	messageItem.bId = item._iIdentified ? 1 : 0;
-	messageItem.bDur = item._iDurability;
-	messageItem.bMDur = item._iMaxDur;
-	messageItem.bCh = item._iCharges;
-	messageItem.bMCh = item._iMaxCharges;
-	messageItem.wValue = SDL_SwapLE16(item._ivalue);
-	messageItem.wToHit = SDL_SwapLE16(item._iPLToHit);
-	messageItem.wMaxDam = SDL_SwapLE16(item._iMaxDam);
-	messageItem.bMinStr = item._iMinStr;
-	messageItem.bMinMag = item._iMinMag;
-	messageItem.bMinDex = item._iMinDex;
-	messageItem.bAC = SDL_SwapLE16(item._iAC);
-	messageItem.dwBuff = SDL_SwapLE32(item.dwBuff);
-}
-
 void PrepareEarForNetwork(const Item &item, TEar &ear)
 {
 	ear.bCursval = item._ivalue | ((item._iCurs - ICURS_EAR_SORCERER) << 6);
@@ -1032,27 +1015,6 @@ void PrepareItemForNetwork(const Item &item, TCmdChItem &message)
 		PrepareEarForNetwork(item, message.ear);
 	else
 		PrepareItemForNetwork(item, message.item);
-}
-
-void RecreateItem(const Player &player, const TItem &messageItem, Item &item)
-{
-	const uint32_t dwBuff = SDL_SwapLE32(messageItem.dwBuff);
-	RecreateItem(player, item,
-	    static_cast<_item_indexes>(SDL_SwapLE16(messageItem.wIndx)), SDL_SwapLE16(messageItem.wCI),
-	    SDL_SwapLE32(messageItem.dwSeed), SDL_SwapLE16(messageItem.wValue), (dwBuff & CF_HELLFIRE) != 0);
-	if (messageItem.bId != 0)
-		item._iIdentified = true;
-	item._iDurability = messageItem.bDur;
-	item._iMaxDur = messageItem.bMDur;
-	item._iCharges = messageItem.bCh;
-	item._iMaxCharges = messageItem.bMCh;
-	item._iPLToHit = SDL_SwapLE16(messageItem.wToHit);
-	item._iMaxDam = SDL_SwapLE16(messageItem.wMaxDam);
-	item._iMinStr = messageItem.bMinStr;
-	item._iMinMag = messageItem.bMinMag;
-	item._iMinDex = messageItem.bMinDex;
-	item._iAC = SDL_SwapLE16(messageItem.bAC);
-	item.dwBuff = dwBuff;
 }
 
 void RecreateItem(const Player &player, const TCmdPItem &message, Item &item)
@@ -2373,6 +2335,40 @@ size_t OnOpenGrave(const TCmd *pCmd)
 }
 
 } // namespace
+
+void PrepareItemForNetwork(const Item &item, TItem &messageItem)
+{
+	messageItem.bId = item._iIdentified ? 1 : 0;
+	messageItem.bDur = item._iDurability;
+	messageItem.bMDur = item._iMaxDur;
+	messageItem.bCh = item._iCharges;
+	messageItem.bMCh = item._iMaxCharges;
+	messageItem.wValue = SDL_SwapLE16(item._ivalue);
+	messageItem.wToHit = SDL_SwapLE16(item._iPLToHit);
+	messageItem.wMaxDam = SDL_SwapLE16(item._iMaxDam);
+	messageItem.dwBuff = SDL_SwapLE32(item.dwBuff);
+}
+
+void RecreateItem(const Player &player, const TItem &messageItem, Item &item)
+{
+	const uint32_t dwBuff = SDL_SwapLE32(messageItem.dwBuff);
+	RecreateItem(player, item,
+	    static_cast<_item_indexes>(SDL_SwapLE16(messageItem.wIndx)), SDL_SwapLE16(messageItem.wCI),
+	    SDL_SwapLE32(messageItem.dwSeed), SDL_SwapLE16(messageItem.wValue), (dwBuff & CF_HELLFIRE) != 0);
+	if (messageItem.bId != 0)
+		item._iIdentified = true;
+	item._iDurability = messageItem.bDur;
+	item._iMaxDur = messageItem.bMDur;
+	item._iCharges = messageItem.bCh;
+	item._iMaxCharges = messageItem.bMCh;
+	item._iPLToHit = SDL_SwapLE16(messageItem.wToHit);
+	item._iMaxDam = SDL_SwapLE16(messageItem.wMaxDam);
+	item._iMinStr = messageItem.bMinStr;
+	item._iMinMag = messageItem.bMinMag;
+	item._iMinDex = messageItem.bMinDex;
+	item._iAC = SDL_SwapLE16(messageItem.bAC);
+	item.dwBuff = dwBuff;
+}
 
 void ClearLastSentPlayerCmd()
 {
