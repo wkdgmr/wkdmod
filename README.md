@@ -108,8 +108,9 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Multiplayer (Select Loopback to play solo offline)
 - SP QUESTS IN MP ON/OFF* optional, I like them on while playing in Normal.  I then turn off for NM and Hell.  There are pros/cons to on/off for instance having    them on let's you farm quests like Warlord of Blood, but having them off let's you farm Lvls 15/16 Lazerus/Diablo faster 
 - Crippling Shrines OFF
-- (Hellfire) Theo OFF* optional, I prefer it off.
-- (Hellfire) Cow Quest can be turned on if you want to score some backstage tickets to Aerosmith at the coliseum
+- (Hellfire) Theo ON* Theo quest needs to be on in order to get the Auric Amulet.  Once you have it you can turn this off.
+- (Hellfire) Cow Quest can be turned on if you want to score some backstage tickets to Aerosmith at the coliseum, and delve into the Hive in search of the Bovine 
+  Plate...
 - Friendly Fire OFF* Friendly Fire ON now enables INVADER game mode.  You will drop items upon death at the hands of monsters and players.
 - **DEVIATE FROM THESE RECOMMENDATIONS AT YOUR PERIL**
 - Please feel free to change any setting not mentioned here to your preference.
