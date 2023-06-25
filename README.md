@@ -17,7 +17,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 ### **DevX Release 1.5.x** with additional **NEW** features:
 
 **[GLOBAL]**
-- When Diablo is killed the game does not end and he drops loot (drops 5 items).
+- When Diablo is killed the game does not end and he drops loot (drops 6 items).
 - Buffed loot drop chances 300% in Hell, 200% in Nightmare, Normal is unchanged.
 - When killing Diablo, Nakrul, Hork Demon or Defiler loot drop tiers are determined by difficulty.  Best drops from these bosses will be found on Hell difficulty.
 - Diablo and Nakrul have been buffed and are much more difficult to defeat.
