@@ -2864,28 +2864,30 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	}
 
 	PlayerArmorGraphic animArmorId = PlayerArmorGraphic::Light;
-	if (player._pClass == HeroClass::Monk
-	|| (player._pClass == HeroClass::Bard)) {
-		if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
+	if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
+		if (player._pClass == HeroClass::Monk
+		|| (player._pClass == HeroClass::Bard)) {
 			if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE) {
 				player._pIAC += player._pLevel;
+				player._pIBonusToHit += player._pLevel / 2;
 			} else {
 				player._pIBonusToHit -= player._pIBonusToHit / 2;
 			}
-			animArmorId = PlayerArmorGraphic::Heavy;
-		} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
+		}
+		animArmorId = PlayerArmorGraphic::Heavy;
+	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
+		if (player._pClass == HeroClass::Monk
+		|| (player._pClass == HeroClass::Bard)) {
 			if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE) {
-				player._pIAC += player._pLevel;
-				player._pIBonusToHit += player._pLevel;
-			} else {
-				player._pIAC += player._pLevel;
+				player._pIAC += player._pLevel * 2;
 				player._pIBonusToHit += player._pLevel;
 			}
-			animArmorId = PlayerArmorGraphic::Medium;
-		} else {
+		}
+		animArmorId = PlayerArmorGraphic::Medium;
+	} else if (player._pClass == HeroClass::Monk
+		|| (player._pClass == HeroClass::Bard)) {
 			player._pIAC += player._pLevel * 2;
 			player._pIBonusToHit += player._pLevel * 2;
-		}
 	}
 
 	const uint8_t gfxNum = static_cast<uint8_t>(animWeaponId) | static_cast<uint8_t>(animArmorId);
