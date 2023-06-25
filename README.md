@@ -14,7 +14,7 @@ wkdmod is compatible with standard DevilutionX characters. Simply copy your char
 
 wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 
-### **DevX Master** with additional **NEW** features:
+### **DevX Release 1.5.x** with additional **NEW** features:
 
 **[GLOBAL]**
 - When Diablo is killed the game does not end and he drops loot (drops 5 items).
