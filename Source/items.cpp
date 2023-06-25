@@ -4954,7 +4954,6 @@ bool ApplyOilToItem(Item &item, Player &player)
 	case IMISC_OILACC:
 	case IMISC_OILMAST:
 	case IMISC_OILSHARP:
-	case IMISC_OILWICK:
 	case IMISC_OILDEATH:
 		if (item._iClass == ICLASS_ARMOR) {
 			return false;
@@ -4962,14 +4961,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 		break;
 	case IMISC_OILHARD:
 	case IMISC_OILIMP:
-		if (item._itype == ItemType::Staff
-		|| item._itype == ItemType::Shield 
-		|| item._itype == ItemType::HeavyArmor
-		|| item._itype == ItemType::MediumArmor
-		|| item._itype == ItemType::LightArmor
-		|| item._itype == ItemType::Helm) {
-			break;
-		} else if (item._iClass == ICLASS_WEAPON && item._itype != ItemType::Staff) {
+		if (item._iClass == ICLASS_WEAPON) {
 			return false;
 		}
 		break;
@@ -5040,8 +5032,11 @@ bool ApplyOilToItem(Item &item, Player &player)
 			break;
 		}
 	case IMISC_OILMAST:
-		if (item._iPLToHit < 120) {
+		if (item._iPLToHit < 125) {
 			item._iPLToHit += GenerateRnd(3) + 3;
+			if (item._iPLToHit > 125) {
+				item._iPLToHit = 125;
+			}
 		}
 		break;
 	case IMISC_OILSKILL:
