@@ -10,9 +10,9 @@ This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" 
 
 <a href="https://www.youtube.com/watch?v=6lJHouylAdA" target="_blank" rel="noopener noreferrer">wkdmod gameplay trailer</a>
 
-wkdmod is compatible with standard DevilutionX characters. Simply copy your character data and stash data into the **devxmods/wkdmod folder in %appdata%/roaming/**
+wkdmod is compatible* with standard DevilutionX characters. Simply copy your character data and stash data into the **devxmods/wkdmod folder in %appdata%/roaming/**
 
-wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
+***WARNING** Unique Items are not forward compatible.  They will morph when brought into wkdmod, it is suggested to just toss them on to the ground or sell them to a vendor.  However, white and magic (blue) items are forward compatible into wkdmod.
 
 ### **DevX Release 1.5.x** with additional **NEW** features:
 
