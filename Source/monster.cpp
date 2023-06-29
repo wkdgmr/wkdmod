@@ -1252,7 +1252,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 			int eMaxd;
 			eMind = player._pIFMinDam;
 			eMaxd = player._pIFMaxDam;
-			int mdam = (GenerateRnd(eMaxd) + eMind);
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
 			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
 				mdam -= mdam / 2;
@@ -1282,7 +1282,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		int eMaxd;
 		eMind = player._pIFMinDam;
 		eMaxd = player._pIFMaxDam;
-		int mdam = (GenerateRnd(eMaxd) + eMind);
+		int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
 		int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 		if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
 			mdam -= mdam / 2;
