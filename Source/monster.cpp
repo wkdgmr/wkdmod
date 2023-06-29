@@ -1252,10 +1252,11 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 			int eMaxd;
 			eMind = player._pIFMinDam;
 			eMaxd = player._pIFMaxDam;
-			int mdam = (GenerateRnd(eMaxd) + eMind) << 6;
+			int mdam = (GenerateRnd(eMaxd) + eMind);
 			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
 				mdam -= mdam / 2;
+			mdam = mdam << 6;
 			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
 			if (monster.hitPoints >> 6 <= 0)
 				M_StartKill(monster, player);
@@ -1281,10 +1282,11 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		int eMaxd;
 		eMind = player._pIFMinDam;
 		eMaxd = player._pIFMaxDam;
-		int mdam = (GenerateRnd(eMaxd) + eMind) << 6;
+		int mdam = (GenerateRnd(eMaxd) + eMind);
 		int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 		if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
 			mdam -= mdam / 2;
+		mdam = mdam << 6;
 		ApplyMonsterDamage(DamageType::Fire, monster, mdam);
 		if (monster.hitPoints >> 6 <= 0)
 			M_StartKill(monster, player);
