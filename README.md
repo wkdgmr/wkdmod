@@ -10,9 +10,9 @@ This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" 
 
 <a href="https://www.youtube.com/watch?v=6lJHouylAdA" target="_blank" rel="noopener noreferrer">wkdmod gameplay trailer</a>
 
-wkdmod is compatible with standard DevilutionX characters. Simply copy your character data and stash data into the **devxmods/wkdmod folder in %appdata%/roaming/**
+wkdmod is compatible* with standard DevilutionX characters. Simply copy your character data and stash data into the **devxmods/wkdmod folder in %appdata%/roaming/**
 
-wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
+***WARNING** Unique Items are not forward compatible.  They will morph when brought into wkdmod, it is suggested to just toss them on to the ground or sell them to a vendor.  However, white and magic (blue) items are forward compatible into wkdmod.
 
 ### **DevX Release 1.5.x** with additional **NEW** features:
 
@@ -40,11 +40,10 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Bard is now buffed when wearing Unique, Medium, and Light Armor.  However receives a debuff when wearing non-Unique Heavy Armor (same as Monk).
 - Golem has been buffed significantly and can no longer take Friendly Fire damage.
 - Rogue gains +100 on Normal, +500 on Nightmare, or +1000 on Hell experience points when disarming a trap
-- The Thorns affix has been reworked into Holy Fire.  Holy Fire damage can be boosted by elemental damage Oils and will do full additive damage from any equipped   Holy Fire source to any Monster that melee hits the player.  Holy Fire can only appear on Weapons (not staffs) Armor, and Helm.
-- The Damage% line of affixes have been buffed, ending with Merciless which now can get up to 250% damage (176 - 250).
-- The +Damage line of affixes have been buffed, ending with Slaughter, which now can get up to +50 damage (25 - 50).
-- Some Elemental Damage affix ranges have been slightly adjusted as well.
-- Health Steal and Mana steal affixes can now appear on jewelry and staffs. 
+- The Thorns affix has been reworked into Holy Fire.  Holy Fire damage can be boosted by elemental damage Oils and will do full additive damage from any equipped   Holy Fire source to any   
+  Monster that melee hits the player.
+- The Damage% line of affixes have been buffed, ending with Merciless which now can get up to 250% damage (151 - 250).
+- The +Damage line of affixes have been buffed, ending with Slaughter, which now can get up to +50 damage (17 - 50).
 - Nerfed Apocalypse in Diablo so it acts like its Hellfire counterpart
 - Swapped some scrolls out for the four oils I added in Hellfire, nobody will miss them
 
@@ -96,6 +95,7 @@ wkdmod is compatible with Diablo & Hellfire game modes within DevilutionX.
 - Hork Spawn now drop items like normal monsters.
 - Fixed Hellfire Arrow behavior to be like Diablo
 - Gnat Sting now always properly fires 3 arrows in a strafe pattern instead of bugging out and only firing one arrow if the player tries to attack too quickly.
+- Runes have been disabled
 
 **[INVADER]**
 - INVADER is a stand alone game mode within wkdmod.  It's just your standard wkdmod Diablo or Hellfire... but with a twist...
