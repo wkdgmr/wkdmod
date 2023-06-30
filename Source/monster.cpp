@@ -778,6 +778,7 @@ void StartAttack(Monster &monster)
 
 void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 {
+	Player& player = Players[monster.enemy];
 	Direction md = GetMonsterDirection(monster);
 	NewMonsterAnim(monster, MonsterGraphic::Attack, md, AnimationDistributionFlags::ProcessAnimationPending);
 	monster.mode = MonsterMode::RangedAttack;
@@ -785,10 +786,30 @@ void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 	monster.var2 = dam;
 	monster.position.future = monster.position.tile;
 	monster.position.old = monster.position.tile;
+	// Check for holy fire effect
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
+			int eMind;
+			int eMaxd;
+			eMind = player._pIFMinDam;
+			eMaxd = player._pIFMaxDam;
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
+				mdam -= mdam / 2;
+			mdam = mdam << 6;
+			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
+		}
+	}
 }
 
 void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 {
+	Player& player = Players[monster.enemy];
 	Direction md = GetMonsterDirection(monster);
 	int8_t distributeFramesBeforeFrame = 0;
 	if (monster.ai == MonsterAIID::Mega)
@@ -800,6 +821,25 @@ void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 	monster.var3 = dam;
 	monster.position.future = monster.position.tile;
 	monster.position.old = monster.position.tile;
+	// Check for holy fire effect
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
+			int eMind;
+			int eMaxd;
+			eMind = player._pIFMinDam;
+			eMaxd = player._pIFMaxDam;
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
+				mdam -= mdam / 2;
+			mdam = mdam << 6;
+			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
+		}
+	}
 }
 
 void StartSpecialAttack(Monster &monster)
