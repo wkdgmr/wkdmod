@@ -887,7 +887,7 @@ bool DoAttack(Player &player)
 			}
 		}
 
-		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
 		    const size_t playerId = player.getId();
 
 		    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
