@@ -5053,6 +5053,12 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 			break;
 		} else {
+			if (item._itype == ItemType::Staff && item._iAC < 90) {
+				item._iAC += GenerateRnd(3) + 3;
+				if (item._iAC >= 90) {
+					item._iAC = 90;
+				}
+			}
 			break;
 		}
 	case IMISC_OILPERM:
@@ -5065,7 +5071,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 				break;
 			}
 		} else {
-			if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur < 255 && item._iMaxDur >= 200) {
+			if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur >= 200) {
 				r = GenerateRnd(2) + 1;
 				item._iMaxDur += r;
 				item._iDurability += r;
@@ -5085,6 +5091,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 			item._iAC += GenerateRnd(2) + 1;
 			break;
 		} else {
+			if (item._itype == ItemType::Staff && item._iAC < 60) {
+				item._iAC += GenerateRnd(2) + 1;
+			}
 			break;
 		}
 	case IMISC_OILFORT:
@@ -5098,13 +5107,13 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 	case IMISC_OILWICK:
 		if (item._iFMinDam > 0 && item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam && item._iFMaxDam > 0) {
-			item._iFMinDam = item._iFMinDam + 2;
+			item._iFMinDam = item._iFMinDam + 4;
 			if (item._iFMinDam > item._iFMaxDam) {
 				item._iFMinDam = item._iFMaxDam;
 			}
 		}
-		if ( item._iLMinDam > 0 && item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam && item._iLMaxDam > 0) {
-			item._iLMinDam = item._iLMinDam + 2;
+		if (item._iLMinDam > 0 && item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam && item._iLMaxDam > 0) {
+			item._iLMinDam = item._iLMinDam + 4;
 			if (item._iLMinDam > item._iLMaxDam) {
 				item._iLMinDam = item._iLMaxDam;
 			}
@@ -5112,10 +5121,16 @@ bool ApplyOilToItem(Item &item, Player &player)
 		break;
 	case IMISC_OILFIRE:
 		if (item._iFMaxDam > 0 && item._iFMaxDam < 200) {
-			item._iFMaxDam = item._iFMaxDam + 4;
+			item._iFMaxDam = item._iFMaxDam + 8;
+			if (item._iFMaxDam > 200) {
+				item._iFMaxDam = 200;
+			}
 		}
 		if (item._iLMaxDam > 0 && item._iLMaxDam < 200) {
-			item._iLMaxDam = item._iLMaxDam + 4;
+			item._iLMaxDam = item._iLMaxDam + 8;
+			if (item._iLMaxDam > 200) {
+				item._iLMaxDam = 200;
+			}
 		}
 		break;
 	case IMISC_OILDEBUG:
