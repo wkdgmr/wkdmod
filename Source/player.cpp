@@ -647,11 +647,41 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 #endif
 			return false;
 	}
-
-	if (gbIsHellfire && HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
-		int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), midam, 0);
+	
+	// Check for holy fire effect
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
+			int eMind;
+			int eMaxd;
+			eMind = player._pIFMinDam;
+			eMaxd = player._pIFMaxDam;
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
+				mdam -= mdam / 2;
+			mdam = mdam << 6;
+			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
+		}
 	}
+
+	if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
+	    const size_t playerId = player.getId();
+	
+	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
+	        int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+	        AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	    }
+	
+	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+	        int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+	        AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	    }
+	}
+
 	int mind = player._pIMinDam;
 	int maxd = player._pIMaxDam;
 	int dam = GenerateRnd(maxd - mind + 1) + mind;
@@ -731,51 +761,46 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	}
 
 	int skdam = 0;
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::RandomStealLife)) {
-		skdam = GenerateRnd(dam / 8);
-		player._pHitPoints += skdam;
-		if (player._pHitPoints > player._pMaxHP) {
-			player._pHitPoints = player._pMaxHP;
-		}
-		player._pHPBase += skdam;
-		if (player._pHPBase > player._pMaxHPBase) {
-			player._pHPBase = player._pMaxHPBase;
-		}
-		RedrawComponent(PanelDrawComponent::Health);
-	}
 	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana3 | ItemSpecialEffect::StealMana5) && HasNoneOf(player._pIFlags, ItemSpecialEffect::NoMana)) {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana3)) {
-			skdam = 3 * dam / 100;
-		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana5)) {
-			skdam = 5 * dam / 100;
-		}
-		player._pMana += skdam;
-		if (player._pMana > player._pMaxMana) {
-			player._pMana = player._pMaxMana;
-		}
-		player._pManaBase += skdam;
-		if (player._pManaBase > player._pMaxManaBase) {
-			player._pManaBase = player._pMaxManaBase;
-		}
-		RedrawComponent(PanelDrawComponent::Mana);
+	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana3) && HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana5)) {
+	        skdam = 8 * dam / 100;
+	    } else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana3)) {
+	        skdam = 3 * dam / 100;
+	    } else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana5)) {
+	        skdam = 5 * dam / 100;
+	    }
+	    player._pMana += skdam;
+	    if (player._pMana > player._pMaxMana) {
+	        player._pMana = player._pMaxMana;
+	    }
+	    player._pManaBase += skdam;
+	    if (player._pManaBase > player._pMaxManaBase) {
+	        player._pManaBase = player._pMaxManaBase;
+	    }
+	    RedrawComponent(PanelDrawComponent::Mana);
 	}
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealLife3 | ItemSpecialEffect::StealLife5)) {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealLife3)) {
-			skdam = 3 * dam / 100;
-		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealLife5)) {
-			skdam = 5 * dam / 100;
-		}
-		player._pHitPoints += skdam;
-		if (player._pHitPoints > player._pMaxHP) {
-			player._pHitPoints = player._pMaxHP;
-		}
-		player._pHPBase += skdam;
-		if (player._pHPBase > player._pMaxHPBase) {
-			player._pHPBase = player._pMaxHPBase;
-		}
-		RedrawComponent(PanelDrawComponent::Health);
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealLife3)) {
+	    skdam += 3 * dam / 100;
+	}
+	
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealLife5)) {
+	    skdam += 5 * dam / 100;
+	}
+	
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::RandomStealLife)) {
+	    skdam += GenerateRnd(dam / 8);
+	}
+	
+	if (skdam > 0) {
+	    player._pHitPoints += skdam;
+	    if (player._pHitPoints > player._pMaxHP) {
+	        player._pHitPoints = player._pMaxHP;
+	    }
+	    player._pHPBase += skdam;
+	    if (player._pHPBase > player._pMaxHPBase) {
+	        player._pHPBase = player._pMaxHPBase;
+	    }
+	    RedrawComponent(PanelDrawComponent::Health);
 	}
 	if ((monster.hitPoints >> 6) <= 0) {
 		M_StartKill(monster, player);
@@ -882,14 +907,16 @@ bool DoAttack(Player &player)
 			}
 		}
 
-		if (!gbIsHellfire || !HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
-			const size_t playerId = player.getId();
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-				AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-			}
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-				AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-			}
+		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
+		    const size_t playerId = player.getId();
+
+		    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
+		        AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+		    }
+
+		    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+		        AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+		    }
 		}
 
 		if (monster !=nullptr && !monster->isPlayerMinion() ) {
