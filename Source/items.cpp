@@ -791,19 +791,13 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		break;
 	case IPL_FIREDAM:
 		item._iFlags |= ItemSpecialEffect::FireDamage;
-		item._iFlags &= ~ItemSpecialEffect::LightningDamage;
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
-		item._iLMinDam = 0;
-		item._iLMaxDam = 0;
 		break;
 	case IPL_LIGHTDAM:
 		item._iFlags |= ItemSpecialEffect::LightningDamage;
-		item._iFlags &= ~ItemSpecialEffect::FireDamage;
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
-		item._iFMinDam = 0;
-		item._iFMaxDam = 0;
 		break;
 	case IPL_STR:
 		item._iPLStr += r;
@@ -889,34 +883,24 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		break;
 	case IPL_FIRE_ARROWS:
 		item._iFlags |= ItemSpecialEffect::FireArrows;
-		item._iFlags &= ~ItemSpecialEffect::LightningArrows;
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
-		item._iLMinDam = 0;
-		item._iLMaxDam = 0;
 		break;
 	case IPL_LIGHT_ARROWS:
 		item._iFlags |= ItemSpecialEffect::LightningArrows;
-		item._iFlags &= ~ItemSpecialEffect::FireArrows;
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
-		item._iFMinDam = 0;
-		item._iFMaxDam = 0;
 		break;
 	case IPL_FIREBALL:
 		item._iMisType = 1;
-		item._iFlags |= (ItemSpecialEffect::LightningArrows | ItemSpecialEffect::FireArrows);
+		item._iFlags |= (ItemSpecialEffect::FireArrows);
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
-		item._iLMinDam = 0;
-		item._iLMaxDam = 0;
 		break;
 	case IPL_THORNS:
 		item._iFlags |= ItemSpecialEffect::Thorns;
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
-		item._iLMinDam = 0;
-		item._iLMaxDam = 0;
 		break;
 	case IPL_NOMANA:
 		item._iFlags |= ItemSpecialEffect::NoMana;
@@ -1003,17 +987,13 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		break;
 	case IPL_ADDACLIFE:
 		item._iMisType = 2;
-		item._iFlags |= (ItemSpecialEffect::LightningArrows | ItemSpecialEffect::FireArrows);
-		item._iFMinDam = 0;
-		item._iFMaxDam = 0;
+		item._iFlags |= (ItemSpecialEffect::LightningArrows);
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
 		break;
 	case IPL_ADDMANAAC:
 		item._iMisType = 3;
-		item._iFlags |= (ItemSpecialEffect::LightningDamage | ItemSpecialEffect::FireDamage);
-		item._iFMinDam = 0;
-		item._iFMaxDam = 0;
+		item._iFlags |= (ItemSpecialEffect::LightningDamage);
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
 		break;
