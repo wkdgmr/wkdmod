@@ -904,6 +904,7 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iFMaxDam = 0;
 		break;
 	case IPL_FIREBALL:
+		item._iMisType = 1;
 		item._iFlags |= (ItemSpecialEffect::LightningArrows | ItemSpecialEffect::FireArrows);
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
@@ -1001,19 +1002,21 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iCurs = power.param1;
 		break;
 	case IPL_ADDACLIFE:
-	    item._iFlags |= (ItemSpecialEffect::LightningArrows | ItemSpecialEffect::FireArrows);
-	    item._iFMinDam = 0; // Set fire damage to 0, since it is not relevant for the lightning spell effect
-	    item._iFMaxDam = 0; // Set fire damage to 0
-	    item._iLMinDam = power.param1 + 1; // Set lightning damage based on power.param1 + 1 to trigger the spell effect
-	    item._iLMaxDam = power.param2; // Set the maximum lightning damage based on power.param2
-	    break;
+		item._iMisType = 2;
+		item._iFlags |= (ItemSpecialEffect::LightningArrows | ItemSpecialEffect::FireArrows);
+		item._iFMinDam = 0;
+		item._iFMaxDam = 0;
+		item._iLMinDam = power.param1;
+		item._iLMaxDam = power.param2;
+		break;
 	case IPL_ADDMANAAC:
-	    item._iFlags |= (ItemSpecialEffect::LightningDamage | ItemSpecialEffect::FireDamage);
-	    item._iFMinDam = 0; // Set fire damage to 0, since it is not relevant for the lightning spell effect
-	    item._iFMaxDam = 0; // Set fire damage to 0
-	    item._iLMinDam = power.param1 + 2; // Set lightning damage based on power.param1 + 2 to trigger the spell effect
-	    item._iLMaxDam = power.param2; // Set the maximum lightning damage based on power.param2
-	    break;
+		item._iMisType = 3;
+		item._iFlags |= (ItemSpecialEffect::LightningDamage | ItemSpecialEffect::FireDamage);
+		item._iFMinDam = 0;
+		item._iFMaxDam = 0;
+		item._iLMinDam = power.param1;
+		item._iLMaxDam = power.param2;
+		break;
 	case IPL_FIRERES_CURSE:
 		item._iPLFR -= r;
 		break;

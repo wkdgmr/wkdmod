@@ -3263,17 +3263,17 @@ void ProcessSpectralArrow(Missile &missile)
 		dir = player._pdir;
 		micaster = TARGET_MONSTERS;
 
-		switch (player._pILMinDam) {
-		case 0:
+		switch (player._pIMisType) {
+		case 1:
 			mitype = MissileID::FireballBow;
 			break;
-		case 1:
+		case 2:
 			mitype = MissileID::LightningBow;
 			break;
-		case 2:
+		case 3:
 			mitype = MissileID::ChargedBoltBow;
 			break;
-		case 3:
+		case 4:
 			mitype = MissileID::HolyBoltBow;
 			break;
 		}
