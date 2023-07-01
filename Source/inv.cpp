@@ -442,10 +442,6 @@ void CheckInvPaste(Player &player, Point cursorPosition)
 
 		ChangeEquipment(player, pasteHand, player.HoldItem.pop());
 
-		if (player.HoldItem._iMisType > 0) {
-			player._pIMisType = player.HoldItem._iMisType;
-		}
-
 		if (!previouslyEquippedItem.isEmpty()) {
 			player.HoldItem = previouslyEquippedItem;
 		}
@@ -481,9 +477,6 @@ void CheckInvPaste(Player &player, Point cursorPosition)
 			ChangeEquipment(player, INVLOC_HAND_LEFT, player.HoldItem);
 			player.HoldItem = previouslyEquippedItem;
 		}
-	    if (player.HoldItem._iMisType > 0) {
-            player._pIMisType = player.HoldItem._iMisType;
-        }
 		break;
 	case ILOC_UNEQUIPABLE:
 		if (player.HoldItem._itype == ItemType::Gold && it == 0) {
@@ -1210,7 +1203,6 @@ void RemoveEquipment(Player &player, inv_body_loc bodyLocation, bool hiPri)
 		NetSendCmdDelItem(hiPri, bodyLocation);
 	}
 
-	player._pIMisType = 0;
 	player.InvBody[bodyLocation].clear();
 }
 

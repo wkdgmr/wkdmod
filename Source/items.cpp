@@ -2551,6 +2551,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	int fmax = 0; // maximum fire damage
 	int lmin = 0; // minimum lightning damage
 	int lmax = 0; // maximum lightning damage
+	int mistype = 0; // missile type
 
 	for (auto &item : player.InvBody) {
 		if (!item.isEmpty() && item._iStatFlag) {
@@ -2607,6 +2608,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				fmax += item._iFMaxDam;
 				lmin += item._iLMinDam;
 				lmax += item._iLMaxDam;
+				mistype += item._iMisType;
 			}
 		}
 	}
@@ -2780,6 +2782,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	player._pIFMaxDam = fmax;
 	player._pILMinDam = lmin;
 	player._pILMaxDam = lmax;
+	player._pIMisType = mistype;
 
 	player._pInfraFlag = false;
 
