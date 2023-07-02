@@ -648,7 +648,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 			return false;
 	}
 	
-	if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
+	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType != 3) {
 	    const size_t playerId = player.getId();
 	
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
@@ -660,6 +660,10 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	        AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
 	    }
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 3) {
+		const size_t playerId = player.getId();
+	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
 	}
 
 	int mind = player._pIMinDam;
@@ -899,6 +903,7 @@ bool DoAttack(Player &player)
 		    }
 		}
 
+
 		if (monster !=nullptr && !monster->isPlayerMinion() ) {
 			didhit = PlrHitMonst(player, *monster);
 		} else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
@@ -1038,8 +1043,14 @@ bool DoRangeAttack(Player &player)
 			mistype = MissileID::LightningArrow;
 		}
 		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows)) {
-			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-			mistype = MissileID::SpectralArrow;
+			if (player._pIMisType = 1) {
+				dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+				mistype = MissileID::SpectralArrow;
+			}
+			if (player._pIMisType = 2) {
+				dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+				mistype = MissileID::SpectralArrow;
+			}
 		}
 
 		AddMissile(
