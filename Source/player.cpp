@@ -1046,8 +1046,7 @@ bool DoRangeAttack(Player &player)
 			if (player._pIMisType = 1) {
 				dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 				mistype = MissileID::SpectralArrow;
-			}
-			if (player._pIMisType = 2) {
+			} else if (player._pIMisType = 2) {
 				dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 				mistype = MissileID::SpectralArrow;
 			}
