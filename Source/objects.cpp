@@ -2554,7 +2554,7 @@ void OperateShrineStone(Player &player)
             int minRnd = static_cast<int>(player._pLevel * 0.4);
             r = std::max(minRnd, GenerateRnd(player._pLevel / r) + 1);
             do {
-                if (item._iMaxCharges < 255) {
+                if (item._iMaxCharges < 200) {
                     item._iMaxCharges++;
                 }
                 item._iCharges += r;
