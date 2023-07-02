@@ -660,7 +660,11 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	        AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
 	    }
-	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 3 || player._pIMisType == 6) {
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 3) {
+		const size_t playerId = player.getId();
+	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 6) {
 		const size_t playerId = player.getId();
 	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
