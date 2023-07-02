@@ -3271,6 +3271,7 @@ void ProcessSpectralArrow(Missile &missile)
 			mitype = MissileID::LightningBow;
 			break;
 		case 3:
+		case 6:
 			mitype = MissileID::ChargedBoltBow;
 			break;
 		case 4:
