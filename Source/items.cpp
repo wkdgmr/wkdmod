@@ -3989,27 +3989,40 @@ void PrintItemDetails(const Item &item)
 
 	if (item._iClass == ICLASS_WEAPON && item._itype != ItemType::Staff) {
 		if (item._iMinDam == item._iMaxDam) {
-			AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}")), item._iMinDam, (item._iPLToHit > 0) ? fmt::format("  ToHit: +{:d}%", item._iPLToHit) : ""));
+			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
+				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}")), item._iMinDam, (item._iPLToHit > 0) ? fmt::format("  ToHit: +{:d}%", item._iPLToHit) : ""));
+				AddPanelString(fmt::format(fmt::runtime(_("Indestructible"))));
+			} else {
+				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}")), item._iMinDam, (item._iPLToHit > 0) ? fmt::format("  ToHit: +{:d}%", item._iPLToHit) : ""));
+				AddPanelString(fmt::format(fmt::runtime(_(/* TRANSLATORS: Dur: is durability */ "Dur: {:d}/{:d}{:s}")), item._iDurability, item._iMaxDur));
+			}
 		} else {
-			AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}")), item._iMinDam, item._iMaxDam, (item._iPLToHit > 0) ? fmt::format("  ToHit: +{:d}%", item._iPLToHit) : ""));
-		}
+			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
+				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}")), item._iMinDam, item._iMaxDam, (item._iPLToHit > 0) ? fmt::format("  ToHit: +{:d}%", item._iPLToHit) : ""));
+				AddPanelString(fmt::format(fmt::runtime(_("Indestructible"))));
+			} else {
+				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}")), item._iMinDam, item._iMaxDam, (item._iPLToHit > 0) ? fmt::format("  ToHit: +{:d}%", item._iPLToHit) : ""));
+				AddPanelString(fmt::format(fmt::runtime(_(/* TRANSLATORS: Dur: is durability */ "Dur: {:d}/{:d}{:s}")), item._iDurability, item._iMaxDur));
+			}
 
-		if (item._iMaxDur == DUR_INDESTRUCTIBLE)
-			AddPanelString(fmt::format(fmt::runtime(_("Indestructible{:s}"))));
-		else
-			AddPanelString(fmt::format(fmt::runtime(_(/* TRANSLATORS: Dur: is durability */ "Dur: {:d}/{:d}{:s}")), item._iDurability, item._iMaxDur));
-	} 
-	else if (item._iClass == ICLASS_WEAPON && item._itype == ItemType::Staff) {
+		}
+	} else if (item._iClass == ICLASS_WEAPON && item._itype == ItemType::Staff) {
 		if (item._iMinDam == item._iMaxDam) {
-			AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}  AC: {:d}")), item._iMinDam, item._iAC));
-		} else {
-			AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}  AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-		}
-
-		if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-			AddPanelString(fmt::format(fmt::runtime(_("{:s} Indestructible")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : ""));
-		} else {
-			AddPanelString(fmt::format(fmt::runtime(_("{:s} Dur: {:d}/{:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : "", item._iDurability, item._iMaxDur));
+			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
+				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}  AC: {:d}")), item._iMinDam, item._iAC));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} Indestructible")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : ""));
+			} else {
+				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}  AC: {:d}")), item._iMinDam, item._iAC));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} Dur: {:d}/{:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : "", item._iDurability, item._iMaxDur));
+			}
+		} else { 		
+			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
+				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}  AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} Indestructible")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : ""));
+			} else {
+				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}  AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} Dur: {:d}/{:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : "", item._iDurability, item._iMaxDur));
+			}
 		}
 	}
 
