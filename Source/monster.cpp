@@ -797,6 +797,7 @@ void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
 				mdam -= mdam / 2;
+				mdam -= mdam / 2;
 			mdam = mdam << 6;
 			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
 			if (monster.hitPoints >> 6 <= 0)
@@ -831,6 +832,7 @@ void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
 			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
+				mdam -= mdam / 2;
 				mdam -= mdam / 2;
 			mdam = mdam << 6;
 			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
@@ -1265,6 +1267,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 				int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 				if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
 					mdam -= mdam / 2;
+					mdam -= mdam / 2;
 				mdam = mdam << 6;
 				ApplyMonsterDamage(DamageType::Fire, monster, mdam);
 				if (monster.hitPoints >> 6 <= 0)
@@ -1316,6 +1319,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
 				mdam -= mdam / 2;
+				mdam -= mdam / 2;
 			mdam = mdam << 6;
 			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
 			if (monster.hitPoints >> 6 <= 0)
@@ -1345,6 +1349,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
 		int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 		if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
+			mdam -= mdam / 2;
 			mdam -= mdam / 2;
 		mdam = mdam << 6;
 		ApplyMonsterDamage(DamageType::Fire, monster, mdam);
@@ -4788,7 +4793,6 @@ bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 	|| (missileType == MissileID::ChargedBoltBow)
 	|| (missileType == MissileID::Firebolt)
 	|| (missileType == MissileID::Inferno)
-	|| (missileType == MissileID::InfernoControl)
 	|| (missileType == MissileID::ChargedBolt)
 	|| (missileType == MissileID::Lightning)) {
 		return false;
@@ -4812,7 +4816,6 @@ bool Monster::isResistant(MissileID missileType, DamageType missileElement) cons
 	|| (missileType == MissileID::ChargedBoltBow)
 	|| (missileType == MissileID::Firebolt)
 	|| (missileType == MissileID::Inferno)
-	|| (missileType == MissileID::InfernoControl)
 	|| (missileType == MissileID::ChargedBolt)
 	|| (missileType == MissileID::Lightning)) {
 		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
