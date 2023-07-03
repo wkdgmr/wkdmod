@@ -2439,7 +2439,7 @@ void OperateShrineGloomy(Player &player)
 				if ((item._itype == ItemType::LightArmor && item._iAC < 45)
 				|| (item._itype == ItemType::MediumArmor && item._iAC < 75)
 				|| (item._itype == ItemType::HeavyArmor && item._iAC < 105)
-				|| (item._itype == ItemType::Shield || item._itype == ItemType::Staff && item._iAC < 60)) {
+				|| (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)) {
 					item._iAC += 2;
 					if (item._itype == ItemType::Staff)
 						item._iMaxDam--;
