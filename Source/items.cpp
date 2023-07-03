@@ -4001,7 +4001,7 @@ void PrintItemDetails(const Item &item)
 				AddPanelString(fmt::format(fmt::runtime(_("Indestructible"))));
 			} else {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} damage: {:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : "", item._iMinDam));
-				AddPanelString(fmt::format(fmt::runtime(_(/* TRANSLATORS: Dur: is durability */ "Dur: {:d}/{:d}{:s}")), item._iDurability, item._iMaxDur));
+				AddPanelString(fmt::format(fmt::runtime(_(/* TRANSLATORS: Dur: is durability */ "Dur: {:d}/{:d}")), item._iDurability, item._iMaxDur));
 			}
 		} else {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
