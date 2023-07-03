@@ -976,6 +976,9 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 	case IPL_DRAINLIFE:
 		item._iFlags |= ItemSpecialEffect::DrainLife;
 		break;
+	case IPL_DRAINMANA:
+		item._iFlags |= ItemSpecialEffect::DrainMana;
+		break;
 	case IPL_RNDSTEALLIFE:
 		item._iFlags |= ItemSpecialEffect::RandomStealLife;
 		break;
@@ -3917,6 +3920,8 @@ bool DoOil(Player &player, int cii)
 		return _("one handed sword");
 	case IPL_DRAINLIFE:
 		return _("constantly lose hit points");
+	case IPL_DRAINMANA:
+		return _("constantly lose mana");
 	case IPL_RNDSTEALLIFE:
 		return _("life stealing");
 	case IPL_NOMINSTR:

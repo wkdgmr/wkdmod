@@ -2982,6 +2982,22 @@ void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*
 				NetSendCmd(true, CMD_REMSHIELD);
 		}
 	}
+	if (totalDamage > 0 && player.InvBody[INVLOC_HAND_LEFT]._iFlags == ItemSpecialEffect::DrainMana) {
+		uint8_t manaShieldLevel = player._pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
+		if (&player == MyPlayer)
+			RedrawComponent(PanelDrawComponent::Mana);
+		if (player._pMana >= totalDamage) {
+			player._pMana -= totalDamage;
+			player._pManaBase -= totalDamage;
+			totalDamage = 0;
+		} else {
+			totalDamage -= player._pMana;
+			player._pMana = 0;
+			player._pManaBase = player._pMaxManaBase - player._pMaxMana;
+			if (&player == MyPlayer)
+				NetSendCmd(true, CMD_REMSHIELD);
+		}
+	} 
 
 	if (totalDamage == 0)
 		return;
@@ -3169,6 +3185,9 @@ void ProcessPlayers()
 
 			if (&player == MyPlayer) {
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainLife) && leveltype != DTYPE_TOWN) {
+					ApplyPlrDamage(DamageType::Physical, player, 0, 0, 4);
+				}
+				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainMana) && leveltype != DTYPE_TOWN) {
 					ApplyPlrDamage(DamageType::Physical, player, 0, 0, 4);
 				}
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::NoMana) && player._pManaBase > 0) {
