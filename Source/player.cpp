@@ -3194,7 +3194,7 @@ void ProcessPlayers()
 
 			if (&player == MyPlayer) {
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainLife) && leveltype != DTYPE_TOWN) {
-					ApplyPlrDamage(DamageType::Physical, player, 0, 0, 12);
+					ApplyPlrDamage(DamageType::Physical, player, 0, 0, 8);
 				}
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainMana) && leveltype != DTYPE_TOWN) {
 					ApplyManaDrain(DamageType::Physical, player, 0, 0, 12);
