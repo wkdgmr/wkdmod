@@ -133,6 +133,7 @@ struct PlayerNetPack {
 	int32_t pIFMaxDam;
 	int32_t pILMinDam;
 	int32_t pILMaxDam;
+	int32_t pIMisType;
 };
 #pragma pack(pop)
 
