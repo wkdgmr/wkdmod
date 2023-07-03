@@ -2983,7 +2983,6 @@ void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*
 		}
 	}
 	if (totalDamage > 0 && player.InvBody[INVLOC_HAND_LEFT]._iFlags == ItemSpecialEffect::DrainMana) {
-		uint8_t manaShieldLevel = player._pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
 		if (&player == MyPlayer)
 			RedrawComponent(PanelDrawComponent::Mana);
 		if (player._pMana >= totalDamage) {
@@ -2999,7 +2998,7 @@ void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*
 		}
 	} 
 
-	if (totalDamage == 0)
+	if (totalDamage == 0 || player.InvBody[INVLOC_HAND_LEFT]._iFlags == ItemSpecialEffect::DrainMana)
 		return;
 
 	RedrawComponent(PanelDrawComponent::Health);
