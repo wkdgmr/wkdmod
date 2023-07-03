@@ -2425,7 +2425,6 @@ void OperateShrineGloomy(Player &player)
 		case ItemType::Axe:
 		case ItemType::Bow:
 		case ItemType::Mace:
-		case ItemType::Staff:
 			item._iMaxDam--;
 			if (item._iMaxDam < item._iMinDam)
 				item._iMaxDam = item._iMinDam;
@@ -2435,10 +2434,21 @@ void OperateShrineGloomy(Player &player)
 		case ItemType::LightArmor:
 		case ItemType::MediumArmor:
 		case ItemType::HeavyArmor:
-			if (item._iAC > 0 || item._itype == ItemType:: Staff && item._iAC < 90)
-				item._iAC += 2;
-				if (item._iAC > 90)
-					item._iAC = 90;
+		case ItemType::Staff:
+			if (item._iAC > 0 || item._itype == ItemType:: Staff) {
+				if ((item._itype == ItemType::LightArmor && item._iAC < 45)
+				|| (item._itype == ItemType::MediumArmor && item._iAC < 75)
+				|| (item._itype == ItemType::HeavyArmor && item._iAC < 105)
+				|| (item._itype == ItemType::Shield || item._itype == ItemType::Staff && item._iAC < 60)) {
+					item._iAC += 2;
+					if (item._itype == ItemType::Staff)
+						item._iMaxDam--;
+						if (item._iMaxDam < item._iMinDam)
+							item._iMaxDam = item._iMinDam;
+						break;
+				}
+				break;
+			}
 			break;
 		default:
 			break;
