@@ -5059,12 +5059,14 @@ bool ApplyOilToItem(Item &item, Player &player)
 		item._iMinDex = std::max(0, item._iMinDex - r);
 		break;
 	case IMISC_OILIMP:
-		if (item._iAC > 0 || item._itype == ItemType:: Staff && item._iAC < 90) {
-			item._iAC += GenerateRnd(3) + 3;
-			if (item._iAC >= 90) {
-				item._iAC = 90;
+		if (item._iAC > 0 || item._itype == ItemType:: Staff) {
+			if ((item._itype == ItemType::LightArmor && item._iAC < 45)
+			|| (item._itype == ItemType::MediumArmor && item._iAC < 75)
+			|| (item._itype == ItemType::HeavyArmor && item._iAC < 105)
+			|| (item._itype == ItemType::Shield || item._itype == ItemType::Staff && item._iAC < 60)) {
+				item._iAC += GenerateRnd(3) + 3;
+				break;
 			}
-			break;
 		}
 	case IMISC_OILPERM:
 		if ((int)(rand()%10 + 1) == 1) {
@@ -5092,9 +5094,14 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 		}
 	case IMISC_OILHARD:
-		if (item._iAC > 0 || item._itype == ItemType:: Staff && item._iAC < 60) {
-			item._iAC += GenerateRnd(2) + 1;
-			break;
+		if (item._iAC > 0 || item._itype == ItemType:: Staff) {
+			if ((item._itype == ItemType::LightArmor && item._iAC < 45)
+			|| (item._itype == ItemType::MediumArmor && item._iAC < 75)
+			|| (item._itype == ItemType::HeavyArmor && item._iAC < 105)
+			|| (item._itype == ItemType::Shield || item._itype == ItemType::Staff && item._iAC < 60)) {
+					item._iAC += GenerateRnd(2) + 1;
+					break;
+			}
 		}
 	case IMISC_OILFORT:
 		if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur < 200) {
@@ -5150,8 +5157,15 @@ bool ApplyOilToItem(Item &item, Player &player)
 			item._iDurability = DUR_INDESTRUCTIBLE;
 			item._iMaxDur = DUR_INDESTRUCTIBLE;
 		}
-		if (item._iAC > 0 || item._itype == ItemType:: Staff && item._iAC < 90) {
-			item._iAC = 90;
+		if (item._iAC > 0 || item._itype == ItemType:: Staff) {
+			if (item._itype == ItemType::LightArmor && item._iAC < 45)
+				item._iAC = 45;
+			if (item._itype == ItemType::MediumArmor && item._iAC < 75)
+				item._iAC = 75;
+			if (item._itype == ItemType::HeavyArmor && item._iAC < 105)
+				item._iAC = 105;
+			if (item._itype == ItemType::Shield || item._itype == ItemType::Staff && item._iAC < 60)
+				item._iAC = 60;
 		}
 		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Axe && item._itype != ItemType::Bow) {
 			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
