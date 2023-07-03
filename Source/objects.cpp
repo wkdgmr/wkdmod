@@ -2560,17 +2560,25 @@ void OperateShrineStone(Player &player)
 
     for (Item &item : PlayerItemsRange { player }) {
         if (item._itype == ItemType::Staff && IsValidSpell(item._iSpell)) {
-            int r = GetSpellStaffLevel(item._iSpell);
-            int minRnd = static_cast<int>(player._pLevel * 0.4);
-            r = std::max(minRnd, GenerateRnd(player._pLevel / r) + 1);
-            do {
-                if (item._iMaxCharges < 200) {
-                    item._iMaxCharges++;
-                }
-                item._iCharges += r;
-            } while (item._iCharges < item._iMaxCharges);
+            // calculate the increment based on player level
+            int inc;
+            if (player._pLevel == 50) {
+                inc = 20;
+            } else if (player._pLevel >= 21 && player._pLevel < 50) {
+				if (player._pLevel <= 24) {
+					inc = GenerateRnd(20) + 1; // range 1-20
+				} else if (player._pLevel >= 25) {
+                	inc = GenerateRnd(11) + 10; // range 10-20
+				}
+            } else if (player._pLevel <= 20) {
+                inc = GenerateRnd(player._pLevel) + 1; // range 1-pLevel
+            }
 
-            item._iCharges = std::min(item._iCharges, item._iMaxCharges);
+            // increase max charges by the increment, up to 200
+            item._iMaxCharges = std::min(item._iMaxCharges + inc, 200);
+
+            // ensure the current charges are at least the maximum charges
+            item._iCharges = std::max(item._iCharges, item._iMaxCharges);
         }
     }
 
@@ -2580,7 +2588,6 @@ void OperateShrineStone(Player &player)
 
     InitDiabloMsg(EMSG_SHRINE_STONE);
 }
-
 
 void OperateShrineReligious(Player &player)
 {
