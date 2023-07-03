@@ -2865,6 +2865,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		if (player._pClass == HeroClass::Monk
 		|| (player._pClass == HeroClass::Bard)) {
 			if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE) {
+				player._pIAC += player.InvBody[INVLOC_CHEST]._iAC / 3;
 				player._pIAC += player._pLevel * 2;
 				player._pIBonusToHit += player._pLevel;
 			}
@@ -2872,6 +2873,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		animArmorId = PlayerArmorGraphic::Medium;
 	} else if (player._pClass == HeroClass::Monk
 		|| (player._pClass == HeroClass::Bard)) {
+			player._pIAC += player.InvBody[INVLOC_CHEST]._iAC;
 			player._pIAC += player._pLevel * 2;
 			player._pIBonusToHit += player._pLevel * 2;
 	}
