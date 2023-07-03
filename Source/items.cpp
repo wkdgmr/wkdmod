@@ -2864,18 +2864,18 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
 		if (player._pClass == HeroClass::Monk
 		|| (player._pClass == HeroClass::Bard)) {
-			if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE) {
+			player._pIAC += player._pLevel * 2;
+			player._pIBonusToHit += player._pLevel;
+			if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor)
 				player._pIAC += player.InvBody[INVLOC_CHEST]._iAC / 3;
-				player._pIAC += player._pLevel * 2;
-				player._pIBonusToHit += player._pLevel;
-			}
 		}
 		animArmorId = PlayerArmorGraphic::Medium;
 	} else if (player._pClass == HeroClass::Monk
 		|| (player._pClass == HeroClass::Bard)) {
-			player._pIAC += player.InvBody[INVLOC_CHEST]._iAC;
 			player._pIAC += player._pLevel * 2;
 			player._pIBonusToHit += player._pLevel * 2;
+			if (player.InvBody[INVLOC_CHEST]._itype == ItemType::LightArmor)
+				player._pIAC += player.InvBody[INVLOC_CHEST]._iAC;
 	}
 
 	const uint8_t gfxNum = static_cast<uint8_t>(animWeaponId) | static_cast<uint8_t>(animArmorId);
