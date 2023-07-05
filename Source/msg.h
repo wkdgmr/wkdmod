@@ -535,6 +535,7 @@ struct TItem {
 	uint16_t wCI;
 	uint32_t dwSeed;
 	uint8_t bId;
+	uint8_t bAC;
 	uint8_t bDur;
 	uint8_t bMDur;
 	uint8_t bCh;
@@ -543,6 +544,11 @@ struct TItem {
 	uint32_t dwBuff;
 	uint16_t wToHit;
 	uint16_t wMaxDam;
+	uint16_t wMinDam;
+	uint16_t wFMaxDam;
+	uint16_t wFMinDam;
+	uint16_t wLMaxDam;
+	uint16_t wLMinDam;
 };
 
 struct TEar {

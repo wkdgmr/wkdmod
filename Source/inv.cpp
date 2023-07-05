@@ -1748,7 +1748,7 @@ bool CanPut(Point position)
 	return true;
 }
 
-int SyncDropItem(Point position, _item_indexes idx, uint16_t icreateinfo, int iseed, int id, int dur, int mdur, int ch, int mch, int ivalue, uint32_t ibuff, int toHit, int maxDam)
+int SyncDropItem(Point position, _item_indexes idx, uint16_t icreateinfo, int iseed, int id, int AC, int dur, int mdur, int ch, int mch, int ivalue, uint32_t ibuff, int toHit, int minDam, int maxDam, int minFDam, int maxFDam, int minLDam, int maxLDam)
 {
 	if (ActiveItemCount >= MAXITEMS)
 		return -1;
@@ -1758,12 +1758,18 @@ int SyncDropItem(Point position, _item_indexes idx, uint16_t icreateinfo, int is
 	RecreateItem(*MyPlayer, item, idx, icreateinfo, iseed, ivalue, (ibuff & CF_HELLFIRE) != 0);
 	if (id != 0)
 		item._iIdentified = true;
+	item._iAC = AC;
 	item._iDurability = dur;
 	item._iMaxDur = mdur;
 	item._iCharges = ch;
 	item._iMaxCharges = mch;
 	item._iPLToHit = toHit;
+	item._iMinDam = minDam;
 	item._iMaxDam = maxDam;
+	item._iFMinDam = minFDam;
+	item._iFMaxDam = maxFDam;
+	item._iLMinDam = minLDam;
+	item._iLMaxDam = maxLDam;
 	item.dwBuff = ibuff;
 
 	return PlaceItemInWorld(std::move(item), position);
