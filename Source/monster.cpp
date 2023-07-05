@@ -4799,8 +4799,8 @@ bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 		return false;
 	} else {
 		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-		    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-		    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid)) {
+		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		|| ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid)) {
 			return true;
 		} else {
 			return false;
@@ -4821,17 +4821,17 @@ bool Monster::isResistant(MissileID missileType, DamageType missileElement) cons
 	|| (missileType == MissileID::ChargedBolt)
 	|| (missileType == MissileID::Lightning)) {
 		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-		    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-			|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-		    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
+		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
+		|| ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
 			return true;
 		} else {
 			return false;
 		}
 	} else {
-		if (((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
-			|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-		    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
+		if (((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
+		|| ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
+		|| ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
 			return true;
 		} else {
 			return false;
