@@ -3921,7 +3921,7 @@ bool DoOil(Player &player, int cii)
 	case IPL_DRAINLIFE:
 		return _("constantly lose hit points");
 	case IPL_DRAINMANA:
-		return _("constantly lose mana");
+		return _("drains your soul for power");
 	case IPL_RNDSTEALLIFE:
 		return _("life stealing");
 	case IPL_NOMINSTR:

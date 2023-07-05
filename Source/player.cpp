@@ -3002,29 +3002,47 @@ void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*
 	}
 }
 
-void ApplyManaDrain(DamageType damageType, Player &player, int dam, int minMP /*= 0*/, int frac /*= 0*/)
+void ApplyManaDrain(DamageType damageType, Player &player, int dam, int minMP, int minHP /*= 0*/, int frac /*= 0*/, DeathReason deathReason /*= DeathReason::MonsterOrTrap*/)
 {
 	int totalDamage = (dam << 6) + frac;
 	if (&player == MyPlayer) {
 		AddFloatingNumber(damageType, player, totalDamage);
 	}
-	if (totalDamage > 0) {
-		if (&player == MyPlayer)
-			RedrawComponent(PanelDrawComponent::Mana);
-		if (player._pMana >= totalDamage) {
-			player._pMana -= totalDamage;
-			player._pManaBase -= totalDamage;
-			totalDamage = 0;
-		} else {
-			totalDamage -= player._pMana;
-			player._pMana = 0;
-			player._pManaBase = player._pMaxManaBase - player._pMaxMana;
+	if (player._pMana > 0) {
+		if (totalDamage > 0) {
 			if (&player == MyPlayer)
-				NetSendCmd(true, CMD_REMSHIELD);
+				RedrawComponent(PanelDrawComponent::Mana);
+			if (player._pMana >= totalDamage) {
+				player._pMana -= totalDamage;
+				player._pManaBase -= totalDamage;
+				totalDamage = 0;
+			} else {
+				totalDamage -= player._pMana;
+				player._pMana = 0;
+				player._pManaBase = player._pMaxManaBase - player._pMaxMana;
+				if (&player == MyPlayer)
+					NetSendCmd(true, CMD_REMSHIELD);
+			}
 		}
 	}
+
 	if (totalDamage == 0)
 		return;
+
+	RedrawComponent(PanelDrawComponent::Health);
+	player._pHitPoints -= totalDamage;
+	player._pHPBase -= totalDamage;
+	if (player._pHitPoints > player._pMaxHP) {
+		player._pHitPoints = player._pMaxHP;
+		player._pHPBase = player._pMaxHPBase;
+	}
+	int minHitPoints = minHP << 6;
+	if (player._pHitPoints < minHitPoints) {
+		SetPlayerHitPoints(player, minHitPoints);
+	}
+	if (player._pHitPoints >> 6 <= 0) {
+		SyncPlrKill(player, deathReason);
+	}
 }
 
 void SyncPlrKill(Player &player, DeathReason deathReason)
@@ -3197,7 +3215,7 @@ void ProcessPlayers()
 					ApplyPlrDamage(DamageType::Physical, player, 0, 0, 4);
 				}
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainMana) && leveltype != DTYPE_TOWN) {
-					ApplyManaDrain(DamageType::Physical, player, 0, 0, 12);
+					ApplyManaDrain(DamageType::Physical, player, 0, 0, 0, 4);
 				}
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::NoMana) && player._pManaBase > 0) {
 					player._pManaBase -= player._pMana;
