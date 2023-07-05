@@ -746,10 +746,6 @@ bool DeltaGetItem(const TCmdGItem &message, uint8_t bLevel)
 				delta.item.dwBuff = message.item.dwBuff;
 				delta.item.wToHit = message.item.wToHit;
 				delta.item.wMaxDam = message.item.wMaxDam;
-				delta.item.bMinStr = message.item.bMinStr;
-				delta.item.bMinMag = message.item.bMinMag;
-				delta.item.bMinDex = message.item.bMinDex;
-				delta.item.bAC = message.item.bAC;
 			}
 			break;
 		}
@@ -1048,11 +1044,7 @@ int SyncDropItem(Point position, const TItem &item)
 	    SDL_SwapLE16(item.wValue),
 	    SDL_SwapLE32(item.dwBuff),
 	    SDL_SwapLE16(item.wToHit),
-	    SDL_SwapLE16(item.wMaxDam),
-	    item.bMinStr,
-	    item.bMinMag,
-	    item.bMinDex,
-	    SDL_SwapLE16(item.bAC));
+	    SDL_SwapLE16(item.wMaxDam));
 }
 
 int SyncDropEar(Point position, const TEar &ear)
@@ -2363,10 +2355,6 @@ void RecreateItem(const Player &player, const TItem &messageItem, Item &item)
 	item._iMaxCharges = messageItem.bMCh;
 	item._iPLToHit = SDL_SwapLE16(messageItem.wToHit);
 	item._iMaxDam = SDL_SwapLE16(messageItem.wMaxDam);
-	item._iMinStr = messageItem.bMinStr;
-	item._iMinMag = messageItem.bMinMag;
-	item._iMinDex = messageItem.bMinDex;
-	item._iAC = SDL_SwapLE16(messageItem.bAC);
 	item.dwBuff = dwBuff;
 }
 
