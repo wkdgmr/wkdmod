@@ -2665,8 +2665,9 @@ void OperateShrineCostOfWisdom(Player &player, SpellID spellId, diablo_message m
 		uint8_t newSpellLevel = std::min(static_cast<uint8_t>(curSpellLevel + 2), MaxSpellLevel);
 		NetSendCmdParam2(true, CMD_CHANGE_SPELL_LEVEL, static_cast<uint16_t>(spellId), newSpellLevel);
 	}
-
-	ModifyPlrMag(player, -2);
+	if (player._pBaseMag = 0)
+		ModifyPlrVit(player, -2);
+	else ModifyPlrMag(player, -2);
 	CheckStats(player);
 	CalcPlrInv(player, true);
 	RedrawEverything();
@@ -2737,7 +2738,9 @@ void OperateShrineEerie(Player &player)
 	if (&player != MyPlayer)
 		return;
 
-	ModifyPlrMag(player, 2);
+	if (player._pBaseMag = 0)
+		ModifyPlrVit(player, 2);
+	else ModifyPlrMag(player, 2);
 	CheckStats(player);
 	CalcPlrInv(player, true);
 	RedrawEverything();
@@ -2978,7 +2981,9 @@ void OperateShrineGlowing(Player &player)
 	modplrmag = std::min(modplrmag, 5);
 
 	// Add 1-5 points to Magic
-	ModifyPlrMag(player, modplrmag);
+	if (player._pBaseMag = 0)
+		ModifyPlrVit(player, modplrmag);
+	else ModifyPlrMag(player, modplrmag);
 
 	// Add 1000 - 5000 xp
 	player._pExperience += static_cast<uint32_t>(modplrmag * 1000);
@@ -3080,7 +3085,9 @@ void OperateShrineSolar(Player &player)
 		ModifyPlrVit(player, 2);
 	} else if (hour >= 18) {
 		InitDiabloMsg(EMSG_SHRINE_SOLAR3);
-		ModifyPlrMag(player, 2);
+		if (player._pBaseMag = 0)
+			ModifyPlrVit(player, 2);
+		else ModifyPlrMag(player, 2);
 	} else if (hour >= 12) {
 		InitDiabloMsg(EMSG_SHRINE_SOLAR2);
 		ModifyPlrStr(player, 2);
