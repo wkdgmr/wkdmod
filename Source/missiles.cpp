@@ -885,13 +885,13 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		break;
 	case SpellID::BloodStar: {
 		int base = (2 * (sl * 3)) + 4;
-		*mind = (ScaleSpellEffect(base, sl)) / 3;
-		*maxd = (ScaleSpellEffect(base + 36, sl)) / 3;
+		*mind = (ScaleSpellEffect(base, sl)) / 2;
+		*maxd = (ScaleSpellEffect(base + 36, sl)) / 2;
 	} break;
 	case SpellID::BoneSpirit: {
 		int base = ((sl * 3) + (myPlayer._pMagic / 3) + 4);
-		*mind = (ScaleSpellEffect(base, sl)) / 4;
-		*maxd = (ScaleSpellEffect(base + 36, sl)) / 4;
+		*mind = (ScaleSpellEffect(base, sl)) / 3;
+		*maxd = (ScaleSpellEffect(base + 36, sl)) / 3;
 	} break;
 	default:
 		break;
@@ -2192,7 +2192,7 @@ void AddGenericMagicMissile(Missile &missile, AddMissileParameter &parameter)
 		case MissileSource::Player: {
 			const Player &player = *missile.sourcePlayer();
 			int dmg = 2 * (player._pLevel + GenerateRndSum(10, 2)) + 4;
-			missile._midam = (ScaleSpellEffect(dmg, missile._mispllvl)) / 3;
+			missile._midam = (ScaleSpellEffect(dmg, missile._mispllvl)) / 2;
 			break;
 		}
 		case MissileSource::Monster:
@@ -2671,7 +2671,7 @@ void AddBoneSpirit(Missile &missile, AddMissileParameter &parameter)
 	}
 	Player &player = Players[missile._misource];
 	int dmg = (missile._mispllvl * 3) + (player._pMagic / 3) + 4; // updated this line
-	missile._midam = (ScaleSpellEffect(dmg, missile._mispllvl)) / 4;
+	missile._midam = (ScaleSpellEffect(dmg, missile._mispllvl)) / 3;
 	UpdateMissileVelocity(missile, dst, 16);
 	SetMissDir(missile, GetDirection(missile.position.start, dst));
 	missile._mirange = 256;
