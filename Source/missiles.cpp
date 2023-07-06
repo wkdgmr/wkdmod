@@ -293,7 +293,7 @@ bool Plr2PlrMHit(const Player &player, int p, int mindam, int maxdam, int dist, 
 	}
 
 	if (mtype == MissileID::HolyBolt && sgGameInitInfo.bFriendlyFire == 1 && player.friendlyMode
-	|| (mtype == MissileID::HolyBolt && sgGameInitInfo.bFriendlyFire == 0)) {
+	    || (mtype == MissileID::HolyBolt && sgGameInitInfo.bFriendlyFire == 0)) {
 		return false;
 	}
 
@@ -448,7 +448,7 @@ void CheckMissileCol(Missile &missile, DamageType damageType, int minDamage, int
 	if (isPlayerHit) {
 		missile._miHitFlag = true;
 	}
-	
+
 	if (isPlayerHit) {
 		if (gbIsHellfire && blocked) {
 			RotateBlockedMissile(missile);
@@ -663,7 +663,7 @@ bool GuardianTryFireAt(Missile &missile, Point target)
 	int baseDamage = player._pLevel + 1;
 	int minDmg = ScaleSpellEffect(baseDamage, missile._mispllvl);
 	int maxDmg = ScaleSpellEffect((baseDamage * 2), (missile._mispllvl * 5));
-	int dmg = GenerateRnd(maxDmg - minDmg + 1) + minDmg;  // generates a number between minDmg and maxDmg
+	int dmg = GenerateRnd(maxDmg - minDmg + 1) + minDmg; // generates a number between minDmg and maxDmg
 
 	Direction dir = GetDirection(position, target);
 	AddMissile(position, target, dir, MissileID::Firebolt, TARGET_MONSTERS, missile._misource, dmg, missile.sourcePlayer()->GetSpellLevel(SpellID::Guardian), &missile);
@@ -672,7 +672,6 @@ bool GuardianTryFireAt(Missile &missile, Point target)
 
 	return true;
 }
-
 
 bool GrowWall(int playerId, Point position, Point target, MissileID type, int spellLevel, int damage)
 {
@@ -832,21 +831,16 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = *mind + 36;
 		break;
 	case SpellID::Fireball:
-	case SpellID::RuneOfFire:
+	case SpellID::RuneOfFire: {
 		int base = (2 * myPlayer._pLevel) + 4;
 		*mind = ScaleSpellEffect(base, sl);
 		*maxd = ScaleSpellEffect(base + 36, sl);
-	 	break;
-	case SpellID::BloodStar:
-		int base = (2 * (sl * 3)) + 4;
-		*mind = ScaleSpellEffect(base, sl);
-		*maxd = ScaleSpellEffect(base + 36, sl);
-	 	break;
-	case SpellID::Guardian:
+	} break;
+	case SpellID::Guardian: {
 		int base = myPlayer._pLevel + 1;
 		*mind = ScaleSpellEffect(base, sl);
 		*maxd = ScaleSpellEffect((base * 2), (sl * 5));
-	 	break;
+	} break;
 	case SpellID::ChainLightning:
 		*mind = 4 + sl;
 		*maxd = 4 + (sl * 2) + (2 * myPlayer._pLevel);
@@ -872,9 +866,9 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = 2 * (sl * 2) + (myPlayer._pLevel * 2);
 		break;
 	case SpellID::Apocalypse:
-	    *mind = myPlayer._pLevel + (sl * 5);
-	    *maxd = (myPlayer._pLevel * 2) + (sl * 10) + std::min(150, myPlayer._pMagic);
-	    break;
+		*mind = myPlayer._pLevel + (sl * 5);
+		*maxd = (myPlayer._pLevel * 2) + (sl * 10) + std::min(150, myPlayer._pMagic);
+		break;
 	case SpellID::Elemental:
 		*mind = ScaleSpellEffect(2 * myPlayer._pLevel + 4, sl);
 		/// BUGFIX: add here '*mind /= 2;'
@@ -889,6 +883,11 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*mind = myPlayer._pLevel + 9;
 		*maxd = *mind + myPlayer._pLevel + 9;
 		break;
+	case SpellID::BloodStar: {
+		int base = (2 * (sl * 3)) + 4;
+		*mind = ScaleSpellEffect(base, sl);
+		*maxd = ScaleSpellEffect(base + 36, sl);
+	} break;
 	case SpellID::BoneSpirit: {
 		int base = ((sl * 3) + (myPlayer._pMagic / 3) + 4);
 		*mind = ScaleSpellEffect(base, sl);
@@ -1004,9 +1003,9 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 	if (missileData.isArrow()) {
 		int tac = player.GetArmor();
 		if (player._pLevel > 19) {
-			tac += (int)(rand()%player._pLevel + 20);
+			tac += (int)(rand() % player._pLevel + 20);
 		} else {
-			tac += (int)(rand()%player._pLevel + 1);
+			tac += (int)(rand() % player._pLevel + 1);
 		}
 		if (monster != nullptr) {
 			hper = monster->toHit
@@ -1658,7 +1657,6 @@ void AddElementalArrow(Missile &missile, AddMissileParameter &parameter)
 			av += (player._pLevel) / 8;
 		if (IsAnyOf(player._pClass, HeroClass::Rogue, HeroClass::Warrior, HeroClass::Bard))
 			av -= 1;
-		
 	}
 	UpdateMissileVelocity(missile, dst, av);
 
@@ -1913,7 +1911,6 @@ void AddLightning(Missile &missile, AddMissileParameter &parameter)
 	}
 	missile._mlid = AddLight(missile.position.tile, 4);
 }
-
 
 void AddMissileExplosion(Missile &missile, AddMissileParameter &parameter)
 {
@@ -2552,23 +2549,22 @@ void AddTrapDisarm(Missile &missile, AddMissileParameter & /*parameter*/)
 
 void AddApocalypse(Missile &missile, AddMissileParameter & /*parameter*/)
 {
-    Player &player = Players[missile._misource];
+	Player &player = Players[missile._misource];
 
-    missile.var1 = 8;
-    missile.var2 = std::max(missile.position.start.y - 8, 1);
-    missile.var3 = std::min(missile.position.start.y + 8, MAXDUNY - 1);
-    missile.var4 = std::max(missile.position.start.x - 8, 1);
-    missile.var5 = std::min(missile.position.start.x + 8, MAXDUNX - 1);
-    missile.var6 = missile.var4;
+	missile.var1 = 8;
+	missile.var2 = std::max(missile.position.start.y - 8, 1);
+	missile.var3 = std::min(missile.position.start.y + 8, MAXDUNY - 1);
+	missile.var4 = std::max(missile.position.start.x - 8, 1);
+	missile.var5 = std::min(missile.position.start.x + 8, MAXDUNX - 1);
+	missile.var6 = missile.var4;
 
-    int minDmg = player._pLevel + (missile._mispllvl * 5);
-    int maxDmg = (player._pLevel * 2) + (missile._mispllvl * 10) + std::min(150, player._pMagic);
+	int minDmg = player._pLevel + (missile._mispllvl * 5);
+	int maxDmg = (player._pLevel * 2) + (missile._mispllvl * 10) + std::min(150, player._pMagic);
 
-    missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 
-    missile._mirange = 255;
+	missile._mirange = 255;
 }
-
 
 void AddInferno(Missile &missile, AddMissileParameter &parameter)
 {
