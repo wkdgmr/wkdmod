@@ -660,9 +660,9 @@ bool GuardianTryFireAt(Missile &missile, Point target)
 		return false;
 
 	Player &player = Players[missile._misource];
-	int baseDamage = player._pLevel + 1;
+	int baseDamage = (player._pLevel / 2) + 1;
 	int minDmg = ScaleSpellEffect(baseDamage, missile._mispllvl);
-	int maxDmg = ScaleSpellEffect((baseDamage * 2), (missile._mispllvl * 5));
+	int maxDmg = ScaleSpellEffect((baseDamage + 9), missile._mispllvl);
 	int dmg = GenerateRnd(maxDmg - minDmg + 1) + minDmg; // generates a number between minDmg and maxDmg
 
 	Direction dir = GetDirection(position, target);
@@ -837,13 +837,13 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = ScaleSpellEffect(base + 36, sl);
 	} break;
 	case SpellID::Guardian: {
-		int base = myPlayer._pLevel + 1;
+		int base = (myPlayer._pLevel / 2) + 1;
 		*mind = ScaleSpellEffect(base, sl);
-		*maxd = ScaleSpellEffect((base * 2), (sl * 5));
+		*maxd = ScaleSpellEffect(base + 9, sl);
 	} break;
 	case SpellID::ChainLightning:
-		*mind = 4 + sl;
-		*maxd = 4 + (sl * 2) + (2 * myPlayer._pLevel);
+		*mind = 4;
+		*maxd = 4 + (2 * myPlayer._pLevel);
 		break;
 	case SpellID::FlameWave:
 		*mind = 6 * (myPlayer._pLevel + 1);
@@ -853,8 +853,8 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 	case SpellID::RuneOfImmolation:
 	case SpellID::Nova:
 	case SpellID::RuneOfNova:
-		*mind = ScaleSpellEffect((myPlayer._pLevel + 5) / 2, sl) * 5;
-		*maxd = ScaleSpellEffect((myPlayer._pLevel + 30) / 2, sl) * 5;
+		*mind = (ScaleSpellEffect((myPlayer._pLevel + 5) / 2, sl) * 5) / 3;
+		*maxd = (ScaleSpellEffect((myPlayer._pLevel + 5) / 2, sl) * 5) / 3;
 		break;
 	case SpellID::Inferno:
 		*mind = sl + myPlayer._pLevel / 2;
@@ -885,13 +885,13 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		break;
 	case SpellID::BloodStar: {
 		int base = (2 * (sl * 3)) + 4;
-		*mind = ScaleSpellEffect(base, sl);
-		*maxd = ScaleSpellEffect(base + 36, sl);
+		*mind = (ScaleSpellEffect(base, sl)) / 3;
+		*maxd = (ScaleSpellEffect(base + 36, sl)) / 3;
 	} break;
 	case SpellID::BoneSpirit: {
 		int base = ((sl * 3) + (myPlayer._pMagic / 3) + 4);
-		*mind = ScaleSpellEffect(base, sl);
-		*maxd = ScaleSpellEffect(base + 36, sl);
+		*mind = (ScaleSpellEffect(base, sl)) / 4;
+		*maxd = (ScaleSpellEffect(base + 36, sl)) / 4;
 	} break;
 	default:
 		break;
@@ -1893,19 +1893,11 @@ void AddLightning(Missile &missile, AddMissileParameter &parameter)
 
 	missile._miAnimFrame = GenerateRnd(8) + 1;
 
-	Player &player = Players[missile._misource];
-	int dmg;
 	if (missile._micaster == TARGET_PLAYERS || missile.IsTrap()) {
-		if (missile.IsTrap() || Monsters[missile._misource].type().type == MT_FAMILIAR) {
+		if (missile.IsTrap() || Monsters[missile._misource].type().type == MT_FAMILIAR)
 			missile._mirange = 8;
-			// BUGFIX: damage of missile should be encoded in missile struct; monster can be dead before missile arrives.
-			dmg = GenerateRnd(currlevel) + 2 * currlevel;
-		} else {
+		else
 			missile._mirange = 10;
-			// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
-			dmg = (GenerateRnd(2) + GenerateRnd(player._pLevel) + 2) << 6;
-		}
-		missile._midam = dmg;
 	} else {
 		missile._mirange = (missile._mispllvl / 2) + 6;
 	}
@@ -2200,7 +2192,7 @@ void AddGenericMagicMissile(Missile &missile, AddMissileParameter &parameter)
 		case MissileSource::Player: {
 			const Player &player = *missile.sourcePlayer();
 			int dmg = 2 * (player._pLevel + GenerateRndSum(10, 2)) + 4;
-			missile._midam = ScaleSpellEffect(dmg, missile._mispllvl);
+			missile._midam = (ScaleSpellEffect(dmg, missile._mispllvl)) / 3;
 			break;
 		}
 		case MissileSource::Monster:
@@ -2458,8 +2450,8 @@ void AddNova(Missile &missile, AddMissileParameter &parameter)
 
 	if (!missile.IsTrap()) {
 		Player &player = Players[missile._misource];
-		int minDmg = ScaleSpellEffect((player._pLevel + 5) / 2, missile._mispllvl) * 5;
-		int maxDmg = ScaleSpellEffect((player._pLevel + 30) / 2, missile._mispllvl) * 5;
+		int minDmg = (ScaleSpellEffect((player._pLevel + 5) / 2, missile._mispllvl) * 5) / 3;
+		int maxDmg = (ScaleSpellEffect((player._pLevel + 30) / 2, missile._mispllvl) * 5) / 3;
 		missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	} else {
 		missile._midam = (currlevel / 2) + GenerateRndSum(3, 3);
@@ -2679,7 +2671,7 @@ void AddBoneSpirit(Missile &missile, AddMissileParameter &parameter)
 	}
 	Player &player = Players[missile._misource];
 	int dmg = (missile._mispllvl * 3) + (player._pMagic / 3) + 4; // updated this line
-	missile._midam = ScaleSpellEffect(dmg, missile._mispllvl);
+	missile._midam = (ScaleSpellEffect(dmg, missile._mispllvl)) / 4;
 	UpdateMissileVelocity(missile, dst, 16);
 	SetMissDir(missile, GetDirection(missile.position.start, dst));
 	missile._mirange = 256;
@@ -3313,8 +3305,8 @@ void ProcessLightningControl(Missile &missile)
 		// BUGFIX: damage of missile should be encoded in missile struct; monster can be dead before missile arrives.
 		dam = GenerateRnd(currlevel) + 2 * currlevel;
 	} else if (missile._micaster == TARGET_MONSTERS) {
-		// Assign the precalculated damage to dam
-		dam = missile._midam;
+		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
+		dam = (GenerateRnd(2) + GenerateRnd(Players[missile._misource]._pLevel) + 2) << 6;
 	} else {
 		auto &monster = Monsters[missile._misource];
 		dam = 2 * (monster.minDamage + GenerateRnd(monster.maxDamage - monster.minDamage + 1));
@@ -4081,7 +4073,7 @@ void ProcessBoneSpirit(Missile &missile)
 			if (monster != nullptr) {
 				Player &player = Players[missile._misource];
 				int dmg = 2 * ((missile._mispllvl * 3) + (player._pMagic / 3) + GenerateRndSum(10, 2)) + 4;
-				missile._midam = ScaleSpellEffect(dmg, missile._mispllvl);
+				missile._midam = (ScaleSpellEffect(dmg, missile._mispllvl)) / 4;
 				SetMissDir(missile, GetDirection(c, monster->position.tile));
 				UpdateMissileVelocity(missile, monster->position.tile, 16);
 			} else {
