@@ -3264,8 +3264,8 @@ void ProcessSpectralArrow(Missile &missile)
 	MissileID mitype = MissileID::Arrow;
 	Direction dir = Direction::South;
 	mienemy_type micaster = TARGET_PLAYERS;
+	const Player &player = Players[id];
 	if (!missile.IsTrap()) {
-		const Player &player = Players[id];
 		dir = player._pdir;
 		micaster = TARGET_MONSTERS;
 
@@ -3281,14 +3281,29 @@ void ProcessSpectralArrow(Missile &missile)
 			mitype = MissileID::ChargedBoltBow;
 			break;
 		case 4:
+		case 7:
+		case 8:
+			mitype = MissileID::Inferno;
+			break;
+		case 5:
 			mitype = MissileID::HolyBoltBow;
 			break;
 		}
 	}
 	AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-	if (mitype == MissileID::ChargedBoltBow) {
+	if (mitype == MissileID::Inferno && player._pIMisType == 4 || player._pIMisType == 8) {
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+	}
+	if (mitype == MissileID::ChargedBoltBow || player._pIMisType == 7) {
+		if (mitype == MissileID::ChargedBoltBow)
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		if (mitype == MissileID::Inferno && player._pIMisType == 7)
+			mitype = MissileID::Inferno;
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			mitype = MissileID::ChargedBoltBow;
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	missile._mirange--;
 	if (missile._mirange == 0)

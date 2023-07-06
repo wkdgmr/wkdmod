@@ -648,7 +648,8 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 			return false;
 	}
 	
-	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType != 3 || player._pIMisType != 6) {
+	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType != 3 || player._pIMisType != 4
+	|| player._pIMisType != 6 || player._pIMisType != 7 || player._pIMisType != 8) {
 	    const size_t playerId = player.getId();
 	
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
@@ -664,9 +665,27 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		const size_t playerId = player.getId();
 	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 4) {
+		const size_t playerId = player.getId();
+	    int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
 	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 6) {
 		const size_t playerId = player.getId();
 	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 7) {
+		const size_t playerId = player.getId();
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
+	    	int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+	    	AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+	    	int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+	    	AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+		}
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 8) {
+		const size_t playerId = player.getId();
+	    int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
 	}
 

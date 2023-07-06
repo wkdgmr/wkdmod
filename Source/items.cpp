@@ -897,6 +897,12 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
 		break;
+	case IPL_INFERNO:
+		item._iMisType = 4;
+		item._iFlags |= (ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage);
+		item._iFMinDam = power.param1;
+		item._iFMaxDam = power.param2;
+		break;
 	case IPL_THORNS:
 		item._iFlags |= ItemSpecialEffect::Thorns;
 		item._iFMinDam = power.param1;
@@ -3859,6 +3865,11 @@ bool DoOil(Player &player, int cii)
 			return fmt::format(fmt::runtime(_("fireball damage: {:d}")), item._iFMinDam);
 		else
 			return fmt::format(fmt::runtime(_("fireball damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+	case IPL_INFERNO:
+		if (item._iFMinDam == item._iFMaxDam)
+			return fmt::format(fmt::runtime(_("inferno damage: {:d}")), item._iFMinDam);
+		else
+			return fmt::format(fmt::runtime(_("inferno damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_THORNS: 
 		if (item._iFMinDam == item._iFMaxDam)
 			return fmt::format(fmt::runtime(_("holy fire damage: {:d}")), item._iFMinDam);
