@@ -2563,7 +2563,13 @@ void AddInferno(Missile &missile, AddMissileParameter &parameter)
 	missile._mlid = AddLight(missile.position.start, 1);
 	if (missile._micaster == TARGET_MONSTERS) {
 		int i = GenerateRnd(Players[missile._misource]._pLevel / 2) + GenerateRnd(missile._mispllvl);
-		missile._midam = ((i + (i * 2)) + (i + (Players[missile._misource]._pMagic / 2)));
+		// calculate mind (minimum damage)
+		int mind = missile._mispllvl + Players[missile._misource]._pLevel / 2;
+		// calculate maxd (maximum damage)
+		int maxd = (missile._mispllvl * 2) + Players[missile._misource]._pLevel;
+		maxd += maxd / 2 + Players[missile._misource]._pMagic / 2;
+		// determine the actual damage
+		missile._midam = mind + GenerateRnd(maxd - mind + 1);
 	} else {
 		auto &monster = Monsters[missile._misource];
 		missile._midam = monster.minDamage + GenerateRnd(monster.maxDamage - monster.minDamage + 1);
