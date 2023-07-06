@@ -660,16 +660,19 @@ bool GuardianTryFireAt(Missile &missile, Point target)
 		return false;
 
 	Player &player = Players[missile._misource];
-	int dmg = GenerateRnd(10) + player._pLevel + 1;
-	dmg = ScaleSpellEffect(dmg, missile._mispllvl);
+	int baseDamage = player._pLevel + 1;
+	int minDmg = ScaleSpellEffect(baseDamage, missile._mispllvl);
+	int maxDmg = ScaleSpellEffect((baseDamage * 2), (missile._mispllvl * 5));
+	int dmg = GenerateRnd(maxDmg - minDmg + 1) + minDmg;  // generates a number between minDmg and maxDmg
 
 	Direction dir = GetDirection(position, target);
-	AddMissile(position, target, dir, MissileID::Firebolt, TARGET_MONSTERS, missile._misource, missile._midam, missile.sourcePlayer()->GetSpellLevel(SpellID::Guardian), &missile);
+	AddMissile(position, target, dir, MissileID::Firebolt, TARGET_MONSTERS, missile._misource, dmg, missile.sourcePlayer()->GetSpellLevel(SpellID::Guardian), &missile);
 	SetMissDir(missile, 2);
 	missile.var2 = 3;
 
 	return true;
 }
+
 
 bool GrowWall(int playerId, Point position, Point target, MissileID type, int spellLevel, int damage)
 {
@@ -829,32 +832,32 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = *mind + 36;
 		break;
 	case SpellID::Fireball:
-	case SpellID::RuneOfFire: {
+	case SpellID::RuneOfFire:
 		int base = (2 * myPlayer._pLevel) + 4;
 		*mind = ScaleSpellEffect(base, sl);
 		*maxd = ScaleSpellEffect(base + 36, sl);
-	} break;
-	case SpellID::BloodStar: {
+	 	break;
+	case SpellID::BloodStar:
 		int base = (2 * (sl * 3)) + 4;
 		*mind = ScaleSpellEffect(base, sl);
 		*maxd = ScaleSpellEffect(base + 36, sl);
-	} break;
-	case SpellID::Guardian: {
+	 	break;
+	case SpellID::Guardian:
 		int base = myPlayer._pLevel + 1;
 		*mind = ScaleSpellEffect(base, sl);
-		*maxd = ScaleSpellEffect(base + 9, sl);
-	} break;
+		*maxd = ScaleSpellEffect((base * 2), (sl * 5));
+	 	break;
 	case SpellID::ChainLightning:
-		*mind = 4;
-		*maxd = 4 + (2 * myPlayer._pLevel);
+		*mind = 4 + sl;
+		*maxd = 4 + (sl * 2) + (2 * myPlayer._pLevel);
 		break;
 	case SpellID::FlameWave:
 		*mind = 6 * (myPlayer._pLevel + 1);
 		*maxd = *mind + 54;
 		break;
-	case SpellID::Nova:
 	case SpellID::Immolation:
 	case SpellID::RuneOfImmolation:
+	case SpellID::Nova:
 	case SpellID::RuneOfNova:
 		*mind = ScaleSpellEffect((myPlayer._pLevel + 5) / 2, sl) * 5;
 		*maxd = ScaleSpellEffect((myPlayer._pLevel + 30) / 2, sl) * 5;
@@ -869,9 +872,9 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = 2 * (sl * 2) + (myPlayer._pLevel * 2);
 		break;
 	case SpellID::Apocalypse:
-		*mind = myPlayer._pLevel;
-		*maxd = *mind * 6;
-		break;
+	    *mind = myPlayer._pLevel + (sl * 5);
+	    *maxd = (myPlayer._pLevel * 2) + (sl * 10) + std::min(150, myPlayer._pMagic);
+	    break;
 	case SpellID::Elemental:
 		*mind = ScaleSpellEffect(2 * myPlayer._pLevel + 4, sl);
 		/// BUGFIX: add here '*mind /= 2;'
@@ -1766,7 +1769,7 @@ void AddFirebolt(Missile &missile, AddMissileParameter &parameter)
 		switch (missile.sourceType()) {
 		case MissileSource::Player: {
 			const Player &player = *missile.sourcePlayer();
-			missile._midam = GenerateRnd(10) + (player._pMagic / 8) + player._pLevel + missile._mispllvl + 1;
+			missile._midam = (player._pMagic / 8) + player._pLevel + missile._mispllvl + 1;
 		} break;
 
 		case MissileSource::Monster:
@@ -1892,16 +1895,25 @@ void AddLightning(Missile &missile, AddMissileParameter &parameter)
 
 	missile._miAnimFrame = GenerateRnd(8) + 1;
 
+	Player &player = Players[missile._misource];
+	int dmg;
 	if (missile._micaster == TARGET_PLAYERS || missile.IsTrap()) {
-		if (missile.IsTrap() || Monsters[missile._misource].type().type == MT_FAMILIAR)
+		if (missile.IsTrap() || Monsters[missile._misource].type().type == MT_FAMILIAR) {
 			missile._mirange = 8;
-		else
+			// BUGFIX: damage of missile should be encoded in missile struct; monster can be dead before missile arrives.
+			dmg = GenerateRnd(currlevel) + 2 * currlevel;
+		} else {
 			missile._mirange = 10;
+			// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
+			dmg = (GenerateRnd(2) + GenerateRnd(player._pLevel) + 2) << 6;
+		}
+		missile._midam = dmg;
 	} else {
 		missile._mirange = (missile._mispllvl / 2) + 6;
 	}
 	missile._mlid = AddLight(missile.position.tile, 4);
 }
+
 
 void AddMissileExplosion(Missile &missile, AddMissileParameter &parameter)
 {
@@ -2449,8 +2461,9 @@ void AddNova(Missile &missile, AddMissileParameter &parameter)
 
 	if (!missile.IsTrap()) {
 		Player &player = Players[missile._misource];
-		int dmg = GenerateRndSum(6, 5) + player._pLevel + 5;
-		missile._midam = ScaleSpellEffect(dmg / 2, missile._mispllvl);
+		int minDmg = ScaleSpellEffect((player._pLevel + 5) / 2, missile._mispllvl) * 5;
+		int maxDmg = ScaleSpellEffect((player._pLevel + 30) / 2, missile._mispllvl) * 5;
+		missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	} else {
 		missile._midam = (currlevel / 2) + GenerateRndSum(3, 3);
 	}
@@ -2539,18 +2552,23 @@ void AddTrapDisarm(Missile &missile, AddMissileParameter & /*parameter*/)
 
 void AddApocalypse(Missile &missile, AddMissileParameter & /*parameter*/)
 {
-	Player &player = Players[missile._misource];
+    Player &player = Players[missile._misource];
 
-	missile.var1 = 8;
-	missile.var2 = std::max(missile.position.start.y - 8, 1);
-	missile.var3 = std::min(missile.position.start.y + 8, MAXDUNY - 1);
-	missile.var4 = std::max(missile.position.start.x - 8, 1);
-	missile.var5 = std::min(missile.position.start.x + 8, MAXDUNX - 1);
-	missile.var6 = missile.var4;
-	int playerLevel = player._pLevel;
-	missile._midam = GenerateRndSum(6, playerLevel) + playerLevel;
-	missile._mirange = 255;
+    missile.var1 = 8;
+    missile.var2 = std::max(missile.position.start.y - 8, 1);
+    missile.var3 = std::min(missile.position.start.y + 8, MAXDUNY - 1);
+    missile.var4 = std::max(missile.position.start.x - 8, 1);
+    missile.var5 = std::min(missile.position.start.x + 8, MAXDUNX - 1);
+    missile.var6 = missile.var4;
+
+    int minDmg = player._pLevel + (missile._mispllvl * 5);
+    int maxDmg = (player._pLevel * 2) + (missile._mispllvl * 10) + std::min(150, player._pMagic);
+
+    missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+
+    missile._mirange = 255;
 }
+
 
 void AddInferno(Missile &missile, AddMissileParameter &parameter)
 {
@@ -2593,7 +2611,7 @@ void AddChargedBolt(Missile &missile, AddMissileParameter &parameter)
 	Point dst = parameter.dst;
 	Player &player = Players[missile._misource];
 	missile._mirnd = GenerateRnd(15) + 1;
-	missile._midam = (missile._micaster == TARGET_MONSTERS) ? (GenerateRnd(Players[missile._misource]._pMagic / 4) + player._pLevel + 1) : 15;
+	missile._midam = (missile._micaster == TARGET_MONSTERS) ? (GenerateRnd(Players[missile._misource]._pMagic / 4 + 1) + player._pLevel + 1) : 15;
 
 	if (missile.position.start == dst) {
 		dst += parameter.midir;
@@ -2664,7 +2682,7 @@ void AddBoneSpirit(Missile &missile, AddMissileParameter &parameter)
 		dst += parameter.midir;
 	}
 	Player &player = Players[missile._misource];
-	int dmg = 2 * ((missile._mispllvl * 3) + (player._pMagic / 3) + GenerateRndSum(10, 2)) + 4;
+	int dmg = (missile._mispllvl * 3) + (player._pMagic / 3) + 4; // updated this line
 	missile._midam = ScaleSpellEffect(dmg, missile._mispllvl);
 	UpdateMissileVelocity(missile, dst, 16);
 	SetMissDir(missile, GetDirection(missile.position.start, dst));
@@ -3299,8 +3317,8 @@ void ProcessLightningControl(Missile &missile)
 		// BUGFIX: damage of missile should be encoded in missile struct; monster can be dead before missile arrives.
 		dam = GenerateRnd(currlevel) + 2 * currlevel;
 	} else if (missile._micaster == TARGET_MONSTERS) {
-		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
-		dam = (GenerateRnd(2) + GenerateRnd(Players[missile._misource]._pLevel) + 2) << 6;
+		// Assign the precalculated damage to dam
+		dam = missile._midam;
 	} else {
 		auto &monster = Monsters[missile._misource];
 		dam = 2 * (monster.minDamage + GenerateRnd(monster.maxDamage - monster.minDamage + 1));
