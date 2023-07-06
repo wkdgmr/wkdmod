@@ -3283,7 +3283,7 @@ void ProcessSpectralArrow(Missile &missile)
 		case 4:
 		case 7:
 		case 8:
-			mitype = MissileID::Inferno;
+			mitype = MissileID::InfernoControl;
 			break;
 		case 5:
 			mitype = MissileID::HolyBoltBow;
@@ -3291,17 +3291,21 @@ void ProcessSpectralArrow(Missile &missile)
 		}
 	}
 	AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-	if (mitype == MissileID::Inferno && player._pIMisType == 4 || player._pIMisType == 8) {
-		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+	if (mitype == MissileID::InfernoControl) {
+		if (player._pIMisType == 4 || player._pIMisType == 7)
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		if (player._pIMisType == 8)
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (mitype == MissileID::ChargedBoltBow || player._pIMisType == 7) {
-		if (mitype == MissileID::ChargedBoltBow)
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-		if (mitype == MissileID::Inferno && player._pIMisType == 7)
-			mitype = MissileID::Inferno;
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		if (player._pIMisType == 3 || player._pIMisType == 7)
 			mitype = MissileID::ChargedBoltBow;
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		if (player._pIMisType == 6)
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
