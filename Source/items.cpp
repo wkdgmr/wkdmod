@@ -3800,14 +3800,14 @@ bool DoOil(Player &player, int cii)
 		return fmt::format(fmt::runtime(ngettext("{:d} {:s} charge", "{:d} {:s} charges", item._iMaxCharges)), item._iMaxCharges, pgettext("spell", GetSpellData(item._iSpell).sNameText));
 	case IPL_FIREDAM:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("Fire hit damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("Fire hit damage: {:d} Pierces immunities")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("Fire hit damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("Fire hit damage: {:d}-{:d} Pierces immunities")), item._iFMinDam, item._iFMaxDam);
 	case IPL_LIGHTDAM:
 		if (item._iLMinDam == item._iLMaxDam)
-			return fmt::format(fmt::runtime(_("Lightning hit damage: {:d}")), item._iLMinDam);
+			return fmt::format(fmt::runtime(_("Lightning hit damage: {:d} Pierces immunities")), item._iLMinDam);
 		else
-			return fmt::format(fmt::runtime(_("Lightning hit damage: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
+			return fmt::format(fmt::runtime(_("Lightning hit damage: {:d}-{:d} Pierces immunities")), item._iLMinDam, item._iLMaxDam);
 	case IPL_STR:
 	case IPL_STR_CURSE:
 		return fmt::format(fmt::runtime(_("{:+d} to strength")), item._iPLStr);
@@ -3846,24 +3846,24 @@ bool DoOil(Player &player, int cii)
 		return _("multiple arrows per shot");
 	case IPL_FIRE_ARROWS:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("fire arrows damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("fire arrows damage: {:d} Pierces immunities")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("fire arrows damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("fire arrows damage: {:d}-{:d} Pierces immunities")), item._iFMinDam, item._iFMaxDam);
 	case IPL_LIGHT_ARROWS:
 		if (item._iLMinDam == item._iLMaxDam)
-			return fmt::format(fmt::runtime(_("lightning arrows damage {:d}")), item._iLMinDam);
+			return fmt::format(fmt::runtime(_("lightning arrows damage {:d} Pierces immunities")), item._iLMinDam);
 		else
-			return fmt::format(fmt::runtime(_("lightning arrows damage {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
+			return fmt::format(fmt::runtime(_("lightning arrows damage {:d}-{:d} Pierces immunities")), item._iLMinDam, item._iLMaxDam);
 	case IPL_FIREBALL:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("fireball damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("fireball damage: {:d} Pierces immunities")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("fireball damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("fireball damage: {:d}-{:d} Pierces immunities")), item._iFMinDam, item._iFMaxDam);
 	case IPL_THORNS: 
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("holy fire damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("holy fire damage: {:d} Pierces immunities")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("holy fire damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("holy fire damage: {:d}-{:d} Pierces immunities")), item._iFMinDam, item._iFMaxDam);
 	case IPL_NOMANA:
 		return _("user loses all mana");
 	case IPL_ABSHALFTRAP:
@@ -3930,14 +3930,14 @@ bool DoOil(Player &player, int cii)
 		return { string_view(" ") };
 	case IPL_ADDACLIFE:
 		if (item._iLMinDam == item._iLMaxDam)
-			return fmt::format(fmt::runtime(_("lightning damage: {:d}")), item._iLMinDam);
+			return fmt::format(fmt::runtime(_("lightning damage: {:d} Pierces immunities")), item._iLMinDam);
 		else
-			return fmt::format(fmt::runtime(_("lightning damage: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
+			return fmt::format(fmt::runtime(_("lightning damage: {:d}-{:d} Pierces immunities")), item._iLMinDam, item._iLMaxDam);
 	case IPL_ADDMANAAC:
 		if (item._iLMinDam == item._iLMaxDam)
-			return fmt::format(fmt::runtime(_("charged bolts damage: {:d}")), item._iLMinDam);
+			return fmt::format(fmt::runtime(_("charged bolts damage: {:d} Pierces immunities")), item._iLMinDam);
 		else
-			return fmt::format(fmt::runtime(_("charged bolts damage: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
+			return fmt::format(fmt::runtime(_("charged bolts damage: {:d}-{:d} Pierces immunities")), item._iLMinDam, item._iLMaxDam);
 	case IPL_DEVASTATION:
 		return _("occasional triple damage");
 	case IPL_DECAY:
