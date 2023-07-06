@@ -884,7 +884,7 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = *mind + myPlayer._pLevel + 9;
 		break;
 	case SpellID::BloodStar: {
-		int base = (2 * (sl * 3)) + 4;
+		int base = (sl * 3) + 4;
 		*mind = (ScaleSpellEffect(base, sl) / 2);
 		*maxd = (ScaleSpellEffect(base + 36, sl) / 2);
 	} break;
@@ -4050,9 +4050,12 @@ void ProcessElemental(Missile &missile)
 
 void ProcessBoneSpirit(Missile &missile)
 {
+	Player &player = Players[missile._misource];
 	missile._mirange--;
-	int minDam = missile._midam;
-	int maxDam = missile._midam;
+	int base = (missile._mispllvl * 3) + (player._pMagic / 2) + 4;
+	int minDmg = (ScaleSpellEffect(base, missile._mispllvl) / 2);
+	int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) / 2);
+	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	if (missile._mimfnum == 8) {
 		ChangeLight(missile._mlid, missile.position.tile, missile._miAnimFrame);
 		if (missile._mirange == 0) {
@@ -4061,7 +4064,7 @@ void ProcessBoneSpirit(Missile &missile)
 		}
 		PutMissile(missile);
 	} else {
-		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDam, maxDam, false, false);
+		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);
 		Point c = missile.position.tile;
 		if (missile.var3 == 0 && c == Point { missile.var4, missile.var5 })
 			missile.var3 = 1;
@@ -4070,11 +4073,6 @@ void ProcessBoneSpirit(Missile &missile)
 			missile._mirange = 255;
 			auto *monster = FindClosest(c, 19);
 			if (monster != nullptr) {
-				Player &player = Players[missile._misource];
-				int base = (missile._mispllvl * 3) + (player._pMagic / 2) + 4;
-				int minDmg = (ScaleSpellEffect(base, missile._mispllvl) / 2);
-				int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) / 2);
-				missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 				SetMissDir(missile, GetDirection(c, monster->position.tile));
 				UpdateMissileVelocity(missile, monster->position.tile, 16);
 			} else {
