@@ -2192,8 +2192,8 @@ void AddGenericMagicMissile(Missile &missile, AddMissileParameter &parameter)
 		case MissileSource::Player: {
         	const Player &player = *missile.sourcePlayer();
         	int dmgBase = (2 * (missile._mispllvl * 3)) + 4;
-        	int minDmg = (ScaleSpellEffect(dmgBase, missile._mispllvl)) * .66;
-        	int maxDmg = (ScaleSpellEffect(dmgBase + 36, missile._mispllvl)) * .66;
+        	int minDmg = (ScaleSpellEffect(dmgBase, missile._mispllvl)) * .55;
+        	int maxDmg = (ScaleSpellEffect(dmgBase + 36, missile._mispllvl)) * .55;
         	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
         	break;
 		}
@@ -2671,9 +2671,6 @@ void AddBoneSpirit(Missile &missile, AddMissileParameter &parameter)
 	if (missile.position.start == dst) {
 		dst += parameter.midir;
 	}
-	Player &player = Players[missile._misource];
-	int dmg = (missile._mispllvl * 3) + (player._pMagic / 3) + 4; // updated this line
-	missile._midam = (ScaleSpellEffect(dmg, missile._mispllvl)) / 3;
 	UpdateMissileVelocity(missile, dst, 16);
 	SetMissDir(missile, GetDirection(missile.position.start, dst));
 	missile._mirange = 256;
@@ -4075,8 +4072,8 @@ void ProcessBoneSpirit(Missile &missile)
 			if (monster != nullptr) {
 				Player &player = Players[missile._misource];
 				int base = (missile._mispllvl * 3) + (player._pMagic / 2) + 4;
-				int minDmg = (ScaleSpellEffect(base, missile._mispllvl) * .66);
-				int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) * .66);
+				int minDmg = (ScaleSpellEffect(base, missile._mispllvl) * .55);
+				int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) * .55);
 				missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 				SetMissDir(missile, GetDirection(c, monster->position.tile));
 				UpdateMissileVelocity(missile, monster->position.tile, 16);
