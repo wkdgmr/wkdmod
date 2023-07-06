@@ -160,7 +160,7 @@ void DrawSpellList(const Surface &out)
 			|| spellId == SpellID::ChargedBolt
 			|| spellId == SpellID::Inferno
 			|| spellId == SpellID::Guardian) {
-				AddPanelString(_("Pierces immunes"));
+				AddPanelString(_("Pierces immunities"));
 			}
 			if (spellLevel == 0)
 				AddPanelString(_("Spell Level 0 - Unusable"));
