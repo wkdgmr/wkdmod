@@ -1054,7 +1054,10 @@ bool DoRangeAttack(Player &player)
 			dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 			mistype = MissileID::SpectralArrow;
 		}
-
+	    if (HasAllOf(player._pIFlags, ItemSpecialEffect::MultipleArrows)) {
+			dmg = (player._pIMinDam + GenerateRnd(player._pIMaxDam - player._pIMinDam)) / 3;
+		}
+		
 		AddMissile(
 		    player.position.tile,
 		    player.position.temp + Displacement { xoff, yoff },
