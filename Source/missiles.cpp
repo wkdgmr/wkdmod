@@ -2191,7 +2191,7 @@ void AddGenericMagicMissile(Missile &missile, AddMissileParameter &parameter)
 		switch (missile.sourceType()) {
 		case MissileSource::Player: {
         	const Player &player = *missile.sourcePlayer();
-        	int dmgBase = (2 * (missile._mispllvl * 3)) + 4;
+        	int dmgBase = (missile._mispllvl * 3) + 4;
         	int minDmg = (ScaleSpellEffect(dmgBase, missile._mispllvl)) / 2;
         	int maxDmg = (ScaleSpellEffect(dmgBase + 36, missile._mispllvl)) / 2;
         	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
