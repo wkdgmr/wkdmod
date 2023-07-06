@@ -885,13 +885,13 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		break;
 	case SpellID::BloodStar: {
 		int base = (2 * (sl * 3)) + 4;
-		*mind = (ScaleSpellEffect(base, sl)) / 2;
-		*maxd = (ScaleSpellEffect(base + 36, sl)) / 2;
+		*mind = (ScaleSpellEffect(base, sl));
+		*maxd = (ScaleSpellEffect(base + 36, sl));
 	} break;
 	case SpellID::BoneSpirit: {
-		int base = ((sl * 3) + (myPlayer._pMagic / 3) + 4);
-		*mind = (ScaleSpellEffect(base, sl)) / 3;
-		*maxd = (ScaleSpellEffect(base + 36, sl)) / 3;
+		int base = ((sl * 3) + (myPlayer._pMagic / 2) + 4);
+		*mind = (ScaleSpellEffect(base, sl) / 2);
+		*maxd = (ScaleSpellEffect(base + 36, sl) / 2);
 	} break;
 	default:
 		break;
@@ -2190,10 +2190,12 @@ void AddGenericMagicMissile(Missile &missile, AddMissileParameter &parameter)
 	if (missile._midam == 0) {
 		switch (missile.sourceType()) {
 		case MissileSource::Player: {
-			const Player &player = *missile.sourcePlayer();
-			int dmg = 2 * (player._pLevel + GenerateRndSum(10, 2)) + 4;
-			missile._midam = (ScaleSpellEffect(dmg, missile._mispllvl)) / 2;
-			break;
+        	const Player &player = *missile.sourcePlayer();
+        	int dmgBase = (2 * (missile._mispllvl * 3)) + 4;
+        	int minDmg = (ScaleSpellEffect(dmgBase, missile._mispllvl));
+        	int maxDmg = (ScaleSpellEffect(dmgBase + 36, missile._mispllvl));
+        	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+        	break;
 		}
 		case MissileSource::Monster:
 			missile._midam = ProjectileMonsterDamage(missile);
@@ -4072,8 +4074,10 @@ void ProcessBoneSpirit(Missile &missile)
 			auto *monster = FindClosest(c, 19);
 			if (monster != nullptr) {
 				Player &player = Players[missile._misource];
-				int dmg = 2 * ((missile._mispllvl * 3) + (player._pMagic / 3) + GenerateRndSum(10, 2)) + 4;
-				missile._midam = (ScaleSpellEffect(dmg, missile._mispllvl)) / 4;
+				int base = (missile._mispllvl * 3) + (player._pMagic / 2) + 4;
+				int minDmg = (ScaleSpellEffect(base, missile._mispllvl) / 2);
+				int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) / 2);
+				missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 				SetMissDir(missile, GetDirection(c, monster->position.tile));
 				UpdateMissileVelocity(missile, monster->position.tile, 16);
 			} else {
