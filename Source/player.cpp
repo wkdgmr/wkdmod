@@ -1076,7 +1076,10 @@ bool DoRangeAttack(Player &player)
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows)) {
 			dmg = (player._pIMinDam + GenerateRnd(player._pIMaxDam - player._pIMinDam)) / 3;
 		}
-	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMisType == 5 || player._pIMisType == 9) {
+	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMisType == 5) {
+			mistype = MissileID::SpectralArrow;
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMisType == 9) {
 			mistype = MissileID::SpectralArrow;
 		}
 		

@@ -3288,9 +3288,11 @@ void ProcessSpectralArrow(Missile &missile)
 			break;
 		}
 	}
-	if (mitype != MissileID::InfernoControl) {
+	if (mitype != MissileID::InfernoControl || mitype != MissileID::BoneSpirit) {
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-	} else {
+	} else if (mitype == MissileID::InfernoControl) {
+		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+	} else if (mitype == MissileID::BoneSpirit) {
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 	}
 	if (mitype == MissileID::InfernoControl && player._pIMisType != 7) {
@@ -4088,6 +4090,11 @@ void ProcessBoneSpirit(Missile &missile)
 	int minDmg = (ScaleSpellEffect(base, missile._mispllvl) / 2);
 	int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) / 2);
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+	if (player._pIMisType == 9) {
+		minDmg = player._pIMMinDam;
+		maxDmg = player._pIMMaxDam;
+		missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+	}
 	if (missile._mimfnum == 8) {
 		ChangeLight(missile._mlid, missile.position.tile, missile._miAnimFrame);
 		if (missile._mirange == 0) {
