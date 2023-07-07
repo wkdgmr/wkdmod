@@ -3296,10 +3296,10 @@ void ProcessSpectralArrow(Missile &missile)
 			break;
 		}
 	}
-	if (mitype != MissileID::InfernoControl) {
-		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-	} else if (mitype == MissileID::InfernoControl) {
+	if (mitype == MissileID::InfernoControl) {
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+	} else {
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, 1);
 	}
 	if (mitype == MissileID::InfernoControl && player._pIMisType != 7) {
 		if (player._pIMisType == 4) {
