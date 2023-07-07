@@ -921,9 +921,6 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 	case IPL_3XDAMVDEM:
 		item._iFlags |= ItemSpecialEffect::TripleDemonDamage;
 		break;
-	case IPL_ALLRESZERO:
-		item._iFlags |= ItemSpecialEffect::ZeroResistance;
-		break;
 	case IPL_STEALMANA:
 		if (power.param1 == 3)
 			item._iFlags |= ItemSpecialEffect::StealMana3;
@@ -3895,8 +3892,6 @@ bool DoOil(Player &player, int cii)
 		return _("knocks target back");
 	case IPL_3XDAMVDEM:
 		return _(/*xgettext:no-c-format*/ "+200% damage vs. demons");
-	case IPL_ALLRESZERO:
-		return _("All Resistance equals 0");
 	case IPL_STEALMANA:
 		if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana3))
 			return _(/*xgettext:no-c-format*/ "hit steals 3% mana");
