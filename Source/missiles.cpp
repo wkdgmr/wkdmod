@@ -2629,7 +2629,12 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 	missile.var1 = missile.position.start.x;
 	missile.var2 = missile.position.start.y;
 	missile._mlid = AddLight(missile.position.start, 8);
-	missile._midam = GenerateRnd(10) + (player._pLevel * 2) + 9;
+	int minDmg = player._pLevel + 9;
+	int maxDmg = minDmg + player._pLevel + 9;
+	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+	if (player._pIMisType == 5) {
+		missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+	}
 }
 
 void AddResurrect(Missile &missile, AddMissileParameter & /*parameter*/)
@@ -2666,6 +2671,9 @@ void AddBoneSpirit(Missile &missile, AddMissileParameter &parameter)
 	if (missile.position.start == dst) {
 		dst += parameter.midir;
 	}
+
+	Player &player = Players[missile._misource];
+
 	UpdateMissileVelocity(missile, dst, 16);
 	SetMissDir(missile, GetDirection(missile.position.start, dst));
 	missile._mirange = 256;
@@ -3288,15 +3296,17 @@ void ProcessSpectralArrow(Missile &missile)
 			break;
 		}
 	}
-	if (mitype != MissileID::InfernoControl || mitype != MissileID::BoneSpirit) {
+	if (mitype != MissileID::InfernoControl) {
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	} else if (mitype == MissileID::InfernoControl) {
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-	} else if (mitype == MissileID::BoneSpirit) {
-		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 	}
 	if (mitype == MissileID::InfernoControl && player._pIMisType != 7) {
+		if (player._pIMisType == 4) {
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+		}
 		if (player._pIMisType == 8) {
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		}
 	}
@@ -3310,11 +3320,12 @@ void ProcessSpectralArrow(Missile &missile)
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 		}
 	}
 	if (player._pIMisType == 7) {
 		if (mitype == MissileID::InfernoControl) {
+			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			mitype = MissileID::ChargedBoltBow;
 		}
 		if (mitype == MissileID::ChargedBoltBow) {
@@ -4103,6 +4114,11 @@ void ProcessBoneSpirit(Missile &missile)
 		}
 		PutMissile(missile);
 	} else {
+		if (player._pIMisType == 9) {
+			minDmg = player._pIMMinDam;
+			maxDmg = player._pIMMaxDam;
+			missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+		}
 		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);
 		Point c = missile.position.tile;
 		if (missile.var3 == 0 && c == Point { missile.var4, missile.var5 })
