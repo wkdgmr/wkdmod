@@ -292,11 +292,6 @@ bool Plr2PlrMHit(const Player &player, int p, int mindam, int maxdam, int dist, 
 		return false;
 	}
 
-	if (mtype == MissileID::HolyBolt && sgGameInitInfo.bFriendlyFire == 1 && player.friendlyMode
-	    || (mtype == MissileID::HolyBolt && sgGameInitInfo.bFriendlyFire == 0)) {
-		return false;
-	}
-
 	const MissileData &missileData = GetMissileData(mtype);
 
 	if (HasAnyOf(target._pSpellFlags, SpellFlag::Etherealize) && missileData.isArrow()) {
