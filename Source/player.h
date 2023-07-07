@@ -273,6 +273,8 @@ struct Player {
 	int _pIFMaxDam;
 	int _pILMinDam;
 	int _pILMaxDam;
+	int _pIMMinDam;
+	int _pIMMaxDam;
 	int _pIMisType;
 	uint32_t _pExperience;
 	uint32_t _pNextExper;

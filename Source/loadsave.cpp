@@ -291,6 +291,8 @@ void LoadItemData(LoadHelper &file, Item &item)
 	item._iFMaxDam = file.NextLE<int32_t>();
 	item._iLMinDam = file.NextLE<int32_t>();
 	item._iLMaxDam = file.NextLE<int32_t>();
+	item._iMMinDam = file.NextLE<int32_t>();
+	item._iMMaxDam = file.NextLE<int32_t>();
 	item._iMisType = file.NextLE<int32_t>();
 	item._iPLEnAc = file.NextLE<int32_t>();
 	item._iPrePower = static_cast<item_effect_type>(file.NextLE<int8_t>());
@@ -525,6 +527,8 @@ void LoadPlayer(LoadHelper &file, Player &player)
 	player._pIFMaxDam = file.NextLE<int32_t>();
 	player._pILMinDam = file.NextLE<int32_t>();
 	player._pILMaxDam = file.NextLE<int32_t>();
+	player._pIMMinDam = file.NextLE<int32_t>();
+	player._pIMMaxDam = file.NextLE<int32_t>();
 	player._pIMisType = file.NextLE<int32_t>();
 	player._pOilType = static_cast<item_misc_id>(file.NextLE<int32_t>());
 	player.pTownWarps = file.NextLE<uint8_t>();
@@ -1061,6 +1065,8 @@ void SaveItem(SaveHelper &file, const Item &item)
 	file.WriteLE<int32_t>(item._iFMaxDam);
 	file.WriteLE<int32_t>(item._iLMinDam);
 	file.WriteLE<int32_t>(item._iLMaxDam);
+	file.WriteLE<int32_t>(item._iMMinDam);
+	file.WriteLE<int32_t>(item._iMMaxDam);
 	file.WriteLE<int32_t>(item._iMisType);
 	file.WriteLE<int32_t>(item._iPLEnAc);
 	file.WriteLE<int8_t>(item._iPrePower);
@@ -1300,6 +1306,8 @@ void SavePlayer(SaveHelper &file, const Player &player)
 	file.WriteLE<int32_t>(player._pIFMaxDam);
 	file.WriteLE<int32_t>(player._pILMinDam);
 	file.WriteLE<int32_t>(player._pILMaxDam);
+	file.WriteLE<int32_t>(player._pIMMinDam);
+	file.WriteLE<int32_t>(player._pIMMaxDam);
 	file.WriteLE<int32_t>(player._pIMisType);
 	file.WriteLE<int32_t>(player._pOilType);
 	file.WriteLE<uint8_t>(player.pTownWarps);

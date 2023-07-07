@@ -232,6 +232,8 @@ struct Item {
 	int16_t _iFMaxDam = 0;
 	int16_t _iLMinDam = 0;
 	int16_t _iLMaxDam = 0;
+	int16_t _iMMinDam = 0;
+	int16_t _iMMaxDam = 0;
 	int _iMisType = 0;
 	int16_t _iPLEnAc = 0;
 	enum item_effect_type _iPrePower = IPL_INVALID;
