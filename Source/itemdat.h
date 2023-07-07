@@ -359,7 +359,7 @@ enum class ItemSpecialEffect : uint32_t {
 	NoMana                 = 1 << 27,
 	HalfTrapDamage         = 1 << 28,
 	TripleDemonDamage      = 1 << 30,
-	ZeroResistance         = 1U << 31,
+	MagicDamage            = 1U << 31,
 	// clang-format on
 };
 use_enum_as_flags(ItemSpecialEffect);
@@ -536,6 +536,7 @@ enum item_effect_type : int8_t {
 	IPL_SETAC = 75,
 	IPL_ADDACLIFE,
 	IPL_ADDMANAAC,
+	IPL_HOLYBOLTBOW,
 	IPL_AC_CURSE = 79,
 	IPL_LASTDIABLO = IPL_AC_CURSE,
 	IPL_FIRERES_CURSE,
