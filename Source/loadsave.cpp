@@ -1725,8 +1725,8 @@ void LoadAdditionalMissiles()
 	}
 }
 
-const int DiabloItemSaveSize = 368;
-const int HellfireItemSaveSize = 372;
+const int DiabloItemSaveSize = 400;
+const int HellfireItemSaveSize = 400;
 
 } // namespace
 
