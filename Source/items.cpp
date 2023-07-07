@@ -1009,6 +1009,12 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iMMinDam = power.param1;
 		item._iMMaxDam = power.param2;
 		break;
+	case IPL_BONESPIRITBOW:
+		item._iMisType = 9;
+		item._iFlags |= ItemSpecialEffect::MagicDamage;
+		item._iMMinDam = power.param1;
+		item._iMMaxDam = power.param2;
+		break;
 	case IPL_FIRERES_CURSE:
 		item._iPLFR -= r;
 		break;
@@ -3954,6 +3960,11 @@ bool DoOil(Player &player, int cii)
 			return fmt::format(fmt::runtime(_("magic missile damage: {:d}")), item._iMMinDam);
 		else
 			return fmt::format(fmt::runtime(_("magic missile damage: {:d}-{:d}")), item._iMMinDam, item._iMMaxDam);
+	case IPL_BONESPIRITBOW:
+		if (item._iMMinDam == item._iMMaxDam)
+			return fmt::format(fmt::runtime(_("bone spirit damage: {:d}")), item._iMMinDam);
+		else
+			return fmt::format(fmt::runtime(_("bone spirit damage: {:d}-{:d}")), item._iMMinDam, item._iMMaxDam);
 	case IPL_DEVASTATION:
 		return _("occasional triple damage");
 	case IPL_DECAY:

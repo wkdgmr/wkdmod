@@ -3283,6 +3283,9 @@ void ProcessSpectralArrow(Missile &missile)
 		case 5:
 			mitype = MissileID::HolyBoltBow;
 			break;
+		case 9:
+			mitype = MissileID::BoneSpirit;
+			break;
 		}
 	}
 	if (mitype != MissileID::InfernoControl) {
