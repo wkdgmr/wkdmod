@@ -2767,13 +2767,6 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		lr -= player._pLevel;
 	}
 
-	if (HasAnyOf(iflgs, ItemSpecialEffect::ZeroResistance)) {
-		// reset resistances to zero if the respective special effect is active
-		mr = 0;
-		fr = 0;
-		lr = 0;
-	}
-
 	player._pMagResist = clamp(mr, 0, MaxResistance);
 	player._pFireResist = clamp(fr, 0, MaxResistance);
 	player._pLghtResist = clamp(lr, 0, MaxResistance);
