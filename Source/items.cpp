@@ -1005,7 +1005,7 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		break;
 	case IPL_HOLYBOLTBOW:
 		item._iMisType = 5;
-		item._iFlags |= (ItemSpecialEffect::MagicDamage);
+		item._iFlags |= ItemSpecialEffect::MagicDamage;
 		item._iMMinDam = power.param1;
 		item._iMMaxDam = power.param2;
 		break;
