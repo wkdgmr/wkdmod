@@ -2621,11 +2621,10 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 		sp += std::min(missile._mispllvl * 2, 47);
 	}
 
-	Player &player = *MyPlayer;
 	PlayerMagicDmg magicDmg;
+	Player &player = Players[missile._misource];
 	int MissileSwitch(Player &player);
 	int missileswitch = MissileSwitch(player);
-	Player &player = Players[missile._misource];
 	UpdateMissileVelocity(missile, dst, sp);
 	SetMissDir(missile, GetDirection16(missile.position.start, dst));
 	missile._mirange = 256;
@@ -3270,10 +3269,9 @@ void ProcessSpectralArrow(Missile &missile)
 	MissileID mitype = MissileID::Arrow;
 	Direction dir = Direction::South;
 	mienemy_type micaster = TARGET_PLAYERS;
-	Player &player = *MyPlayer;
+	Player &player = Players[id];
 	int MissileSwitch(Player &player);
 	int missileswitch = MissileSwitch(player);
-	const Player &player = Players[id];
 
 	if (!missile.IsTrap()) {
 		dir = player._pdir;
@@ -4102,11 +4100,10 @@ void ProcessElemental(Missile &missile)
 
 void ProcessBoneSpirit(Missile &missile)
 {
-	Player &player = *MyPlayer;
 	PlayerMagicDmg magicDmg;
+	Player &player = Players[missile._misource];
 	int MissileSwitch(Player &player);
 	int missileswitch = MissileSwitch(player);
-	Player &player = Players[missile._misource];
 	missile._mirange--;
 	int base = (missile._mispllvl * 3) + (player._pMagic / 2) + 4;
 	int minDmg = (ScaleSpellEffect(base, missile._mispllvl) / 2);

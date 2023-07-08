@@ -698,7 +698,6 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 			return false;
 	}
 
-	Player &player = *MyPlayer;
 	int MissileSwitch(Player &player);
 	int missileswitch = MissileSwitch(player);
 	
@@ -1111,7 +1110,6 @@ bool DoRangeAttack(Player &player)
 	            xoff = y < 0 ? -angle : angle;
 	    }
 
-		Player &player = *MyPlayer;
 		int MissileSwitch(Player &player);
 		int missileswitch = MissileSwitch(player);
 
