@@ -2621,7 +2621,6 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 		sp += std::min(missile._mispllvl * 2, 47);
 	}
 
-	PlayerMagicDmg magicDmg;
 	Player &player = Players[missile._misource];
 	int MissileSwitch(Player &player);
 	int missileswitch = MissileSwitch(player);
@@ -2635,7 +2634,7 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 	int maxDmg = minDmg + player._pLevel + 9;
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	if (missileswitch == 5) {
-		missile._midam = GetMMin(magicDmg) + GenerateRnd(GetMMax(magicDmg) - GetMMin(magicDmg));
+		missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
 	}
 }
 
@@ -4100,7 +4099,6 @@ void ProcessElemental(Missile &missile)
 
 void ProcessBoneSpirit(Missile &missile)
 {
-	PlayerMagicDmg magicDmg;
 	Player &player = Players[missile._misource];
 	int MissileSwitch(Player &player);
 	int missileswitch = MissileSwitch(player);
@@ -4110,8 +4108,8 @@ void ProcessBoneSpirit(Missile &missile)
 	int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) / 2);
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	if (missileswitch == 9) {
-		minDmg = GetMMin(magicDmg);
-		maxDmg = GetMMax(magicDmg);
+		minDmg = player._pIMMinDam;
+		maxDmg = player._pIMMaxDam;
 		missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	}
 	if (missile._mimfnum == 8) {
@@ -4123,8 +4121,8 @@ void ProcessBoneSpirit(Missile &missile)
 		PutMissile(missile);
 	} else {
 		if (missileswitch == 9) {
-			minDmg = GetMMin(magicDmg);
-			maxDmg = GetMMax(magicDmg);
+			minDmg = player._pIMMinDam;
+			maxDmg = player._pIMMaxDam;
 			missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 		}
 		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);

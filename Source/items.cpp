@@ -2805,7 +2805,8 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	player._pIFMaxDam = fmax;
 	player._pILMinDam = lmin;
 	player._pILMaxDam = lmax;
-	PlayerMagicDmg magicDmg = AddPlayerMagicDmg(mmin, mmax);
+	player._pIMMinDam = mmin;
+	player._pIMMaxDam = mmax;
 
 	player._pInfraFlag = false;
 

@@ -1114,7 +1114,6 @@ bool DoRangeAttack(Player &player)
 		int missileswitch = MissileSwitch(player);
 
 		int dmg = 4;
-		PlayerMagicDmg magicDmg;
 		MissileID mistype = MissileID::Arrow;
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireArrows)) {
 			mistype = MissileID::FireArrow;
@@ -1134,11 +1133,11 @@ bool DoRangeAttack(Player &player)
 			dmg = (player._pIMinDam + GenerateRnd(player._pIMaxDam - player._pIMinDam)) / 3;
 		}
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && missileswitch == 5) {
-			dmg = GetMMin(magicDmg) + GenerateRnd(GetMMax(magicDmg) - GetMMin(magicDmg));
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
 			mistype = MissileID::SpectralArrow;
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && missileswitch == 9) {
-			dmg = GetMMin(magicDmg) + GenerateRnd(GetMMax(magicDmg) - GetMMin(magicDmg));
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
 			mistype = MissileID::SpectralArrow;
 		}
 		

@@ -273,6 +273,8 @@ struct Player {
 	int _pIFMaxDam;
 	int _pILMinDam;
 	int _pILMaxDam;
+	int _pIMMinDam;
+	int _pIMMaxDam;
 	uint32_t _pExperience;
 	uint32_t _pNextExper;
 	PLR_MODE _pmode;
@@ -772,26 +774,6 @@ struct Player {
 		this->plrIsOnSetLevel = true;
 	}
 };
-
-struct PlayerMagicDmg {
-    int mmin = 0;
-    int mmax = 0;
-};
-
-PlayerMagicDmg AddPlayerMagicDmg(int mmin, int mmax) {
-    PlayerMagicDmg magicDmg;
-    magicDmg.mmin = mmin;
-    magicDmg.mmax = mmax;
-    return magicDmg;
-}
-
-int GetMMin(PlayerMagicDmg magicDmg) {
-    return magicDmg.mmin;
-}
-
-int GetMMax(PlayerMagicDmg magicDmg) {
-    return magicDmg.mmax;
-}
 
 extern DVL_API_FOR_TEST size_t MyPlayerId;
 extern DVL_API_FOR_TEST Player *MyPlayer;
