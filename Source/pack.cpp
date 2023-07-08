@@ -220,9 +220,6 @@ void PackNetPlayer(PlayerNetPack &packed, const Player &player)
 	packed.pIFMaxDam = SDL_SwapLE32(player._pIFMaxDam);
 	packed.pILMinDam = SDL_SwapLE32(player._pILMinDam);
 	packed.pILMaxDam = SDL_SwapLE32(player._pILMaxDam);
-	packed.pIMMinDam = SDL_SwapLE32(player._pIMMinDam);
-	packed.pIMMaxDam = SDL_SwapLE32(player._pIMMaxDam);
-	packed.pIMisType = SDL_SwapLE32(player._pIMisType);
 }
 
 void UnPackItem(const ItemPack &packedItem, const Player &player, Item &item, bool isHellfire)
@@ -497,12 +494,6 @@ bool UnPackNetPlayer(const PlayerNetPack &packed, Player &player)
 	if (player._pILMinDam != SDL_SwapLE32(packed.pILMinDam))
 		return false;
 	if (player._pILMaxDam != SDL_SwapLE32(packed.pILMaxDam))
-		return false;
-	if (player._pIMMinDam != SDL_SwapLE32(packed.pIMMinDam))
-		return false;
-	if (player._pIMMaxDam != SDL_SwapLE32(packed.pIMMaxDam))
-		return false;
-	if (player._pIMisType != SDL_SwapLE32(packed.pIMisType))
 		return false;
 
 	return true;

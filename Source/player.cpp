@@ -616,6 +616,56 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 	return false;
 }
 
+int MissileSwitch(Player &player)
+{
+	int missileswitch = 0;
+
+	if (player.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 1
+	&& player.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
+		missileswitch = 1;
+	}
+	if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 2
+	&& player.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0) {
+		missileswitch = 2;
+	}
+	if (player.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 5
+	&& player.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
+		missileswitch = 5;
+	}
+	if (player.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 9
+	&& player.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
+		missileswitch = 9;
+	}
+	if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 || player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
+	|| player.InvBody[INVLOC_HAND_LEFT]._iFMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 6
+	&& player.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 || player.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3
+		|| player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
+		&& player.InvBody[INVLOC_HAND_LEFT]._iFMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam != 6)
+			missileswitch = 3;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 6)
+			missileswitch = 6;
+	}
+	if (player.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 || player.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4
+	|| player.InvBody[INVLOC_HAND_LEFT]._iLMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 8
+	&& player.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 || player.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 4
+		|| player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 4
+		&& player.InvBody[INVLOC_HAND_LEFT]._iLMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iLMinDam != 8)
+			missileswitch = 4;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iLMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 8)
+			missileswitch = 8;
+	}
+	if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 7
+	|| player.InvBody[INVLOC_HAND_LEFT]._iLMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 7
+	&& player.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 && player.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0
+	|| player.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 && player.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
+			missileswitch = 7;
+	}
+
+	return missileswitch;
+}
+
 bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 {
 	int hper = 0;
@@ -647,9 +697,13 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 #endif
 			return false;
 	}
+
+	Player &player = *MyPlayer;
+	int MissileSwitch(Player &player);
+	int missileswitch = MissileSwitch(player);
 	
-	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType != 3 || player._pIMisType != 4
-	|| player._pIMisType != 6 || player._pIMisType != 7 || player._pIMisType != 8) {
+	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && missileswitch != 3 || missileswitch != 4
+	|| missileswitch != 6 || missileswitch != 7 || missileswitch != 8) {
 	    const size_t playerId = player.getId();
 	
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
@@ -661,19 +715,19 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	        AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
 	    }
-	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 3) {
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && missileswitch == 3) {
 		const size_t playerId = player.getId();
 	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
-	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 4) {
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && missileswitch == 4) {
 		const size_t playerId = player.getId();
 	    int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
-	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 6) {
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && missileswitch == 6) {
 		const size_t playerId = player.getId();
 	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
-	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 7) {
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && missileswitch == 7) {
 		const size_t playerId = player.getId();
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
 	    	int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
@@ -683,7 +737,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	    	int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	    	AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
 		}
-	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 8) {
+	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && missileswitch == 8) {
 		const size_t playerId = player.getId();
 	    int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
@@ -1057,7 +1111,12 @@ bool DoRangeAttack(Player &player)
 	            xoff = y < 0 ? -angle : angle;
 	    }
 
+		Player &player = *MyPlayer;
+		int MissileSwitch(Player &player);
+		int missileswitch = MissileSwitch(player);
+
 		int dmg = 4;
+		PlayerMagicDmg magicDmg;
 		MissileID mistype = MissileID::Arrow;
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireArrows)) {
 			mistype = MissileID::FireArrow;
@@ -1065,23 +1124,23 @@ bool DoRangeAttack(Player &player)
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows)) {
 			mistype = MissileID::LightningArrow;
 		}
-		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && player._pIMisType == 1) {
+		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && missileswitch == 1) {
 			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 			mistype = MissileID::SpectralArrow;
 		}
-		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && player._pIMisType == 2) {
+		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && missileswitch == 2) {
 			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam)) / 6;
 			mistype = MissileID::SpectralArrow;
 		}
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows)) {
 			dmg = (player._pIMinDam + GenerateRnd(player._pIMaxDam - player._pIMinDam)) / 3;
 		}
-	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMisType == 5) {
-			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && missileswitch == 5) {
+			dmg = GetMMin(magicDmg) + GenerateRnd(GetMMax(magicDmg) - GetMMin(magicDmg));
 			mistype = MissileID::SpectralArrow;
 		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMisType == 9) {
-			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && missileswitch == 9) {
+			dmg = GetMMin(magicDmg) + GenerateRnd(GetMMax(magicDmg) - GetMMin(magicDmg));
 			mistype = MissileID::SpectralArrow;
 		}
 		
