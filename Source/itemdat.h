@@ -484,6 +484,7 @@ enum item_effect_type : int8_t {
 	IPL_CHARGES,
 	IPL_FIREDAM,
 	IPL_LIGHTDAM,
+	IPL_MAGICDAM,
 	IPL_STR = 19,
 	IPL_STR_CURSE,
 	IPL_MAG,

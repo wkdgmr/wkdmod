@@ -799,6 +799,11 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
 		break;
+	case IPL_MAGICDAM:
+		item._iFlags |= ItemSpecialEffect::MagicDamage;
+		item._iFMinDam = power.param1;
+		item._iFMaxDam = power.param2;
+		break;
 	case IPL_STR:
 		item._iPLStr += r;
 		break;
@@ -3833,6 +3838,11 @@ bool DoOil(Player &player, int cii)
 			return fmt::format(fmt::runtime(_("Lightning hit damage: {:d}")), item._iLMinDam);
 		else
 			return fmt::format(fmt::runtime(_("Lightning hit damage: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
+	case IPL_MAGICDAM:
+		if (item._iFMinDam == item._iFMaxDam)
+			return fmt::format(fmt::runtime(_("magic hit damage: {:d}")), item._iFMinDam);
+		else
+			return fmt::format(fmt::runtime(_("magic hit damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_STR:
 	case IPL_STR_CURSE:
 		return fmt::format(fmt::runtime(_("{:+d} to strength")), item._iPLStr);
