@@ -3352,6 +3352,7 @@ void ProcessSpectralArrow(Missile &missile)
 	}
 	if (mitype != MissileID::InfernoControl || mitype != MissileID::ChargedBoltBow) {
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, 1);
+	}
 	if (mitype == MissileID::InfernoControl && MissileSwitch() != 7) {
 		if (MissileSwitch() == 4) {
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
