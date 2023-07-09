@@ -3298,8 +3298,7 @@ void ProcessSpectralArrow(Missile &missile)
 	}
 	if (mitype != MissileID::InfernoControl || mitype != MissileID::ChargedBoltBow) {
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, 1);
-	}
-	if (mitype == MissileID::InfernoControl) {
+	} else if (mitype == MissileID::InfernoControl) {
 		if (player._pIMisType == 4) {
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		} else if (player._pIMisType == 7) {
@@ -3310,14 +3309,10 @@ void ProcessSpectralArrow(Missile &missile)
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		}
-	}
-	if (mitype == MissileID::ChargedBoltBow) {
+	} else if (mitype == MissileID::ChargedBoltBow) {
 		if (player._pIMisType == 3) {
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 		} else if (player._pIMisType == 6) {
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 		} else if (player._pIMisType == 7) {
