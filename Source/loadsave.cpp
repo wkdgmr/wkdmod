@@ -244,7 +244,7 @@ void LoadItemData(LoadHelper &file, Item &item)
 	item.AnimInfo.numberOfFrames = file.NextLENarrow<int32_t, int8_t>();
 	item.AnimInfo.currentFrame = file.NextLENarrow<int32_t, int8_t>(-1);
 	file.Skip(8); // Skip _iAnimWidth and _iAnimWidth2
-	file.Skip(4); // Unused since 1.02
+	item._iMisType = file.NextLE<int32_t>();
 	item._iSelFlag = file.NextLE<uint8_t>();
 	file.Skip(3); // Alignment
 	item._iPostDraw = file.NextBool32();
@@ -516,7 +516,7 @@ void LoadPlayer(LoadHelper &file, Player &player)
 	player._pIFlags = static_cast<ItemSpecialEffect>(file.NextLE<int32_t>());
 	player._pIGetHit = file.NextLE<int32_t>();
 	player._pISplLvlAdd = file.NextLE<int8_t>();
-	file.Skip(1);         // Unused
+	player._pIMisType = file.NextLE<int32_t>();
 	file.Skip(2);         // Alignment
 	file.Skip<int32_t>(); // _pISplDur
 	player._pIEnAc = file.NextLE<int32_t>();
@@ -1012,7 +1012,7 @@ void SaveItem(SaveHelper &file, const Item &item)
 	file.WriteLE<int32_t>(ItemAnimWidth);
 	// write _iAnimWidth2 for vanilla compatibility
 	file.WriteLE<int32_t>(CalculateWidth2(ItemAnimWidth));
-	file.Skip<uint32_t>(); // _delFlag, unused since 1.02
+	file.WriteLE<int32_t>(item._iMisType);
 	file.WriteLE<uint8_t>(item._iSelFlag);
 	file.Skip(3); // Alignment
 	file.WriteLE<uint32_t>(item._iPostDraw ? 1 : 0);
@@ -1307,7 +1307,8 @@ void SavePlayer(SaveHelper &file, const Player &player)
 		file.WriteLE<uint8_t>(0);
 	file.WriteLE<uint8_t>(player.pManaShield ? 1 : 0);
 	file.WriteLE<uint8_t>(player.pOriginalCathedral ? 1 : 0);
-	file.Skip(2); // Available bytes
+	file.WriteLE<int32_t>(player._pIMisType);
+	file.Skip(1); // Available bytes
 	file.WriteLE<uint16_t>(player.wReflections);
 	file.Skip(14); // Available bytes
 
