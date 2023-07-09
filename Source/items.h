@@ -226,15 +226,12 @@ struct Item {
 	int16_t _iPLLight = 0;
 	int8_t _iSplLvlAdd = 0;
 	bool _iRequest = false;
-	/** Unique item ID, used as an index into UniqueItemList */
+	int8_t _iMisType = 0;
 	int _iUid = 0;
 	int16_t _iFMinDam = 0;
 	int16_t _iFMaxDam = 0;
 	int16_t _iLMinDam = 0;
 	int16_t _iLMaxDam = 0;
-	int16_t _iMMinDam = 0;
-	int16_t _iMMaxDam = 0;
-	int _iMisType = 0;
 	int16_t _iPLEnAc = 0;
 	enum item_effect_type _iPrePower = IPL_INVALID;
 	enum item_effect_type _iSufPower = IPL_INVALID;

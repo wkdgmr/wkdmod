@@ -1006,14 +1006,14 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 	case IPL_HOLYBOLTBOW:
 		item._iMisType = 5;
 		item._iFlags |= ItemSpecialEffect::MagicDamage;
-		item._iMMinDam = power.param1;
-		item._iMMaxDam = power.param2;
+		item._iFMinDam = power.param1;
+		item._iFMaxDam = power.param2;
 		break;
 	case IPL_BONESPIRITBOW:
 		item._iMisType = 9;
 		item._iFlags |= ItemSpecialEffect::MagicDamage;
-		item._iMMinDam = power.param1;
-		item._iMMaxDam = power.param2;
+		item._iFMinDam = power.param1;
+		item._iFMaxDam = power.param2;
 		break;
 	case IPL_FIRERES_CURSE:
 		item._iPLFR -= r;
@@ -2571,7 +2571,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	int lmax = 0; // maximum lightning damage
 	int mmin = 0; // minimum magic damage
 	int mmax = 0; // maximum magic damage
-	int mistype = 0; // missile type
+	int miscase = 0; // spectral arrow switch/case 
 
 	for (auto &item : player.InvBody) {
 		if (!item.isEmpty() && item._iStatFlag) {
@@ -2625,12 +2625,21 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				spllvladd += item._iSplLvlAdd;
 				enac += item._iPLEnAc;
 				fmin += item._iFMinDam;
+				if (HasAnyOf(item._iFlags, ItemSpecialEffect::MagicDamage)) {
+					fmin -= item._iFMinDam;
+					mmin += item._iFMinDam;
+				}
 				fmax += item._iFMaxDam;
+				if (HasAnyOf(item._iFlags, ItemSpecialEffect::MagicDamage)) {
+					fmax -= item._iFMaxDam;
+					mmax += item._iFMaxDam;
+				}
 				lmin += item._iLMinDam;
 				lmax += item._iLMaxDam;
-				mmin += item._iMMinDam;
-				mmax += item._iMMaxDam;
-				mistype += item._iMisType;
+				miscase += item._iMisType;
+				
+				
+			
 			}
 		}
 	}
@@ -2799,7 +2808,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	player._pILMaxDam = lmax;
 	player._pIMMinDam = mmin;
 	player._pIMMaxDam = mmax;
-	player._pIMisType = mistype;
+	player._pIMisType = miscase;
 
 	player._pInfraFlag = false;
 
@@ -3956,15 +3965,15 @@ bool DoOil(Player &player, int cii)
 		else
 			return fmt::format(fmt::runtime(_("charged bolts damage: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
 	case IPL_HOLYBOLTBOW:
-		if (item._iMMinDam == item._iMMaxDam)
-			return fmt::format(fmt::runtime(_("magic missile damage: {:d}")), item._iMMinDam);
+		if (item._iFMinDam == item._iFMaxDam)
+			return fmt::format(fmt::runtime(_("magic missile damage: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("magic missile damage: {:d}-{:d}")), item._iMMinDam, item._iMMaxDam);
+			return fmt::format(fmt::runtime(_("magic missile damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_BONESPIRITBOW:
-		if (item._iMMinDam == item._iMMaxDam)
-			return fmt::format(fmt::runtime(_("bone spirit damage: {:d}")), item._iMMinDam);
+		if (item._iFMinDam == item._iFMaxDam)
+			return fmt::format(fmt::runtime(_("bone spirit damage: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("bone spirit damage: {:d}-{:d}")), item._iMMinDam, item._iMMaxDam);
+			return fmt::format(fmt::runtime(_("bone spirit damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_DEVASTATION:
 		return _("occasional triple damage");
 	case IPL_DECAY:
