@@ -2629,15 +2629,16 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 
 				spllvladd += item._iSplLvlAdd;
 				enac += item._iPLEnAc;
-				if (item._iFMaxDam > 0 && item._iFlags != ItemSpecialEffect::MagicDamage)
+				if (item._iFlags != ItemSpecialEffect::MagicDamage) {
 					fmin += item._iFMinDam;
 					fmax += item._iFMaxDam;
+				} else if (item._iFlags == ItemSpecialEffect::MagicDamage) {
+					mmin += item._iFMinDam;
+					mmax += item._iFMaxDam;
+				}
 				if (item._iLMaxDam > 0)
 					lmin += item._iLMinDam;
 					lmax += item._iLMaxDam;
-				if (item._iFlags == ItemSpecialEffect::MagicDamage)
-					mmin += item._iFMinDam;
-					mmax += item._iFMaxDam;
 
 			}
 		}
