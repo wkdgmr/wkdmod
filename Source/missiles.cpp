@@ -3268,42 +3268,48 @@ int MissileSwitch()
 	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0) {
 		return 2;
 	}
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0
+	&& !myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3 && !myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
+		return 3;
+	}
+	if (myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0
+	&& !myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && !myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0) {
+		return 3;
+	}
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0
+	&& !myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && !myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
+		return 4;
+	}
+	if (myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0
+	&& !myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && !myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
+		return 4;
+	}
 	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 5
 	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
 		return 5;
+	}
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
+	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
+		return 6;
+	}
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0
+	&& myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
+		return 7;
+	}
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0
+	&& myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
+		return 7;
+	}
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4
+	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
+		return 8;
 	}
 	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 9
 	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
 		return 9;
 	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 || myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
-	|| myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 6
-	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 || myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
-		if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3
-		|| myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
-		&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam != 6) {
-			return 3;
-		} else if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 6) {
-			return 6;
-		}
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 || myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4
-	|| myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 8
-	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 || myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
-		if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 4
-		|| myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 4
-		&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam != 8) {
-			return 4;
-		} else if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 8) {
-			return 8;
-		}
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 7
-	|| myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 7
-	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0
-	|| myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
-			return 7;
-	}
+
+
 
 }
 
