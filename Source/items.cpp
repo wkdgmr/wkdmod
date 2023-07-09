@@ -3787,9 +3787,9 @@ bool DoOil(Player &player, int cii)
 	case IPL_DAMP_CURSE:
 		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "{:+d}% damage")), item._iPLDam);
 	case IPL_TOHIT_DAMP:
-		return fmt::format(fmt::runtime(_("+tohit% {:+d}%, {:+d}% damage")), item._iPLToHit, item._iPLDam);
+		return fmt::format(fmt::runtime(_("+tohit%, {:+d}% damage")), item._iPLDam);
 	case IPL_TOHIT_DAMP_CURSE:
-		return fmt::format(fmt::runtime(_("-tohit% {:+d}%, {:+d}% damage")), item._iPLToHit, item._iPLDam);
+		return fmt::format(fmt::runtime(_("-tohit%, {:+d}% damage")), item._iPLDam);
 	case IPL_ACP:
 	case IPL_ACP_CURSE:
 		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "{:+d}% armor")), item._iPLAC);
@@ -3842,9 +3842,9 @@ bool DoOil(Player &player, int cii)
 			return fmt::format(fmt::runtime(_("Lightning hit damage: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
 	case IPL_MAGICDAM:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("magic hit damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("Magic hit damage: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("magic hit damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("Magic hit damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_STR:
 	case IPL_STR_CURSE:
 		return fmt::format(fmt::runtime(_("{:+d} to strength")), item._iPLStr);
