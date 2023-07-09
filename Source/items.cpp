@@ -892,14 +892,14 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iLMaxDam = power.param2;
 		break;
 	case IPL_FIREBALL:
-		Player &myPlayer = *MyPlayer;
+		Player &myPlayer = const_cast<Player&>(player);
 		myPlayer._pIMisType = 1;
 		item._iFlags |= (ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows);
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
 		break;
 	case IPL_INFERNO:
-		Player &myPlayer = *MyPlayer;
+		Player &myPlayer = const_cast<Player&>(player);
 		myPlayer._pIMisType = 4;
 		item._iFlags |= (ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage);
 		item._iFMinDam = power.param1;
@@ -994,28 +994,28 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iCurs = power.param1;
 		break;
 	case IPL_ADDACLIFE:
-		Player &myPlayer = *MyPlayer;
+		Player &myPlayer = const_cast<Player&>(player);
 		myPlayer._pIMisType = 2;
 		item._iFlags |= (ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows);
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
 		break;
 	case IPL_ADDMANAAC:
-		Player &myPlayer = *MyPlayer;
+		Player &myPlayer = const_cast<Player&>(player);
 		myPlayer._pIMisType = 3;
 		item._iFlags |= (ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage);
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
 		break;
 	case IPL_HOLYBOLTBOW:
-		Player &myPlayer = *MyPlayer;
+		Player &myPlayer = const_cast<Player&>(player);
 		myPlayer._pIMisType = 5;
 		item._iFlags |= ItemSpecialEffect::MagicDamage;
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
 		break;
 	case IPL_BONESPIRITBOW:
-		Player &myPlayer = *MyPlayer;
+		Player &myPlayer = const_cast<Player&>(player);
 		myPlayer._pIMisType = 9;
 		item._iFlags |= ItemSpecialEffect::MagicDamage;
 		item._iFMinDam = power.param1;
