@@ -3256,9 +3256,8 @@ void ProcessNova(Missile &missile)
 	ProcessNovaCommon(missile, MissileID::NovaBall);
 }
 
-Direction OppositeIMisDir()
+Direction OppositeIMisDir(Direction dir)
 {
-	Direction dir;
 	if (dir == Direction::South) {
 		dir = Direction::North;
 	} else if (dir == Direction::North) {
@@ -3360,7 +3359,7 @@ void ProcessSpectralArrow(Missile &missile)
 	if (misswitch == 3) {
 		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-		dir = OppositeIMisDir();
+		dir = OppositeIMisDir(dir);
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 		dir = RandomIMisDir();
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
@@ -3383,7 +3382,7 @@ void ProcessSpectralArrow(Missile &missile)
 	if (misswitch == 8) {
 		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-		dir = OppositeIMisDir();
+		dir = OppositeIMisDir(dir);
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		dir = RandomIMisDir();
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
@@ -3401,7 +3400,7 @@ void ProcessSpectralArrow(Missile &missile)
 		if (mitype == MissileID::ChargedBoltBow) {
 			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-			dir = OppositeIMisDir();
+			dir = OppositeIMisDir(dir);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			dir = RandomIMisDir();
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
