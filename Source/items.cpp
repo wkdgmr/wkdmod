@@ -2624,26 +2624,21 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 
 				spllvladd += item._iSplLvlAdd;
 				enac += item._iPLEnAc;
-				
-				if (item._iFlags != ItemSpecialEffect::MagicDamage) {
-					fmin += item._iFMinDam;
-					fmax += item._iFMaxDam;
-					player._pIFMinDam = fmin;
-					player._pIFMaxDam = fmax;
-				} else if (item._iFlags == ItemSpecialEffect::MagicDamage) {
+				fmin += item._iFMinDam;
+				if (HasAnyOf(item._iFlags, ItemSpecialEffect::MagicDamage)) {
+					fmin -= item._iFMinDam;
 					mmin += item._iFMinDam;
-					mmax += item._iFMaxDam;
-					player._pIMMinDam += mmin;
-					player._pIMMaxDam += mmax;
 				}
-				if (item._iLMaxDam > 0)
-					lmin += item._iLMinDam;
-					lmax += item._iLMaxDam;
-					player._pILMinDam = lmin;
-					player._pILMaxDam = lmax;
-
-
-
+				fmax += item._iFMaxDam;
+				if (HasAnyOf(item._iFlags, ItemSpecialEffect::MagicDamage)) {
+					fmax -= item._iFMaxDam;
+					mmax += item._iFMaxDam;
+				}
+				lmin += item._iLMinDam;
+				lmax += item._iLMaxDam;
+				
+				
+			
 			}
 		}
 	}
@@ -2805,6 +2800,13 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 
 	player._pMaxMana = imana + player._pMaxManaBase;
 	player._pMana = std::min(imana + player._pManaBase, player._pMaxMana);
+
+	player._pIFMinDam = fmin;
+	player._pIFMaxDam = fmax;
+	player._pILMinDam = lmin;
+	player._pILMaxDam = lmax;
+	player._pIMMinDam = mmin;
+	player._pIMMaxDam = mmax;
 
 	player._pInfraFlag = false;
 
