@@ -3300,7 +3300,8 @@ void ProcessSpectralArrow(Missile &missile)
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (mitype == MissileID::InfernoControl) {
-		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+		if (!player._pIMisType == 7 || !player._pIMisType == 8) {
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		if (player._pIMisType == 8) {
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, Direction::SouthEast, mitype, micaster, id, dam, spllvl, &missile);

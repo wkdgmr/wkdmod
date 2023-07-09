@@ -877,23 +877,22 @@ bool DoAttack(Player &player)
 		    const size_t playerId = player.getId();
 
 		    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && !player._pIMisType == 3
-			|| !player._pIMisType == 6) {
+			|| !player._pIMisType == 6 || !player._pIMisType == 7) {
 		        AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
 		    }
 
 		    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && !player._pIMisType == 4
-			|| !player._pIMisType == 8) {
+			|| !player._pIMisType == 8 || !player._pIMisType == 7) {
 		        AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
 		    }
 			if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) && player._pIMisType == 3 || player._pIMisType == 6) {
-			    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-				AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, midam, 0);
-			    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+			    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, 0, 0);
 			}
 			if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) && player._pIMisType == 4 || player._pIMisType == 8) {
-			    int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-				AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, midam, 0);
-			    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+			    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, 0, 0);
+			}
+			if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage |  ItemSpecialEffect::LightningDamage)) && player._pIMisType == 7) {
+			    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, 0, 0);
 			}
 		}
 
