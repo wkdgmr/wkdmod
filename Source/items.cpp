@@ -174,7 +174,7 @@ item_misc_id OilMagic[] = {
 	IMISC_OILFIRE,
 	IMISC_OILDEBUG,
 };
-char OilNames[12][25] = {
+char OilNames[12][28] = {
 	N_("Oil of Accuracy"),
 	N_("Oil of Death"),
 	N_("Oil of Sharpness"),
@@ -184,8 +184,8 @@ char OilNames[12][25] = {
 	N_("Oil of Permanence"),
 	N_("Oil of Hardening"),
 	N_("Oil of Fortitude"),
-	N_("Oil of Wick & Spark"),
-	N_("Oil of Sun & Storm"),
+	N_("Oil of the Horadrim (small)"),
+	N_("Oil of the Horadrim (large)"),
 	N_("Oil of Legitness"),
 };
 
@@ -1692,10 +1692,10 @@ void PrintItemOil(char iDidx)
 		AddPanelString(_("chance to hit"));
 		break;
 	case IMISC_OILDEATH:
-		AddPanelString(_("increase weapon DMG max"));
+		AddPanelString(_("greatly increases weapon DMG"));
 		break;
 	case IMISC_OILSHARP:
-		AddPanelString(_("increase weapon DMG min"));
+		AddPanelString(_("increase weapon DMG"));
 		break;
 	case IMISC_OILMAST:
 		AddPanelString(_("greatly increases a"));
@@ -1706,7 +1706,7 @@ void PrintItemOil(char iDidx)
 		AddPanelString(_("to use armor or weapons"));
 		break;
 	case IMISC_OILIMP:
-		AddPanelString(_("greatly increase AC"));
+		AddPanelString(_("greatly increases AC"));
 		break;
 	case IMISC_OILPERM:
 		AddPanelString(_("makes an item indestructible"));
@@ -1720,10 +1720,12 @@ void PrintItemOil(char iDidx)
 		AddPanelString(_("current and max durability"));
 		break;
 	case IMISC_OILWICK:
-		AddPanelString(_("increase fire/lightning DMG min"));
+		AddPanelString(_("increases fire, lightning"));
+		AddPanelString(_("and magic damage on items"));
 		break;
 	case IMISC_OILFIRE:
-		AddPanelString(_("increase fire/lightning DMG max"));
+		AddPanelString(_("greatly increases fire, lightning"));
+		AddPanelString(_("and magic damage on items"));
 		break;
 	case IMISC_OILDEBUG:
 		AddPanelString(_("totally legit"));
@@ -5035,66 +5037,105 @@ bool ApplyOilToItem(Item &item, Player &player)
 		break;
 	case IMISC_OILDEATH:
 		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Axe && item._itype != ItemType::Bow) {
-			if (item._iMaxDam > 0 && item._iMaxDam < 60) {
-				item._iMaxDam = item._iMaxDam + 2;
-				if (item._iMaxDam >= 60) {
-					item._iMaxDam = 60;
+			if (item._iMinDam > 0 && item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
+				item._iMinDam = item._iMinDam + 2;
+				if (item._iMinDam > 30) {
+					item._iMinDam = 30;
+				}
+				if (item._iMaxDam < 60) {
+					item._iMaxDam = item._iMaxDam + 4;
+					if (item._iMaxDam > 60) {
+						item._iMaxDam = 60;
+					}
 				}
 			}
-			break;
 		} else if (item._itype == ItemType::Axe) {
-			if (item._iMaxDam > 0 && item._iMaxDam < 80) {
-				item._iMaxDam = item._iMaxDam + 2;
-				if (item._iMaxDam >= 80) {
-					item._iMaxDam = 80;
+			if (item._iMinDam > 0 && item._iMinDam < 40 && item._iMinDam < item._iMaxDam) {
+				item._iMinDam = item._iMinDam + 2;
+				if (item._iMinDam > 40) {
+					item._iMinDam = 40;
+				}
+				if (item._iMaxDam < 80) {
+					item._iMaxDam = item._iMaxDam + 4;
+					if (item._iMaxDam > 80) {
+						item._iMaxDam = 80;
+					}
 				}
 			}
-			break;
 		} else if (item._itype == ItemType::Bow) {
-			if (item._iMaxDam > 0 && item._iMaxDam < 30) {
-				item._iMaxDam = item._iMaxDam + 2;
-				if (item._iMaxDam >= 30) {
-					item._iMaxDam = 30;
+			if (item._iMinDam > 0 && item._iMinDam < 15 && item._iMinDam < item._iMaxDam) {
+				item._iMinDam = item._iMinDam + 2;
+				if (item._iMinDam > 15) {
+					item._iMinDam = 15;
+				}
+				if (item._iMaxDam < 30) {
+					item._iMaxDam = item._iMaxDam + 4;
+					if (item._iMaxDam > 30) {
+						item._iMaxDam = 30;
+					}
 				}
 			}
-			break;
 		} else {
-			if (item._iMaxDam > 0 && item._iMaxDam < 35) {
-				item._iMaxDam = item._iMaxDam + 2;
-				if (item._iMaxDam >= 35) {
-					item._iMaxDam = 35;
+			if (item._iMinDam > 0 && item._iMinDam < 20 && item._iMinDam < item._iMaxDam) {
+				item._iMinDam = item._iMinDam + 2;
+				if (item._iMinDam > 20) {
+					item._iMinDam = 20;
+				}
+				if (item._iMaxDam < 35) {
+					item._iMaxDam = item._iMaxDam + 4;
+					if (item._iMaxDam > 35) {
+						item._iMaxDam = 35;
+					}
 				}
 			}
-			break;
 		}
+		break;
 	case IMISC_OILSHARP:
 		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Axe && item._itype != ItemType::Bow) {
 			if (item._iMinDam > 0 && item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
+				if (item._iMaxDam < 60) {
+					item._iMaxDam = item._iMaxDam + 2;
+					if (item._iMaxDam > 60) {
+						item._iMaxDam = 60;
+					}
+				}
 			}
-			break;
 		} else if (item._itype == ItemType::Axe) {
 			if (item._iMinDam > 0 && item._iMinDam < 40 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
+				if (item._iMaxDam < 80) {
+					item._iMaxDam = item._iMaxDam + 2;
+					if (item._iMaxDam > 80) {
+						item._iMaxDam = 80;
+					}
+				}
 			}
-			break;
 		} else if (item._itype == ItemType::Bow) {
 			if (item._iMinDam > 0 && item._iMinDam < 15 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
+				if (item._iMaxDam < 30) {
+					item._iMaxDam = item._iMaxDam + 2;
+					if (item._iMaxDam > 30) {
+						item._iMaxDam = 30;
+					}
+				}
 			}
-			break;
 		} else {
 			if (item._iMinDam > 0 && item._iMinDam < 20 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = item._iMinDam + 1;
+				if (item._iMaxDam < 35) {
+					item._iMaxDam = item._iMaxDam + 2;
+					if (item._iMaxDam > 35) {
+						item._iMaxDam = 35;
+					}
+				}
 			}
-			break;
 		}
+		break;
 	case IMISC_OILMAST:
 		if (item._iPLToHit < 125) {
 			item._iPLToHit += GenerateRnd(3) + 3;
-			if (item._iPLToHit > 125) {
-				item._iPLToHit = 125;
-			}
 		}
 		break;
 	case IMISC_OILSKILL:
@@ -5158,25 +5199,37 @@ bool ApplyOilToItem(Item &item, Player &player)
 			break;
 		}
 	case IMISC_OILWICK:
-		if (item._iFMinDam > 0 && item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam && item._iFMaxDam > 0) {
-			item._iFMinDam = item._iFMinDam + 4;
-			if (item._iFMinDam > item._iFMaxDam) {
-				item._iFMinDam = item._iFMaxDam;
+		if (item._iFMinDam > 0 && item._iFMaxDam < 200 && item._iFMinDam < item._iFMaxDam && item._iFMaxDam > 0) {
+			item._iFMinDam = item._iFMinDam + 2;
+		}
+		if (item._iFMaxDam > 0 && item._iFMaxDam < 200) {
+			item._iFMaxDam = item._iFMaxDam + 4;
+			if (item._iFMaxDam > 200) {
+				item._iFMaxDam = 200;
 			}
 		}
-		if (item._iLMinDam > 0 && item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam && item._iLMaxDam > 0) {
-			item._iLMinDam = item._iLMinDam + 4;
-			if (item._iLMinDam > item._iLMaxDam) {
-				item._iLMinDam = item._iLMaxDam;
+		if (item._iLMinDam > 0 && item._iLMaxDam < 200 && item._iLMinDam < item._iLMaxDam && item._iLMaxDam > 0) {
+			item._iLMinDam = item._iLMinDam + 2;
+		}
+		if (item._iLMaxDam > 0 && item._iLMaxDam < 200) {
+			item._iLMaxDam = item._iLMaxDam + 4;
+			if (item._iLMaxDam > 200) {
+				item._iLMaxDam = 200;
 			}
 		}
 		break;
 	case IMISC_OILFIRE:
+		if (item._iFMinDam > 0 && item._iFMaxDam < 200 && item._iFMinDam < item._iFMaxDam && item._iFMaxDam > 0) {
+			item._iFMinDam = item._iFMinDam + 4;
+		}
 		if (item._iFMaxDam > 0 && item._iFMaxDam < 200) {
 			item._iFMaxDam = item._iFMaxDam + 8;
 			if (item._iFMaxDam > 200) {
 				item._iFMaxDam = 200;
 			}
+		}
+		if (item._iLMinDam > 0 && item._iLMaxDam < 200 && item._iLMinDam < item._iLMaxDam && item._iLMaxDam > 0) {
+			item._iLMinDam = item._iLMinDam + 4;
 		}
 		if (item._iLMaxDam > 0 && item._iLMaxDam < 200) {
 			item._iLMaxDam = item._iLMaxDam + 8;
@@ -5186,14 +5239,14 @@ bool ApplyOilToItem(Item &item, Player &player)
 		}
 		break;
 	case IMISC_OILDEBUG:
-		if (item._iFMinDam > 0 && item._iFMinDam < 200 && item._iFMinDam < item._iFMaxDam && item._iFMaxDam > 0) {
-			item._iFMinDam = 200;
+		if (item._iFMinDam > 0 && item._iLMaxDam < 200 && item._iFMinDam < item._iFMaxDam && item._iFMaxDam > 0) {
+			item._iFMinDam = 100;
 		}
 		if (item._iFMaxDam > 0 && item._iFMaxDam < 200) {
 			item._iFMaxDam = 200;
 		}
-		if (item._iLMinDam > 0 && item._iLMinDam < 200 && item._iLMinDam < item._iLMaxDam && item._iLMaxDam > 0) {
-			item._iLMinDam = 200;
+		if (item._iLMinDam > 0 && item._iLMaxDam < 200 && item._iLMinDam < item._iLMaxDam && item._iLMaxDam > 0) {
+			item._iLMinDam = 100;
 		}
 		if (item._iLMaxDam > 0 && item._iLMaxDam < 200) {
 			item._iLMaxDam = 200;
