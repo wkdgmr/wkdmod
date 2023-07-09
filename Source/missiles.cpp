@@ -3259,57 +3259,54 @@ void ProcessNova(Missile &missile)
 int MissileSwitch()
 {
 	Player &myPlayer = *MyPlayer;
+	int switchMis;
 
 	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 1
 	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		return 1;
+		switchMis = 1;
 	}
 	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 2
 	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0) {
-		return 2;
+		switchMis = 2;
 	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0
-	&& !myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3 && !myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
-		return 3;
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0) {
+		switchMis = 3;
 	}
-	if (myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0
-	&& !myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && !myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0) {
-		return 3;
+	if (myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
+		switchMis = 3;
 	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0
-	&& !myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && !myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
-		return 4;
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
+		switchMis = 4;
 	}
-	if (myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0
-	&& !myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && !myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		return 4;
+	if (myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
+		switchMis = 4;
 	}
 	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 5
 	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		return 5;
+		switchMis = 5;
 	}
 	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
 	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
-		return 6;
+		switchMis = 6;
 	}
 	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0
 	&& myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
-		return 7;
+		switchMis = 7;
 	}
 	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0
 	&& myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
-		return 7;
+		switchMis = 7;
 	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4
-	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
-		return 8;
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 
+	&& myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
+		switchMis = 8;
 	}
 	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 9
 	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		return 9;
+		switchMis = 9;
 	}
 
-
+	return switchMis;
 
 }
 
@@ -3353,11 +3350,8 @@ void ProcessSpectralArrow(Missile &missile)
 			break;
 		}
 	}
-	if (mitype == MissileID::InfernoControl) {
-		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-	} else {
+	if (mitype != MissileID::InfernoControl || mitype != MissileID::ChargedBoltBow) {
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, 1);
-	}
 	if (mitype == MissileID::InfernoControl && MissileSwitch() != 7) {
 		if (MissileSwitch() == 4) {
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
@@ -3371,8 +3365,11 @@ void ProcessSpectralArrow(Missile &missile)
 		if (MissileSwitch() == 3) {
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 		}
 		if (MissileSwitch() == 6) {
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
@@ -3387,6 +3384,7 @@ void ProcessSpectralArrow(Missile &missile)
 		}
 		if (mitype == MissileID::ChargedBoltBow) {
 			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			mitype = MissileID::InfernoControl;
