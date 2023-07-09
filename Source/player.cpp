@@ -1043,7 +1043,7 @@ bool DoRangeAttack(Player &player)
 			mistype = MissileID::SpectralArrow;
 		}
 		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 2) {
-			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam)) / 6;
+			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam)) / 4;
 			mistype = MissileID::SpectralArrow;
 		}
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows)) {
