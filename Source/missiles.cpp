@@ -3256,6 +3256,27 @@ void ProcessNova(Missile &missile)
 	ProcessNovaCommon(missile, MissileID::NovaBall);
 }
 
+void ProcessIMisDir(Direction dir = Direction::South)
+{
+	if (dir == Direction::South) {
+		dir = Direction::North;
+	} else if (dir == Direction::North) {
+		dir = Direction::South;
+	} else if (dir == Direction::East) {
+		dir = Direction::West;
+	} else if (dir == Direction::West) {
+		dir = Direction::East;
+	} else if (dir == Direction::NorthEast) {
+		dir = Direction::SouthWest;
+	} else if (dir == Direction::NorthWest) {
+		dir = Direction::SouthEast;
+	} else if (dir == Direction::SouthWest) {
+		dir = Direction::NorthEast;
+	} else if (dir == Direction::SouthEast) {
+		dir = Direction::NorthWest;
+	}
+}
+
 void ProcessSpectralArrow(Missile &missile)
 {
 	int id = missile._misource;
@@ -3303,8 +3324,10 @@ void ProcessSpectralArrow(Missile &missile)
 	if (misswitch == 3) {
 		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-		AddMissile(src, dst, Direction::SouthWest, mitype, micaster, id, dam, spllvl);
-		AddMissile(src, dst, Direction::SouthEast, mitype, micaster, id, dam, spllvl);
+		ProcessIMisDir(dir);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		ProcessIMisDir(dir);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 6) {
 		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
@@ -3317,28 +3340,35 @@ void ProcessSpectralArrow(Missile &missile)
 	}
 	if (misswitch == 4) {
 		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-		AddMissile(missile.position.tile, missile.position.start, Direction::SouthEast, mitype, micaster, id, dam, spllvl, &missile);
-		AddMissile(missile.position.tile, missile.position.start, Direction::SouthWest, mitype, micaster, id, dam, spllvl, &missile);
+		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+		ProcessIMisDir(dir);
+		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 	}
 	if (misswitch == 8) {
 		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-		AddMissile(missile.position.tile, missile.position.start, Direction::NorthWest, mitype, micaster, id, dam, spllvl, &missile);
-		AddMissile(missile.position.tile, missile.position.start, Direction::NorthEast, mitype, micaster, id, dam, spllvl, &missile);
-		AddMissile(missile.position.tile, missile.position.start, Direction::SouthWest, mitype, micaster, id, dam, spllvl, &missile);
-		AddMissile(missile.position.tile, missile.position.start, Direction::SouthEast, mitype, micaster, id, dam, spllvl, &missile);
+		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+		ProcessIMisDir(dir);
+		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+		ProcessIMisDir(dir);
+		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+		ProcessIMisDir(dir);
+		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 	}
 	if (misswitch == 7) {
 		if (mitype == MissileID::InfernoControl) {
 			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-			AddMissile(missile.position.tile, missile.position.start, Direction::SouthEast, mitype, micaster, id, dam, spllvl, &missile);
-			AddMissile(missile.position.tile, missile.position.start, Direction::SouthWest, mitype, micaster, id, dam, spllvl, &missile);
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+			ProcessIMisDir(dir);
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			mitype = MissileID::ChargedBoltBow;
 		}
 		if (mitype == MissileID::ChargedBoltBow) {
 			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-			AddMissile(src, dst, Direction::SouthWest, mitype, micaster, id, dam, spllvl);
-			AddMissile(src, dst, Direction::SouthEast, mitype, micaster, id, dam, spllvl);
+			ProcessIMisDir(dir);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			ProcessIMisDir(dir);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			mitype == MissileID::InfernoControl;
 		}
 	}
