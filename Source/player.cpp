@@ -875,7 +875,7 @@ bool DoAttack(Player &player)
 
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
 		    const size_t playerId = player.getId();
-			int misswitch = misswitch;
+			int misswitch = player._pIMisType;
 
 		    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && misswitch != 3 || misswitch != 6) {
 		        AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
@@ -1028,7 +1028,7 @@ bool DoRangeAttack(Player &player)
 
 		int dmg = 4;
 		MissileID mistype = MissileID::Arrow;
-		int misswitch = misswitch;
+		int misswitch = player._pIMisType;
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireArrows) && misswitch != 1) {
 			mistype = MissileID::FireArrow;
 		}
