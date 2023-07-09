@@ -3302,6 +3302,7 @@ void ProcessSpectralArrow(Missile &missile)
 	if (mitype == MissileID::InfernoControl) {
 		if (!player._pIMisType == 7 || !player._pIMisType == 8) {
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+		}
 		if (player._pIMisType == 8) {
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, Direction::SouthEast, mitype, micaster, id, dam, spllvl, &missile);
@@ -3321,8 +3322,10 @@ void ProcessSpectralArrow(Missile &missile)
 		}	
 	}
 	if (mitype == MissileID::ChargedBoltBow && !player._pIMisType == 7) {
-		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		if (!player._pIMisType == 6) {
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		}
 		if (player._pIMisType == 6) {
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
