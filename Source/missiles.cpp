@@ -3296,41 +3296,44 @@ void ProcessSpectralArrow(Missile &missile)
 			break;
 		}
 	}
-	if (mitype != MissileID::InfernoControl) {
+	int misswitch = player._pIMisType;
+	if (misswitch != 3 || misswitch != 6 || misswitch != 4 || misswitch != 8 || misswitch != 7) {
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
-	if (mitype == MissileID::InfernoControl) {
-		if (!player._pIMisType == 7 || !player._pIMisType == 8) {
-			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-		}
-		if (player._pIMisType == 8) {
-			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-			AddMissile(missile.position.tile, missile.position.start, Direction::SouthEast, mitype, micaster, id, dam, spllvl, &missile);
-		}
-		if (player._pIMisType == 7) {
-			if (mitype == MissileID::InfernoControl) {
-				int dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-				AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-				mitype = MissileID::ChargedBoltBow;
-			}
-			if (mitype == MissileID::ChargedBoltBow) {
-				int dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-				mitype = MissileID::InfernoControl;
-			}
-		}	
+	if (misswitch == 3) {
+		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
-	if (mitype == MissileID::ChargedBoltBow && !player._pIMisType == 7) {
-		if (!player._pIMisType == 6) {
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+	if (misswitch == 6) {
+		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+	}
+	if (misswitch == 4) {
+		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+	}
+	if (misswitch == 8) {
+		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+		AddMissile(missile.position.tile, missile.position.start, Direction::SouthEast, mitype, micaster, id, dam, spllvl, &missile);
+	}
+	if (misswitch == 7) {
+		if (mitype == MissileID::InfernoControl) {
+			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+			mitype = MissileID::ChargedBoltBow;
 		}
-		if (player._pIMisType == 6) {
+		if (mitype == MissileID::ChargedBoltBow) {
+			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			mitype == MissileID::InfernoControl;
 		}
 	}
 
