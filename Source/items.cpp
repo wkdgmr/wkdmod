@@ -4047,38 +4047,38 @@ void PrintItemDetails(const Item &item)
 	if (item._iClass == ICLASS_WEAPON && item._itype != ItemType::Staff) {
 		if (item._iMinDam == item._iMaxDam) {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} damage: {:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : "", item._iMinDam));
-				AddPanelString(fmt::format(fmt::runtime(_("Indestructible"))));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam));
 			} else {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} damage: {:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : "", item._iMinDam));
-				AddPanelString(fmt::format(fmt::runtime(_(/* TRANSLATORS: Dur: is durability */ "Dur: {:d}/{:d}")), item._iDurability, item._iMaxDur));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} DUR:{:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iDurability));
 			}
 		} else {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} damage: {:d}-{:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam));
-				AddPanelString(fmt::format(fmt::runtime(_("Indestructible"))));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam));
 			} else {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} damage: {:d}-{:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam));
-				AddPanelString(fmt::format(fmt::runtime(_(/* TRANSLATORS: Dur: is durability */ "Dur: {:d}/{:d}")), item._iDurability, item._iMaxDur));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} DUR:{:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iDurability));
 			}
 
 		}
 	} else if (item._iClass == ICLASS_WEAPON && item._itype == ItemType::Staff) {
 		if (item._iMinDam == item._iMaxDam) {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}  AC: {:d}")), item._iMinDam, item._iAC));
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} Indestructible")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : ""));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
 			} else {
-				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}  AC: {:d}")), item._iMinDam, item._iAC));
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} Dur: {:d}/{:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : "", item._iDurability, item._iMaxDur));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d} DUR:{:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
 			}
 		} else { 		
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}  AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} Indestructible")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : ""));
+				AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iAC));
 			} else {
-				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}  AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} Dur: {:d}/{:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: +{:d}%", item._iPLToHit) : "", item._iDurability, item._iMaxDur));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} AC:{:d} DUR:{:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iAC, item._iDurability));
 			}
 		}
 	}
