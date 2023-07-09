@@ -787,24 +787,8 @@ void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 	monster.position.future = monster.position.tile;
 	monster.position.old = monster.position.tile;
 	// Check for holy fire effect
-	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
-			int eMind;
-			int eMaxd;
-			eMind = player._pIFMinDam;
-			eMaxd = player._pIFMaxDam;
-			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
-				mdam -= mdam / 2;
-				mdam -= mdam / 2;
-			mdam = mdam << 6;
-			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
-			if (monster.hitPoints >> 6 <= 0)
-				M_StartKill(monster, player);
-			else
-				M_StartHit(monster, player, mdam);
-		}
+	if ((int)(rand()%3 + 1) == 1) {
+		HolyFireDamage(player, monster);
 	}
 }
 
@@ -823,24 +807,8 @@ void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 	monster.position.future = monster.position.tile;
 	monster.position.old = monster.position.tile;
 	// Check for holy fire effect
-	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
-			int eMind;
-			int eMaxd;
-			eMind = player._pIFMinDam;
-			eMaxd = player._pIFMaxDam;
-			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
-				mdam -= mdam / 2;
-				mdam -= mdam / 2;
-			mdam = mdam << 6;
-			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
-			if (monster.hitPoints >> 6 <= 0)
-				M_StartKill(monster, player);
-			else
-				M_StartHit(monster, player, mdam);
-		}
+	if ((int)(rand()%3 + 1) == 1) {
+		HolyFireDamage(player, monster);
 	}
 }
 
@@ -1250,6 +1218,28 @@ int GetMinHit()
 	}
 }
 
+void HolyFireDamage(Player &player, Monster &monster) {
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
+			int eMind;
+			int eMaxd;
+			eMind = player._pIFMinDam;
+			eMaxd = player._pIFMaxDam;
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
+				mdam -= mdam / 2;
+				mdam -= mdam / 2;
+			mdam = mdam << 6;
+			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
+		}
+	}
+}
+
 void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, int maxDam)
 {
 	if (player._pHitPoints >> 6 <= 0 || player._pInvincible || HasAnyOf(player._pSpellFlags, SpellFlag::Etherealize))
@@ -1258,23 +1248,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		return;
 	} else {
 		if ((int)(rand()%3 + 1) == 1) {
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
-				int eMind;
-				int eMaxd;
-				eMind = player._pIFMinDam;
-				eMaxd = player._pIFMaxDam;
-				int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-				int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-				if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
-					mdam -= mdam / 2;
-					mdam -= mdam / 2;
-				mdam = mdam << 6;
-				ApplyMonsterDamage(DamageType::Fire, monster, mdam);
-				if (monster.hitPoints >> 6 <= 0)
-					M_StartKill(monster, player);
-				else
-					M_StartHit(monster, player, mdam);
-			}
+			HolyFireDamage(player, monster);
 		}
 	}	
 
@@ -1309,25 +1283,10 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 			dam = std::max(dam + (player._pIGetHit << 6), 64);
 			CheckReflect(monster, player, dam);
 		}
-		// Reflect can also kill a monster, so make sure the monster is still alive
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
-			int eMind;
-			int eMaxd;
-			eMind = player._pIFMinDam;
-			eMaxd = player._pIFMaxDam;
-			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
-				mdam -= mdam / 2;
-				mdam -= mdam / 2;
-			mdam = mdam << 6;
-			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
-			if (monster.hitPoints >> 6 <= 0)
-				M_StartKill(monster, player);
-			else
-				M_StartHit(monster, player, mdam);
+		// Check for holy fire effect
+		if ((int)(rand()%3 + 1) == 1) {
+			HolyFireDamage(player, monster);
 		}
-		return;
 	}
 
 	int dam = (minDam << 6) + GenerateRnd(((maxDam - minDam) << 6) + 1);
@@ -1340,23 +1299,9 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		ApplyPlrDamage(DamageType::Physical, player, 0, 0, dam);
 	}
 
-	// Reflect can also kill a monster, so make sure the monster is still alive
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
-		int eMind;
-		int eMaxd;
-		eMind = player._pIFMinDam;
-		eMaxd = player._pIFMaxDam;
-		int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-		int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-		if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
-			mdam -= mdam / 2;
-			mdam -= mdam / 2;
-		mdam = mdam << 6;
-		ApplyMonsterDamage(DamageType::Fire, monster, mdam);
-		if (monster.hitPoints >> 6 <= 0)
-			M_StartKill(monster, player);
-		else
-			M_StartHit(monster, player, mdam);
+	// Check for holy fire effect
+	if ((int)(rand()%3 + 1) == 1) {
+		HolyFireDamage(player, monster);
 	}
 
 	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING
