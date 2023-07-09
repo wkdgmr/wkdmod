@@ -648,46 +648,40 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 			return false;
 	}
 
-	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage))) {
-	    const size_t playerId = player.getId();
+	const size_t playerId = player.getId();
 	
-	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-	        int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-	        AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
-	    }
-	
-	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-	        int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-	        AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
-	    }
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
+	    int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	}
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
 	}
 	if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 3) {
-		const size_t playerId = player.getId();
 	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
-	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 4) {
-		const size_t playerId = player.getId();
-	    int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
-	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 6) {
-		const size_t playerId = player.getId();
-	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
-	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 7) {
-		const size_t playerId = player.getId();
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-	    	int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-	    	AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
-		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-	    	int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-	    	AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
-		}
-	} else if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 8) {
-		const size_t playerId = player.getId();
+	}
+	if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 4) {
 	    int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
 	}
+	if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 6) {
+	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIMisType == 7) {
+		int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	}
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pIMisType == 7) {
+		int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	}
+	if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 8) {
+	    int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	}
+
 
 	int mind = player._pIMinDam;
 	int maxd = player._pIMaxDam;
@@ -1073,6 +1067,9 @@ bool DoRangeAttack(Player &player)
 			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam)) / 6;
 			mistype = MissileID::SpectralArrow;
 		}
+		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && player._pIMisType == 2) {
+			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam)) / 6;
+			mistype = MissileID::SpectralArrow;
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows)) {
 			dmg = (player._pIMinDam + GenerateRnd(player._pIMaxDam - player._pIMinDam)) / 3;
 		}
