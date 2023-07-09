@@ -3258,53 +3258,53 @@ void ProcessNova(Missile &missile)
 
 int MissileSwitch()
 {
-	Player &player = *MyPlayer;
-	int missileswitch = 0;
+	Player &myPlayer = *MyPlayer;
 
-	if (player.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 1
-	&& player.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		missileswitch = 1;
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 1
+	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
+		return 1;
 	}
-	if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 2
-	&& player.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0) {
-		missileswitch = 2;
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 2
+	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0) {
+		return 2;
 	}
-	if (player.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 5
-	&& player.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		missileswitch = 5;
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 5
+	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
+		return 5;
 	}
-	if (player.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 9
-	&& player.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		missileswitch = 9;
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 9
+	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
+		return 9;
 	}
-	if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 || player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
-	|| player.InvBody[INVLOC_HAND_LEFT]._iFMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 6
-	&& player.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 || player.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
-		if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3
-		|| player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
-		&& player.InvBody[INVLOC_HAND_LEFT]._iFMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam != 6)
-			missileswitch = 3;
-		if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 6)
-			missileswitch = 6;
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 || myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
+	|| myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 6
+	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 || myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
+		if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3
+		|| myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
+		&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam != 6) {
+			return 3;
+		} else if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 6) {
+			return 6;
+		}
 	}
-	if (player.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 || player.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4
-	|| player.InvBody[INVLOC_HAND_LEFT]._iLMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 8
-	&& player.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 || player.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
-		if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 4
-		|| player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 4
-		&& player.InvBody[INVLOC_HAND_LEFT]._iLMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iLMinDam != 8)
-			missileswitch = 4;
-		if (player.InvBody[INVLOC_HAND_LEFT]._iLMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 8)
-			missileswitch = 8;
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 || myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4
+	|| myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 8
+	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 || myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
+		if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 4
+		|| myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 4
+		&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam != 8) {
+			return 4;
+		} else if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 8) {
+			return 8;
+		}
 	}
-	if (player.InvBody[INVLOC_HAND_LEFT]._iFMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 7
-	|| player.InvBody[INVLOC_HAND_LEFT]._iLMinDam + player.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 7
-	&& player.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 && player.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0
-	|| player.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 && player.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
-			missileswitch = 7;
+	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 7
+	|| myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam + myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 7
+	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0
+	|| myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
+			return 7;
 	}
 
-	return missileswitch;
 }
 
 void ProcessSpectralArrow(Missile &missile)
@@ -3317,7 +3317,7 @@ void ProcessSpectralArrow(Missile &missile)
 	MissileID mitype = MissileID::Arrow;
 	Direction dir = Direction::South;
 	mienemy_type micaster = TARGET_PLAYERS;
-	Player &player = Players[id];
+	const Player &player = Players[id];
 
 	if (!missile.IsTrap()) {
 		dir = player._pdir;
