@@ -776,6 +776,28 @@ void StartAttack(Monster &monster)
 	monster.position.old = monster.position.tile;
 }
 
+void HolyFireDamage(Player &player, Monster &monster) {
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
+			int eMind;
+			int eMaxd;
+			eMind = player._pIFMinDam;
+			eMaxd = player._pIFMaxDam;
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
+				mdam -= mdam / 2;
+				mdam -= mdam / 2;
+			mdam = mdam << 6;
+			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
+		}
+	}
+}
+
 void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 {
 	Player& player = Players[monster.enemy];
@@ -1215,28 +1237,6 @@ int GetMinHit()
 		return 20;
 	default:
 		return 15;
-	}
-}
-
-void HolyFireDamage(Player &player, Monster &monster) {
-	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
-			int eMind;
-			int eMaxd;
-			eMind = player._pIFMinDam;
-			eMaxd = player._pIFMaxDam;
-			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
-				mdam -= mdam / 2;
-				mdam -= mdam / 2;
-			mdam = mdam << 6;
-			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
-			if (monster.hitPoints >> 6 <= 0)
-				M_StartKill(monster, player);
-			else
-				M_StartHit(monster, player, mdam);
-		}
 	}
 }
 
