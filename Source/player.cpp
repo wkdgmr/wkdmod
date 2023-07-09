@@ -669,6 +669,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) && player._pIMisType == 6) {
 	    int midam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
+	}
 	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIMisType == 7) {
 		int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, playerId, midam, 0);
