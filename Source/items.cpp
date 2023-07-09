@@ -892,18 +892,18 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iLMaxDam = power.param2;
 		break;
 	case IPL_FIREBALL:
+		Player &myPlayer = *MyPlayer;
+		myPlayer._pIMisType = 1;
 		item._iFlags |= (ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows);
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
-		item._iLMinDam = 1;
-		item._iLMaxDam = 0;
 		break;
 	case IPL_INFERNO:
+		Player &myPlayer = *MyPlayer;
+		myPlayer._pIMisType = 4;
 		item._iFlags |= (ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage);
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
-		item._iLMinDam = 4;
-		item._iLMaxDam = 0;
 		break;
 	case IPL_THORNS:
 		item._iFlags |= ItemSpecialEffect::Thorns;
@@ -994,32 +994,32 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iCurs = power.param1;
 		break;
 	case IPL_ADDACLIFE:
+		Player &myPlayer = *MyPlayer;
+		myPlayer._pIMisType = 2;
 		item._iFlags |= (ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows);
-		item._iFMinDam = 2;
-		item._iFMaxDam = 0;
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
 		break;
 	case IPL_ADDMANAAC:
+		Player &myPlayer = *MyPlayer;
+		myPlayer._pIMisType = 3;
 		item._iFlags |= (ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage);
-		item._iFMinDam = 3;
-		item._iFMaxDam = 0;
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
 		break;
 	case IPL_HOLYBOLTBOW:
+		Player &myPlayer = *MyPlayer;
+		myPlayer._pIMisType = 5;
 		item._iFlags |= ItemSpecialEffect::MagicDamage;
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
-		item._iLMinDam = 5;
-		item._iLMaxDam = 0;
 		break;
 	case IPL_BONESPIRITBOW:
+		Player &myPlayer = *MyPlayer;
+		myPlayer._pIMisType = 9;
 		item._iFlags |= ItemSpecialEffect::MagicDamage;
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
-		item._iLMinDam = 9;
-		item._iLMaxDam = 0;
 		break;
 	case IPL_FIRERES_CURSE:
 		item._iPLFR -= r;
@@ -2629,16 +2629,25 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 
 				spllvladd += item._iSplLvlAdd;
 				enac += item._iPLEnAc;
+				
 				if (item._iFlags != ItemSpecialEffect::MagicDamage) {
 					fmin += item._iFMinDam;
 					fmax += item._iFMaxDam;
+					player._pIFMinDam = fmin;
+					player._pIFMaxDam = fmax;
 				} else if (item._iFlags == ItemSpecialEffect::MagicDamage) {
 					mmin += item._iFMinDam;
 					mmax += item._iFMaxDam;
+					player._pIMMinDam += mmin;
+					player._pIMMaxDam += mmax;
 				}
 				if (item._iLMaxDam > 0)
 					lmin += item._iLMinDam;
 					lmax += item._iLMaxDam;
+					player._pILMinDam = lmin;
+					player._pILMaxDam = lmax;
+
+
 
 			}
 		}
@@ -2801,13 +2810,6 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 
 	player._pMaxMana = imana + player._pMaxManaBase;
 	player._pMana = std::min(imana + player._pManaBase, player._pMaxMana);
-
-	player._pIFMinDam = fmin;
-	player._pIFMaxDam = fmax;
-	player._pILMinDam = lmin;
-	player._pILMaxDam = lmax;
-	player._pIMMinDam = mmin;
-	player._pIMMaxDam = mmax;
 
 	player._pInfraFlag = false;
 

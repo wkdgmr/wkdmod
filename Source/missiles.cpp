@@ -2631,7 +2631,7 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 	int minDmg = player._pLevel + 9;
 	int maxDmg = minDmg + player._pLevel + 9;
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
-	if (MissileSwitch() == 5) {
+	if (player._pIMisType == 5) {
 		missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
 	}
 }
@@ -3256,60 +3256,6 @@ void ProcessNova(Missile &missile)
 	ProcessNovaCommon(missile, MissileID::NovaBall);
 }
 
-int MissileSwitch()
-{
-	Player &myPlayer = *MyPlayer;
-	int switchMis;
-
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 1
-	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		switchMis = 1;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 2
-	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0) {
-		switchMis = 2;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0) {
-		switchMis = 3;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
-		switchMis = 3;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		switchMis = 4;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
-		switchMis = 4;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 5
-	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		switchMis = 5;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3
-	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
-		switchMis = 6;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0
-	&& myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iFMaxDam == 0) {
-		switchMis = 7;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMinDam == 3 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iFMaxDam == 0
-	&& myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
-		switchMis = 7;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0 
-	&& myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMinDam == 4 && myPlayer.InvBody[INVLOC_HAND_RIGHT]._iLMaxDam == 0) {
-		switchMis = 8;
-	}
-	if (myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMinDam == 9
-	&& myPlayer.InvBody[INVLOC_HAND_LEFT]._iLMaxDam == 0) {
-		switchMis = 9;
-	}
-
-	return switchMis;
-
-}
-
 void ProcessSpectralArrow(Missile &missile)
 {
 	int id = missile._misource;
@@ -3326,7 +3272,7 @@ void ProcessSpectralArrow(Missile &missile)
 		dir = player._pdir;
 		micaster = TARGET_MONSTERS;
 
-		switch (MissileSwitch()) {
+		switch (player._pIMisType) {
 		case 1:
 			mitype = MissileID::FireballBow;
 			break;
@@ -3354,30 +3300,30 @@ void ProcessSpectralArrow(Missile &missile)
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, 1);
 	}
 	if (mitype == MissileID::InfernoControl) {
-		if (MissileSwitch() == 4) {
+		if (player._pIMisType == 4) {
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-		} else if (MissileSwitch() == 7) {
+		} else if (player._pIMisType == 7) {
 			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			mitype = MissileID::ChargedBoltBow;
-		} else if (MissileSwitch() == 8) {
+		} else if (player._pIMisType == 8) {
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		}
 	}
 	if (mitype == MissileID::ChargedBoltBow) {
-		if (MissileSwitch() == 3) {
+		if (player._pIMisType == 3) {
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-		} else if (MissileSwitch() == 6) {
+		} else if (player._pIMisType == 6) {
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-		} else if (MissileSwitch() == 7) {
+		} else if (player._pIMisType == 7) {
 			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
@@ -4152,7 +4098,7 @@ void ProcessBoneSpirit(Missile &missile)
 	int minDmg = (ScaleSpellEffect(base, missile._mispllvl) / 2);
 	int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) / 2);
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
-	if (MissileSwitch() == 9) {
+	if (player._pIMisType == 9) {
 		minDmg = player._pIMMinDam;
 		maxDmg = player._pIMMaxDam;
 		missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
@@ -4165,7 +4111,7 @@ void ProcessBoneSpirit(Missile &missile)
 		}
 		PutMissile(missile);
 	} else {
-		if (MissileSwitch() == 9) {
+		if (player._pIMisType == 9) {
 			minDmg = player._pIMMinDam;
 			maxDmg = player._pIMMaxDam;
 			missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
