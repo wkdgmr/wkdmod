@@ -722,8 +722,6 @@ int CalculateToHitBonus(int level)
 	}
 }
 
-int misswitch = 0;
-
 int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 {
 	int r = RndPL(power.param1, power.param2);
@@ -894,13 +892,13 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iLMaxDam = power.param2;
 		break;
 	case IPL_FIREBALL:
-		misswitch = 1;
+		item._iMisType = 1;
 		item._iFlags |= (ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows);
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
 		break;
 	case IPL_INFERNO:
-		misswitch = 4;
+		item._iMisType = 4;
 		item._iFlags |= (ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage);
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
@@ -994,25 +992,25 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iCurs = power.param1;
 		break;
 	case IPL_ADDACLIFE:
-		misswitch = 2;
+		item._iMisType = 2;
 		item._iFlags |= (ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows);
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
 		break;
 	case IPL_ADDMANAAC:
-		misswitch = 3;
+		item._iMisType = 3;
 		item._iFlags |= (ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage);
 		item._iLMinDam = power.param1;
 		item._iLMaxDam = power.param2;
 		break;
 	case IPL_HOLYBOLTBOW:
-		misswitch = 5;
+		item._iMisType = 5;
 		item._iFlags |= ItemSpecialEffect::MagicDamage;
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
 		break;
 	case IPL_BONESPIRITBOW:
-		misswitch = 9;
+		item._iMisType = 9;
 		item._iFlags |= ItemSpecialEffect::MagicDamage;
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
@@ -2573,6 +2571,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	int lmax = 0; // maximum lightning damage
 	int mmin = 0; // minimum magic damage
 	int mmax = 0; // maximum magic damage
+	int miscase = 0; // spectral arrow switch/case 
 
 	for (auto &item : player.InvBody) {
 		if (!item.isEmpty() && item._iStatFlag) {
@@ -2637,6 +2636,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				}
 				lmin += item._iLMinDam;
 				lmax += item._iLMaxDam;
+				miscase += item._iMisType;
 				
 				
 			
@@ -2802,13 +2802,13 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	player._pMaxMana = imana + player._pMaxManaBase;
 	player._pMana = std::min(imana + player._pManaBase, player._pMaxMana);
 
-	player._pIMisType = misswitch;
 	player._pIFMinDam = fmin;
 	player._pIFMaxDam = fmax;
 	player._pILMinDam = lmin;
 	player._pILMaxDam = lmax;
 	player._pIMMinDam = mmin;
 	player._pIMMaxDam = mmax;
+	player._pIMisType = miscase;
 
 	player._pInfraFlag = false;
 
