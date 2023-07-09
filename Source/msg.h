@@ -549,6 +549,7 @@ struct TItem {
 	uint16_t wFMinDam;
 	uint16_t wLMaxDam;
 	uint16_t wLMinDam;
+	uint16_t wIMisType;
 };
 
 struct TEar {

@@ -1749,7 +1749,7 @@ bool CanPut(Point position)
 }
 
 int SyncDropItem(Point position, _item_indexes idx, uint16_t icreateinfo, int iseed, int id, int AC, int dur, int mdur, int ch, int mch, 
-int ivalue, uint32_t ibuff, int toHit, int minDam, int maxDam, int minFDam, int maxFDam, int minLDam, int maxLDam)
+int ivalue, uint32_t ibuff, int toHit, int minDam, int maxDam, int minFDam, int maxFDam, int minLDam, int maxLDam, int IMis)
 {
 	if (ActiveItemCount >= MAXITEMS)
 		return -1;
@@ -1772,6 +1772,7 @@ int ivalue, uint32_t ibuff, int toHit, int minDam, int maxDam, int minFDam, int 
 	item._iLMinDam = minLDam;
 	item._iLMaxDam = maxLDam;
 	item.dwBuff = ibuff;
+	item._iMisType = IMis;
 
 	return PlaceItemInWorld(std::move(item), position);
 }

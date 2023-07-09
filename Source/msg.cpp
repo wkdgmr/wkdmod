@@ -752,6 +752,7 @@ bool DeltaGetItem(const TCmdGItem &message, uint8_t bLevel)
 				delta.item.wFMaxDam = message.item.wFMaxDam;
 				delta.item.wLMinDam = message.item.wLMinDam;
 				delta.item.wLMaxDam = message.item.wLMaxDam;
+				delta.item.wIMisType = message.item.wIMisType;
 			}
 			break;
 		}
@@ -1050,7 +1051,8 @@ int SyncDropItem(Point position, const TItem &item)
 		SDL_SwapLE16(item.wFMinDam),
 	    SDL_SwapLE16(item.wFMaxDam),
 		SDL_SwapLE16(item.wLMinDam),
-	    SDL_SwapLE16(item.wLMaxDam));
+	    SDL_SwapLE16(item.wLMaxDam),
+		SDL_SwapLE16(item.wIMisType));
 }
 
 int SyncDropEar(Point position, const TEar &ear)
@@ -2350,6 +2352,7 @@ void PrepareItemForNetwork(const Item &item, TItem &messageItem)
 	messageItem.wFMaxDam = SDL_SwapLE16(item._iFMaxDam);
 	messageItem.wLMinDam = SDL_SwapLE16(item._iLMinDam);
 	messageItem.wLMaxDam = SDL_SwapLE16(item._iLMaxDam);
+	messageItem.wIMisType = SDL_SwapLE16(item._iMisType);
 	messageItem.dwBuff = SDL_SwapLE32(item.dwBuff);
 }
 
@@ -2379,6 +2382,7 @@ void RecreateItem(const Player &player, const TItem &messageItem, Item &item)
 	item._iFMaxDam = SDL_SwapLE16(messageItem.wFMaxDam);
 	item._iLMinDam = SDL_SwapLE16(messageItem.wLMinDam);
 	item._iLMaxDam = SDL_SwapLE16(messageItem.wLMaxDam);
+	item._iMisType = SDL_SwapLE16(item._iMisType);
 	item.dwBuff = dwBuff;
 }
 
