@@ -3780,14 +3780,16 @@ bool DoOil(Player &player, int cii)
 {
 	switch (plidx) {
 	case IPL_TOHIT:
+		return fmt::format(fmt::runtime(_("+tohit%")));
 	case IPL_TOHIT_CURSE:
-		return fmt::format(fmt::runtime(_("chance to hit: {:+d}%")), item._iPLToHit);
+		return fmt::format(fmt::runtime(_("-tohit%")));
 	case IPL_DAMP:
 	case IPL_DAMP_CURSE:
 		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "{:+d}% damage")), item._iPLDam);
 	case IPL_TOHIT_DAMP:
+		return fmt::format(fmt::runtime(_("+tohit% {:+d}%, {:+d}% damage")), item._iPLToHit, item._iPLDam);
 	case IPL_TOHIT_DAMP_CURSE:
-		return fmt::format(fmt::runtime(_("to hit: {:+d}%, {:+d}% damage")), item._iPLToHit, item._iPLDam);
+		return fmt::format(fmt::runtime(_("-tohit% {:+d}%, {:+d}% damage")), item._iPLToHit, item._iPLDam);
 	case IPL_ACP:
 	case IPL_ACP_CURSE:
 		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "{:+d}% armor")), item._iPLAC);
