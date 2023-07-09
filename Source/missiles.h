@@ -173,6 +173,8 @@ struct Missile {
 	}
 };
 
+int MissileSwitch();
+
 extern std::list<Missile> Missiles;
 extern bool MissilePreFlag;
 
