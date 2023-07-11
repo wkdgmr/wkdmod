@@ -3455,10 +3455,10 @@ void ProcessSpectralArrow(Missile &missile)
 			mitype == MissileID::InfernoControl;
 		}
 	}
-	if (misswitch == 1 || misswitch == 2 || misswitch == 5 
-	|| misswitch == 9 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) && misswitch == 1 || misswitch == 2 || misswitch == 5 
+	|| misswitch == 9) {
+		std::pair<Direction, Direction> dirPair = NextIMisDir(dir);
 	    AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-	    std::pair<Direction, Direction> dirPair = NextIMisDir(dir);
 	    AddMissile(src, dst, dirPair.first, mitype, micaster, id, dam, spllvl);
 	    AddMissile(src, dst, dirPair.second, mitype, micaster, id, dam, spllvl);
 	}
