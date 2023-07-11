@@ -340,6 +340,7 @@ enum class ItemSpecialEffect : uint32_t {
 	LightningDamage        = 1 << 5,
 	DrainLife              = 1 << 6,
 	DrainMana              = 1 << 7,
+	Empower                = 1 << 8,
 	MultipleArrows         = 1 << 9,
 	Knockback              = 1 << 11,
 	StealMana3             = 1 << 13,
