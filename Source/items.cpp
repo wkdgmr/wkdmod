@@ -3798,7 +3798,7 @@ bool DoOil(Player &player, int cii)
 		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "{:+d}% armor")), item._iPLAC);
 	case IPL_SETAC:
 	case IPL_AC_CURSE:
-		return fmt::format(fmt::runtime(_("armor class: {:d}")), item._iAC);
+		return fmt::format(fmt::runtime(_("AC: {:d}")), item._iAC);
 	case IPL_FIRERES:
 	case IPL_FIRERES_CURSE:
 		if (item._iPLFR < MaxResistance)
@@ -4053,18 +4053,18 @@ void PrintItemDetails(const Item &item)
 		if (item._iMinDam == item._iMaxDam) {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} IND")), 
-				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam));
+				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}", item._iPLToHit) : "", item._iMinDam));
 			} else {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} DUR:{:d}")), 
-				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iDurability));
+				(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iDurability));
 			}
 		} else {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} IND")), 
-				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam));
+				(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iMaxDam));
 			} else {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} DUR:{:d}")), 
-				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iDurability));
+				(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iDurability));
 			}
 
 		}
@@ -4072,59 +4072,98 @@ void PrintItemDetails(const Item &item)
 
 	if (item._iClass == ICLASS_ARMOR) {
 		if (item._iMaxDur == DUR_INDESTRUCTIBLE)
-			AddPanelString(fmt::format(fmt::runtime(_("armor: {:d}  Indestructible")), item._iAC));
+			AddPanelString(fmt::format(fmt::runtime(_("AC: {:d}  INDESTRUCTIBLE")), item._iAC));
 		else
-			AddPanelString(fmt::format(fmt::runtime(_(/* TRANSLATORS: Dur: is durability */ "armor: {:d}  Dur: {:d}/{:d}")), item._iAC, item._iDurability, item._iMaxDur));
+			AddPanelString(fmt::format(fmt::runtime(_(/* TRANSLATORS: Dur: is durability */ "AC: {:d}  DUR: {:d}/{:d}")), item._iAC, item._iDurability, item._iMaxDur));
 	}
 	if (item._iMiscId == IMISC_STAFF) {
 		if (item._iMinDam == item._iMaxDam) {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
 				if (item._iMaxCharges != 0) {
-					AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-					(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
-					AddPanelString(fmt::format(fmt::runtime(_("CHRG:{:d} IND")), item._iCharges));
+					if (item._iMagical == ITEM_QUALITY_UNIQUE) {
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d}")), item._iMinDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE UNIQUE"))));
+					} else {
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d} IND")), item._iMinDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+					}
 				} else {
-					AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-					(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
-					AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE"))));
+					if (item._iMagical == ITEM_QUALITY_UNIQUE) {
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE UNIQUE"))));
+					} else {
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC));
+					}
 				}
 			} else {
 				if (item._iMaxCharges != 0) {
-					AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-					(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
-					AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} CHRG:{:d}")), item._iDurability, item._iCharges));
+					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d}")), item._iMinDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")),(item._iPLToHit > 0) ? 
+						fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} UNIQUE")), item._iDurability));
+					} else {
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} CHRG:{:d}")), item._iDurability, item._iCharges));
+					}
 				} else {
-					AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-					(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
-					AddPanelString(fmt::format(fmt::runtime(_("Durability: {:d}/{:d}")), item._iDurability, item._iMaxDur));
+					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d}/{:d} UNIQUE")), item._iDurability, item._iMaxDur));
+					} else {
+						AddPanelString(fmt::format(fmt::runtime(_("{:s}D:{:d}AC:{:d}DU:{:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("H:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
+					}
 				}
 			}
 		} else { 		
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
 				if (item._iMaxCharges != 0) {
-					AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), 
-					(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iAC));
-					AddPanelString(fmt::format(fmt::runtime(_("CHRG:{:d} IND")), item._iCharges));
+					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE UNIQUE"))));
+					} else {
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d} IND")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+					}
 				} else {
-					AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), 
-					(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iAC));
-					AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE"))));
+					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} IND UNIQUE")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : ""));
+					} else {
+						AddPanelString(fmt::format(fmt::runtime(_("{:s}D:{:d}-{:d}AC:{:d}")), (item._iPLToHit > 0) ? fmt::format("T:{:d}", item._iPLToHit) : "", 
+						item._iMinDam, item._iMaxDam, item._iAC));
+					}
 				}
 			} else {
 				if (item._iMaxCharges != 0) {
-					AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} AC:{:d}")), 
-					(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iAC));
-					AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} CHRG:{:d}")), item._iDurability, item._iCharges));
+					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d} UNIQUE")), item._iDurability));
+					} else {
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d} DUR:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iDurability, item._iCharges));
+					}
 				} else {
-					AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-					(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
-					AddPanelString(fmt::format(fmt::runtime(_("Durability: {:d}/{:d}")), item._iDurability, item._iMaxDur));
+					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DUR:{:d} UNIQUE")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iDurability));
+					} else {
+						AddPanelString(fmt::format(fmt::runtime(_("{:s}D:{:d}-{:d}A:{:d}d:{:d}")), (item._iPLToHit > 0) ? fmt::format("T:{:d}", item._iPLToHit) : "", 
+						item._iMinDam, item._iMaxDam, item._iAC, item._iDurability));					
+					}
 				}
 			}
 		}
-	}
-	if (item._iMiscId == IMISC_STAFF && item._iMaxCharges != 0) {
-		AddPanelString(fmt::format(fmt::runtime(_("Charges: {:d}/{:d}")), item._iCharges, item._iMaxCharges));
 	}
 	if (item._iPrePower != -1) {
 		AddPanelString(PrintItemPower(item._iPrePower, item));
@@ -4132,7 +4171,7 @@ void PrintItemDetails(const Item &item)
 	if (item._iSufPower != -1) {
 		AddPanelString(PrintItemPower(item._iSufPower, item));
 	}
-	if (item._iMagical == ITEM_QUALITY_UNIQUE) {
+	if (item._iMagical == ITEM_QUALITY_UNIQUE && item._iMiscId != IMISC_STAFF) {
 		AddPanelString(_("unique item"));
 		ShowUniqueItemInfoBox = true;
 		curruitem = item;
@@ -4165,9 +4204,9 @@ void PrintItemDur(const Item &item)
 	}
 	if (item._iClass == ICLASS_ARMOR) {
 		if (item._iMaxDur == DUR_INDESTRUCTIBLE)
-			AddPanelString(fmt::format(fmt::runtime(_("armor: {:d}  Indestructible")), item._iAC));
+			AddPanelString(fmt::format(fmt::runtime(_("AC: {:d}  Indestructible")), item._iAC));
 		else
-			AddPanelString(fmt::format(fmt::runtime(_("armor: {:d}  Dur: {:d}/{:d}")), item._iAC, item._iDurability, item._iMaxDur));
+			AddPanelString(fmt::format(fmt::runtime(_("AC: {:d}  Dur: {:d}/{:d}")), item._iAC, item._iDurability, item._iMaxDur));
 		if (item._iMagical != ITEM_QUALITY_NORMAL)
 			AddPanelString(_("Not Identified"));
 		if (item._iMiscId == IMISC_STAFF && item._iMaxCharges > 0) {
