@@ -891,11 +891,10 @@ bool DoAttack(Player &player)
 			}
 		}
 
-		int misswitch = player._pIMisType;
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && misswitch != 3 || misswitch != 6 && player._pIFMaxDam > 0) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
 		    AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && misswitch != 4 || misswitch != 8 && player._pILMaxDam > 0) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
 		    AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 

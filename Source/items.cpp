@@ -4052,7 +4052,7 @@ void PrintItemDetails(const Item &item)
 	if (item._iClass == ICLASS_WEAPON && item._itype != ItemType::Staff) {
 		if (item._iMinDam == item._iMaxDam) {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}")), 
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} INDESTRUCTIBLE")), 
 				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam));
 			} else {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} DUR:{:d}")), 
