@@ -884,7 +884,7 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iPLLight -= power.param1;
 		break;
 	case IPL_MULT_ARROWS:
-		item._iFlags |= ItemSpecialEffect::MultipleArrows;
+		item._iFlags |= (ItemSpecialEffect::Empower | ItemSpecialEffect::MultipleArrows);
 		break;
 	case IPL_FIRE_ARROWS:
 		item._iFlags |= ItemSpecialEffect::FireArrows;
