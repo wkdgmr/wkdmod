@@ -1008,6 +1008,30 @@ bool DoAttack(Player &player)
 	return false;
 }
 
+std::pair<Direction, Direction> NextIMisDir(Direction dir)
+{
+    switch (dir) {
+    case Direction::North:
+        return { Direction::NorthEast, Direction::NorthWest };
+    case Direction::NorthEast:
+        return { Direction::North, Direction::East };
+    case Direction::East:
+        return { Direction::NorthEast, Direction::SouthEast };
+    case Direction::SouthEast:
+        return { Direction::East, Direction::South };
+    case Direction::South:
+        return { Direction::SouthEast, Direction::SouthWest };
+    case Direction::SouthWest:
+        return { Direction::South, Direction::West };
+    case Direction::West:
+        return { Direction::SouthWest, Direction::NorthWest };
+    case Direction::NorthWest:
+        return { Direction::West, Direction::North };
+    default:
+        throw std::invalid_argument("Invalid direction");
+    }
+}
+
 bool DoRangeAttack(Player &player)
 {
 	int arrows = 0;
@@ -1067,6 +1091,15 @@ bool DoRangeAttack(Player &player)
 		    player.getId(),
 		    dmg,
 		    0);
+
+		Direction dir = player._pdir;
+		std::pair<Direction, Direction> strafedir = NextIMisDir(dir);
+			
+		if (player._pIMisType == 1 || player._pIMisType == 2 
+		|| player._pIMisType == 5 || player._pIMisType == 9 && (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))) {
+			AddMissile(player.position.tile, player.position.temp + Displacement { xoff, yoff }, strafedir.first, mistype, TARGET_MONSTERS, player.getId(), dmg, 0);
+			AddMissile(player.position.tile, player.position.temp + Displacement { xoff, yoff }, strafedir.second, mistype, TARGET_MONSTERS, player.getId(), dmg, 0);
+		}
 
     	if (mistype != MissileID::SpectralArrow) {
     	    if (arrow == 0) {

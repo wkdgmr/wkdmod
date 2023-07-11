@@ -3311,30 +3311,6 @@ Direction RandomIMisDir()
     return dir;
 }
 
-std::pair<Direction, Direction> NextIMisDir(Direction dir)
-{
-    switch (dir) {
-    case Direction::North:
-        return { Direction::NorthEast, Direction::NorthWest };
-    case Direction::NorthEast:
-        return { Direction::North, Direction::East };
-    case Direction::East:
-        return { Direction::NorthEast, Direction::SouthEast };
-    case Direction::SouthEast:
-        return { Direction::East, Direction::South };
-    case Direction::South:
-        return { Direction::SouthEast, Direction::SouthWest };
-    case Direction::SouthWest:
-        return { Direction::South, Direction::West };
-    case Direction::West:
-        return { Direction::SouthWest, Direction::NorthWest };
-    case Direction::NorthWest:
-        return { Direction::West, Direction::North };
-    default:
-        throw std::invalid_argument("Invalid direction");
-    }
-}
-
 void ProcessSpectralArrow(Missile &missile)
 {
 	int id = missile._misource;
@@ -3377,7 +3353,7 @@ void ProcessSpectralArrow(Missile &missile)
 	}
 	int misswitch = player._pIMisType;
 	if (misswitch != 3 || misswitch != 6 || misswitch != 4 
-	|| misswitch != 8 || misswitch != 7 && !HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+	|| misswitch != 8 || misswitch != 7) {
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 3) {
@@ -3455,14 +3431,6 @@ void ProcessSpectralArrow(Missile &missile)
 			mitype == MissileID::InfernoControl;
 		}
 	}
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) && misswitch == 1 || misswitch == 2 || misswitch == 5 
-	|| misswitch == 9) {
-		std::pair<Direction, Direction> dirPair = NextIMisDir(dir);
-	    AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-	    AddMissile(src, dst, dirPair.first, mitype, micaster, id, dam, spllvl);
-	    AddMissile(src, dst, dirPair.second, mitype, micaster, id, dam, spllvl);
-	}
-
 
 	missile._mirange--;
 	if (missile._mirange == 0)
