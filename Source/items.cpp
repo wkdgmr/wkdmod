@@ -4056,15 +4056,15 @@ void PrintItemDetails(const Item &item)
 				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}", item._iPLToHit) : "", item._iMinDam));
 			} else {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} DUR:{:d}")), 
-				(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iDurability));
+				(item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iMinDam, item._iDurability));
 			}
 		} else {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} IND")), 
-				(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iMaxDam));
+				(item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam));
 			} else {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} DUR:{:d}")), 
-				(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iDurability));
+				(item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iDurability));
 			}
 
 		}
@@ -4082,52 +4082,51 @@ void PrintItemDetails(const Item &item)
 				if (item._iMaxCharges != 0) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) {
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d}")), item._iMinDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges: {:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iCharges));
 						AddPanelString(fmt::format(fmt::runtime(_("indestructible unique"))));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d} IND")), item._iMinDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges:{:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iCharges));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC));
+						(item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("indestructible unique"))));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC));
+						(item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
 					}
 				}
 			} else {
 				if (item._iMaxCharges != 0) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d}")), item._iMinDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")),(item._iPLToHit > 0) ? 
-						fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges: {:d}")),(item._iPLToHit > 0) ? 
+						fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iCharges));
 						AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} unique")), item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} CHRG:{:d}")), item._iDurability, item._iCharges));
+						(item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} Charges:{:d}")), item._iDurability, item._iCharges));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
-						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d}/{:d} unique")), item._iDurability, item._iMaxDur));
+						(item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d} unique")), item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
-						AddPanelString(fmt::format(fmt::runtime(_("{:s}D:{:d}AC:{:d}DU:{:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("H:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d} AC:{:d} DUR: {:d}")), item._iMinDam, item._iAC, item._iDurability));
 					}
 				}
 			}
@@ -4135,47 +4134,45 @@ void PrintItemDetails(const Item &item)
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
 				if (item._iMaxCharges != 0) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
-						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges: {:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iCharges));
 						AddPanelString(fmt::format(fmt::runtime(_("indestructible unique"))));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
-						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d} IND")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges:{:d} IND")), (item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iCharges));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} IND unique")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : ""));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} IND unique")), (item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : ""));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
-						AddPanelString(fmt::format(fmt::runtime(_("{:s}D:{:d}-{:d}AC:{:d}")), (item._iPLToHit > 0) ? fmt::format("T:{:d}", item._iPLToHit) : "", 
-						item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 					}
 				}
 			} else {
 				if (item._iMaxCharges != 0) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
-						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges: {:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iCharges));
 						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d} unique")), item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
-						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d} DUR:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iDurability, item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("Charges: {:d} DUR: {:d}")),item._iCharges, item._iDurability));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
-						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} DUR:{:d} unique")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DUR:{:d} unique")), (item._iPLToHit > 0) ? fmt::format("ToHit:{:d}%", item._iPLToHit) : "", item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
-						AddPanelString(fmt::format(fmt::runtime(_("{:s}D:{:d}-{:d}A:{:d}d:{:d}")), (item._iPLToHit > 0) ? fmt::format("T:{:d}", item._iPLToHit) : "", 
-						item._iMinDam, item._iMaxDam, item._iAC, item._iDurability));					
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d} DU:{:d}")), item._iMinDam, item._iMaxDam, item._iAC, item._iDurability));					
 					}
 				}
 			}
