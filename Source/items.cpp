@@ -4072,7 +4072,7 @@ void PrintItemDetails(const Item &item)
 
 	if (item._iClass == ICLASS_ARMOR) {
 		if (item._iMaxDur == DUR_INDESTRUCTIBLE)
-			AddPanelString(fmt::format(fmt::runtime(_("AC: {:d}  INDESTRUCTIBLE")), item._iAC));
+			AddPanelString(fmt::format(fmt::runtime(_("AC: {:d}  indestructible")), item._iAC));
 		else
 			AddPanelString(fmt::format(fmt::runtime(_(/* TRANSLATORS: Dur: is durability */ "AC: {:d}  DUR: {:d}/{:d}")), item._iAC, item._iDurability, item._iMaxDur));
 	}
@@ -4084,7 +4084,7 @@ void PrintItemDetails(const Item &item)
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d}")), item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
-						AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE UNIQUE"))));
+						AddPanelString(fmt::format(fmt::runtime(_("indestructible unique"))));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
@@ -4096,7 +4096,7 @@ void PrintItemDetails(const Item &item)
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE UNIQUE"))));
+						AddPanelString(fmt::format(fmt::runtime(_("indestructible unique"))));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
@@ -4110,7 +4110,7 @@ void PrintItemDetails(const Item &item)
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d}")), item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")),(item._iPLToHit > 0) ? 
 						fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
-						AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} UNIQUE")), item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} unique")), item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
@@ -4122,7 +4122,7 @@ void PrintItemDetails(const Item &item)
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
-						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d}/{:d} UNIQUE")), item._iDurability, item._iMaxDur));
+						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d}/{:d} unique")), item._iDurability, item._iMaxDur));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
@@ -4137,7 +4137,7 @@ void PrintItemDetails(const Item &item)
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
-						AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE UNIQUE"))));
+						AddPanelString(fmt::format(fmt::runtime(_("indestructible unique"))));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
@@ -4147,7 +4147,7 @@ void PrintItemDetails(const Item &item)
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} IND UNIQUE")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : ""));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} IND unique")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : ""));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
@@ -4160,7 +4160,7 @@ void PrintItemDetails(const Item &item)
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
-						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d} UNIQUE")), item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d} unique")), item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
@@ -4170,7 +4170,7 @@ void PrintItemDetails(const Item &item)
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} DUR:{:d} UNIQUE")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DUR:{:d} unique")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
@@ -4203,12 +4203,12 @@ void PrintItemDur(const Item &item)
 	if (item._iClass == ICLASS_WEAPON) {
 		if (item._iMinDam == item._iMaxDam) {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE)
-				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}  Indestructible")), item._iMinDam));
+				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}  indestructible")), item._iMinDam));
 			else
 				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}  Dur: {:d}/{:d}")), item._iMinDam, item._iDurability, item._iMaxDur));
 		} else {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE)
-				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}  Indestructible")), item._iMinDam, item._iMaxDam));
+				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}  indestructible")), item._iMinDam, item._iMaxDam));
 			else
 				AddPanelString(fmt::format(fmt::runtime(_("damage: {:d}-{:d}  Dur: {:d}/{:d}")), item._iMinDam, item._iMaxDam, item._iDurability, item._iMaxDur));
 		}
@@ -4220,7 +4220,7 @@ void PrintItemDur(const Item &item)
 	}
 	if (item._iClass == ICLASS_ARMOR) {
 		if (item._iMaxDur == DUR_INDESTRUCTIBLE)
-			AddPanelString(fmt::format(fmt::runtime(_("AC: {:d}  Indestructible")), item._iAC));
+			AddPanelString(fmt::format(fmt::runtime(_("AC: {:d}  indestructible")), item._iAC));
 		else
 			AddPanelString(fmt::format(fmt::runtime(_("AC: {:d}  Dur: {:d}/{:d}")), item._iAC, item._iDurability, item._iMaxDur));
 		if (item._iMagical != ITEM_QUALITY_NORMAL)
