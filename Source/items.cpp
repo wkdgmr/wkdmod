@@ -2539,19 +2539,6 @@ void InitItems()
 	initItemGetRecords();
 }
 
-void AmuletOfEmpowerment(Player &player) 
-{
-    if ((player._pIMisType == 1 || player._pIMisType == 2 || player._pIMisType == 3 
-    || player._pIMisType == 6 || player._pIMisType == 4 || player._pIMisType == 7 
-    || player._pIMisType == 8 || player._pIMisType == 5 || player._pIMisType == 9)
-    && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-        player._pIMisType += 100;
-    }
-	if (player._pIMisType >= 100 && !HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-		player._pIMisType -= 100;
-	}
-}
-
 void CalcPlrItemVals(Player &player, bool loadgfx)
 {
 	int mind = 0; // min damage
@@ -2832,7 +2819,6 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	player._pIMMinDam = mmin;
 	player._pIMMaxDam = mmax;
 	player._pIMisType = miscase;
-	AmuletOfEmpowerment(player);
 
 	player._pInfraFlag = false;
 
