@@ -4052,7 +4052,7 @@ void PrintItemDetails(const Item &item)
 	if (item._iClass == ICLASS_WEAPON && item._itype != ItemType::Staff) {
 		if (item._iMinDam == item._iMaxDam) {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} INDESTRUCTIBLE")), 
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} IND")), 
 				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam));
 			} else {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} DUR:{:d}")), 
@@ -4060,7 +4060,7 @@ void PrintItemDetails(const Item &item)
 			}
 		} else {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d}")), 
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} IND")), 
 				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam));
 			} else {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} DUR:{:d}")), 
@@ -4071,7 +4071,7 @@ void PrintItemDetails(const Item &item)
 	} else if (item._iClass == ICLASS_WEAPON && item._itype == ItemType::Staff) {
 		if (item._iMinDam == item._iMaxDam) {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d} IND")), 
 				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
 			} else {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d} DUR:{:d}")), 
@@ -4079,7 +4079,7 @@ void PrintItemDetails(const Item &item)
 			}
 		} else { 		
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), 
+				AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d} IND")), 
 				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iAC));
 			} else {
 				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} AC:{:d} DUR:{:d}")), 
