@@ -1012,7 +1012,8 @@ bool DoRangeAttack(Player &player)
 {
 	int arrows = 0;
 	if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
-	    arrows = HasAllOf(player._pIFlags, (ItemSpecialEffect::Empower | ItemSpecialEffect::MultipleArrows)) ? 3 : 1;
+	    arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows)
+		|| HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) && player._pIMisType > 0 ? 3 : 1;
 	}
 
 	for (int arrow = 0; arrow < arrows; arrow++) {
@@ -1040,6 +1041,10 @@ bool DoRangeAttack(Player &player)
 		}
 		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 1) {
 			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+			mistype = MissileID::SpectralArrow;
+		}
+		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 2) {
+			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam));
 			mistype = MissileID::SpectralArrow;
 		}
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 5) {
