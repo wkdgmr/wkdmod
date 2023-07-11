@@ -3311,6 +3311,29 @@ Direction RandomIMisDir()
     return dir;
 }
 
+std::pair<Direction, Direction> NextIMisDir(Direction dir)
+{
+    switch (dir) {
+    case Direction::North:
+        return { Direction::NorthEast, Direction::NorthWest };
+    case Direction::NorthEast:
+        return { Direction::North, Direction::East };
+    case Direction::East:
+        return { Direction::NorthEast, Direction::SouthEast };
+    case Direction::SouthEast:
+        return { Direction::East, Direction::South };
+    case Direction::South:
+        return { Direction::SouthEast, Direction::SouthWest };
+    case Direction::SouthWest:
+        return { Direction::South, Direction::West };
+    case Direction::West:
+        return { Direction::SouthWest, Direction::NorthWest };
+    case Direction::NorthWest:
+        return { Direction::West, Direction::North };
+    default:
+        throw std::invalid_argument("Invalid direction");
+    }
+}
 
 void ProcessSpectralArrow(Missile &missile)
 {
@@ -3330,30 +3353,41 @@ void ProcessSpectralArrow(Missile &missile)
 
 		switch (player._pIMisType) {
 		case 1:
+		case 101:
 			mitype = MissileID::FireballBow;
 			break;
 		case 2:
+		case 102:
 			mitype = MissileID::LightningBow;
 			break;
 		case 3:
 		case 6:
+		case 103:
+		case 106:
 			mitype = MissileID::ChargedBoltBow;
 			break;
 		case 4:
 		case 7:
 		case 8:
+		case 104:
+		case 107:
+		case 108:
 			mitype = MissileID::InfernoControl;
 			break;
 		case 5:
+		case 105:
 			mitype = MissileID::HolyBoltBow;
 			break;
 		case 9:
+		case 109:
 			mitype = MissileID::BoneSpirit;
 			break;
 		}
 	}
 	int misswitch = player._pIMisType;
-	if (misswitch != 3 || misswitch != 6 || misswitch != 4 || misswitch != 8 || misswitch != 7) {
+	if (misswitch != 3 || misswitch != 6 || misswitch != 4 || misswitch != 8 || misswitch != 7
+	|| misswitch != 101 || misswitch != 102 || misswitch != 105 || misswitch != 109 || misswitch != 103 
+	|| misswitch != 106 || misswitch != 104 || misswitch != 108 || misswitch != 107) {
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 3) {
@@ -3364,7 +3398,7 @@ void ProcessSpectralArrow(Missile &missile)
 		dir = RandomIMisDir();
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
-	if (misswitch == 6) {
+	if (misswitch == 6 || misswitch == 103 || misswitch == 106) {
 		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 		AddMissile(src, dst, Direction::SouthWest, mitype, micaster, id, dam, spllvl);
@@ -3379,7 +3413,7 @@ void ProcessSpectralArrow(Missile &missile)
 		dir = RandomIMisDir();
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 	}
-	if (misswitch == 8) {
+	if (misswitch == 8 || misswitch == 104 || misswitch == 108) {
 		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		dir = OppositeIMisDir(dir);
@@ -3407,6 +3441,37 @@ void ProcessSpectralArrow(Missile &missile)
 			mitype == MissileID::InfernoControl;
 		}
 	}
+	if (misswitch == 107) {
+		if (mitype == MissileID::InfernoControl) {
+			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+			dir = OppositeIMisDir(dir);
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+			dir = RandomIMisDir();
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
+			mitype == MissileID::ChargedBoltBow;
+		}
+		if (mitype == MissileID::ChargedBoltBow) {
+			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			dir = OppositeIMisDir(dir);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			dir = RandomIMisDir();
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			dir = RandomIMisDir();
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			dir = RandomIMisDir();
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			mitype == MissileID::InfernoControl;
+		}
+	}
+	if (misswitch == 101 || misswitch == 102 || misswitch == 105 || misswitch == 109) {
+	    AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+	    std::pair<Direction, Direction> dirPair = NextIMisDir(dir);
+	    AddMissile(src, dst, dirPair.first, mitype, micaster, id, dam, spllvl);
+	    AddMissile(src, dst, dirPair.second, mitype, micaster, id, dam, spllvl);
+	}
+
 
 	missile._mirange--;
 	if (missile._mirange == 0)

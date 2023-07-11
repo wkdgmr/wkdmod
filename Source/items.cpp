@@ -913,6 +913,9 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
 		break;
+	case IPL_EMPOWER:
+        item._iMisType += 100;
+		break;
 	case IPL_NOMANA:
 		item._iFlags |= ItemSpecialEffect::NoMana;
 		RedrawComponent(PanelDrawComponent::Mana);
@@ -3906,6 +3909,8 @@ bool DoOil(Player &player, int cii)
 			return fmt::format(fmt::runtime(_("holy fire damage: {:d}")), item._iFMinDam);
 		else
 			return fmt::format(fmt::runtime(_("holy fire damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+	case IPL_EMPOWER:
+			return fmt::format(fmt::runtime(_("Empowers Unique Weapons")));
 	case IPL_NOMANA:
 		return _("user loses all mana");
 	case IPL_ABSHALFTRAP:

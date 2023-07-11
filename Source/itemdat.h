@@ -512,6 +512,7 @@ enum item_effect_type : int8_t {
 	IPL_INVCURS,
 	IPL_THORNS,
 	IPL_NOMANA,
+	IPL_EMPOWER = 49,
 	IPL_FIREBALL = 50, /* only used in hellfire */
 	IPL_INFERNO,
 	IPL_ABSHALFTRAP = 52,
