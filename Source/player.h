@@ -774,6 +774,7 @@ struct Player {
 		this->plrlevel = static_cast<uint8_t>(level);
 		this->plrIsOnSetLevel = true;
 	}
+
 };
 
 extern DVL_API_FOR_TEST size_t MyPlayerId;

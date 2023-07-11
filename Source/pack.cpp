@@ -495,7 +495,7 @@ bool UnPackNetPlayer(const PlayerNetPack &packed, Player &player)
 		return false;
 	if (player._pILMaxDam != SDL_SwapLE32(packed.pILMaxDam))
 		return false;
-
+		
 	return true;
 }
 
