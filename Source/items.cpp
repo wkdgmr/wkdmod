@@ -4085,6 +4085,8 @@ void PrintItemDetails(const Item &item)
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
 						AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE UNIQUE"))));
+						ShowUniqueItemInfoBox = true;
+						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d} IND")), item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), 
@@ -4095,6 +4097,8 @@ void PrintItemDetails(const Item &item)
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE UNIQUE"))));
+						ShowUniqueItemInfoBox = true;
+						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC));
@@ -4107,6 +4111,8 @@ void PrintItemDetails(const Item &item)
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")),(item._iPLToHit > 0) ? 
 						fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
 						AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} UNIQUE")), item._iDurability));
+						ShowUniqueItemInfoBox = true;
+						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC));
@@ -4117,6 +4123,8 @@ void PrintItemDetails(const Item &item)
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
 						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d}/{:d} UNIQUE")), item._iDurability, item._iMaxDur));
+						ShowUniqueItemInfoBox = true;
+						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}D:{:d}AC:{:d}DU:{:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("H:{:d}", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
@@ -4130,6 +4138,8 @@ void PrintItemDetails(const Item &item)
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
 						AddPanelString(fmt::format(fmt::runtime(_("INDESTRUCTIBLE UNIQUE"))));
+						ShowUniqueItemInfoBox = true;
+						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d} IND")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
@@ -4138,6 +4148,8 @@ void PrintItemDetails(const Item &item)
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} IND UNIQUE")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : ""));
+						ShowUniqueItemInfoBox = true;
+						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}D:{:d}-{:d}AC:{:d}")), (item._iPLToHit > 0) ? fmt::format("T:{:d}", item._iPLToHit) : "", 
 						item._iMinDam, item._iMaxDam, item._iAC));
@@ -4149,6 +4161,8 @@ void PrintItemDetails(const Item &item)
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iCharges));
 						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d} UNIQUE")), item._iDurability));
+						ShowUniqueItemInfoBox = true;
+						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} CHRG:{:d} DUR:{:d}")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iDurability, item._iCharges));
@@ -4157,6 +4171,8 @@ void PrintItemDetails(const Item &item)
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DUR:{:d} UNIQUE")), (item._iPLToHit > 0) ? fmt::format("TH:{:d}", item._iPLToHit) : "", item._iDurability));
+						ShowUniqueItemInfoBox = true;
+						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}D:{:d}-{:d}A:{:d}d:{:d}")), (item._iPLToHit > 0) ? fmt::format("T:{:d}", item._iPLToHit) : "", 
 						item._iMinDam, item._iMaxDam, item._iAC, item._iDurability));					
