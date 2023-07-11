@@ -3256,6 +3256,29 @@ void ProcessNova(Missile &missile)
 	ProcessNovaCommon(missile, MissileID::NovaBall);
 }
 
+Direction OppositeIMisDir(Direction dir)
+{
+	if (dir == Direction::South) {
+		dir = Direction::North;
+	} else if (dir == Direction::North) {
+		dir = Direction::South;
+	} else if (dir == Direction::East) {
+		dir = Direction::West;
+	} else if (dir == Direction::West) {
+		dir = Direction::East;
+	} else if (dir == Direction::NorthEast) {
+		dir = Direction::SouthWest;
+	} else if (dir == Direction::NorthWest) {
+		dir = Direction::SouthEast;
+	} else if (dir == Direction::SouthWest) {
+		dir = Direction::NorthEast;
+	} else if (dir == Direction::SouthEast) {
+		dir = Direction::NorthWest;
+	}
+
+	return dir;
+}
+
 std::pair<Direction, Direction> NextIMisDir(Direction dir)
 {
     switch (dir) {
@@ -3331,6 +3354,8 @@ void ProcessSpectralArrow(Missile &missile)
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 		AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
 		AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
+		dir = OppositeIMisDir(dir);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 6 || misswitch == 3 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
@@ -3338,12 +3363,15 @@ void ProcessSpectralArrow(Missile &missile)
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 		AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
 		AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
-		std::pair<Direction, Direction> novadir2 = NextIMisDir(novadir.second);
+		dir = OppositeIMisDir(dir);
+		std::pair<Direction, Direction> novadir2 = NextIMisDir(dir);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 		AddMissile(src, dst, novadir2.first, mitype, micaster, id, dam, spllvl);
 		AddMissile(src, dst, novadir2.second, mitype, micaster, id, dam, spllvl);
-		std::pair<Direction, Direction> novadirlast = NextIMisDir(novadir2.second);
-		AddMissile(src, dst, novadirlast.first, mitype, micaster, id, dam, spllvl);
-		AddMissile(src, dst, novadirlast.second, mitype, micaster, id, dam, spllvl);
+		dir = OppositeIMisDir(novadir2.second);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		dir = OppositeIMisDir(novadir2.first);
+		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 4) {
 		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
@@ -3358,7 +3386,9 @@ void ProcessSpectralArrow(Missile &missile)
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		AddMissile(missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
 		AddMissile(missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
-		std::pair<Direction, Direction> infernodir2 = NextIMisDir(infernodir.second);
+		dir = OppositeIMisDir(dir);
+		std::pair<Direction, Direction> infernodir2 = NextIMisDir(dir);
+		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		AddMissile(missile.position.tile, missile.position.start, infernodir2.first, mitype, micaster, id, dam, spllvl, &missile);
 		AddMissile(missile.position.tile, missile.position.start, infernodir2.second, mitype, micaster, id, dam, spllvl, &missile);
 	}
@@ -3369,8 +3399,8 @@ void ProcessSpectralArrow(Missile &missile)
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
-			std::pair<Direction, Direction> infernodir2 = NextIMisDir(infernodir.second);
-			AddMissile(missile.position.tile, missile.position.start, infernodir2.first, mitype, micaster, id, dam, spllvl, &missile);
+			dir = OppositeIMisDir(dir);
+			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			mitype = MissileID::ChargedBoltBow;
 		}
 		if (mitype == MissileID::ChargedBoltBow) {
@@ -3379,8 +3409,8 @@ void ProcessSpectralArrow(Missile &missile)
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
-			std::pair<Direction, Direction> novadirlast = NextIMisDir(novadir.second);
-			AddMissile(src, dst, novadirlast.first, mitype, micaster, id, dam, spllvl);
+			dir = OppositeIMisDir(dir);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			mitype == MissileID::InfernoControl;
 		}
 	}
