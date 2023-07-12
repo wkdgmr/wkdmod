@@ -669,8 +669,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		int arrows = 0;
 		int dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 		if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
-		    arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows)
-			|| HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) && player._pIMisType > 0 ? 3 : 1;
+		    arrows = 3;
 		}
 
 		for (int arrow = 0; arrow < arrows; arrow++) {
@@ -689,6 +688,11 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 
 			AddMissile(player.position.tile, player.position.temp + Displacement { xoff, yoff }, player._pdir, 
 			MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
+
+			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+				AddMissile(player.position.tile, player.position.temp + Displacement { xoff + 1, yoff + 1 }, player._pdir, 
+				MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
+			}
 
 			if (DamageWeapon(player, 40)) {
 				StartStand(player, player._pdir);
