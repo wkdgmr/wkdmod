@@ -1276,7 +1276,7 @@ void GetItemPower(const Player &player, Item &item, int minlvl, int maxlvl, Affi
 
 void GetStaffSpell(const Player &player, Item &item, int lvl, bool onlygood)
 {
-	if (!gbIsHellfire && FlipCoin(4)) {
+	if (FlipCoin(4)) {
 		GetItemPower(player, item, lvl / 2, lvl, AffixItemType::Staff, onlygood);
 		return;
 	}
