@@ -1054,16 +1054,21 @@ bool DoRangeAttack(Player &player)
 			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
 			mistype = MissileID::SpectralArrow;
 		}
-		
-		AddMissile(
-		    player.position.tile,
-		    player.position.temp + Displacement { xoff, yoff },
-		    player._pdir,
-		    mistype,
-		    TARGET_MONSTERS,
-		    player.getId(),
-		    dmg,
-		    0);
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff) {
+			AddMissile(player.position.tile, player.position.temp, player._pdir, 
+			MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
+		} else {
+			AddMissile(
+			player.position.tile,
+			player.position.temp + Displacement { xoff, yoff },
+			player._pdir,
+			mistype,
+			TARGET_MONSTERS,
+			player.getId(),
+			dmg,
+			0);
+		}
 
     	if (mistype != MissileID::SpectralArrow) {
     	    if (arrow == 0) {
