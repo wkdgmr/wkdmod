@@ -1521,13 +1521,11 @@ void AddBigExplosion(Missile &missile, AddMissileParameter & /*parameter*/)
 void AddImmolation(Missile &missile, AddMissileParameter &parameter)
 {
 	Point dst = parameter.dst;
-	if (missile.position.start == parameter.dst) {
-		if (Players[missile._misource]._pIMisType == 1 
+	if (Players[missile._misource]._pIMisType == 1 
 		&& Players[missile._misource].InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff) {
-			dst += Players[missile._misource]._pdir;
-		} else {
-			dst += parameter.midir;
-		}
+		dst += Players[missile._misource]._pdir;
+	} else if (missile.position.start == parameter.dst) {
+		dst += parameter.midir;
 	}
 	int sp = 16;
 	if (missile._micaster == TARGET_MONSTERS) {
