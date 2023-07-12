@@ -1038,7 +1038,8 @@ bool DoRangeAttack(Player &player)
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows) && misswitch != 2) {
 			mistype = MissileID::LightningArrow;
 		}
-		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 1) {
+		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 1
+		&& player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Staff) {
 			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 			mistype = MissileID::SpectralArrow;
 		}
@@ -1055,7 +1056,8 @@ bool DoRangeAttack(Player &player)
 			mistype = MissileID::SpectralArrow;
 		}
 
-		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1) {
+			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 			AddMissile(player.position.tile, player.position.temp, player._pdir, 
 			MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
 		} else {
