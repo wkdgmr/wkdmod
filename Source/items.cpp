@@ -3779,6 +3779,8 @@ bool DoOil(Player &player, int cii)
 	return true;
 }
 
+std::string chargeString = item._iMaxCharges == 1 ? "charge" : "charges";
+
 [[nodiscard]] StringOrView PrintItemPower(char plidx, const Item &item)
 {
 	switch (plidx) {
@@ -3832,7 +3834,6 @@ bool DoOil(Player &player, int cii)
 	case IPL_CHARGES:
 		return _("Extra charges");
 	case IPL_SPELL:
-		std::string chargeString = item._iMaxCharges == 1 ? "charge" : "charges";
 		return fmt::format("{:d} {:s} " + chargeString, item._iMaxCharges, pgettext("spell", GetSpellData(item._iSpell).sNameText));
 	case IPL_FIREDAM:
 		if (item._iFMinDam == item._iFMaxDam)
