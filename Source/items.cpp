@@ -3832,7 +3832,8 @@ bool DoOil(Player &player, int cii)
 	case IPL_CHARGES:
 		return _("Extra charges");
 	case IPL_SPELL:
-		return fmt::format(fmt::runtime(_("{:d} {:s} charges")), GetSpellData(item._iSpell).sNameText, item._iMaxCharges);
+		std::string chargeString = item._iMaxCharges == 1 ? "charge" : "charges";
+		return fmt::format("{:d} {:s} " + chargeString, item._iMaxCharges, pgettext("spell", GetSpellData(item._iSpell).sNameText));
 	case IPL_FIREDAM:
 		if (item._iFMinDam == item._iFMaxDam)
 			return fmt::format(fmt::runtime(_("Fire hit damage: {:d}")), item._iFMinDam);
