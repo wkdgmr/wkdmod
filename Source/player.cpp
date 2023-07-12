@@ -666,58 +666,60 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1) {
-		int arrows = 0;
-		int dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-		if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
-		    arrows = 3;
-		}
-
-	for (int arrow = 0; arrow < arrows; arrow++) {
-	    int xoff = 0;
-	    int yoff = 0;
-
-	    int angle = arrow - 1;  // This will result in -1, 0, or 1
-	    int x = player.position.temp.x - player.position.tile.x;
-	    if (x != 0)
-	        yoff = x < 0 ? angle : -angle;
-	    int y = player.position.temp.y - player.position.tile.y;
-	    if (y != 0)
-	        xoff = y < 0 ? -angle : angle;
-
-	    Direction originalDirection = player._pdir;
-	
-	    if (!HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-	        AddMissile(player.position.tile, player.position.temp + Displacement { xoff, yoff }, originalDirection, 
-	        MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
+	    int arrows = 0;
+	    int dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+	    if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
+	        arrows = 3;
 	    }
 
-	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-	        // Assuming Direction:: is an enumeration from 0 to 7, the additional arrows are offset by 1 direction clockwise and anticlockwise.
-	        Direction newDirectionClockwise = (Direction)(((int)originalDirection + 1) % 8);
-	        Direction newDirectionAntiClockwise = (Direction)(((int)originalDirection - 1 + 8) % 8); 
+	    for (int arrow = 0; arrow < arrows; arrow++) {
+	        int xoff = 0;
+	        int yoff = 0;
 
-	        AddMissile(player.position.tile, player.position.temp + Displacement { xoff, yoff }, newDirectionClockwise, 
+	        int angle = arrow - 1;  // This will result in -1, 0, or 1
+	        int x = player.position.temp.x - player.position.tile.x;
+	        if (x != 0)
+	            yoff = x < 0 ? angle : -angle;
+	        int y = player.position.temp.y - player.position.tile.y;
+	        if (y != 0)
+	            xoff = y < 0 ? -angle : angle;
+
+	        AddMissile(player.position.tile, player.position.temp + Displacement { xoff, yoff }, player._pdir, 
 	        MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
-	        AddMissile(player.position.tile, player.position.temp + Displacement { xoff, yoff }, newDirectionAntiClockwise, 
-	        MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
+
+	        if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+	            int empowerXoff = xoff;
+	            int empowerYoff = yoff;
+
+    		if (arrow == 0) {
+    		    empowerXoff += 10;
+    		    empowerYoff += 10;
+    		} else if (arrow == 1) {
+    		    empowerXoff -= 10;
+    		    empowerYoff -= 10;
+    		} else {
+    		    empowerXoff += 10;
+    		    empowerYoff -= 10;
+    		}
+
+	            AddMissile(player.position.tile, player.position.temp + Displacement { empowerXoff, empowerYoff }, player._pdir, 
+	            MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
+	        }
+
+	        if (DamageWeapon(player, 40)) {
+	            StartStand(player, player._pdir);
+	            ClearStateVariables(player);
+	            return true;
+	        }
 	    }
 
-	    if (DamageWeapon(player, 40)) {
+	    if (player.AnimInfo.isLastFrame()) {
 	        StartStand(player, player._pdir);
 	        ClearStateVariables(player);
 	        return true;
 	    }
+	    return false;
 	}
-
-
-	if (player.AnimInfo.isLastFrame()) {
-		StartStand(player, player._pdir);
-		ClearStateVariables(player);
-		return true;
-	}
-	return false;
-
-}
 
 	int mind = player._pIMinDam;
 	int maxd = player._pIMaxDam;
