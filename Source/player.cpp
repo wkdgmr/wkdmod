@@ -690,7 +690,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 			MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
 
 			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-				AddMissile(player.position.tile, player.position.temp + Displacement { xoff + 1, yoff + 1 }, player._pdir, 
+				AddMissile(player.position.tile, player.position.temp + Displacement { xoff + 6, yoff + 6 }, player._pdir, 
 				MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
 			}
 
