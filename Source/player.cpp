@@ -687,24 +687,24 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        AddMissile(player.position.tile, player.position.temp + Displacement { xoff, yoff }, player._pdir, 
 	        MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
 
-	        if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-	            int empowerXoff = xoff;
-	            int empowerYoff = yoff;
-
-    		if (arrow == 0) {
-    		    empowerXoff += 10;
-    		    empowerYoff += 10;
-    		} else if (arrow == 1) {
-    		    empowerXoff -= 10;
-    		    empowerYoff -= 10;
-    		} else {
-    		    empowerXoff += 10;
-    		    empowerYoff -= 10;
-    		}
-
-	            AddMissile(player.position.tile, player.position.temp + Displacement { empowerXoff, empowerYoff }, player._pdir, 
-	            MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
-	        }
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+		    int empowerXoff = xoff;
+		    int empowerYoff = yoff;
+		
+		    if (arrow == 0) {
+		        empowerXoff += 10;
+		        empowerYoff += 10;
+		    } else if (arrow == 1) {
+		        empowerXoff -= 10;
+		        empowerYoff -= 20;
+		    } else {
+		        empowerXoff += 20;
+		        empowerYoff -= 10;
+		    }
+		
+		    AddMissile(player.position.tile, player.position.temp + Displacement { empowerXoff, empowerYoff }, player._pdir, 
+		    MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
+		}
 
 	        if (DamageWeapon(player, 40)) {
 	            StartStand(player, player._pdir);
