@@ -1521,10 +1521,7 @@ void AddBigExplosion(Missile &missile, AddMissileParameter & /*parameter*/)
 void AddImmolation(Missile &missile, AddMissileParameter &parameter)
 {
 	Point dst = parameter.dst;
-	if (Players[missile._misource]._pIMisType == 1 
-		&& Players[missile._misource].InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff) {
-		dst += Players[missile._misource]._pdir;
-	} else if (missile.position.start == parameter.dst) {
+	if (missile.position.start == parameter.dst) {
 		dst += parameter.midir;
 	}
 	int sp = 16;
@@ -1533,6 +1530,10 @@ void AddImmolation(Missile &missile, AddMissileParameter &parameter)
 	}
 	UpdateMissileVelocity(missile, dst, sp);
 	SetMissDir(missile, GetDirection16(missile.position.start, dst));
+	if (Players[missile._misource]._pIMisType == 1 
+	&& Players[missile._misource].InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff) {
+		dst += Players[missile._misource]._pdir;
+	}
 	missile._mirange = 256;
 	missile._mlid = AddLight(missile.position.start, 8);
 }

@@ -4077,7 +4077,7 @@ void PrintItemDetails(const Item &item)
 	if (item._iMiscId == IMISC_STAFF) {
 		if (item._iMinDam == item._iMaxDam) {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				if (item._iMaxCharges != 0 || IPL_SPELL) {
+				if (item._iMaxCharges != 0 || item._iSufPower == IPL_SPELL) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) {
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d}")), item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s} Charges: {:d}")), 
@@ -4105,7 +4105,7 @@ void PrintItemDetails(const Item &item)
 					}
 				}
 			} else {
-				if (item._iMaxCharges != 0) {
+				if (item._iMaxCharges != 0 || item._iSufPower == IPL_SPELL) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d}")), item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s} Charges: {:d}")),
@@ -4134,16 +4134,18 @@ void PrintItemDetails(const Item &item)
 			}
 		} else { 		
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				if (item._iMaxCharges != 0) {
+				if (item._iMaxCharges != 0 || item._iSufPower == IPL_SPELL) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges: {:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s} Charges: {:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", 
+						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
 						AddPanelString(fmt::format(fmt::runtime(_("indestructible unique"))));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges:{:d} IND")), (item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s} Charges:{:d} IND")), (item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", 
+						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
@@ -4156,16 +4158,18 @@ void PrintItemDetails(const Item &item)
 					}
 				}
 			} else {
-				if (item._iMaxCharges != 0) {
+				if (item._iMaxCharges != 0 || item._iSufPower == IPL_SPELL) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges: {:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s} Charges: {:d}")), (item._iPLToHit > 0) ? fmt::format("ToHit: {:d}%", item._iPLToHit) : "", 
+						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
 						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d} unique")), item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("Charges: {:d} DUR: {:d}")),item._iCharges, item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges: {:d} DUR: {:d}")),
+						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges, item._iDurability));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 

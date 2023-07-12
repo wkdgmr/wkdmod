@@ -686,8 +686,8 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		        if (y != 0)
 		            xoff = y < 0 ? -angle : angle;
 		    }
-			
-			AddMissile(player.position.tile, player.position.temp, player._pdir, 
+
+			AddMissile(player.position.tile, player.position.temp + Displacement { xoff, yoff }, player._pdir, 
 			MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
 
 			if (DamageWeapon(player, 40)) {
