@@ -4081,24 +4081,22 @@ void PrintItemDetails(const Item &item)
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
 				if (item._iMaxCharges != 0 || item._iSufPower == IPL_SPELL) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) {
-						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d}")), item._iMinDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s} Charges: {:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", 
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d} AC: {:d}")), item._iMinDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s}: {:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", 
 						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
-						AddPanelString(fmt::format(fmt::runtime(_("indestructible unique"))));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
-						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d} AC:{:d} IND")), item._iMinDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s} Charges:{:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", 
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d} AC: {:d} IND")), item._iMinDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s}: {:d}")), 
+						(item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", 
 						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) {
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("indestructible unique"))));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d} AC: {:d}")), item._iMinDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} indestructible")), (item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : ""));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
@@ -4109,27 +4107,25 @@ void PrintItemDetails(const Item &item)
 			} else {
 				if (item._iMaxCharges != 0 || item._iSufPower == IPL_SPELL) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
-						AddPanelString(fmt::format(fmt::runtime(_("{:s}DMG:{:d}AC:{:d}")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges:{:d}DUR:{:d} unique")),
-						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
-						AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} unique")), item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG: {:d} AC: {:d}")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s}:{:d} DUR:{:d}")),
+						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges, item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG: {:d} AC: {:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("DUR:{:d} {:s} Charges:{:d}")), 
-						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iDurability, item._iCharges));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s}:{:d} DUR:{:d}")), 
+						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges, item._iDurability));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} AC:{:d}")), 
-						(item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC, item._iDurability));
-						AddPanelString(fmt::format(fmt::runtime(_("DUR: {:d} unique")), item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d} AC: {:d}")), item._iMinDam, item._iAC, item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DUR: {:d}")), (item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
-						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d} AC:{:d} DUR: {:d}")), item._iMinDam, item._iAC, item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d} AC: {:d} DUR:{:d}")), item._iMinDam, item._iAC, item._iDurability));
 					}
 				}
 			}
@@ -4137,24 +4133,25 @@ void PrintItemDetails(const Item &item)
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
 				if (item._iMaxCharges != 0 || item._iSufPower == IPL_SPELL) {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
-						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d}AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s} Charges:{:d}")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", 
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s}: {:d}")), (item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", 
 						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
+						ShowUniqueItemInfoBox = true;
+						curruitem = item;
+					} else {
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d}AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s}: {:d}")), (item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", 
+						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
+					}
+				} else {
+					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} INDESTRUCTIBLE")), (item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : ""));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}DMG:{:d}-{:d}AC:{:d}")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "",
 						item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges:{:d} IND")), pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
-					}
-				} else {
-					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
-						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} INDESTRUCTIBLE")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : ""));
-						ShowUniqueItemInfoBox = true;
-						curruitem = item;
-					} else {
-						AddPanelString(fmt::format(fmt::runtime(_("{:s}DMG:{:d}-{:d}AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 					}
 				}
 			} else {
@@ -4162,24 +4159,24 @@ void PrintItemDetails(const Item &item)
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}DMG:{:d}-{:d}AC:{:d}")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", 
 						item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges:{:d} DUR:{:d}")),  
+						AddPanelString(fmt::format(fmt::runtime(_("{:s}: {:d} DUR: {:d}")),  
 						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges, item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}DMG:{:d}-{:d}AC:{:d}")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", 
 						item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} Charges:{:d} DUR:{:d}")),
+						AddPanelString(fmt::format(fmt::runtime(_("{:s}: {:d} DUR: {:d}")),
 						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges, item._iDurability));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
-						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s} DUR:{:d}")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s} DUR: {:d}")), (item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
-						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d} AC:{:d} DU:{:d}")), item._iMinDam, item._iMaxDam, item._iAC, item._iDurability));					
+						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d}AC:{:d}DUR:{:d}")), item._iMinDam, item._iMaxDam, item._iAC, item._iDurability));					
 					}
 				}
 			}
