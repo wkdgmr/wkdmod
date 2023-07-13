@@ -681,7 +681,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        int yoff = 0;
 
 	        // Calculate the direction index for the current arrow
-	        int arrowDirectionIndex = (directionIndex + arrow) % 8;
+	        int arrowDirectionIndex = (directionIndex + 1 + arrow) % 8;
 
 	        // Get the direction enum value based on the direction index
 	        Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
