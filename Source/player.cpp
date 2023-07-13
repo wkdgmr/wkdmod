@@ -676,12 +676,21 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	    // Get the index of the player's direction in the directions array
 	    int directionIndex = static_cast<int>(player._pdir);
 
-	    for (int arrow = 0; arrow < arrows; arrow++) {
-	        int xoff = 0;
-	        int yoff = 0;
+	    // Define strafe patterns
+	    std::array<int, 3> strafePattern3 = { -1, 0, 1 }; // Normal strafe pattern
+	    std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 }; // Empower strafe pattern
 
-	        // Calculate the direction index for the current arrow
-	        int arrowDirectionIndex = (directionIndex + 1 + arrow) % 8;
+	    for (int arrow = 0; arrow < arrows; arrow++) {
+	        // Choose the correct strafe pattern based on number of arrows
+	        int arrowDirectionIndex;
+	        if (arrows == 3) {
+	            arrowDirectionIndex = (directionIndex + strafePattern3[arrow]) % 8;
+	        } else if (arrows == 6) {
+	            arrowDirectionIndex = (directionIndex + strafePattern6[arrow]) % 8;
+	        }
+	        if (arrowDirectionIndex < 0) {
+	            arrowDirectionIndex += 8; // Handle negative direction indices
+	        }
 
 	        // Get the direction enum value based on the direction index
 	        Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
@@ -691,7 +700,20 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 
 	        AddMissile(player.position.tile, player.position.tile + displacement, arrowDirection,
 	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
+
+	        if (DamageWeapon(player, 40)) {
+	            StartStand(player, player._pdir);
+	            ClearStateVariables(player);
+	            return true;
+	        }
 	    }
+
+	    if (player.AnimInfo.isLastFrame()) {
+	        StartStand(player, player._pdir);
+	        ClearStateVariables(player);
+	        return true;
+	    }
+	    return false;
 	}
 
 
