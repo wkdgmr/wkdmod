@@ -665,61 +665,35 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage |  ItemSpecialEffect::LightningDamage)) && misswitch == 7) {
 	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
+	
 	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1) {
 	    int arrows = 0;
 	    int dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 	    if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
-	        arrows = 3;
+	        arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) ? 6 : 3;
 	    }
+
+	    // Get the index of the player's direction in the directions array
+	    int directionIndex = static_cast<int>(player._pdir);
 
 	    for (int arrow = 0; arrow < arrows; arrow++) {
 	        int xoff = 0;
 	        int yoff = 0;
 
-	        int angle = arrow - 1;  // This will result in -1, 0, or 1
-	        int x = player.position.temp.x - player.position.tile.x;
-	        if (x != 0)
-	            yoff = x < 0 ? angle : -angle;
-	        int y = player.position.temp.y - player.position.tile.y;
-	        if (y != 0)
-	            xoff = y < 0 ? -angle : angle;
+	        // Calculate the direction index for the current arrow
+	        int arrowDirectionIndex = (directionIndex + arrow) % 8;
 
-	        AddMissile(player.position.tile, player.position.temp + Displacement { xoff, yoff }, player._pdir, 
-	        MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
+	        // Get the direction enum value based on the direction index
+	        Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
 
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-		    int empowerXoff = xoff;
-		    int empowerYoff = yoff;
-		
-		    if (arrow == 0) {
-		        empowerXoff += 10;
-		        empowerYoff += 10;
-		    } else if (arrow == 1) {
-		        empowerXoff -= 10;
-		        empowerYoff -= 20;
-		    } else {
-		        empowerXoff += 20;
-		        empowerYoff -= 10;
-		    }
-		
-		    AddMissile(player.position.tile, player.position.temp + Displacement { empowerXoff, empowerYoff }, player._pdir, 
-		    MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
-		}
+	        // Calculate the displacement based on the arrow direction
+	        Displacement displacement(arrowDirection);
 
-	        if (DamageWeapon(player, 40)) {
-	            StartStand(player, player._pdir);
-	            ClearStateVariables(player);
-	            return true;
-	        }
+	        AddMissile(player.position.tile, player.position.tile + displacement, arrowDirection,
+	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
 	    }
-
-	    if (player.AnimInfo.isLastFrame()) {
-	        StartStand(player, player._pdir);
-	        ClearStateVariables(player);
-	        return true;
-	    }
-	    return false;
 	}
+
 
 	int mind = player._pIMinDam;
 	int maxd = player._pIMaxDam;
