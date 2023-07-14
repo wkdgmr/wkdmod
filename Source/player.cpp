@@ -743,7 +743,6 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        ClearStateVariables(player);
 	        return true;
 	    }
-	    return false;
 	}
 
 	int pFireDam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
