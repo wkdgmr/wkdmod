@@ -2637,7 +2637,8 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 	int minDmg = player._pLevel + 9;
 	int maxDmg = minDmg + player._pLevel + 9;
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
-	if (player._pIMisType == 5) {
+	if (player._pIMisType == 100 || player._pIMisType == 103
+	|| player._pIMisType == 104 || player._pIMisType == 200) {
 		missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
 	}
 }
