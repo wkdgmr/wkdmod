@@ -792,6 +792,21 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	    return false;
 	}
 
+	int pFireDam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+	int pLightningDam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+	int pMagicDam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+
+/* 	int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+	if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
+		pFireDam -= pFireDam / 2;
+		pFireDam -= pFireDam / 2;
+	if ((res & (RESIST_LIGHTNING | IMMUNE_LIGHTNING)) != 0)
+		pLightningDam -= pLightningDam / 2;
+		pLightningDam -= pLightningDam / 2;
+	if ((res & (RESIST_MAGIC | IMMUNE_MAGIC)) != 0)
+		pMagicDam -= pMagicDam /2;
+		pMagicDam -= pMagicDam /2; */
+
 
 
 	int mind = player._pIMinDam;
@@ -855,6 +870,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 
 	if (adjacentDamage)
 		dam >>= 2;
+		pFireDam >>= 2;
+		pLightningDam >>= 2;
+		pMagicDam >>= 2;
 
 	if (&player == MyPlayer) {
 		if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::Peril)) {
@@ -870,6 +888,12 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		}
 #endif
 		ApplyMonsterDamage(DamageType::Physical, monster, dam);
+		if (pFireDam > 0)
+			ApplyMonsterDamage(DamageType::Fire, monster, pFireDam);
+		if (pLightningDam > 0)
+			ApplyMonsterDamage(DamageType::Lightning, monster, pLightningDam);
+		if (pMagicDam > 0)
+			ApplyMonsterDamage(DamageType::Magic, monster, pMagicDam);
 	}
 
 	int skdam = 0;
@@ -1019,14 +1043,18 @@ bool DoAttack(Player &player)
 			}
 		}
 
+		int pFireDam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+		int pLightningDam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+		int pMagicDam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
-		    AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+		    AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), pFireDam, 0);
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
-		    AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+		    AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), pLightningDam, 0);
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
-		    AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+		    AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), pMagicDam, 0);
 		}
 
 		if (monster !=nullptr && !monster->isPlayerMinion() ) {

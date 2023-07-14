@@ -3962,7 +3962,9 @@ bool DoOil(Player &player, int cii)
 	case IPL_SETDUR:
 		return _("altered durability");
 	case IPL_ONEHAND:
-		return _("one handed sword");
+		if (item._iFMaxDam > 0)
+			return _("one handed maul");
+		else return _("one handed great sword");
 	case IPL_DRAINLIFE:
 		return _("constantly lose hit points");
 	case IPL_DRAINMANA:
