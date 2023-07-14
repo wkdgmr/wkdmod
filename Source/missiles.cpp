@@ -2643,7 +2643,11 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	if (player._pIMisType == 100 || player._pIMisType == 103
 	|| player._pIMisType == 104 || player._pIMisType == 200) {
-		missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+		if (player.queuedSpell.spellType != SpellType::Spell 
+        && player.queuedSpell.spellType != SpellType::Scroll
+        && player.queuedSpell.spellType != SpellType::Charges) {
+			missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+		}
 	}
 }
 
