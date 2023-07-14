@@ -730,18 +730,6 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 
 	        AddMissile(player.position.tile, player.position.tile + displacement, arrowDirection,
 	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
-
-	        if (DamageWeapon(player, 40)) {
-	            StartStand(player, player._pdir);
-	            ClearStateVariables(player);
-	            return true;
-	        }
-	    }
-
-	    if (player.AnimInfo.isLastFrame()) {
-	        StartStand(player, player._pdir);
-	        ClearStateVariables(player);
-	        return true;
 	    }
 	}
 
