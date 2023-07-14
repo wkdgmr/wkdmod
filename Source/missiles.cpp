@@ -1938,8 +1938,10 @@ void AddWeaponExplosion(Missile &missile, AddMissileParameter &parameter)
 	missile.var2 = parameter.dst.x;
 	if (parameter.dst.x == 1)
 		SetMissAnim(missile, MissileGraphicID::MagmaBallExplosion);
-	else
+	else if (parameter.dst.x == 2)
 		SetMissAnim(missile, MissileGraphicID::ChargedBolt);
+	else if (parameter.dst.x == 3)
+		SetMissAnim(missile, MissileGraphicID::HolyBoltExplosion);
 	missile._mirange = missile._miAnimLen - 1;
 }
 
@@ -3342,6 +3344,7 @@ void ProcessSpectralArrow(Missile &missile)
 		case 100:
 		case 103:
 		case 104:
+		case 200:
 			mitype = MissileID::HolyBoltBow;
 			break;
 		case 9:
@@ -3432,7 +3435,7 @@ void ProcessSpectralArrow(Missile &missile)
 			AddMissile(player.position.tile, player.position.temp, novadir.first, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
 			AddMissile(player.position.tile, player.position.temp, novadir.second, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
 			dir = OppositeIMisDir(player._pdir);
-			AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
+			AddMissile(player.position.tile, player.position.temp, dir, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
 		}
 	}
 	if (misswitch == 104) {

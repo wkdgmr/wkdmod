@@ -2635,13 +2635,11 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				spllvladd += item._iSplLvlAdd;
 				enac += item._iPLEnAc;
 				fmin += item._iFMinDam;
-				if (HasAnyOf(item._iFlags, ItemSpecialEffect::MagicDamage)) {
-					fmin -= item._iFMinDam;
-					mmin += item._iFMinDam;
-				}
 				fmax += item._iFMaxDam;
 				if (HasAnyOf(item._iFlags, ItemSpecialEffect::MagicDamage)) {
-					fmax -= item._iFMaxDam;
+					mmin += item._iFMinDam;
+				}
+				if (HasAnyOf(item._iFlags, ItemSpecialEffect::MagicDamage)) {
 					mmax += item._iFMaxDam;
 				}
 				lmin += item._iLMinDam;
@@ -2819,6 +2817,8 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	player._pIMMinDam = mmin;
 	player._pIMMaxDam = mmax;
 	player._pIMisType = miscase;
+	player._pIFMinDam = player._pIFMinDam - player._pIMMinDam;
+	player._pIFMaxDam = player._pIFMaxDam - player._pIMMaxDam;
 
 	player._pInfraFlag = false;
 

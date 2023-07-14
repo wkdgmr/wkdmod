@@ -670,6 +670,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 100
 	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 103
 	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 104
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200
 	|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 100
 	|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 103
 	|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 104) {
@@ -681,13 +682,15 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 100
 		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 103
 		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 104
+		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 100
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 103
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 104) {
 			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
 		}
 	    if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
-	        arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) ? 6 : 3;
+	        arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) 
+			|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200 ? 6 : 3;
 	    }
 
 	    // Get the index of the player's direction in the directions array
@@ -736,7 +739,15 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2 || 
 	player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9) {
 	    int arrows = 1;  // default arrow count
-	    int dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+	    int dmg = 0;
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2) {
+			dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9) {
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+		}
 	
 	    if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
 	        arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) ? 3 : 1;
@@ -1013,6 +1024,9 @@ bool DoAttack(Player &player)
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
 		    AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
+		    AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 
 		if (monster !=nullptr && !monster->isPlayerMinion() ) {
