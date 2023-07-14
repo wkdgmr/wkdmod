@@ -667,6 +667,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	}
 	
 	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 5
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9
 	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 100
 	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 103
 	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 104
@@ -679,7 +682,12 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1) {
 			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 		}
-		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 100
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2) {
+			dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+		}
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 5
+		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9
+		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 100
 		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 103
 		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 104
 		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200
@@ -691,6 +699,10 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	    if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
 	        arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) 
 			|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200 ? 6 : 3;
+			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
+			&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200) {
+				dmg = dmg * 2;
+			}
 	    }
 
 	    // Get the index of the player's direction in the directions array
@@ -736,78 +748,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	    return false;
 	}
 
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2 || 
-	player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9) {
-	    int arrows = 1;  // default arrow count
-	    int dmg = 0;
-
-		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2) {
-			dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-		}
-
-		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9) {
-			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
-		}
-	
-	    if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
-	        arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) ? 3 : 1;
-	    }
-
-	    // Get the index of the player's direction in the directions array
-	    int directionIndex = static_cast<int>(player._pdir);
-
-	    // Define strafe pattern
-	    std::array<int, 3> strafePattern = { -1, 0, 1 }; // Normal strafe pattern
-
-	    for (int arrow = 0; arrow < arrows; arrow++) {
-	        // Choose the correct strafe pattern based on number of arrows
-	        int arrowDirectionIndex;
-	        if (arrows == 3) {
-	            arrowDirectionIndex = (directionIndex + strafePattern[arrow]) % 8;
-	        } else {
-	            arrowDirectionIndex = directionIndex;
-	        }
-
-	        // Get the direction enum value based on the direction index
-	        Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
-
-	        // Calculate the displacement based on the arrow direction
-	        Displacement displacement(arrowDirection);
-
-	        AddMissile(player.position.tile, player.position.tile + displacement, arrowDirection,
-	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
-
-	        if (DamageWeapon(player, 40)) {
-	            StartStand(player, player._pdir);
-	            ClearStateVariables(player);
-	            return true;
-	        }
-	    }
-
-	    if (player.AnimInfo.isLastFrame()) {
-	        StartStand(player, player._pdir);
-	        ClearStateVariables(player);
-	        return true;
-	    }
-	    return false;
-	}
-
 	int pFireDam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 	int pLightningDam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 	int pMagicDam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
-
-/* 	int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-	if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
-		pFireDam -= pFireDam / 2;
-		pFireDam -= pFireDam / 2;
-	if ((res & (RESIST_LIGHTNING | IMMUNE_LIGHTNING)) != 0)
-		pLightningDam -= pLightningDam / 2;
-		pLightningDam -= pLightningDam / 2;
-	if ((res & (RESIST_MAGIC | IMMUNE_MAGIC)) != 0)
-		pMagicDam -= pMagicDam /2;
-		pMagicDam -= pMagicDam /2; */
-
-
 
 	int mind = player._pIMinDam;
 	int maxd = player._pIMaxDam;
@@ -1043,17 +986,16 @@ bool DoAttack(Player &player)
 			}
 		}
 
-		int pFireDam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-		int pLightningDam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-		int pMagicDam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
-
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
+			int pFireDam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 		    AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), pFireDam, 0);
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
+			int pLightningDam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 		    AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), pLightningDam, 0);
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
+			int pMagicDam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
 		    AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), pMagicDam, 0);
 		}
 
@@ -1095,7 +1037,7 @@ bool DoAttack(Player &player)
 			|| (player._pClass == HeroClass::Sorcerer
 				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
 				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-			|| (player.plrlevel == 40 && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow)
+				|| player.plrlevel == 40 && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow
 			|| (player._pClass == HeroClass::Barbarian
 				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
 				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
@@ -1113,7 +1055,8 @@ bool DoAttack(Player &player)
 							&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
 							|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
 							&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-		                		&& !(player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield))))	
+		                		&& !(player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)
+			|| player.plrlevel >= 40 && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow)))	
 		{	
 			// playing as a class/weapon with cleave
 			position = player.position.tile + Right(player._pdir);
@@ -1206,6 +1149,10 @@ bool DoRangeAttack(Player &player)
 			mistype = MissileID::SpectralArrow;
 		}
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 100) {
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+			mistype = MissileID::SpectralArrow;
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 5) {
 			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
 			mistype = MissileID::SpectralArrow;
 		}
