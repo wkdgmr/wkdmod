@@ -789,6 +789,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	}
 
 	dam <<= 6;
+	pFireDam <<= 6;
+	pLightningDam <<= 6;
+	pMagicDam <<= 6;
 	if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::Jesters)) {
 		int r = GenerateRnd(201);
 		if (r >= 100)
