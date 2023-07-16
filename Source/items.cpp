@@ -3789,16 +3789,32 @@ bool DoOil(Player &player, int cii)
 {
 	switch (plidx) {
 	case IPL_TOHIT:
-		return fmt::format(fmt::runtime(_("+tohit%")));
+		if (item._iMagical == ITEM_QUALITY_UNIQUE
+		|| item._iMiscId == IMISC_RING
+		|| item._iMiscId == IMISC_AMULET)
+			return fmt::format(fmt::runtime(_("chance to hit: {:+d}%")), item._iPLToHit);
+		else return fmt::format(fmt::runtime(_("+tohit%")));
 	case IPL_TOHIT_CURSE:
-		return fmt::format(fmt::runtime(_("-tohit%")));
+		if (item._iMagical == ITEM_QUALITY_UNIQUE
+		|| item._iMiscId == IMISC_RING
+		|| item._iMiscId == IMISC_AMULET)
+			return fmt::format(fmt::runtime(_("chance to hit: {:+d}%")), item._iPLToHit);
+		else return fmt::format(fmt::runtime(_("-tohit%")));
 	case IPL_DAMP:
 	case IPL_DAMP_CURSE:
 		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "{:+d}% damage")), item._iPLDam);
 	case IPL_TOHIT_DAMP:
-		return fmt::format(fmt::runtime(_("+tohit%, {:+d}% damage")), item._iPLDam);
+		if (item._iMagical == ITEM_QUALITY_UNIQUE
+		|| item._iMiscId == IMISC_RING
+		|| item._iMiscId == IMISC_AMULET)
+			return fmt::format(fmt::runtime(_("to hit: {:+d}%, {:+d}% damage")), item._iPLToHit, item._iPLDam);
+		else return fmt::format(fmt::runtime(_("+tohit%, {:+d}% damage")), item._iPLDam);
 	case IPL_TOHIT_DAMP_CURSE:
-		return fmt::format(fmt::runtime(_("-tohit%, {:+d}% damage")), item._iPLDam);
+		if (item._iMagical == ITEM_QUALITY_UNIQUE
+		|| item._iMiscId == IMISC_RING
+		|| item._iMiscId == IMISC_AMULET)
+			return fmt::format(fmt::runtime(_("to hit: {:+d}%, {:+d}% damage")), item._iPLToHit, item._iPLDam);
+		else return fmt::format(fmt::runtime(_("-tohit%, {:+d}% damage")), item._iPLDam);
 	case IPL_ACP:
 	case IPL_ACP_CURSE:
 		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "{:+d}% armor")), item._iPLAC);
@@ -4065,18 +4081,18 @@ void PrintItemDetails(const Item &item)
 	if (item._iClass == ICLASS_WEAPON && item._itype != ItemType::Staff) {
 		if (item._iMinDam == item._iMaxDam) {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} IND")), 
-				(item._iPLToHit > 0) ? fmt::format("TH:+{:d}", item._iPLToHit) : "", item._iMinDam));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG: {:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", item._iMinDam));
 			} else {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d} DUR:{:d}")), 
-				(item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iMinDam, item._iDurability));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG: {:d} DUR: {:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", item._iMinDam, item._iDurability));
 			}
 		} else {
 			if (item._iMaxDur == DUR_INDESTRUCTIBLE) {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} IND")), 
-				(item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam));
+				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG: {:d}-{:d}")), 
+				(item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam));
 			} else {
-				AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG:{:d}-{:d} DUR:{:d}")), 
+				AddPanelString(fmt::format(fmt::runtime(_("{:s}DMG:{:d}-{:d}DUR:{:d}")), 
 				(item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iMinDam, item._iMaxDam, item._iDurability));
 			}
 
