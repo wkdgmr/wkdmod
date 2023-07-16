@@ -4111,14 +4111,14 @@ void PrintItemDetails(const Item &item)
 						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d} AC: {:d}")), item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s}: {:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", 
-						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
+						GetSpellData(item._iSpell).sNameText, item._iCharges));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d} AC: {:d} IND")), item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s}: {:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", 
-						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
+						GetSpellData(item._iSpell).sNameText, item._iCharges));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) {
@@ -4136,14 +4136,14 @@ void PrintItemDetails(const Item &item)
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG: {:d} AC: {:d}")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}:{:d} DUR:{:d}")),
-						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges, item._iDurability));
+						GetSpellData(item._iSpell).sNameText, item._iCharges, item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} DMG: {:d} AC: {:d}")), 
 						(item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", item._iMinDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}:{:d} DUR:{:d}")), 
-						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges, item._iDurability));
+						GetSpellData(item._iSpell).sNameText, item._iCharges, item._iDurability));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
@@ -4162,13 +4162,13 @@ void PrintItemDetails(const Item &item)
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
 						AddPanelString(fmt::format(fmt::runtime(_("DMG: {:d}-{:d} AC: {:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s}: {:d}")), (item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", 
-						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
+						GetSpellData(item._iSpell).sNameText, item._iCharges));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("DMG:{:d}-{:d}AC:{:d}")), item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s} {:s}: {:d}")), (item._iPLToHit > 0) ? fmt::format("HIT: {:d}%", item._iPLToHit) : "", 
-						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges));
+						GetSpellData(item._iSpell).sNameText, item._iCharges));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
@@ -4187,14 +4187,13 @@ void PrintItemDetails(const Item &item)
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}DMG:{:d}-{:d}AC:{:d}")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", 
 						item._iMinDam, item._iMaxDam, item._iAC));
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}: {:d} DUR: {:d}")),  
-						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges, item._iDurability));
+						GetSpellData(item._iSpell).sNameText, item._iCharges, item._iDurability));
 						ShowUniqueItemInfoBox = true;
 						curruitem = item;
 					} else {
 						AddPanelString(fmt::format(fmt::runtime(_("{:s}DMG:{:d}-{:d}AC:{:d}")), (item._iPLToHit > 0) ? fmt::format("HIT:{:d}%", item._iPLToHit) : "", 
 						item._iMinDam, item._iMaxDam, item._iAC));
-						AddPanelString(fmt::format(fmt::runtime(_("{:s}: {:d} DUR: {:d}")),
-						pgettext("spell", GetSpellData(item._iSpell).sNameText), item._iCharges, item._iDurability));
+						AddPanelString(fmt::format(fmt::runtime(_("{:s}: {:d} DUR: {:d}")), GetSpellData(item._iSpell).sNameText, item._iCharges, item._iDurability));
 					}
 				} else {
 					if (item._iMagical == ITEM_QUALITY_UNIQUE) { 
