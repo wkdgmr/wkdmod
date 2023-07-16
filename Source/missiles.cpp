@@ -2275,8 +2275,6 @@ void AddStoneCurse(Missile &missile, AddMissileParameter &parameter)
 	missile.var2 = monsterId;
 	monster.petrify();
 
-	Player &player = Players[missile._misource];
-
 	// And set up the missile to unpetrify it in the future
 	missile.position.tile = *targetMonsterPosition;
 	missile.position.start = missile.position.tile;
@@ -2419,8 +2417,6 @@ void AddFireWallControl(Missile &missile, AddMissileParameter &parameter)
 
 void AddInfravision(Missile &missile, AddMissileParameter & /*parameter*/)
 {
-	Player &player = Players[missile._misource];
-
 	missile._mirange = ScaleSpellEffect(1584, missile._mispllvl);
 }
 
