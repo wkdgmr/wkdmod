@@ -677,6 +677,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 104) {
 	    int arrows = 0;
 	    int dmg = 0; 
+		int var3 = 0;
 		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1) {
 			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 		}
@@ -692,10 +693,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 100
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 103
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 104) {
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
-			&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200)
-				dmg = 2 * (player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam));
-			else dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+			if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9)
+				var3 = 1;
 		}
 	    if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
 	        arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) 
@@ -728,7 +728,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        Displacement displacement(arrowDirection);
 
 	        AddMissile(player.position.tile, player.position.tile + displacement, arrowDirection,
-	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, 0);
+	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, var3);
+			if (misswitch == 5 && arrow == 0)
+				PlaySfxLoc(IS_FBALLBOW, player.position.tile);
 	    }
 	}
 
@@ -1117,6 +1119,7 @@ bool DoRangeAttack(Player &player)
 	    }
 
 		int dmg = 4;
+		int var3 = 0;
 		MissileID mistype = MissileID::Arrow;
 		int misswitch = player._pIMisType;
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireArrows) && misswitch != 1) {
@@ -1143,6 +1146,7 @@ bool DoRangeAttack(Player &player)
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 9) {
 			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+			var3 = 1;
 			mistype = MissileID::SpectralArrow;
 		}
 
@@ -1155,7 +1159,7 @@ bool DoRangeAttack(Player &player)
 		TARGET_MONSTERS,
 		player.getId(),
 		dmg,
-		0);
+		var3);
 		
 
     	if (mistype != MissileID::SpectralArrow) {
@@ -1164,7 +1168,10 @@ bool DoRangeAttack(Player &player)
     	    } else if (arrow == 1) {
     	        PlaySfxLoc(IS_STING1, player.position.tile);
     	    }
-    	}
+    	} else if (mistype == MissileID::SpectralArrow && misswitch == 5 && arrow == 0) {
+			PlaySfxLoc(IS_FBALLBOW, player.position.tile);			
+		}
+
 
 		if (DamageWeapon(player, 40)) {
 			StartStand(player, player._pdir);

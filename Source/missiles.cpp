@@ -3420,7 +3420,7 @@ void ProcessSpectralArrow(Missile &missile)
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			mitype = MissileID::ChargedBoltBow;
 		}
-		if (mitype == MissileID::ChargedBoltBow && !HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+		if (mitype == MissileID::ChargedBoltBow) {
 			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 			std::pair<Direction, Direction> novadir = NextIMisDir(player._pdir);
 			AddMissile(player.position.tile, player.position.temp, novadir.first, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
@@ -3428,42 +3428,19 @@ void ProcessSpectralArrow(Missile &missile)
 			dir = OppositeIMisDir(player._pdir);
 			AddMissile(player.position.tile, player.position.temp, dir, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
 		}
-		if (mitype == MissileID::ChargedBoltBow && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-			std::pair<Direction, Direction> novadir = NextIMisDir(player._pdir);
-			AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-			AddMissile(player.position.tile, player.position.temp, novadir.first, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-			AddMissile(player.position.tile, player.position.temp, novadir.second, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-			dir = OppositeIMisDir(player._pdir);
-			std::pair<Direction, Direction> novadir2 = NextIMisDir(dir);
-			AddMissile(player.position.tile, player.position.temp, dir, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-			AddMissile(player.position.tile, player.position.temp, novadir2.first, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-			AddMissile(player.position.tile, player.position.temp, novadir2.second, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-		}
+
 	}
 	if (misswitch == 104) {
 		if (mitype == MissileID::HolyBoltBow) {
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			mitype = MissileID::InfernoControl;
 		}
-		if (mitype == MissileID::InfernoControl && !HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+		if (mitype == MissileID::InfernoControl) {
 			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 			std::pair<Direction, Direction> infernodir = NextIMisDir(player._pdir);
 			AddMissile(missile.position.tile, missile.position.start, player._pdir, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, infernodir.first, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, infernodir.second, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
-		}
-		if (mitype == MissileID::InfernoControl && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-			std::pair<Direction, Direction> infernodir = NextIMisDir(player._pdir);
-			AddMissile(missile.position.tile, missile.position.start, player._pdir, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
-			AddMissile(missile.position.tile, missile.position.start, infernodir.first, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
-			AddMissile(missile.position.tile, missile.position.start, infernodir.second, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
-			dir = OppositeIMisDir(player._pdir);
-			std::pair<Direction, Direction> infernodir2 = NextIMisDir(dir);
-			AddMissile(missile.position.tile, missile.position.start, dir, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
-			AddMissile(missile.position.tile, missile.position.start, infernodir2.first, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
-			AddMissile(missile.position.tile, missile.position.start, infernodir2.second, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
 		}
 	}
 	missile._mirange--;
