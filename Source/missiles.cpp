@@ -1392,30 +1392,12 @@ void AddStealMana(Missile &missile, AddMissileParameter & /*parameter*/)
 
 void AddSpectralArrow(Missile &missile, AddMissileParameter &parameter)
 {
-	int av = 0;
-
-	if (missile.sourceType() == MissileSource::Player) {
+	if (missile.sourceType() == MissileSource::Player)
 		const Player &player = *missile.sourcePlayer();
-
-		if (player._pClass == HeroClass::Rogue)
-			av += (player._pLevel - 1) / 4;
-		else if (player._pClass == HeroClass::Warrior || player._pClass == HeroClass::Bard)
-			av += (player._pLevel - 1) / 8;
-
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack))
-			av++;
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack))
-			av += 2;
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FasterAttack))
-			av += 4;
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack))
-			av += 8;
-	}
 
 	missile._mirange = 1;
 	missile.var1 = parameter.dst.x;
 	missile.var2 = parameter.dst.y;
-	missile.var3 = av;
 }
 
 void AddWarp(Missile &missile, AddMissileParameter & /*parameter*/)
@@ -4078,6 +4060,15 @@ void ProcessInferno(Missile &missile)
 
 void ProcessInfernoControl(Missile &missile)
 {
+	if (Players[missile._misource]._pIMisType == 4 || Players[missile._misource]._pIMisType == 7
+	|| Players[missile._misource]._pIMisType == 8 || Players[missile._misource]._pIMisType == 104) {
+		if (Players[missile._misource].queuedSpell.spellType != SpellType::Spell 
+	    && Players[missile._misource].queuedSpell.spellType != SpellType::Scroll
+	    && Players[missile._misource].queuedSpell.spellType != SpellType::Charges) {
+			missile.var3 = (Players[missile._misource]._pIFMinDam 
+			+ GenerateRnd(Players[missile._misource]._pIFMaxDam - Players[missile._misource]._pIFMinDam));
+		}
+	}
 	missile._mirange--;
 	missile.position.traveled += missile.position.velocity;
 	UpdateMissilePos(missile);
