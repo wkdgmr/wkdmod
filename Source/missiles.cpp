@@ -2178,6 +2178,13 @@ void AddGenericMagicMissile(Missile &missile, AddMissileParameter &parameter)
         	int minDmg = (ScaleSpellEffect(dmgBase, missile._mispllvl)) / 2;
         	int maxDmg = (ScaleSpellEffect(dmgBase + 36, missile._mispllvl)) / 2;
         	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+			if (player._pIMisType == 5) {
+				if (player.queuedSpell.spellType != SpellType::Spell 
+    		    && player.queuedSpell.spellType != SpellType::Scroll
+    		    && player.queuedSpell.spellType != SpellType::Charges) {
+					missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+				}
+			}
         	break;
 		}
 		case MissileSource::Monster:
@@ -2187,10 +2194,6 @@ void AddGenericMagicMissile(Missile &missile, AddMissileParameter &parameter)
 			missile._midam = ProjectileTrapDamage(missile);
 			break;
 		}
-	}
-	if (Players[missile._misource]._pIMisType == 5) {
-		missile._midam = Players[missile._misource]._pIMMinDam 
-		+ GenerateRnd(Players[missile._misource]._pIMMaxDam - Players[missile._misource]._pIMMinDam);
 	}
 }
 
@@ -2668,6 +2671,13 @@ void AddBoneSpirit(Missile &missile, AddMissileParameter &parameter)
 
 	UpdateMissileVelocity(missile, dst, 16);
 	SetMissDir(missile, GetDirection(missile.position.start, dst));
+	if (Players[missile._misource]._pIMisType == 9
+	&& Players[missile._misource].InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff) {
+		if (player.queuedSpell.spellType != SpellType::Spell 
+        	&& player.queuedSpell.spellType != SpellType::Scroll
+        	&& player.queuedSpell.spellType != SpellType::Charges)
+				dst += Players[missile._misource]._pdir;
+	}
 	missile._mirange = 256;
 	missile.var1 = missile.position.start.x;
 	missile.var2 = missile.position.start.y;
@@ -4232,9 +4242,12 @@ void ProcessBoneSpirit(Missile &missile)
 	int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) / 2);
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	if (player._pIMisType == 9) {
-		minDmg = player._pIMMinDam;
-		maxDmg = player._pIMMaxDam;
-		missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+		if (player.queuedSpell.spellType != SpellType::Spell 
+        && player.queuedSpell.spellType != SpellType::Scroll
+        && player.queuedSpell.spellType != SpellType::Charges)
+			minDmg = player._pIMMinDam;
+			maxDmg = player._pIMMaxDam;
+			missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	}
 	if (missile._mimfnum == 8) {
 		ChangeLight(missile._mlid, missile.position.tile, missile._miAnimFrame);
@@ -4245,9 +4258,12 @@ void ProcessBoneSpirit(Missile &missile)
 		PutMissile(missile);
 	} else {
 		if (player._pIMisType == 9) {
-			minDmg = player._pIMMinDam;
-			maxDmg = player._pIMMaxDam;
-			missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+			if (player.queuedSpell.spellType != SpellType::Spell 
+    	    && player.queuedSpell.spellType != SpellType::Scroll
+    	    && player.queuedSpell.spellType != SpellType::Charges)
+				minDmg = player._pIMMinDam;
+				maxDmg = player._pIMMaxDam;
+				missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 		}
 		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);
 		Point c = missile.position.tile;
