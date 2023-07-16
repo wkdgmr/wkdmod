@@ -692,15 +692,14 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 100
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 103
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 104) {
-			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
+			&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200)
+				dmg = 2 * (player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam));
+			else dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
 		}
 	    if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
 	        arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) 
 			|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200 ? 6 : 3;
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
-			&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200) {
-				dmg = dmg * 2;
-			}
 	    }
 
 	    // Get the index of the player's direction in the directions array
