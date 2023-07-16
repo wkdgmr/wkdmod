@@ -3376,12 +3376,10 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 	int uper = monster.isUnique() ? 15 : 1;
 
 	int8_t mLevel = monster.data().level;
-	if (!gbIsHellfire && monster.type().type == MT_DIABLO)
-		mLevel -= 15;
 
 	switch (sgGameInitInfo.nDifficulty) {
 	case DIFF_NIGHTMARE:
-		mLevel += 8;
+		mLevel += 9;
 		break;
 	case DIFF_HELL:
 		mLevel += 16;
