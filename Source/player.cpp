@@ -2020,8 +2020,11 @@ bool Player::isWalking() const
 
 int Player::GetManaShieldDamageReduction()
 {
-	constexpr uint8_t Max = 7;
-	return 24 - std::min(_pSplLvl[static_cast<int8_t>(SpellID::ManaShield)], Max) * 3;
+	if (_pSplLvl[static_cast<int8_t>(SpellID::ManaShield)] <= 15) {
+		return _pSplLvl[static_cast<int8_t>(SpellID::ManaShield)] * 25 / 15;
+	} else {
+		return 25 + std::min(_pSplLvl[static_cast<int8_t>(SpellID::ManaShield)] - 15, 12);
+	}
 }
 
 void Player::RestorePartialLife()
@@ -3062,20 +3065,21 @@ void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*
 	}
 	if (totalDamage > 0 && player.pManaShield) {
 		uint8_t manaShieldLevel = player._pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
-		if (manaShieldLevel > 0) {
-			totalDamage += totalDamage / -player.GetManaShieldDamageReduction();
+		int damageAfterReduction = totalDamage * player.GetManaShieldDamageReduction() / 100;
+		int damageRedirectedToMana = 0;
+		if (manaShieldLevel <= 15) {
+			damageRedirectedToMana = damageAfterReduction * manaShieldLevel / 20; // up to 75% at level 15
+		} else {
+			damageRedirectedToMana = damageAfterReduction * (75 + std::min(manaShieldLevel - 15, 12)) / 100; // additional 1% per level, capped at 87%
 		}
+		totalDamage = damageAfterReduction - damageRedirectedToMana;
 		if (&player == MyPlayer)
 			RedrawComponent(PanelDrawComponent::Mana);
-		if (player._pMana >= totalDamage) {
-			player._pMana -= totalDamage;
-			player._pManaBase -= totalDamage;
-			totalDamage = 0;
+		if (player._pMana >= damageRedirectedToMana) {
+			player._pMana -= damageRedirectedToMana;
+			player._pManaBase -= damageRedirectedToMana;
 		} else {
-			totalDamage -= player._pMana;
-			if (manaShieldLevel > 0) {
-				totalDamage += totalDamage / (player.GetManaShieldDamageReduction() - 1);
-			}
+			totalDamage += player._pMana;
 			player._pMana = 0;
 			player._pManaBase = player._pMaxManaBase - player._pMaxMana;
 			if (&player == MyPlayer)
