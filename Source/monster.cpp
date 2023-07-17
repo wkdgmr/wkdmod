@@ -790,6 +790,8 @@ void HolyFireDamage(Player &player, Monster &monster) {
 				mdam -= mdam / 2;
 			mdam = mdam << 6;
 			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
+			AddMissile(monster.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			PlaySfxLoc(LS_WALLLOOP, monster.position.tile);
 			if (monster.hitPoints >> 6 <= 0)
 				M_StartKill(monster, player);
 			else

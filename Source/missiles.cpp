@@ -1924,6 +1924,8 @@ void AddWeaponExplosion(Missile &missile, AddMissileParameter &parameter)
 		SetMissAnim(missile, MissileGraphicID::ChargedBolt);
 	else if (parameter.dst.x == 3)
 		SetMissAnim(missile, MissileGraphicID::HolyBoltExplosion);
+	else if (parameter.dst.x == 4)
+		SetMissAnim(missile, MissileGraphicID::BigExplosion);
 	missile._mirange = missile._miAnimLen - 1;
 }
 
