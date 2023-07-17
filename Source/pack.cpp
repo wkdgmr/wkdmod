@@ -125,11 +125,20 @@ bool IsUniqueMonsterItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
 
 	for (int i = 0; UniqueMonstersData[i].mName != nullptr; i++) {
 		const auto &uniqueMonsterData = UniqueMonstersData[i];
-		const auto &uniqueMonsterLevel = static_cast<uint8_t>(MonstersData[uniqueMonsterData.mtype].level);
+		uint8_t uniqueMonsterLevel = MonstersData[uniqueMonsterData.mtype].level;
 
 		if (!isHellfireItem && IsAnyOf(uniqueMonsterData.mtype, MT_HORKDMN, MT_DEFILER, MT_NAKRUL)) {
 			// These monsters don't appear in Diablo
 			continue;
+		}
+
+		switch (sgGameInitInfo.nDifficulty) {
+			case DIFF_NIGHTMARE:
+				uniqueMonsterLevel += 9;
+				break;
+			case DIFF_HELL:
+				uniqueMonsterLevel += 16;
+				break;
 		}
 
 		if (level == uniqueMonsterLevel) {
@@ -149,12 +158,17 @@ bool IsDungeonItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
 		const auto &monsterData = MonstersData[i];
 		auto monsterLevel = static_cast<uint8_t>(monsterData.level);
 
-		if (i != MT_DIABLO && monsterData.availability == MonsterAvailability::Never) {
+		if (monsterData.availability == MonsterAvailability::Never) {
 			continue;
 		}
 
-		if (i == MT_DIABLO && !isHellfireItem) {
-			monsterLevel -= 15;
+		switch (sgGameInitInfo.nDifficulty) {
+			case DIFF_NIGHTMARE:
+				monsterLevel += 9;
+				break;
+			case DIFF_HELL:
+				monsterLevel += 16;
+				break;
 		}
 
 		if (level == monsterLevel) {
