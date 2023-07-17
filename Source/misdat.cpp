@@ -55,7 +55,7 @@ const MissileData MissilesData[] = {
 /*ThinLightningControl*/ { &AddLightningControl,    &ProcessLightningControl,     SFX_NONE,    SFX_NONE,    MissileGraphicID::ThinLightning,        Lightning | Invisible, MissileMovementDistribution::Disabled    },
 /*ThinLightning*/        { &AddLightning,           &ProcessLightning,            SFX_NONE,    SFX_NONE,    MissileGraphicID::ThinLightning,        Lightning,             MissileMovementDistribution::Disabled    },
 /*BloodStar*/            { &AddGenericMagicMissile, &ProcessGenericProjectile,    SFX_NONE,    SFX_NONE,    MissileGraphicID::BloodStar,            Magic,                 MissileMovementDistribution::Blockable   },
-/*BloodStarExplosion*/   { &AddMissileExplosion,    &ProcessMissileExplosion,     SFX_NONE,    SFX_NONE,    MissileGraphicID::BloodStarExplosion,   Magic,                 MissileMovementDistribution::Disabled    },
+/*BloodStarExplosion*/   { &AddMissileExplosion,    &ProcessMissileExplosion,     SFX_NONE,    LS_ELECIMP1, MissileGraphicID::BloodStarExplosion,   Magic,                 MissileMovementDistribution::Disabled    },
 /*Teleport*/             { &AddTeleport,            &ProcessTeleport,             LS_ELEMENTL, SFX_NONE,    MissileGraphicID::None,                 Physical | Invisible,  MissileMovementDistribution::Disabled    },
 /*FireArrow*/            { &AddElementalArrow,      &ProcessElementalArrow,       SFX_NONE,    SFX_NONE,    MissileGraphicID::FireArrow,            Fire | Arrow,          MissileMovementDistribution::Blockable   },
 /*DoomSerpents*/         { nullptr,                 nullptr,                      LS_DSERP,    SFX_NONE,    MissileGraphicID::DoomSerpents,         Magic | Invisible,     MissileMovementDistribution::Disabled    },
