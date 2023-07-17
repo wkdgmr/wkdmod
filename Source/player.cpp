@@ -2023,10 +2023,13 @@ bool Player::isWalking() const
 
 int Player::GetManaShieldDamageReduction()
 {
-	if (_pSplLvl[static_cast<int8_t>(SpellID::ManaShield)] <= 15) {
-		return _pSplLvl[static_cast<int8_t>(SpellID::ManaShield)] * 25 / 15;
+	uint8_t manaShieldLevel = _pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
+	if (manaShieldLevel <= 15) {
+		// Starting at 20% and increasing to 35% from level 1 to 15
+		return 20 + (manaShieldLevel - 1) * (35 - 20) / 14;
 	} else {
-		return 25 + std::min(_pSplLvl[static_cast<int8_t>(SpellID::ManaShield)] - 15, 12);
+		// Starting at 36% and increasing by 2% per level to 50% from level 16
+		return 35 + std::min((manaShieldLevel - 15) * 2, 15);
 	}
 }
 
@@ -3071,9 +3074,9 @@ void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*
 		int damageAfterReduction = totalDamage * player.GetManaShieldDamageReduction() / 100;
 		int damageRedirectedToMana = 0;
 		if (manaShieldLevel <= 15) {
-			damageRedirectedToMana = damageAfterReduction * manaShieldLevel / 20; // up to 75% at level 15
+			damageRedirectedToMana = damageAfterReduction * (30 + (manaShieldLevel - 1) * (75 - 30) / 14) / 100; // up to 75% at level 15
 		} else {
-			damageRedirectedToMana = damageAfterReduction * (75 + std::min(manaShieldLevel - 15, 12)) / 100; // additional 1% per level, capped at 87%
+			damageRedirectedToMana = damageAfterReduction * (75 + std::min((manaShieldLevel - 15) * 2, 30)) / 100; // additional 2% per level, capped at 90%
 		}
 		totalDamage = damageAfterReduction - damageRedirectedToMana;
 		if (&player == MyPlayer)
