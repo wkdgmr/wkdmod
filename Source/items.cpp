@@ -4459,12 +4459,8 @@ void SpawnSmith(int lvl)
 {
 	constexpr int PinnedItemCount = 0;
 
-	int maxValue = 140000;
-	int maxItems = 20;
-	if (gbIsHellfire) {
-		maxValue = 200000;
-		maxItems = 25;
-	}
+	int maxValue = 300000;
+	int maxItems = 25;
 
 	int iCnt = GenerateRnd(maxItems - 10) + 10;
 	for (int i = 0; i < iCnt; i++) {
