@@ -4807,7 +4807,7 @@ bool Monster::isWalking() const
 
 bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 {
-	Player &myPlayer = *MyPlayer;
+	const Player &myPlayer = *MyPlayer;
 	if ((missileType == MissileID::FireArrow)
 	|| (missileType == MissileID::WeaponExplosion)
 	|| (missileType == MissileID::FireballBow && myPlayer._pIMisType == 1)
@@ -4817,6 +4817,8 @@ bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 	|| (missileType == MissileID::Firebolt)
 	|| (missileType == MissileID::Inferno)
 	|| (missileType == MissileID::ChargedBolt)
+	|| (missileType == MissileID::FlashBottom)
+	|| (missileType == MissileID::FlashTop)
 	|| (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
 		return false;
 	} else {
@@ -4832,7 +4834,7 @@ bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 
 bool Monster::isResistant(MissileID missileType, DamageType missileElement) const
 {
-	Player &myPlayer = *MyPlayer;
+	const Player &myPlayer = *MyPlayer;
 	if ((missileType == MissileID::FireArrow)
 	|| (missileType == MissileID::WeaponExplosion)
 	|| (missileType == MissileID::FireballBow && myPlayer._pIMisType == 1)
@@ -4842,6 +4844,8 @@ bool Monster::isResistant(MissileID missileType, DamageType missileElement) cons
 	|| (missileType == MissileID::Firebolt)
 	|| (missileType == MissileID::Inferno)
 	|| (missileType == MissileID::ChargedBolt)
+	|| (missileType == MissileID::FlashBottom)
+	|| (missileType == MissileID::FlashTop)
 	|| (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
 		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
 		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)

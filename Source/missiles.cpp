@@ -790,10 +790,11 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*maxd = 2 + myPlayer._pLevel;
 		break;
 	case SpellID::Flash:
-		*mind = ScaleSpellEffect(myPlayer._pLevel, sl);
-		*mind += *mind / 2;
-		*maxd = *mind * 2;
-		break;
+	    int base = ((myPlayer._pLevel * 3) + (myPlayer._pMagic / 2) + 4);
+	    *mind = ScaleSpellEffect(base, sl) / 2;
+	    *mind += *mind / 2;
+	    *maxd = *mind * 2;
+	    break;
 	case SpellID::Identify:
 	case SpellID::TownPortal:
 	case SpellID::StoneCurse:
@@ -1983,38 +1984,38 @@ void AddTownPortal(Missile &missile, AddMissileParameter &parameter)
 
 void AddFlashBottom(Missile &missile, AddMissileParameter & /*parameter*/)
 {
-	switch (missile.sourceType()) {
-	case MissileSource::Player: {
-		Player &player = *missile.sourcePlayer();
-		int dmg = GenerateRndSum(20, player._pLevel + 1) + player._pLevel + 1;
-		missile._midam = ScaleSpellEffect(dmg, missile._mispllvl);
-		missile._midam += missile._midam / 2;
-	} break;
-	case MissileSource::Monster:
-		missile._midam = missile.sourceMonster()->level(sgGameInitInfo.nDifficulty) * 2;
-		break;
-	case MissileSource::Trap:
-		missile._midam = currlevel / 2;
-		break;
-	}
+    switch (missile.sourceType()) {
+    case MissileSource::Player: {
+        Player &player = *missile.sourcePlayer();
+        int base = ((player._pLevel * 3) + (player._pMagic / 2) + 4);
+        missile._midam = ScaleSpellEffect(base, missile._mispllvl) / 2;
+        missile._midam += missile._midam / 2;
+    } break;
+    case MissileSource::Monster:
+        missile._midam = missile.sourceMonster()->level(sgGameInitInfo.nDifficulty) * 2;
+        break;
+    case MissileSource::Trap:
+        missile._midam = currlevel / 2;
+        break;
+    }
 
-	missile._mirange = 19;
+    missile._mirange = 19;
 }
 
 void AddFlashTop(Missile &missile, AddMissileParameter & /*parameter*/)
 {
-	if (missile._micaster == TARGET_MONSTERS) {
-		if (!missile.IsTrap()) {
-			int dmg = Players[missile._misource]._pLevel + 1;
-			dmg += GenerateRndSum(20, dmg);
-			missile._midam = ScaleSpellEffect(dmg, missile._mispllvl);
-			missile._midam += missile._midam / 2;
-		} else {
-			missile._midam = currlevel / 2;
-		}
-	}
-	missile._miPreFlag = true;
-	missile._mirange = 19;
+    if (missile._micaster == TARGET_MONSTERS) {
+        if (!missile.IsTrap()) {
+            Player &player = Players[missile._misource];
+            int base = ((player._pLevel * 3) + (player._pMagic / 2) + 4);
+            missile._midam = ScaleSpellEffect(base, missile._mispllvl) / 2;
+            missile._midam += missile._midam / 2;
+        } else {
+            missile._midam = currlevel / 2;
+        }
+    }
+    missile._miPreFlag = true;
+    missile._mirange = 19;
 }
 
 void AddManaShield(Missile &missile, AddMissileParameter &parameter)
