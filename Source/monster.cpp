@@ -776,6 +776,21 @@ void StartAttack(Monster &monster)
 	monster.position.old = monster.position.tile;
 }
 
+int HolyFireChance(Player &player) {
+    if (player._pLevel < 10) {
+        return 10; // 10% chance at level 1-9.
+    } else if (player._pLevel < 20) {
+        return 15; // 15% chance at level 10-19.
+    } else if (player._pLevel < 30) {
+        return 20; // 20% chance at level 20-29.
+    } else if (player._pLevel < 40) {
+        return 25; // 25% chance at level 30-39.
+    } else {
+        return 30; // 30% chance at level 40 and above.
+    }
+}
+
+
 void HolyFireDamage(Player &player, Monster &monster) {
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
@@ -810,8 +825,8 @@ void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 	monster.position.future = monster.position.tile;
 	monster.position.old = monster.position.tile;
 	// Check for holy fire effect
-	if ((int)(rand()%3 + 1) == 1) {
-		HolyFireDamage(player, monster);
+	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
+	    HolyFireDamage(player, monster);
 	}
 }
 
@@ -830,8 +845,8 @@ void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 	monster.position.future = monster.position.tile;
 	monster.position.old = monster.position.tile;
 	// Check for holy fire effect
-	if ((int)(rand()%3 + 1) == 1) {
-		HolyFireDamage(player, monster);
+	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
+	    HolyFireDamage(player, monster);
 	}
 }
 
@@ -1260,8 +1275,9 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 	if (monster.position.tile.WalkingDistance(player.position.tile) >= 2) {
 		return;
 	} else {
-		if ((int)(rand()%3 + 1) == 1) {
-			HolyFireDamage(player, monster);
+		// Check for holy fire effect
+		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
+		    HolyFireDamage(player, monster);
 		}
 	}	
 
@@ -1297,31 +1313,31 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 			CheckReflect(monster, player, dam);
 		}
 		// Check for holy fire effect
-		if ((int)(rand()%3 + 1) == 1) {
-			HolyFireDamage(player, monster);
+		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
+		    HolyFireDamage(player, monster);
 		}
 	}
 	// Check if the monster is a type of zombie and the player is MyPlayer.
 	if (monster.type().type == MT_YZOMBIE && &player == MyPlayer) {
 	    // Determine the chance of vitality drain based on the player's level.
-	    float vitalityDrainChance;
+	    int vitalityDrainChancePercent;
 	    if (player._pLevel <= 25) {
-	        vitalityDrainChance = 0.30f;  // 30% chance if level is 25 or below.
+	        vitalityDrainChancePercent = 30;  // 30% chance if level is 25 or below.
 	    } else {
-	        vitalityDrainChance = std::max(0.05f, 0.30f - (0.01f * (player._pLevel - 25)));  
-			// Decrease 1% per level over 25, but never go below 5%.
+	        vitalityDrainChancePercent = std::max(5, 30 - (player._pLevel - 25));  // Decrease 1% per level over 25, but never go below 5%.
 	    }
-	    // Generate a random float between 0.0 and 1.0.
-	    float roll = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	    // Generate a random integer from 0 to 99.
+	    int roll = GenerateRnd(100); // Range is 0 to 99.
 
 	    // Check if the roll is within the vitality drain chance.
-	    if (roll <= vitalityDrainChance) {
-	        // If player's vitality is more than 9, decrease it by 1.
+	    if (roll < vitalityDrainChancePercent) { // Since roll is from 0 to 99, use < not <=
+	        // If player's vitality is more than 0, decrease it by 1.
 	        if (player._pVitality > 9) {
 	            player._pVitality -= 1;
 	        }
 	    }
 	}
+
 	int dam = (minDam << 6) + GenerateRnd(((maxDam - minDam) << 6) + 1);
 	dam = std::max(dam + (player._pIGetHit << 6), 64);
 	if (&player == MyPlayer) {
@@ -1333,8 +1349,8 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 	}
 
 	// Check for holy fire effect
-	if ((int)(rand()%3 + 1) == 1) {
-		HolyFireDamage(player, monster);
+	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
+	    HolyFireDamage(player, monster);
 	}
 
 	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING
