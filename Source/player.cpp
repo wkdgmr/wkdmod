@@ -821,10 +821,13 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 #endif
 		ApplyMonsterDamage(DamageType::Physical, monster, dam);
 		if (pFireDam > 0)
+			AddMissile(monster.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 			ApplyMonsterDamage(DamageType::Fire, monster, pFireDam);
 		if (pLightningDam > 0)
+			AddMissile(monster.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 			ApplyMonsterDamage(DamageType::Lightning, monster, pLightningDam);
 		if (pMagicDam > 0)
+			AddMissile(monster.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 			ApplyMonsterDamage(DamageType::Magic, monster, pMagicDam);
 	}
 

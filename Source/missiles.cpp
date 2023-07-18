@@ -1918,11 +1918,11 @@ void AddMissileExplosion(Missile &missile, AddMissileParameter &parameter)
 void AddWeaponExplosion(Missile &missile, AddMissileParameter &parameter)
 {
 	missile.var2 = parameter.dst.x;
-	if (parameter.dst.x == 1)
+	if (parameter.dst.x == 1 || parameter.dst.x == 4)
 		SetMissAnim(missile, MissileGraphicID::MagmaBallExplosion);
-	else if (parameter.dst.x == 2)
+	else if (parameter.dst.x == 2 || parameter.dst.x == 5)
 		SetMissAnim(missile, MissileGraphicID::ChargedBolt);
-	else if (parameter.dst.x == 3)
+	else if (parameter.dst.x == 3 || parameter.dst.x == 6)
 		SetMissAnim(missile, MissileGraphicID::HolyBoltExplosion);
 	missile._mirange = missile._miAnimLen - 1;
 }
@@ -3709,20 +3709,32 @@ void ProcessWeaponExplosion(Missile &missile)
 	int mind;
 	int maxd;
 	DamageType damageType;
-	if (missile.var2 == 1) {
+	if (missile.var2 == 1 || missile.var2 == 4) {
 		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
-		mind = player._pIFMinDam;
-		maxd = player._pIFMaxDam;
+		if (missile.var2 == 1)
+			mind = player._pIFMinDam;
+			maxd = player._pIFMaxDam;
+		if (missile.var2 == 4)
+			mind = 0;
+			maxd = 0;
 		damageType = DamageType::Fire;
-	} else if (missile.var2 == 2) {
+	} else if (missile.var2 == 2 || missile.var2 == 5) {
 		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
-		mind = player._pILMinDam;
-		maxd = player._pILMaxDam;
+		if (missile.var2 == 2)
+			mind = player._pILMinDam;
+			maxd = player._pILMaxDam;
+		if (missile.var2 == 5)
+			mind = 0;
+			maxd = 0;
 		damageType = DamageType::Lightning;
-	} else if (missile.var2 == 3) {
+	} else if (missile.var2 == 3 || missile.var2 == 6) {
 		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
-		mind = player._pIMMinDam;
-		maxd = player._pIMMaxDam;
+		if (missile.var2 == 3)
+			mind = player._pIMMinDam;
+			maxd = player._pIMMaxDam;
+		if (missile.var2 == 6)
+			mind = 0;
+			maxd = 0;
 		damageType = DamageType::Magic;
 	}
 	CheckMissileCol(missile, damageType, mind, maxd, false, missile.position.tile, false);
