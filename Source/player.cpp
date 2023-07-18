@@ -821,13 +821,13 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 #endif
 		ApplyMonsterDamage(DamageType::Physical, monster, dam);
 		if (pFireDam > 0)
-			AddMissile(monster.position.tile, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, monster.getId(), 0, 0);
+			AddMissile(monster.position.tile, { 0, 0 }, Direction::South, MissileID::MagmaBallExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 			ApplyMonsterDamage(DamageType::Fire, monster, pFireDam);
 		if (pLightningDam > 0)
-			AddMissile(monster.position.tile, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, monster.getId(), 0, 0);
+			AddMissile(monster.position.tile, { 0, 0 }, Direction::South, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), 0, 0);
 			ApplyMonsterDamage(DamageType::Lightning, monster, pLightningDam);
 		if (pMagicDam > 0)
-			AddMissile(monster.position.tile, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, monster.getId(), 0, 0);
+			AddMissile(monster.position.tile, { 0, 0 }, Direction::South, MissileID::HolyBolt, TARGET_MONSTERS, player.getId(), 0, 0);
 			ApplyMonsterDamage(DamageType::Magic, monster, pMagicDam);
 	}
 
@@ -979,16 +979,13 @@ bool DoAttack(Player &player)
 		}
 
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
-			int pFireDam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-		    AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), pFireDam, 0);
+		    AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
-			int pLightningDam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-		    AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), pLightningDam, 0);
+		    AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
-			int pMagicDam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
-		    AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), pMagicDam, 0);
+		    AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 
 		if (monster !=nullptr && !monster->isPlayerMinion() ) {

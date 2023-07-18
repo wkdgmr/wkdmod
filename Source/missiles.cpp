@@ -3714,11 +3714,16 @@ void ProcessWeaponExplosion(Missile &missile)
 		mind = player._pIFMinDam;
 		maxd = player._pIFMaxDam;
 		damageType = DamageType::Fire;
-	} else {
+	} else if (missile.var2 == 2) {
 		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
 		mind = player._pILMinDam;
 		maxd = player._pILMaxDam;
 		damageType = DamageType::Lightning;
+	} else if (missile.var2 == 3) {
+		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
+		mind = player._pIMMinDam;
+		maxd = player._pIMMaxDam;
+		damageType = DamageType::Magic;
 	}
 	CheckMissileCol(missile, damageType, mind, maxd, false, missile.position.tile, false);
 	if (missile.var1 == 0) {
