@@ -831,48 +831,49 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 			ApplyMonsterDamage(DamageType::Magic, monster, pMagicDam);
 	}
 
-	int skdam = 0;
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana3 | ItemSpecialEffect::StealMana5) && HasNoneOf(player._pIFlags, ItemSpecialEffect::NoMana)) {
-	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana3) && HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana5)) {
-	        skdam = 8 * dam / 100;
-	    } else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana3)) {
-	        skdam = 3 * dam / 100;
-	    } else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana5)) {
-	        skdam = 5 * dam / 100;
+	int manaSteal = 0;
+	int lifeSteal = 0;
+	for (Item &item : EquippedPlayerItemsRange { player }) {
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana3)) {
+	        manaSteal += 3 * dam / 100;
 	    }
-	    player._pMana += skdam;
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana5)) {
+	        manaSteal += 5 * dam / 100;
+	    }
+
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealLife3)) {
+	        lifeSteal += 3 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealLife5)) {
+	        lifeSteal += 5 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::RandomStealLife)) {
+	        lifeSteal += GenerateRnd(dam / 8);
+	    }
+	}
+	if (manaSteal > 0 && HasNoneOf(player._pIFlags, ItemSpecialEffect::NoMana)) {
+	    player._pMana += manaSteal;
 	    if (player._pMana > player._pMaxMana) {
 	        player._pMana = player._pMaxMana;
 	    }
-	    player._pManaBase += skdam;
+	    player._pManaBase += manaSteal;
 	    if (player._pManaBase > player._pMaxManaBase) {
 	        player._pManaBase = player._pMaxManaBase;
 	    }
 	    RedrawComponent(PanelDrawComponent::Mana);
 	}
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealLife3)) {
-	    skdam += 3 * dam / 100;
-	}
-	
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealLife5)) {
-	    skdam += 5 * dam / 100;
-	}
-	
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::RandomStealLife)) {
-	    skdam += GenerateRnd(dam / 8);
-	}
-	
-	if (skdam > 0) {
-	    player._pHitPoints += skdam;
+	if (lifeSteal > 0) {
+	    player._pHitPoints += lifeSteal;
 	    if (player._pHitPoints > player._pMaxHP) {
 	        player._pHitPoints = player._pMaxHP;
 	    }
-	    player._pHPBase += skdam;
+	    player._pHPBase += lifeSteal;
 	    if (player._pHPBase > player._pMaxHPBase) {
 	        player._pHPBase = player._pMaxHPBase;
 	    }
 	    RedrawComponent(PanelDrawComponent::Health);
 	}
+
 	if ((monster.hitPoints >> 6) <= 0) {
 		M_StartKill(monster, player);
 	} else {
