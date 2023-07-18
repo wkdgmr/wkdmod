@@ -120,34 +120,29 @@ bool IsTownItemValid(uint16_t iCreateInfo)
 
 bool IsUniqueMonsterItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
 {
-	const uint8_t level = iCreateInfo & CF_LEVEL;
-	const bool isHellfireItem = (dwBuff & CF_HELLFIRE) != 0;
+    const uint8_t level = iCreateInfo & CF_LEVEL;
+    const bool isHellfireItem = (dwBuff & CF_HELLFIRE) != 0;
 
-	for (int i = 0; UniqueMonstersData[i].mName != nullptr; i++) {
-		const auto &uniqueMonsterData = UniqueMonstersData[i];
-		uint8_t uniqueMonsterLevel = MonstersData[uniqueMonsterData.mtype].level;
+    for (int i = 0; UniqueMonstersData[i].mName != nullptr; i++) {
+        const auto &uniqueMonsterData = UniqueMonstersData[i];
+        uint8_t uniqueMonsterLevel = MonstersData[uniqueMonsterData.mtype].level;
 
-		if (!isHellfireItem && IsAnyOf(uniqueMonsterData.mtype, MT_HORKDMN, MT_DEFILER, MT_NAKRUL)) {
-			// These monsters don't appear in Diablo
-			continue;
-		}
+        if (!isHellfireItem && IsAnyOf(uniqueMonsterData.mtype, MT_HORKDMN, MT_DEFILER, MT_NAKRUL)) {
+            // These monsters don't appear in Diablo
+            continue;
+        }
 
-		switch (sgGameInitInfo.nDifficulty) {
-			case DIFF_NIGHTMARE:
-				uniqueMonsterLevel += 9;
-				break;
-			case DIFF_HELL:
-				uniqueMonsterLevel += 16;
-				break;
-		}
+        uint8_t uniquemlvlNightmare = std::min(uniqueMonsterLevel + 15, 30);
+        uint8_t uniquemlvlHell = std::min(uniqueMonsterLevel + 36, 60);
 
-		if (level == uniqueMonsterLevel) {
-			return true;
-		}
-	}
+        if (level == uniqueMonsterLevel || level == uniquemlvlNightmare || level == uniquemlvlHell) {
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
+
 
 bool IsDungeonItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
 {
@@ -162,18 +157,12 @@ bool IsDungeonItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
 			continue;
 		}
 
-		switch (sgGameInitInfo.nDifficulty) {
-			case DIFF_NIGHTMARE:
-				monsterLevel += 9;
-				break;
-			case DIFF_HELL:
-				monsterLevel += 16;
-				break;
-		}
+        uint8_t mlvlNightmare = std::min(monsterLevel + 15, 30);
+        uint8_t mlvlHell = std::min(monsterLevel + 36, 60);
 
-		if (level == monsterLevel) {
-			return true;
-		}
+        if (level == monsterLevel || level == mlvlNightmare || level == mlvlHell) {
+            return true;
+        }
 	}
 
 	return level <= 30;

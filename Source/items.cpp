@@ -1355,8 +1355,11 @@ void GetOilType(Item &item, int maxLvl)
 
 void GetItemBonus(const Player &player, Item &item, int minlvl, int maxlvl, bool onlygood, bool allowspells)
 {
-	if (minlvl > 25)
-		minlvl = 25;
+    int minlvlCeiling = 20;
+    if ((item._iCreateInfo & CF_BOY) != 0)
+        minlvlCeiling = 25;
+    if (minlvl > minlvlCeiling)
+        minlvl = minlvlCeiling;
 
 	switch (item._itype) {
 	case ItemType::Sword:
@@ -3379,10 +3382,14 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 
 	switch (sgGameInitInfo.nDifficulty) {
 	case DIFF_NIGHTMARE:
-		mLevel += 9;
+		mLevel += 15;
+		if (mLevel > 30)
+			mLevel = 30;
 		break;
 	case DIFF_HELL:
-		mLevel += 16;
+		mLevel += 36;
+		if (mLevel > 60)
+			mLevel = 60;
 		break;
 	}
 
@@ -4606,6 +4613,7 @@ void SpawnBoy(int lvl)
 		keepgoing = false;
 		boyitem = {};
 		boyitem._iSeed = AdvanceRndSeed();
+		boyitem._iCreateInfo = lvl | CF_BOY;
 		SetRndSeed(boyitem._iSeed);
 		_item_indexes itype = RndBoyItem(*MyPlayer, lvl);
 		GetItemAttrs(boyitem, itype, lvl);
