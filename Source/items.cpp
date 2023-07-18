@@ -4527,7 +4527,7 @@ void SpawnWitch(int lvl)
 	const int pinnedBookCount = gbIsHellfire ? GenerateRnd(MaxPinnedBookCount) : 0;
 	const int reservedItems = gbIsHellfire ? 10 : 17;
 	const int itemCount = GenerateRnd(WITCH_ITEMS - reservedItems) + 10;
-	const int maxValue = gbIsHellfire ? 200000 : 140000;
+	const int maxValue = 300000;
 
 	for (int i = 0; i < WITCH_ITEMS; i++) {
 		Item &item = witchitem[i];
