@@ -1301,7 +1301,27 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 			HolyFireDamage(player, monster);
 		}
 	}
+	// Check if the monster is a type of zombie and the player is MyPlayer.
+	if (monster.type().type == MT_YZOMBIE && &player == MyPlayer) {
+	    // Determine the chance of vitality drain based on the player's level.
+	    float vitalityDrainChance;
+	    if (player._pLevel <= 25) {
+	        vitalityDrainChance = 0.30f;  // 30% chance if level is 25 or below.
+	    } else {
+	        vitalityDrainChance = std::max(0.05f, 0.30f - (0.01f * (player._pLevel - 25)));  
+			// Decrease 1% per level over 25, but never go below 5%.
+	    }
+	    // Generate a random float between 0.0 and 1.0.
+	    float roll = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 
+	    // Check if the roll is within the vitality drain chance.
+	    if (roll <= vitalityDrainChance) {
+	        // If player's vitality is more than 9, decrease it by 1.
+	        if (player._pVitality > 9) {
+	            player._pVitality -= 1;
+	        }
+	    }
+	}
 	int dam = (minDam << 6) + GenerateRnd(((maxDam - minDam) << 6) + 1);
 	dam = std::max(dam + (player._pIGetHit << 6), 64);
 	if (&player == MyPlayer) {
