@@ -789,12 +789,17 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 		*mind = 2;
 		*maxd = 2 + myPlayer._pLevel;
 		break;
-	case SpellID::Flash:
-	    int base = ((myPlayer._pLevel * 3) + (myPlayer._pMagic / 2) + 4);
-	    *mind = ScaleSpellEffect(base, sl) / 2;
-	    *mind += *mind / 2;
-	    *maxd = *mind * 2;
-	    break;
+	case SpellID::Flash: {
+	    int base = (myPlayer._pLevel * 4) + (sl * 10);  // Player level and spell level scaling
+	    // The percentage of lightning damage to be used, capped at 100% at spell level 15 and above
+	    double lightningPct = std::min(0.1 * (1 + (sl - 1) / 2), 1.0);
+	    // Calculate the additional lightning damage
+		int minLdam = static_cast<int>(lightningPct * myPlayer._pILMinDam);
+		int maxLdam = static_cast<int>(lightningPct * myPlayer._pILMaxDam);
+	    // Calculate the total minimum and maximum damage
+	    *mind = (base / 2) + minLdam;
+	    *maxd = base + maxLdam;
+	} break;
 	case SpellID::Identify:
 	case SpellID::TownPortal:
 	case SpellID::StoneCurse:
@@ -1987,9 +1992,12 @@ void AddFlashBottom(Missile &missile, AddMissileParameter & /*parameter*/)
     switch (missile.sourceType()) {
     case MissileSource::Player: {
         Player &player = *missile.sourcePlayer();
-        int base = ((player._pLevel * 3) + (player._pMagic / 2) + 4);
-        missile._midam = ScaleSpellEffect(base, missile._mispllvl) / 2;
-        missile._midam += missile._midam / 2;
+        int sl = missile._mispllvl;
+        int base = (player._pLevel * 4) + (sl * 10);
+        double lightningPct = std::min(0.1 * (1 + (sl - 1) / 2), 1.0);
+        int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1 + 1);
+        lightningDamage = static_cast<int>(lightningPct * lightningDamage);
+        missile._midam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
     } break;
     case MissileSource::Monster:
         missile._midam = missile.sourceMonster()->level(sgGameInitInfo.nDifficulty) * 2;
@@ -2007,9 +2015,12 @@ void AddFlashTop(Missile &missile, AddMissileParameter & /*parameter*/)
     if (missile._micaster == TARGET_MONSTERS) {
         if (!missile.IsTrap()) {
             Player &player = Players[missile._misource];
-            int base = ((player._pLevel * 3) + (player._pMagic / 2) + 4);
-            missile._midam = ScaleSpellEffect(base, missile._mispllvl) / 2;
-            missile._midam += missile._midam / 2;
+            int sl = missile._mispllvl;
+            int base = (player._pLevel * 4) + (sl * 10);
+            double lightningPct = std::min(0.1 * (1 + (sl - 1) / 2), 1.0);
+            int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1 + 1);
+            lightningDamage = static_cast<int>(lightningPct * lightningDamage);
+            missile._midam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
         } else {
             missile._midam = currlevel / 2;
         }
@@ -2183,7 +2194,7 @@ void AddGenericMagicMissile(Missile &missile, AddMissileParameter &parameter)
 				if (player.queuedSpell.spellType != SpellType::Spell 
     		    && player.queuedSpell.spellType != SpellType::Scroll
     		    && player.queuedSpell.spellType != SpellType::Charges) {
-					missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+					missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 				}
 			}
         	break;
@@ -2628,7 +2639,7 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 		if (player.queuedSpell.spellType != SpellType::Spell 
         && player.queuedSpell.spellType != SpellType::Scroll
         && player.queuedSpell.spellType != SpellType::Charges) {
-			missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+			missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 		}
 	}
 }
@@ -3360,7 +3371,7 @@ void ProcessSpectralArrow(Missile &missile)
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 3) {
-		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 		std::pair<Direction, Direction> novadir = NextIMisDir(dir);
 		AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
 		AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
@@ -3368,7 +3379,7 @@ void ProcessSpectralArrow(Missile &missile)
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 6 || misswitch == 3 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 		std::pair<Direction, Direction> novadir = NextIMisDir(dir);
 		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 		AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
@@ -3380,14 +3391,14 @@ void ProcessSpectralArrow(Missile &missile)
 		AddMissile(src, dst, novadir2.second, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 4) {
-		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 		std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		AddMissile(missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
 		AddMissile(missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
 	}
 	if (misswitch == 8 || misswitch == 4 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 		std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
 		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 		AddMissile(missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
@@ -3400,7 +3411,7 @@ void ProcessSpectralArrow(Missile &missile)
 	}
 	if (misswitch == 7) {
 		if (mitype == MissileID::InfernoControl) {
-			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 			std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
 			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
@@ -3408,7 +3419,7 @@ void ProcessSpectralArrow(Missile &missile)
 			mitype = MissileID::ChargedBoltBow;
 		}
 		if (mitype == MissileID::ChargedBoltBow) {
-			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 			std::pair<Direction, Direction> novadir = NextIMisDir(dir);
 			AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
 			AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
@@ -3422,7 +3433,7 @@ void ProcessSpectralArrow(Missile &missile)
 			mitype = MissileID::ChargedBoltBow;
 		}
 		if (mitype == MissileID::ChargedBoltBow) {
-			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 			std::pair<Direction, Direction> novadir = NextIMisDir(player._pdir);
 			AddMissile(player.position.tile, player.position.temp, novadir.first, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
 			AddMissile(player.position.tile, player.position.temp, novadir.second, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
@@ -3437,7 +3448,7 @@ void ProcessSpectralArrow(Missile &missile)
 			mitype = MissileID::InfernoControl;
 		}
 		if (mitype == MissileID::InfernoControl) {
-			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 			std::pair<Direction, Direction> infernodir = NextIMisDir(player._pdir);
 			AddMissile(missile.position.tile, missile.position.start, player._pdir, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
 			AddMissile(missile.position.tile, missile.position.start, infernodir.first, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);

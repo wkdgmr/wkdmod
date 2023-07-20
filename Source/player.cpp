@@ -679,10 +679,10 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	    int dmg = 0; 
 		int var3 = 0;
 		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1) {
-			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 		}
 		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2) {
-			dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
+			dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 		}
 		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 5
 		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9
@@ -693,7 +693,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 100
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 103
 		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 104) {
-			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 			if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9)
 				var3 = 1;
 		}
@@ -734,9 +734,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	    }
 	}
 
-	int pFireDam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-	int pLightningDam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-	int pMagicDam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+	int pFireDam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
+	int pLightningDam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
+	int pMagicDam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 
 	int mind = player._pIMinDam;
 	int maxd = player._pIMaxDam;
@@ -1130,23 +1130,23 @@ bool DoRangeAttack(Player &player)
 			mistype = MissileID::LightningArrow;
 		}
 		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 1) {
-			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 			mistype = MissileID::SpectralArrow;
 		}
 		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 2) {
-			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam));
+			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1));
 			mistype = MissileID::SpectralArrow;
 		}
 	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 100) {
-			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 			mistype = MissileID::SpectralArrow;
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 5) {
-			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 			mistype = MissileID::SpectralArrow;
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 9) {
-			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam);
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 			var3 = 1;
 			mistype = MissileID::SpectralArrow;
 		}
