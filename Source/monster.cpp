@@ -839,6 +839,10 @@ void CastHolyShock(Player &player, Monster &monster)
 		ApplyMonsterDamage(DamageType::Lightning, monster, mdam);
 		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
 		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+		if (monster.hitPoints >> 6 <= 0)
+			M_StartKill(monster, player);
+		else
+			M_StartHit(monster, player, mdam);
 }
 
 void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
