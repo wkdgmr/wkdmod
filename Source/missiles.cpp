@@ -1995,7 +1995,7 @@ void AddFlashBottom(Missile &missile, AddMissileParameter & /*parameter*/)
         int sl = missile._mispllvl;
         int base = (player._pLevel * 4) + (sl * 10);
         double lightningPct = std::min(0.1 * (1 + (sl - 1) / 2), 1.0);
-        int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1 + 1);
+        int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
         lightningDamage = static_cast<int>(lightningPct * lightningDamage);
         missile._midam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
     } break;
@@ -2018,7 +2018,7 @@ void AddFlashTop(Missile &missile, AddMissileParameter & /*parameter*/)
             int sl = missile._mispllvl;
             int base = (player._pLevel * 4) + (sl * 10);
             double lightningPct = std::min(0.1 * (1 + (sl - 1) / 2), 1.0);
-            int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1 + 1);
+            int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
             lightningDamage = static_cast<int>(lightningPct * lightningDamage);
             missile._midam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
         } else {
