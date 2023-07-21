@@ -817,7 +817,7 @@ void HolyFireDamage(Player &player, Monster &monster) {
 void CastHolyShock(Player &player, Monster &monster) 
 {
 	SpellID spellId = SpellID::Flash;
-	if (monster.position.tile.WalkingDistance(player.position.tile) < 2)
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
     	if (player._pRSpell != spellId || player._pRSplType != SpellType::Spell) {
     	    return;
     	}
@@ -836,13 +836,20 @@ void CastHolyShock(Player &player, Monster &monster)
 		if ((res & (RESIST_LIGHTNING | IMMUNE_LIGHTNING)) != 0)
 		bsmdam -= mdam / 4;
 		bsmdam = bsmdam << 6;
-		ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
-		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
-		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
-		if (monster.hitPoints >> 6 <= 0)
-			M_StartKill(monster, player);
-		else
-			M_StartHit(monster, player, mdam);
+		if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+			ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
+			AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+			AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
+		} else {
+			return;
+		}
+	} else {
+		return;
+	}
 }
 
 void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
