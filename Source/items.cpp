@@ -3383,13 +3383,15 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 	switch (sgGameInitInfo.nDifficulty) {
 	case DIFF_NIGHTMARE:
 		mLevel += 15;
-		if (mLevel > 30)
-			mLevel = 30;
 		break;
 	case DIFF_HELL:
-		mLevel += 36;
-		if (mLevel > 60)
-			mLevel = 60;
+		if (mLevel >= 24)
+			mLevel += 36;
+			if (mLevel > 60)
+				mLevel = 60;
+		else {
+			mLevel += 15;
+		}
 		break;
 	}
 
