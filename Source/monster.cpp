@@ -831,12 +831,12 @@ void CastHolyShock(Player &player, Monster &monster)
         int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
         lightningDamage = static_cast<int>(lightningPct * lightningDamage);
 		int mdam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
-		int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-		if ((res & (RESIST_LIGHTNING | IMMUNE_LIGHTNING)) != 0)
-			mdam -= mdam / 2;
-			mdam -= mdam / 2;
-		mdam = mdam << 6;
-		ApplyMonsterDamage(DamageType::Lightning, monster, mdam);
+		// int bsmdam = mdam;
+		// int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+		// if ((res & (RESIST_LIGHTNING | IMMUNE_LIGHTNING)) != 0)
+		//	bsmdam -= mdam / 4;
+		// bsmdam = bsmdam << 6;
+		// ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
 		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
 		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
 		if (monster.hitPoints >> 6 <= 0)
