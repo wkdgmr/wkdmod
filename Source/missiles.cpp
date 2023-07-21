@@ -3528,10 +3528,6 @@ void ProcessTownPortal(Missile &missile)
 
 void ProcessFlashBottom(Missile &missile)
 {
-	if (missile._micaster == TARGET_MONSTERS) {
-		if (!missile.IsTrap())
-			Players[missile._misource]._pInvincible = true;
-	}
 	missile._mirange--;
 
 	constexpr Direction Offsets[] = {
@@ -3547,20 +3543,12 @@ void ProcessFlashBottom(Missile &missile)
 
 	if (missile._mirange == 0) {
 		missile._miDelFlag = true;
-		if (missile._micaster == TARGET_MONSTERS) {
-			if (!missile.IsTrap())
-				Players[missile._misource]._pInvincible = false;
-		}
 	}
 	PutMissile(missile);
 }
 
 void ProcessFlashTop(Missile &missile)
 {
-	if (missile._micaster == TARGET_MONSTERS) {
-		if (!missile.IsTrap())
-			Players[missile._misource]._pInvincible = true;
-	}
 	missile._mirange--;
 
 	constexpr Direction Offsets[] = {
@@ -3573,10 +3561,6 @@ void ProcessFlashTop(Missile &missile)
 
 	if (missile._mirange == 0) {
 		missile._miDelFlag = true;
-		if (missile._micaster == TARGET_MONSTERS) {
-			if (!missile.IsTrap())
-				Players[missile._misource]._pInvincible = false;
-		}
 	}
 	PutMissile(missile);
 }
