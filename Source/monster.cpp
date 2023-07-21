@@ -814,6 +814,22 @@ void HolyFireDamage(Player &player, Monster &monster) {
 	}
 }
 
+void CastHolyShock(Player &player, Monster &monster) 
+{
+	SpellID spellId = SpellID::Flash;
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2)
+    	if (player._pRSpell != spellId || player._pRSplType != SpellType::Spell) {
+    	    return;
+    	}
+    	if (player._pSplLvl[static_cast<int>(spellId)] <= 0) {
+    	    return;
+    	}
+    	int spellLevel = player._pSplLvl[static_cast<int>(spellId)];
+		PlaySFX(IS_CAST4);
+    	CastSpell(player.getId(), spellId, player.position.tile.x, 
+    	player.position.tile.y, player.position.tile.x, player.position.tile.y, spellLevel);
+}
+
 void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 {
 	Player& player = Players[monster.enemy];
@@ -827,6 +843,7 @@ void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 	// Check for holy fire effect
 	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 	    HolyFireDamage(player, monster);
+		CastHolyShock(player, monster);
 	}
 }
 
@@ -847,6 +864,7 @@ void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 	// Check for holy fire effect
 	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 	    HolyFireDamage(player, monster);
+		CastHolyShock(player, monster);
 	}
 }
 
@@ -1278,6 +1296,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		// Check for holy fire effect
 		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 		    HolyFireDamage(player, monster);
+			CastHolyShock(player, monster);
 		}
 	}	
 
@@ -1315,6 +1334,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		// Check for holy fire effect
 		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 		    HolyFireDamage(player, monster);
+			CastHolyShock(player, monster);
 		}
 	}
 	// Check if the monster is a type of zombie and the player is MyPlayer.
@@ -1351,6 +1371,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 	// Check for holy fire effect
 	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 	    HolyFireDamage(player, monster);
+		CastHolyShock(player, monster);
 	}
 
 	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING
