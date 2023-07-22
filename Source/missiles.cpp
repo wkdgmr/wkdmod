@@ -2256,8 +2256,7 @@ void AddAcidPuddle(Missile &missile, AddMissileParameter & /*parameter*/)
 		case MissileSource::Player: {
 			Player &player = Players[missile._misource];
 			missile._miLightFlag = true;
-			int monst = missile._misource;
-			missile._mirange = GenerateRnd(100 + player._pLevel) + player._pLevel;
+			missile._mirange = GenerateRnd((player._pLevel * 2) + 1);
 			missile._miPreFlag = true;
 		} break;
 		case MissileSource::Monster: {
@@ -3810,7 +3809,6 @@ void ProcessAcidSplate(Missile &missile)
 				int plyr = missile._misource;
 				int dam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 				AddMissile(missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_MONSTERS, plyr, dam, missile._mispllvl);
-				missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 			} break;
 			case MissileSource::Monster: {
 				int monst = missile._misource;
