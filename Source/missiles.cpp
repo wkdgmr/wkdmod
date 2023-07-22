@@ -3806,9 +3806,8 @@ void ProcessAcidSplate(Missile &missile)
 		switch (missile.sourceType()) {
 			case MissileSource::Player: {
 				Player &player = Players[missile._misource];
-				int plyr = missile._misource;
 				int dam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
-				AddMissile(missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_MONSTERS, plyr, dam, missile._mispllvl);
+				AddMissile(missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_MONSTERS, player.getId(), dam, missile._mispllvl);
 			} break;
 			case MissileSource::Monster: {
 				int monst = missile._misource;

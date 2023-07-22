@@ -1119,7 +1119,7 @@ bool DoRangeAttack(Player &player)
 	            xoff = y < 0 ? -angle : angle;
 	    }
 
-		int dmg = 4;
+		int dmg = 0;
 		int var3 = 0;
 		MissileID mistype = MissileID::Arrow;
 		int misswitch = player._pIMisType;
@@ -1151,7 +1151,6 @@ bool DoRangeAttack(Player &player)
 			mistype = MissileID::SpectralArrow;
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 10) {
-			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 			mistype = MissileID::SpectralArrow;
 		}
 
@@ -1173,7 +1172,8 @@ bool DoRangeAttack(Player &player)
     	    } else if (arrow == 1) {
     	        PlaySfxLoc(IS_STING1, player.position.tile);
     	    }
-    	} else if (mistype == MissileID::SpectralArrow && misswitch == 5 && arrow == 0) {
+    	} else if (mistype == MissileID::SpectralArrow && misswitch == 5 && arrow == 0
+		|| mistype == MissileID::SpectralArrow && misswitch == 10 && arrow == 0) {
 			PlaySfxLoc(IS_FBALLBOW, player.position.tile);			
 		}
 
