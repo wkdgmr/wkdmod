@@ -4862,6 +4862,7 @@ bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 	|| (missileType == MissileID::ChargedBolt)
 	|| (missileType == MissileID::FlashBottom)
 	|| (missileType == MissileID::FlashTop)
+	|| (missileType == MissileID::Acid && myPlayer._pIMisType == 10)
 	|| (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
 		return false;
 	} else {
@@ -4889,11 +4890,13 @@ bool Monster::isResistant(MissileID missileType, DamageType missileElement) cons
 	|| (missileType == MissileID::ChargedBolt)
 	|| (missileType == MissileID::FlashBottom)
 	|| (missileType == MissileID::FlashTop)
+	|| (missileType == MissileID::Acid && myPlayer._pIMisType == 10)
 	|| (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
 		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
 		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
 		|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-		|| ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
+		|| ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		|| ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Acid)) {
 			return true;
 		} else {
 			return false;

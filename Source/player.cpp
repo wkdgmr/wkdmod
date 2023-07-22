@@ -1150,6 +1150,10 @@ bool DoRangeAttack(Player &player)
 			var3 = 1;
 			mistype = MissileID::SpectralArrow;
 		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 10) {
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
+			mistype = MissileID::SpectralArrow;
+		}
 
 
 		AddMissile(

@@ -1029,6 +1029,12 @@ int SaveItemPower(const Player &player, Item &item, ItemPower &power)
 		item._iFMinDam = power.param1;
 		item._iFMaxDam = power.param2;
 		break;
+	case IPL_ACIDBOW:
+		item._iMisType = 10;
+		item._iFlags |= ItemSpecialEffect::MagicDamage;
+		item._iFMinDam = power.param1;
+		item._iFMaxDam = power.param2;
+		break;
 	case IPL_FIRERES_CURSE:
 		item._iPLFR -= r;
 		break;
@@ -4018,6 +4024,11 @@ bool DoOil(Player &player, int cii)
 			return fmt::format(fmt::runtime(_("bone spirit damage: {:d}")), item._iFMinDam);
 		else
 			return fmt::format(fmt::runtime(_("bone spirit damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+	case IPL_ACIDBOW:
+		if (item._iFMinDam == item._iFMaxDam)
+			return fmt::format(fmt::runtime(_("acid damage: {:d}")), item._iFMinDam);
+		else
+			return fmt::format(fmt::runtime(_("acid damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_DEVASTATION:
 		return _("occasional triple damage");
 	case IPL_DECAY:

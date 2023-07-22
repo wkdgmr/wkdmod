@@ -2235,9 +2235,10 @@ void AddAcid(Missile &missile, AddMissileParameter &parameter)
 	missile.var2 = missile.position.start.y;
 	if (missile._midam == 0) {
 		switch (missile.sourceType()) {
-		case MissileSource::Player:
-			// Not typically created by Players
-			break;
+		case MissileSource::Player: {
+			Player &player = Players[missile._misource];
+			missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
+		} break;
 		case MissileSource::Monster:
 			missile._midam = ProjectileMonsterDamage(missile);
 			break;
@@ -2251,10 +2252,21 @@ void AddAcid(Missile &missile, AddMissileParameter &parameter)
 
 void AddAcidPuddle(Missile &missile, AddMissileParameter & /*parameter*/)
 {
-	missile._miLightFlag = true;
-	int monst = missile._misource;
-	missile._mirange = GenerateRnd(15) + 40 * (Monsters[monst].intelligence + 1);
-	missile._miPreFlag = true;
+	switch (missile.sourceType()) {
+		case MissileSource::Player: {
+			Player &player = Players[missile._misource];
+			missile._miLightFlag = true;
+			int monst = missile._misource;
+			missile._mirange = GenerateRnd(100 + player._pLevel) + player._pLevel;
+			missile._miPreFlag = true;
+		} break;
+		case MissileSource::Monster: {
+			missile._miLightFlag = true;
+			int monst = missile._misource;
+			missile._mirange = GenerateRnd(15) + 40 * (Monsters[monst].intelligence + 1);
+			missile._miPreFlag = true;
+		} break;
+	}
 }
 
 void AddStoneCurse(Missile &missile, AddMissileParameter &parameter)
@@ -3369,6 +3381,9 @@ void ProcessSpectralArrow(Missile &missile)
 		case 9:
 			mitype = MissileID::BoneSpirit;
 			break;
+		case 10:
+			mitype = MissileID::Acid;
+			break;
 		case 100:
 		case 103:
 		case 104:
@@ -3789,9 +3804,20 @@ void ProcessAcidSplate(Missile &missile)
 	missile._mirange--;
 	if (missile._mirange == 0) {
 		missile._miDelFlag = true;
-		int monst = missile._misource;
-		int dam = (Monsters[monst].data().level >= 2 ? 2 : 1);
-		AddMissile(missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_PLAYERS, monst, dam, missile._mispllvl);
+		switch (missile.sourceType()) {
+			case MissileSource::Player: {
+				Player &player = Players[missile._misource];
+				int plyr = missile._misource;
+				int dam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
+				AddMissile(missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_MONSTERS, plyr, dam, missile._mispllvl);
+				missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
+			} break;
+			case MissileSource::Monster: {
+				int monst = missile._misource;
+				int dam = (Monsters[monst].data().level >= 2 ? 2 : 1);
+				AddMissile(missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_PLAYERS, monst, dam, missile._mispllvl);
+			} break;
+		}
 	} else {
 		PutMissile(missile);
 	}
