@@ -3798,7 +3798,7 @@ void ProcessMissileExplosion(Missile &missile)
 
 void ProcessAcidSplate(Missile &missile)
 {
-	if (missile._mirange == missile._miAnimLen) {
+	if (missile._mirange == missile._miAnimLen && missile.sourceType() == MissileSource::Monster) {
 		missile.position.tile += Displacement { 1, 1 };
 		missile.position.offset.deltaY -= 32;
 	}
