@@ -132,10 +132,12 @@ bool IsUniqueMonsterItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
             continue;
         }
 
-        uint8_t uniquemlvlNightmare = std::min(uniqueMonsterLevel + 15, 30);
-        uint8_t uniquemlvlHell = std::min(uniqueMonsterLevel + 36, 60);
+        uint8_t plus15mlvl = std::min(uniqueMonsterLevel + 15, 60);
+		uint8_t plus25mlvl = std::min(uniqueMonsterLevel + 25, 60);
+        uint8_t plus36mlvl = std::min(uniqueMonsterLevel + 36, 60);
 
-        if (level == uniqueMonsterLevel || level == uniquemlvlNightmare || level == uniquemlvlHell) {
+        if (level == uniqueMonsterLevel || level == plus15mlvl || level == plus25mlvl
+		|| level == plus36mlvl) {
             return true;
         }
     }
@@ -157,10 +159,12 @@ bool IsDungeonItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
 			continue;
 		}
 
-        uint8_t mlvlNightmare = std::min(monsterLevel + 15, 30);
-        uint8_t mlvlHell = std::min(monsterLevel + 36, 60);
+        uint8_t plus15mlvl = std::min(monsterLevel + 15, 60);
+		uint8_t plus25mlvl = std::min(monsterLevel + 25, 60);
+        uint8_t plus36mlvl = std::min(monsterLevel + 36, 60);
 
-        if (level == monsterLevel || level == mlvlNightmare || level == mlvlHell) {
+        if (level == monsterLevel || level == plus15mlvl || level == plus25mlvl
+		|| level == plus36mlvl) {
             return true;
         }
 	}

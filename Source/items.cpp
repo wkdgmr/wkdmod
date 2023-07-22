@@ -2347,8 +2347,11 @@ std::string GetTranslatedItemNameMagical(const Item &item, bool hellfireItem, bo
 		DiscardRandomValues(1); // CheckUnique
 	}
 
-	if (minlvl > 25)
-		minlvl = 25;
+    int minlvlCeiling = 20;
+    if ((item._iCreateInfo & CF_BOY) != 0)
+        minlvlCeiling = 25;
+    if (minlvl > minlvlCeiling)
+        minlvl = minlvlCeiling;
 
 	AffixItemType affixItemType = AffixItemType::None;
 
@@ -2375,7 +2378,7 @@ std::string GetTranslatedItemNameMagical(const Item &item, bool hellfireItem, bo
 
 		if (!allowspells)
 			affixItemType = AffixItemType::Staff;
-		else if (!hellfireItem && FlipCoin(4)) {
+		else if (FlipCoin(4)) {
 			affixItemType = AffixItemType::Staff;
 		} else {
 			DiscardRandomValues(2); // Spell and Charges
@@ -3383,6 +3386,8 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 	switch (sgGameInitInfo.nDifficulty) {
 	case DIFF_NIGHTMARE:
 		mLevel += 15;
+		if (mLevel > 60)
+			mLevel = 60;
 		break;
 	case DIFF_HELL:
 		if (mLevel >= 24)
@@ -3390,7 +3395,9 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 			if (mLevel > 60)
 				mLevel = 60;
 		else {
-			mLevel += 15;
+			mLevel += 25;
+			if (mLevel > 60)
+				mLevel = 60;
 		}
 		break;
 	}
