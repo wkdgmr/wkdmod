@@ -1950,6 +1950,8 @@ void AddWeaponExplosion(Missile &missile, AddMissileParameter &parameter)
 		SetMissAnim(missile, MissileGraphicID::ChargedBolt);
 	else if (parameter.dst.x == 3 || parameter.dst.x == 6)
 		SetMissAnim(missile, MissileGraphicID::HolyBoltExplosion);
+	else if (parameter.dst.x == 7)
+		SetMissAnim(missile, MissileGraphicID::BoneSpirit);
 	missile._mirange = missile._miAnimLen - 1;
 }
 
@@ -3767,6 +3769,11 @@ void ProcessWeaponExplosion(Missile &missile)
 		if (missile.var2 == 6)
 			mind = 0;
 			maxd = 0;
+		damageType = DamageType::Magic;
+	} else if (missile.var2 == 7) {
+		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
+		mind = player._pIMMinDam;
+		maxd = player._pIMMaxDam;
 		damageType = DamageType::Magic;
 	}
 	CheckMissileCol(missile, damageType, mind, maxd, false, missile.position.tile, false);

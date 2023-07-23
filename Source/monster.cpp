@@ -852,6 +852,39 @@ void CastHolyShock(Player &player, Monster &monster)
 	}
 }
 
+
+void ExplodingBoneArmor(Player &player, Monster &monster)
+{
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+			if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor
+			|| player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor
+			|| player.InvBody[INVLOC_CHEST]._itype == ItemType::LightArmor) {
+				if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE
+				&& player.InvBody[INVLOC_CHEST]._iFlags == ItemSpecialEffect::MagicDamage) {
+					int eMind;
+					int eMaxd;
+					eMind = player._pIMMinDam;
+					eMaxd = player._pIMMaxDam;
+					int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+					int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+					if ((res & (RESIST_MAGIC | IMMUNE_MAGIC)) != 0)
+						mdam -= mdam / 2;
+						mdam -= mdam / 2;
+					mdam = mdam << 6;
+					ApplyMonsterDamage(DamageType::Magic, monster, mdam);
+					PlaySFX(LS_BSIMPCT);
+					AddMissile(monster.position.tile, { 7, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+					if (monster.hitPoints >> 6 <= 0)
+						M_StartKill(monster, player);
+					else
+						M_StartHit(monster, player, mdam);
+				}
+			}
+		}
+	}
+}
+
 void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 {
 	Player& player = Players[monster.enemy];
@@ -866,6 +899,7 @@ void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 	    HolyFireDamage(player, monster);
 		CastHolyShock(player, monster);
+		ExplodingBoneArmor(player, monster);
 	}
 }
 
@@ -887,6 +921,7 @@ void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 	    HolyFireDamage(player, monster);
 		CastHolyShock(player, monster);
+		ExplodingBoneArmor(player, monster);
 	}
 }
 
@@ -1319,6 +1354,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 		    HolyFireDamage(player, monster);
 			CastHolyShock(player, monster);
+			ExplodingBoneArmor(player, monster);
 		}
 	}	
 
@@ -1357,6 +1393,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 		    HolyFireDamage(player, monster);
 			CastHolyShock(player, monster);
+			ExplodingBoneArmor(player, monster);
 		}
 	}
 	// Check if the monster is a type of zombie and the player is MyPlayer.
@@ -1394,6 +1431,7 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 	    HolyFireDamage(player, monster);
 		CastHolyShock(player, monster);
+		ExplodingBoneArmor(player, monster);
 	}
 
 	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING
