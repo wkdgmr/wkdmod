@@ -4287,12 +4287,15 @@ void ProcessElemental(Missile &missile)
 void ProcessBoneSpirit(Missile &missile)
 {
 	Player &player = Players[missile._misource];
+	auto &BoneArmor = player.InvBody[INVLOC_CHEST];
 	missile._mirange--;
 	int base = (missile._mispllvl * 3) + (player._pMagic / 2) + 4;
 	int minDmg = (ScaleSpellEffect(base, missile._mispllvl) / 2);
 	int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) / 2);
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
-	if (player._pIMisType == 9) {
+	if (player._pIMisType == 9
+	|| HasAnyOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage)
+	&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 		if (player.queuedSpell.spellType != SpellType::Spell 
         && player.queuedSpell.spellType != SpellType::Scroll
         && player.queuedSpell.spellType != SpellType::Charges)
@@ -4308,7 +4311,9 @@ void ProcessBoneSpirit(Missile &missile)
 		}
 		PutMissile(missile);
 	} else {
-		if (player._pIMisType == 9) {
+		if (player._pIMisType == 9
+		|| HasAnyOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage)
+		&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 			if (player.queuedSpell.spellType != SpellType::Spell 
     	    && player.queuedSpell.spellType != SpellType::Scroll
     	    && player.queuedSpell.spellType != SpellType::Charges)

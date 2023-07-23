@@ -873,13 +873,13 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 				mdam -= mdam / 2;
 			mdam = mdam << 6;
 			}
+			PlaySFX(LS_BONESP);
 			ApplyMonsterDamage(DamageType::Magic, monster, mdam);
-			PlaySFX(LS_BSIMPCT);
-			AddMissile(monster.position.tile, { 7, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 			if (monster.hitPoints >> 6 <= 0)
 				M_StartKill(monster, player);
 			else
 				M_StartHit(monster, player, mdam);
+			AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), mdam, 1);
 		}
 	}
 }
