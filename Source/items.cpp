@@ -3815,10 +3815,10 @@ bool DoOil(Player &player, int cii)
 		return fmt::format(fmt::runtime(_("chance to hit: {:+d}%")), item._iPLToHit);
 	case IPL_DAMP:
 	case IPL_DAMP_CURSE:
-		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "{:+d}% damage")), item._iPLDam);
+		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "{:+d}% dmg")), item._iPLDam);
 	case IPL_TOHIT_DAMP:
 	case IPL_TOHIT_DAMP_CURSE:
-		return fmt::format(fmt::runtime(_("to hit: {:+d}%, {:+d}% damage")), item._iPLToHit, item._iPLDam);
+		return fmt::format(fmt::runtime(_("to hit: {:+d}%, {:+d}% dmg")), item._iPLToHit, item._iPLDam);
 	case IPL_ACP:
 	case IPL_ACP_CURSE:
 		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "{:+d}% armor")), item._iPLAC);
@@ -3861,19 +3861,19 @@ bool DoOil(Player &player, int cii)
 		return fmt::format(fmt::runtime(ngettext("{:d} {:s} charge", "{:d} {:s} charges", item._iMaxCharges)), item._iMaxCharges, pgettext("spell", GetSpellData(item._iSpell).sNameText));
 	case IPL_FIREDAM:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("Fire hit damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("Fire hit dmg: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("Fire hit damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("Fire hit dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_LIGHTDAM:
 		if (item._iLMinDam == item._iLMaxDam)
-			return fmt::format(fmt::runtime(_("Lightning hit damage: {:d}")), item._iLMinDam);
+			return fmt::format(fmt::runtime(_("Lightning hit dmg: {:d}")), item._iLMinDam);
 		else
-			return fmt::format(fmt::runtime(_("Lightning hit damage: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
+			return fmt::format(fmt::runtime(_("Lightning hit dmg: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
 	case IPL_MAGICDAM:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("Magic hit damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("Magic hit dmg: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("Magic hit damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("Magic hit dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_STR:
 	case IPL_STR_CURSE:
 		return fmt::format(fmt::runtime(_("{:+d} to strength")), item._iPLStr);
@@ -3891,7 +3891,7 @@ bool DoOil(Player &player, int cii)
 		return fmt::format(fmt::runtime(_("{:+d} to all attributes")), item._iPLStr);
 	case IPL_GETHIT_CURSE:
 	case IPL_GETHIT:
-		return fmt::format(fmt::runtime(_("{:+d} damage from enemies")), item._iPLGetHit);
+		return fmt::format(fmt::runtime(_("{:+d} dmg from enemies")), item._iPLGetHit);
 	case IPL_LIFE:
 	case IPL_LIFE_CURSE:
 		return fmt::format(fmt::runtime(_("Hit Points: {:+d}")), item._iPLHP >> 6);
@@ -3912,39 +3912,39 @@ bool DoOil(Player &player, int cii)
 		return _("multiple arrows per shot");
 	case IPL_FIRE_ARROWS:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("fire arrows damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("fire arrows dmg: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("fire arrows damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("fire arrows dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_LIGHT_ARROWS:
 		if (item._iLMinDam == item._iLMaxDam)
-			return fmt::format(fmt::runtime(_("lightning arrows damage {:d}")), item._iLMinDam);
+			return fmt::format(fmt::runtime(_("lightning arrows dmg {:d}")), item._iLMinDam);
 		else
-			return fmt::format(fmt::runtime(_("lightning arrows damage {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
+			return fmt::format(fmt::runtime(_("lightning arrows dmg {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
 	case IPL_FIREBALL:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("fireball damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("fireball dmg: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("fireball damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("fireball dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_INFERNO:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("inferno damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("inferno dmg: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("inferno damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("inferno dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_THORNS: 
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("holy fire damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("holy fire dmg: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("holy fire damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("holy fire dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_EMPOWER:
 			return fmt::format(fmt::runtime(_("Empowers Unique Weapons")));
 	case IPL_NOMANA:
 		return _("user loses all mana");
 	case IPL_ABSHALFTRAP:
-		return _("absorbs half of trap damage");
+		return _("absorbs half of trap dmg");
 	case IPL_KNOCKBACK:
 		return _("knocks target back");
 	case IPL_3XDAMVDEM:
-		return _(/*xgettext:no-c-format*/ "+200% damage vs. demons");
+		return _(/*xgettext:no-c-format*/ "+200% dmg vs. demons");
 	case IPL_STEALMANA:
 		if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana3))
 			return _(/*xgettext:no-c-format*/ "hit steals 3% mana");
@@ -3980,11 +3980,11 @@ bool DoOil(Player &player, int cii)
 	case IPL_FASTBLOCK:
 		return _("fast block");
 	case IPL_DAMMOD:
-		return fmt::format(fmt::runtime(ngettext("adds {:d} point to damage", "adds {:d} points to damage", item._iPLDamMod)), item._iPLDamMod);
+		return fmt::format(fmt::runtime(ngettext("adds {:d} point to dmg", "adds {:d} points to dmg", item._iPLDamMod)), item._iPLDamMod);
 	case IPL_RNDARROWVEL:
 		return _("fires random speed arrows");
 	case IPL_SETDAM:
-		return _("modified base weapon damage");
+		return _("modified base weapon dmg");
 	case IPL_SETDUR:
 		return _("altered durability");
 	case IPL_ONEHAND:
@@ -4003,46 +4003,46 @@ bool DoOil(Player &player, int cii)
 		return { string_view(" ") };
 	case IPL_ADDACLIFE:
 		if (item._iLMinDam == item._iLMaxDam)
-			return fmt::format(fmt::runtime(_("lightning damage: {:d}")), item._iLMinDam);
+			return fmt::format(fmt::runtime(_("lightning dmg: {:d}")), item._iLMinDam);
 		else
-			return fmt::format(fmt::runtime(_("lightning damage: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
+			return fmt::format(fmt::runtime(_("lightning dmg: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
 	case IPL_ADDMANAAC:
 		if (item._iLMinDam == item._iLMaxDam)
-			return fmt::format(fmt::runtime(_("charged bolts damage: {:d}")), item._iLMinDam);
+			return fmt::format(fmt::runtime(_("charged bolts dmg: {:d}")), item._iLMinDam);
 		else
-			return fmt::format(fmt::runtime(_("charged bolts damage: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
+			return fmt::format(fmt::runtime(_("charged bolts dmg: {:d}-{:d}")), item._iLMinDam, item._iLMaxDam);
 	case IPL_HOLYBOLTBOW:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("magic missile damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("magic missile dmg: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("magic missile damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("magic missile dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_BLOODSTARBOW:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("blood star damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("blood star dmg: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("blood star damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("blood star dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_BONESPIRITBOW:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("bone spirit damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("bone spirit dmg: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("bone spirit damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("bone spirit dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_ACIDBOW:
 		if (item._iFMinDam == item._iFMaxDam)
-			return fmt::format(fmt::runtime(_("acid damage: {:d}")), item._iFMinDam);
+			return fmt::format(fmt::runtime(_("acid dmg: {:d}")), item._iFMinDam);
 		else
-			return fmt::format(fmt::runtime(_("acid damage: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
+			return fmt::format(fmt::runtime(_("acid dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_DEVASTATION:
-		return _("occasional triple damage");
+		return _("occasional triple dmg");
 	case IPL_DECAY:
-		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "decaying {:+d}% damage")), item._iPLDam);
+		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "decaying {:+d}% dmg")), item._iPLDam);
 	case IPL_PERIL:
 		return _("2x dmg to monst, 1x to you");
 	case IPL_JESTERS:
-		return std::string(_(/*xgettext:no-c-format*/ "Random 0 - 600% damage"));
+		return std::string(_(/*xgettext:no-c-format*/ "Random 0 - 600% dmg"));
 	case IPL_CRYSTALLINE:
-		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "low dur, {:+d}% damage")), item._iPLDam);
+		return fmt::format(fmt::runtime(_(/*xgettext:no-c-format*/ "low dur, {:+d}% dmg")), item._iPLDam);
 	case IPL_DOPPELGANGER:
-		return fmt::format(fmt::runtime(_("to hit: {:+d}%, {:+d}% damage")), item._iPLToHit, item._iPLDam);
+		return fmt::format(fmt::runtime(_("to hit: {:+d}%, {:+d}% dmg")), item._iPLToHit, item._iPLDam);
 	case IPL_ACDEMON:
 		return _("extra AC vs demons");
 	case IPL_ACUNDEAD:
