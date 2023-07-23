@@ -824,6 +824,9 @@ void CastHolyShock(Player &player, Monster &monster)
     	if (player._pSplLvl[static_cast<int>(spellId)] <= 0) {
     	    return;
     	}
+		if (monster.mode == MonsterMode::Death) {
+			return;
+		}
     	int spellLevel = player._pSplLvl[static_cast<int>(spellId)];
 		PlaySFX(IS_CAST4);
         int base = (player._pLevel * 4) + (spellLevel * 10);
@@ -856,31 +859,27 @@ void CastHolyShock(Player &player, Monster &monster)
 void ExplodingBoneArmor(Player &player, Monster &monster)
 {
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-			if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor
-			|| player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor
-			|| player.InvBody[INVLOC_CHEST]._itype == ItemType::LightArmor) {
-				if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE
-				&& player.InvBody[INVLOC_CHEST]._iFlags == ItemSpecialEffect::MagicDamage) {
-					int eMind;
-					int eMaxd;
-					eMind = player._pIMMinDam;
-					eMaxd = player._pIMMaxDam;
-					int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-					int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-					if ((res & (RESIST_MAGIC | IMMUNE_MAGIC)) != 0)
-						mdam -= mdam / 2;
-						mdam -= mdam / 2;
-					mdam = mdam << 6;
-					ApplyMonsterDamage(DamageType::Magic, monster, mdam);
-					PlaySFX(LS_BSIMPCT);
-					AddMissile(monster.position.tile, { 7, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					if (monster.hitPoints >> 6 <= 0)
-						M_StartKill(monster, player);
-					else
-						M_StartHit(monster, player, mdam);
-				}
+		auto &BoneArmor = player.InvBody[INVLOC_CHEST];
+		if (HasAnyOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage)
+		&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+			int eMind;
+			int eMaxd;
+			eMind = player._pIMMinDam;
+			eMaxd = player._pIMMaxDam;
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+			if ((res & (RESIST_MAGIC | IMMUNE_MAGIC)) != 0) {
+				mdam -= mdam / 2;
+				mdam -= mdam / 2;
+			mdam = mdam << 6;
 			}
+			ApplyMonsterDamage(DamageType::Magic, monster, mdam);
+			PlaySFX(LS_BSIMPCT);
+			AddMissile(monster.position.tile, { 7, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
 		}
 	}
 }
