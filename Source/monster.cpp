@@ -859,45 +859,32 @@ void CastHolyShock(Player &player, Monster &monster)
 void ExplodingBoneArmor(Player &player, Monster &monster)
 {
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
-		auto &BoneArmor = player.InvBody[INVLOC_CHEST];
-		if (HasAnyOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage)
-		&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-			int eMind;
-			int eMaxd;
-			eMind = player._pIMMinDam;
-			eMaxd = player._pIMMaxDam;
-			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-			int bsmdam = mdam;
-			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-			if ((res & (RESIST_MAGIC | IMMUNE_MAGIC)) != 0) {
-				mdam -= mdam / 2;
-				mdam -= mdam / 2;
-			bsmdam = bsmdam << 6;
+		if (!player.InvBody[INVLOC_CHEST].isEmpty()) {
+			if (HasAnyOf(player.InvBody[INVLOC_CHEST]._iFlags, ItemSpecialEffect::MagicDamage)) {
+				int eMind;
+				int eMaxd;
+				eMind = player._pIMMinDam;
+				eMaxd = player._pIMMaxDam;
+				int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+		    	int arrows = 6;
+	   			int dmg = mdam; 
+				int var3 = 1;
+	    		int directionIndex = static_cast<int>(player._pdir);
+	    		std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
+	    		for (int arrow = 0; arrow < arrows; arrow++) {
+	    		    int arrowDirectionIndex;
+					if (arrows == 6) {
+	    		        arrowDirectionIndex = (directionIndex + strafePattern6[arrow]) % 8;
+	    		    }
+	    		    if (arrowDirectionIndex < 0) {
+	    		        arrowDirectionIndex += 8;
+	    		    }
+	    		    Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
+	    		    Displacement displacement(arrowDirection);
+	    		    AddMissile(player.position.tile, player.position.temp + displacement, arrowDirection,
+	    		               MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), dmg, var3);
+	    		}
 			}
-			PlaySFX(LS_BONESP);
-			ApplyMonsterDamage(DamageType::Magic, monster, bsmdam);
-			if (monster.hitPoints >> 6 <= 0)
-				M_StartKill(monster, player);
-			else
-				M_StartHit(monster, player, bsmdam);
-		    int arrows = 6;
-	   		int dmg = mdam; 
-			int var3 = 1;
-	    	int directionIndex = static_cast<int>(player._pdir);
-	    	std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
-	    	for (int arrow = 0; arrow < arrows; arrow++) {
-	    	    int arrowDirectionIndex;
-				if (arrows == 6) {
-	    	        arrowDirectionIndex = (directionIndex + strafePattern6[arrow]) % 8;
-	    	    }
-	    	    if (arrowDirectionIndex < 0) {
-	    	        arrowDirectionIndex += 8;
-	    	    }
-	    	    Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
-	    	    Displacement displacement(arrowDirection);
-	    	    AddMissile(player.position.tile, player.position.temp + displacement, arrowDirection,
-	    	               MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, var3);
-	    	}
 		}
 	}
 }
