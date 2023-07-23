@@ -880,12 +880,14 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	if ((monster.hitPoints >> 6) <= 0) {
 		M_StartKill(monster, player);
 	} else {
-		if (monster.mode != MonsterMode::Petrified && HasAnyOf(player._pIFlags, ItemSpecialEffect::Knockback)
-		|| monster.mode != MonsterMode::Petrified && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow
-		&& player.InvBody[INVLOC_HAND_LEFT]._iMagical == ITEM_QUALITY_UNIQUE
-		&& HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack)
-		&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
+		if (monster.mode != MonsterMode::Petrified && HasAnyOf(player._pIFlags, ItemSpecialEffect::Knockback)) {
 			M_GetKnockback(monster);
+		} else if (monster.mode != MonsterMode::Petrified && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow
+		&& player.InvBody[INVLOC_HAND_LEFT]._iMagical == ITEM_QUALITY_UNIQUE) {
+			if (HasAllOf(player._pIFlags, ItemSpecialEffect::FastestAttack | ItemSpecialEffect::Empower)) {
+				M_GetKnockback(monster);
+			}
+		}
 		M_StartHit(monster, player, dam);
 	}
 	return true;
