@@ -730,7 +730,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        // Calculate the displacement based on the arrow direction
 	        Displacement displacement(arrowDirection);
 
-	        AddMissile(player.position.tile, player.position.tile + displacement, arrowDirection,
+	        AddMissile(player.position.tile, player.position.temp + displacement, arrowDirection,
 	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, var3);
 			if (misswitch == 5 && arrow == 0)
 				PlaySfxLoc(IS_FBALLBOW, player.position.tile);
