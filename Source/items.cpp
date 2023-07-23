@@ -3936,7 +3936,7 @@ bool DoOil(Player &player, int cii)
 		else
 			return fmt::format(fmt::runtime(_("holy fire dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_EMPOWER:
-			return fmt::format(fmt::runtime(_("Empowers Unique Weapons")));
+			return fmt::format(fmt::runtime(_("empowers some unique items")));
 	case IPL_NOMANA:
 		return _("user loses all mana");
 	case IPL_ABSHALFTRAP:
