@@ -1887,7 +1887,9 @@ void PrintItemMisc(const Item &item)
 		return;
 	}
 	if (item._iMiscId == IMISC_AURIC) {
+		AddPanelString(_("hold in inventory"));
 		AddPanelString(_("doubles gold pile capacity"));
+		AddPanelString(_("empower for quick attack"));
 		return;
 	}
 	const bool isOil = (item._iMiscId >= IMISC_USEFIRST && item._iMiscId <= IMISC_USELAST)

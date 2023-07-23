@@ -200,7 +200,8 @@ void StartAttack(Player &player, Direction d, bool includesFirstFrame)
 
 	int8_t skippedAnimationFrames = 0;
 	if (includesFirstFrame) {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack) && HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack | ItemSpecialEffect::FastAttack)) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack) && HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack | ItemSpecialEffect::FastAttack)
+		|| HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack) && HasInventoryItemWithId(player, IDI_AURIC) && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 			// Combining Fastest Attack with any other attack speed modifier skips over the fourth frame, reducing the effectiveness of Fastest Attack.
 			// Faster Attack makes up for this by also skipping the sixth frame so this case only applies when using Quick or Fast Attack modifiers.
 			skippedAnimationFrames = 3;
@@ -210,14 +211,16 @@ void StartAttack(Player &player, Direction d, bool includesFirstFrame)
 			skippedAnimationFrames = 3;
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)) {
 			skippedAnimationFrames = 2;
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack)
+		|| HasInventoryItemWithId(player, IDI_AURIC) && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 			skippedAnimationFrames = 1;
 		}
 	} else {
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FasterAttack)) {
 			// The combination of Faster and Fast Attack doesn't result in more skipped frames, because the second frame skip of Faster Attack is not triggered.
 			skippedAnimationFrames = 2;
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)
+		|| HasInventoryItemWithId(player, IDI_AURIC) && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 			skippedAnimationFrames = 1;
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack)) {
 			// Fastest Attack is skipped if Fast or Faster Attack is also specified, because both skip the frame that triggers Fastest Attack skipping.
