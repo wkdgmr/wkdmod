@@ -800,9 +800,10 @@ void HolyFireDamage(Player &player, Monster &monster) {
 			eMaxd = player._pIFMaxDam;
 			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
 			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0)
+			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0) {
 				mdam -= mdam / 2;
 				mdam -= mdam / 2;
+			}
 			mdam = mdam << 6;
 			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
 			AddMissile(monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0);
@@ -836,8 +837,10 @@ void CastHolyShock(Player &player, Monster &monster)
 		int mdam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
 		int bsmdam = mdam;
 		int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-		if ((res & (RESIST_LIGHTNING | IMMUNE_LIGHTNING)) != 0)
-		bsmdam -= mdam / 4;
+		if ((res & (RESIST_LIGHTNING | IMMUNE_LIGHTNING)) != 0) {
+			bsmdam -= bsmdam / 2;
+			bsmdam -= bsmdam / 2;
+		}
 		bsmdam = bsmdam << 6;
 		if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
 			ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
@@ -861,11 +864,25 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
 		if (!player.InvBody[INVLOC_CHEST].isEmpty()) {
 			if (HasAnyOf(player.InvBody[INVLOC_CHEST]._iFlags, ItemSpecialEffect::MagicDamage)) {
-				int eMind;
-				int eMaxd;
-				eMind = player._pIMMinDam;
-				eMaxd = player._pIMMaxDam;
+
+				int eMind = player._pIMMinDam;
+				int eMaxd = player._pIMMaxDam;
 				int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+
+				int bsmdam = mdam;
+				int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+				if ((res & (RESIST_MAGIC | IMMUNE_MAGIC)) != 0) {
+					bsmdam -= bsmdam / 2;
+					bsmdam -= bsmdam / 2;
+				}
+				bsmdam = bsmdam << 6;
+				PlaySFX(LS_BONESP);
+				ApplyMonsterDamage(DamageType::Magic, monster, bsmdam);
+				if (monster.hitPoints >> 6 <= 0)
+					M_StartKill(monster, player);
+				else
+					M_StartHit(monster, player, bsmdam);
+
 		    	int arrows = 6;
 	   			int dmg = mdam; 
 				int var3 = 1;
