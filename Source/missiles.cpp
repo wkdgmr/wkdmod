@@ -262,8 +262,14 @@ bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Miss
 		monster.tag(player);
 		PlayEffect(monster, MonsterSound::Hit);
 	} else {
-		if (monster.mode != MonsterMode::Petrified && missileData.isArrow() && HasAnyOf(player._pIFlags, ItemSpecialEffect::Knockback))
+		if (monster.mode != MonsterMode::Petrified && missileData.isArrow() && HasAnyOf(player._pIFlags, ItemSpecialEffect::Knockback)) {
 			M_GetKnockback(monster);
+		} else if (monster.mode != MonsterMode::Petrified && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow
+		&& player.InvBody[INVLOC_HAND_LEFT]._iMagical == ITEM_QUALITY_UNIQUE) { // Empowered Windforce
+			if (HasAllOf(player._pIFlags, ItemSpecialEffect::FastestAttack | ItemSpecialEffect::Empower)) {
+				M_GetKnockback(monster);
+			}
+		}
 		if (monster.type().type != MT_GOLEM)
 			M_StartHit(monster, player, dam);
 	}
