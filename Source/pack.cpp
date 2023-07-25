@@ -357,6 +357,8 @@ void PackNetPlayer(PlayerNetPack &packed, const Player &player)
 	packed.pIFMaxDam = SDL_SwapLE32(player._pIFMaxDam);
 	packed.pILMinDam = SDL_SwapLE32(player._pILMinDam);
 	packed.pILMaxDam = SDL_SwapLE32(player._pILMaxDam);
+	packed.pIMMinDam = SDL_SwapLE32(player._pIMMinDam);
+	packed.pIMMaxDam = SDL_SwapLE32(player._pIMMaxDam);
 }
 
 void UnPackItem(const ItemPack &packedItem, const Player &player, Item &item, bool isHellfire)
@@ -602,6 +604,8 @@ bool UnPackNetPlayer(const PlayerNetPack &packed, Player &player)
 	ValidateFields(player._pIFMaxDam, SDL_SwapLE32(packed.pIFMaxDam), player._pIFMaxDam == SDL_SwapLE32(packed.pIFMaxDam));
 	ValidateFields(player._pILMinDam, SDL_SwapLE32(packed.pILMinDam), player._pILMinDam == SDL_SwapLE32(packed.pILMinDam));
 	ValidateFields(player._pILMaxDam, SDL_SwapLE32(packed.pILMaxDam), player._pILMaxDam == SDL_SwapLE32(packed.pILMaxDam));
+	ValidateFields(player._pIMMinDam, SDL_SwapLE32(packed.pIMMinDam), player._pIMMinDam == SDL_SwapLE32(packed.pIMMinDam));
+	ValidateFields(player._pIMMaxDam, SDL_SwapLE32(packed.pIMMaxDam), player._pIMMaxDam == SDL_SwapLE32(packed.pIMMaxDam));
 
 
 	return true;

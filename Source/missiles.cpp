@@ -96,25 +96,6 @@ Monster *FindClosest(Point source, int rad)
 	return nullptr;
 }
 
-Monster *FindClosestExcluding(Point source, int rad, int excludedId)
-{
-	std::optional<Point> monsterPosition = FindClosestValidPosition(
-	    [&source, excludedId](Point target) {
-	        // search for a monster with clear line of sight and not the excluded one
-	        int mid = dMonster[target.x][target.y];
-	        return InDungeonBounds(target) && mid > 0 && mid != excludedId+1 && !CheckBlock(source, target);
-	    },
-	    source, 1, rad);
-
-	if (monsterPosition) {
-		int mid = dMonster[monsterPosition->x][monsterPosition->y];
-		return &Monsters[mid - 1];
-	}
-
-	return nullptr;
-}
-
-
 constexpr Direction16 Direction16Flip(Direction16 x, Direction16 pivot)
 {
 	std::underlying_type_t<Direction16> ret = (2 * static_cast<std::underlying_type_t<Direction16>>(pivot) + 16 - static_cast<std::underlying_type_t<Direction16>>(x)) % 16;

@@ -549,7 +549,9 @@ void LoadPlayer(LoadHelper &file, Player &player)
 	player.pDiabloKillLevel = file.NextLE<uint32_t>();
 	sgGameInitInfo.nDifficulty = static_cast<_difficulty>(file.NextLE<uint32_t>());
 	player.pDamAcFlags = static_cast<ItemSpecialEffectHf>(file.NextLE<uint32_t>());
-	file.Skip(20); // Available bytes
+	player._pIMMinDam = file.NextLE<int32_t>();
+	player._pIMMaxDam = file.NextLE<int32_t>();
+	file.Skip(18); // Available bytes
 	CalcPlrItemVals(player, false);
 
 	player.executedSpell = player.queuedSpell; // Ensures backwards compatibility
@@ -1312,7 +1314,9 @@ void SavePlayer(SaveHelper &file, const Player &player)
 	file.WriteLE<int32_t>(player._pIMisType);
 	file.Skip(1); // Available bytes
 	file.WriteLE<uint16_t>(player.wReflections);
-	file.Skip(14); // Available bytes
+	file.WriteLE<int32_t>(player._pIMMinDam);
+	file.WriteLE<int32_t>(player._pIMMaxDam);
+	file.Skip(12); // Available bytes
 
 	file.WriteLE<uint32_t>(player.pDiabloKillLevel);
 	file.WriteLE<uint32_t>(sgGameInitInfo.nDifficulty);

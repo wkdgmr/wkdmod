@@ -748,6 +748,9 @@ bool DeltaGetItem(const TCmdGItem &message, uint8_t bLevel)
 				delta.item.wToHit = message.item.wToHit;
 				delta.item.wMinDam = message.item.wMinDam;
 				delta.item.wMaxDam = message.item.wMaxDam;
+				delta.item.bMinStr = message.item.bMinStr;
+				delta.item.bMinMag = message.item.bMinMag;
+				delta.item.bMinDex = message.item.bMinDex;
 				delta.item.wFMinDam = message.item.wFMinDam;
 				delta.item.wFMaxDam = message.item.wFMaxDam;
 				delta.item.wLMinDam = message.item.wLMinDam;
@@ -1048,6 +1051,9 @@ int SyncDropItem(Point position, const TItem &item)
 	    SDL_SwapLE16(item.wToHit),
 		SDL_SwapLE16(item.wMinDam),
 	    SDL_SwapLE16(item.wMaxDam),
+	    SDL_SwapLE16(item.bMinStr),
+	    SDL_SwapLE16(item.bMinMag),
+	    SDL_SwapLE16(item.bMinDex),
 		SDL_SwapLE16(item.wFMinDam),
 	    SDL_SwapLE16(item.wFMaxDam),
 		SDL_SwapLE16(item.wLMinDam),
@@ -2348,6 +2354,9 @@ void PrepareItemForNetwork(const Item &item, TItem &messageItem)
 	messageItem.wToHit = SDL_SwapLE16(item._iPLToHit);
 	messageItem.wMinDam = SDL_SwapLE16(item._iMinDam);
 	messageItem.wMaxDam = SDL_SwapLE16(item._iMaxDam);
+	messageItem.bMinStr = SDL_SwapLE16(item._iMinStr);
+	messageItem.bMinMag = SDL_SwapLE16(item._iMinMag);
+	messageItem.bMinDex = SDL_SwapLE16(item._iMinDex);
 	messageItem.wFMinDam = SDL_SwapLE16(item._iFMinDam);
 	messageItem.wFMaxDam = SDL_SwapLE16(item._iFMaxDam);
 	messageItem.wLMinDam = SDL_SwapLE16(item._iLMinDam);
@@ -2378,6 +2387,9 @@ void RecreateItem(const Player &player, const TItem &messageItem, Item &item)
 	item._iPLToHit = SDL_SwapLE16(messageItem.wToHit);
 	item._iMinDam = SDL_SwapLE16(messageItem.wMinDam);
 	item._iMaxDam = SDL_SwapLE16(messageItem.wMaxDam);
+	item._iMinStr = SDL_SwapLE16(messageItem.bMinStr);
+	item._iMinMag = SDL_SwapLE16(messageItem.bMinMag);
+	item._iMinDex = SDL_SwapLE16(messageItem.bMinDex);
 	item._iFMinDam = SDL_SwapLE16(messageItem.wFMinDam);
 	item._iFMaxDam = SDL_SwapLE16(messageItem.wFMaxDam);
 	item._iLMinDam = SDL_SwapLE16(messageItem.wLMinDam);

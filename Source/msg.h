@@ -545,6 +545,9 @@ struct TItem {
 	uint16_t wToHit;
 	uint16_t wMaxDam;
 	uint16_t wMinDam;
+	uint8_t bMinStr;
+	uint8_t bMinMag;
+	uint8_t bMinDex;
 	uint16_t wFMaxDam;
 	uint16_t wFMinDam;
 	uint16_t wLMaxDam;

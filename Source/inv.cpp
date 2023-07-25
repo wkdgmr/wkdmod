@@ -1749,7 +1749,7 @@ bool CanPut(Point position)
 }
 
 int SyncDropItem(Point position, _item_indexes idx, uint16_t icreateinfo, int iseed, int id, int AC, int dur, int mdur, int ch, int mch, 
-int ivalue, uint32_t ibuff, int toHit, int minDam, int maxDam, int minFDam, int maxFDam, int minLDam, int maxLDam, int IMis)
+int ivalue, uint32_t ibuff, int toHit, int minDam, int maxDam, int minStr, int minMag, int minDex, int minFDam, int maxFDam, int minLDam, int maxLDam, int IMis)
 {
 	if (ActiveItemCount >= MAXITEMS)
 		return -1;
@@ -1767,6 +1767,9 @@ int ivalue, uint32_t ibuff, int toHit, int minDam, int maxDam, int minFDam, int 
 	item._iPLToHit = toHit;
 	item._iMinDam = minDam;
 	item._iMaxDam = maxDam;
+	item._iMinStr = minStr;
+	item._iMinMag = minMag;
+	item._iMinDex = minDex;
 	item._iFMinDam = minFDam;
 	item._iFMaxDam = maxFDam;
 	item._iLMinDam = minLDam;
