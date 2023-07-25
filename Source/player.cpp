@@ -836,6 +836,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 
 	int manaSteal = 0;
 	int lifeSteal = 0;
+	auto &SoulEater = player.InvBody[INVLOC_HAND_LEFT];
 	for (Item &item : EquippedPlayerItemsRange { player }) {
 	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana3)) {
 	        manaSteal += 3 * dam / 100;
@@ -850,7 +851,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealLife5)) {
 	        lifeSteal += 5 * dam / 100;
 	    }
-	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::RandomStealLife)) {
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::RandomStealLife) 
+		|| HasAllOf(SoulEater._iFlags, ItemSpecialEffect::FastestAttack | ItemSpecialEffect::DrainMana)
+		&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 	        lifeSteal += GenerateRnd(dam / 8);
 	    }
 	}
@@ -932,19 +935,53 @@ bool PlrHitPlr(Player &attacker, Player &target)
 			dam *= 2;
 		}
 	}
+	auto &SoulEater = attacker.InvBody[INVLOC_HAND_LEFT];
 	int skdam = dam << 6;
-	if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::RandomStealLife)) {
-		int tac = GenerateRnd(skdam / 8);
-		attacker._pHitPoints += tac;
-		if (attacker._pHitPoints > attacker._pMaxHP) {
-			attacker._pHitPoints = attacker._pMaxHP;
-		}
-		attacker._pHPBase += tac;
-		if (attacker._pHPBase > attacker._pMaxHPBase) {
-			attacker._pHPBase = attacker._pMaxHPBase;
-		}
-		RedrawComponent(PanelDrawComponent::Health);
+	int manaSteal = 0;
+	int lifeSteal = 0;
+	for (Item &item : EquippedPlayerItemsRange { attacker }) {
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana3)) {
+	        manaSteal += 3 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana5)) {
+	        manaSteal += 5 * dam / 100;
+	    }
+
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealLife3)) {
+	        lifeSteal += 3 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealLife5)) {
+	        lifeSteal += 5 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::RandomStealLife) 
+	        || (HasAllOf(SoulEater._iFlags, ItemSpecialEffect::FastestAttack | ItemSpecialEffect::DrainMana)
+	        && HasAnyOf(attacker._pIFlags, ItemSpecialEffect::Empower))) {
+	        lifeSteal += GenerateRnd(skdam / 8);
+	    }
 	}
+	if (manaSteal > 0 && HasNoneOf(attacker._pIFlags, ItemSpecialEffect::NoMana)) {
+	    attacker._pMana += manaSteal;
+	    if (attacker._pMana > attacker._pMaxMana) {
+	        attacker._pMana = attacker._pMaxMana;
+	    }
+	    attacker._pManaBase += manaSteal;
+	    if (attacker._pManaBase > attacker._pMaxManaBase) {
+	        attacker._pManaBase = attacker._pMaxManaBase;
+	    }
+	    RedrawComponent(PanelDrawComponent::Mana);
+	}
+	if (lifeSteal > 0) {
+	    attacker._pHitPoints += lifeSteal;
+	    if (attacker._pHitPoints > attacker._pMaxHP) {
+	        attacker._pHitPoints = attacker._pMaxHP;
+	    }
+	    attacker._pHPBase += lifeSteal;
+	    if (attacker._pHPBase > attacker._pMaxHPBase) {
+	        attacker._pHPBase = attacker._pMaxHPBase;
+	    }
+	    RedrawComponent(PanelDrawComponent::Health);
+	}
+
 	if (&attacker == MyPlayer) {
 		NetSendCmdDamage(true, target.getId(), skdam, DamageType::Physical);
 	}
