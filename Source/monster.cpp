@@ -864,13 +864,14 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
 		if (!player.InvBody[INVLOC_CHEST].isEmpty()) {
 			auto &BoneArmor = player.InvBody[INVLOC_CHEST];
-			if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FasterHitRecovery)
+			if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
 			&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 
 				int eMind = player._pIMMinDam;
 				int eMaxd = player._pIMMaxDam;
 				int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
 
+				/*
 				int bsmdam = mdam;
 				int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 				if ((res & (RESIST_MAGIC | IMMUNE_MAGIC)) != 0) {
@@ -884,6 +885,7 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 					M_StartKill(monster, player);
 				else
 					M_StartHit(monster, player, bsmdam);
+				*/
 
 		    	int arrows = 6;
 	   			int dmg = mdam; 
