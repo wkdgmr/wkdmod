@@ -716,9 +716,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        // Choose the correct strafe pattern based on number of arrows
 	        int arrowDirectionIndex;
 	        if (arrows == 3) {
-	            arrowDirectionIndex = (directionIndex + strafePattern3[arrow]) % 8;
+	            arrowDirectionIndex = (directionIndex + strafePattern3[arrow] + 8) % 8;
 	        } else if (arrows == 6) {
-	            arrowDirectionIndex = (directionIndex + strafePattern6[arrow]) % 8;
+	            arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
 	        }
 	        if (arrowDirectionIndex < 0) {
 	            arrowDirectionIndex += 8; // Handle negative direction indices
@@ -730,7 +730,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        // Calculate the displacement based on the arrow direction
 	        Displacement displacement(arrowDirection);
 
-	        AddMissile(player.position.tile, player.position.temp + displacement, arrowDirection,
+	        AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
 	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, var3);
 			if (misswitch == 5 && arrow == 0)
 				PlaySfxLoc(IS_FBALLBOW, player.position.tile);

@@ -96,6 +96,25 @@ Monster *FindClosest(Point source, int rad)
 	return nullptr;
 }
 
+Monster *FindClosestExcluding(Point source, int rad, int excludedId)
+{
+	std::optional<Point> monsterPosition = FindClosestValidPosition(
+	    [&source, excludedId](Point target) {
+	        // search for a monster with clear line of sight and not the excluded one
+	        int mid = dMonster[target.x][target.y];
+	        return InDungeonBounds(target) && mid > 0 && mid != excludedId+1 && !CheckBlock(source, target);
+	    },
+	    source, 1, rad);
+
+	if (monsterPosition) {
+		int mid = dMonster[monsterPosition->x][monsterPosition->y];
+		return &Monsters[mid - 1];
+	}
+
+	return nullptr;
+}
+
+
 constexpr Direction16 Direction16Flip(Direction16 x, Direction16 pivot)
 {
 	std::underlying_type_t<Direction16> ret = (2 * static_cast<std::underlying_type_t<Direction16>>(pivot) + 16 - static_cast<std::underlying_type_t<Direction16>>(x)) % 16;
@@ -1538,10 +1557,6 @@ void AddImmolation(Missile &missile, AddMissileParameter &parameter)
 	}
 	UpdateMissileVelocity(missile, dst, sp);
 	SetMissDir(missile, GetDirection16(missile.position.start, dst));
-	if (Players[missile._misource]._pIMisType == 1 
-	&& Players[missile._misource].InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff) {
-		dst += Players[missile._misource]._pdir;
-	}
 	missile._mirange = 256;
 	missile._mlid = AddLight(missile.position.start, 8);
 }
@@ -2709,28 +2724,28 @@ void AddTelekinesis(Missile &missile, AddMissileParameter & /*parameter*/)
 
 void AddBoneSpirit(Missile &missile, AddMissileParameter &parameter)
 {
-	Point dst = parameter.dst;
-	if (missile.position.start == dst) {
-		dst += parameter.midir;
-	}
+    Point dst = parameter.dst;
+    if (missile.position.start == dst) {
+        dst += parameter.midir;
+    }
 
-	Player &player = Players[missile._misource];
-
-	UpdateMissileVelocity(missile, dst, 16);
-	SetMissDir(missile, GetDirection(missile.position.start, dst));
-	if (Players[missile._misource]._pIMisType == 9
-	&& Players[missile._misource].InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff) {
-		if (player.queuedSpell.spellType != SpellType::Spell 
-        	&& player.queuedSpell.spellType != SpellType::Scroll
-        	&& player.queuedSpell.spellType != SpellType::Charges)
-				dst += Players[missile._misource]._pdir;
-	}
-	missile._mirange = 256;
-	missile.var1 = missile.position.start.x;
-	missile.var2 = missile.position.start.y;
-	missile.var4 = dst.x;
-	missile.var5 = dst.y;
-	missile._mlid = AddLight(missile.position.start, 8);
+    Player &player = Players[missile._misource];
+    auto &BoneArmor = player.InvBody[INVLOC_CHEST];
+    UpdateMissileVelocity(missile, dst, 16);
+    SetMissDir(missile, GetDirection(missile.position.start, dst));
+    missile._mirange = 256;
+    missile.var1 = missile.position.start.x;
+    missile.var2 = missile.position.start.y;
+    missile.var4 = dst.x;
+    missile.var5 = dst.y;
+    missile.var6 = -1;  // Initialize to -1 to not ignore any monster initially
+    missile.var7 = -1;  // Initialize to -1 to not ignore any monster initially
+    if (player._pIMisType == 9
+    || HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FasterHitRecovery) &&
+    HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+            missile.var7 = 1;
+    }
+    missile._mlid = AddLight(missile.position.start, 8);
 }
 
 void AddRedPortal(Missile &missile, AddMissileParameter & /*parameter*/)
@@ -4294,7 +4309,7 @@ void ProcessBoneSpirit(Missile &missile)
 	int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) / 2);
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	if (player._pIMisType == 9
-	|| HasAnyOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage)
+	|| HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FasterHitRecovery)
 	&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 		if (player.queuedSpell.spellType != SpellType::Spell 
         && player.queuedSpell.spellType != SpellType::Scroll
@@ -4312,7 +4327,7 @@ void ProcessBoneSpirit(Missile &missile)
 		PutMissile(missile);
 	} else {
 		if (player._pIMisType == 9
-		|| HasAnyOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage)
+		|| HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FasterHitRecovery)
 		&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 			if (player.queuedSpell.spellType != SpellType::Spell 
     	    && player.queuedSpell.spellType != SpellType::Scroll
@@ -4321,23 +4336,25 @@ void ProcessBoneSpirit(Missile &missile)
 				maxDmg = player._pIMMaxDam;
 				missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 		}
-		MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);
-		Point c = missile.position.tile;
-		if (missile.var3 == 0 && c == Point { missile.var4, missile.var5 })
-			missile.var3 = 1;
-		if (missile.var3 == 1) {
-			missile.var3 = 2;
-			missile._mirange = 255;
-			auto *monster = FindClosest(c, 19);
-			if (monster != nullptr) {
-				SetMissDir(missile, GetDirection(c, monster->position.tile));
-				UpdateMissileVelocity(missile, monster->position.tile, 16);
-			} else {
-				Direction sd = Players[missile._misource]._pdir;
-				SetMissDir(missile, sd);
-				UpdateMissileVelocity(missile, c + sd, 16);
-			}
-		}
+    	MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);
+    	Point c = missile.position.tile;
+    	if (missile.var3 == 0 && c == Point { missile.var4, missile.var5 })
+    	    missile.var3 = 1;
+    	if (missile.var3 == 1) {
+    	    missile.var3 = 2;
+    	    missile._mirange = 255;
+    	    auto *monster = FindClosest(c, 19);
+    	    if (monster != nullptr && monster->position.tile != Point { missile.var6, missile.var7 }) {
+    	        missile.var6 = monster->position.tile.x;  // Store this monster's position
+    	        missile.var7 = monster->position.tile.y;  // as the 'previous' monster position
+    	        SetMissDir(missile, GetDirection(c, monster->position.tile));
+    	        UpdateMissileVelocity(missile, monster->position.tile, 16);
+    	    } else if (monster == nullptr || monster->position.tile == Point { missile.var6, missile.var7 }) {
+    	        Direction sd = Players[missile._misource]._pdir;
+    	        SetMissDir(missile, sd);
+    	        UpdateMissileVelocity(missile, c + sd, 16);
+    	    }
+    	}
 		if (c != Point { missile.var1, missile.var2 }) {
 			missile.var1 = c.x;
 			missile.var2 = c.y;

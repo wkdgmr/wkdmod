@@ -863,7 +863,9 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 {
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
 		if (!player.InvBody[INVLOC_CHEST].isEmpty()) {
-			if (HasAnyOf(player.InvBody[INVLOC_CHEST]._iFlags, ItemSpecialEffect::MagicDamage)) {
+			auto &BoneArmor = player.InvBody[INVLOC_CHEST];
+			if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FasterHitRecovery)
+			&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 
 				int eMind = player._pIMMinDam;
 				int eMaxd = player._pIMMaxDam;
@@ -885,21 +887,20 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 
 		    	int arrows = 6;
 	   			int dmg = mdam; 
-				int var3 = 1;
 	    		int directionIndex = static_cast<int>(player._pdir);
 	    		std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
 	    		for (int arrow = 0; arrow < arrows; arrow++) {
 	    		    int arrowDirectionIndex;
 					if (arrows == 6) {
-	    		        arrowDirectionIndex = (directionIndex + strafePattern6[arrow]) % 8;
+	    		        arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
 	    		    }
 	    		    if (arrowDirectionIndex < 0) {
 	    		        arrowDirectionIndex += 8;
 	    		    }
 	    		    Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
 	    		    Displacement displacement(arrowDirection);
-	    		    AddMissile(player.position.tile, player.position.temp + displacement, arrowDirection,
-	    		               MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), dmg, var3);
+	    		    AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
+	    		               MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), dmg, 0);
 	    		}
 			}
 		}
