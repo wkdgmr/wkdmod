@@ -862,15 +862,13 @@ void CastHolyShock(Player &player, Monster &monster)
 void ExplodingBoneArmor(Player &player, Monster &monster)
 {
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		int eMind = player._pIMMinDam;
+		int eMaxd = player._pIMMaxDam;
+		int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
 		if (!player.InvBody[INVLOC_CHEST].isEmpty()) {
 			auto &BoneArmor = player.InvBody[INVLOC_CHEST];
 			if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
 			&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-
-				int eMind = player._pIMMinDam;
-				int eMaxd = player._pIMMaxDam;
-				int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-
 				/*
 				int bsmdam = mdam;
 				int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
@@ -886,7 +884,6 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 				else
 					M_StartHit(monster, player, bsmdam);
 				*/
-
 		    	int arrows = 6;
 	   			int dmg = mdam; 
 	    		int directionIndex = static_cast<int>(player._pdir);

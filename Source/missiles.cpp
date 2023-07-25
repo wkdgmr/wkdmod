@@ -2741,7 +2741,7 @@ void AddBoneSpirit(Missile &missile, AddMissileParameter &parameter)
     missile.var6 = -1;  // Initialize to -1 to not ignore any monster initially
     missile.var7 = -1;  // Initialize to -1 to not ignore any monster initially
     if (player._pIMisType == 9
-    || HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FasterHitRecovery) &&
+    || HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery) &&
     HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
             missile.var7 = 1;
     }
@@ -4309,7 +4309,7 @@ void ProcessBoneSpirit(Missile &missile)
 	int maxDmg = (ScaleSpellEffect(base + 36, missile._mispllvl) / 2);
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	if (player._pIMisType == 9
-	|| HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FasterHitRecovery)
+	|| HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
 	&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 		if (player.queuedSpell.spellType != SpellType::Spell 
         && player.queuedSpell.spellType != SpellType::Scroll
@@ -4326,16 +4326,6 @@ void ProcessBoneSpirit(Missile &missile)
 		}
 		PutMissile(missile);
 	} else {
-		if (player._pIMisType == 9
-		|| HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FasterHitRecovery)
-		&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-			if (player.queuedSpell.spellType != SpellType::Spell 
-    	    && player.queuedSpell.spellType != SpellType::Scroll
-    	    && player.queuedSpell.spellType != SpellType::Charges)
-				minDmg = player._pIMMinDam;
-				maxDmg = player._pIMMaxDam;
-				missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
-		}
     	MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);
     	Point c = missile.position.tile;
     	if (missile.var3 == 0 && c == Point { missile.var4, missile.var5 })
