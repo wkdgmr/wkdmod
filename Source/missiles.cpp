@@ -2263,7 +2263,7 @@ void AddAcidPuddle(Missile &missile, AddMissileParameter & /*parameter*/)
 		case MissileSource::Player: {
 			Player &player = Players[missile._misource];
 			missile._miLightFlag = true;
-			missile._mirange = GenerateRnd((player._pLevel * 2) + 1);
+			missile._mirange = GenerateRnd((player._pLevel * 2) + 1) + GenerateRnd((player._pIMMaxDam) + 1);
 			missile._miPreFlag = true;
 		} break;
 		case MissileSource::Monster: {
@@ -3811,6 +3811,10 @@ void ProcessAcidSplate(Missile &missile)
 	if (missile._mirange == missile._miAnimLen && missile.sourceType() == MissileSource::Monster) {
 		missile.position.tile += Displacement { 1, 1 };
 		missile.position.offset.deltaY -= 32;
+	} else if (missile._mirange == missile._miAnimLen && missile.sourceType() == MissileSource::Player) {
+		Point c = missile.position.tile;
+		auto *monster = FindClosest(c, 1);
+		missile.position.tile = monster->position.tile;
 	}
 	missile._mirange--;
 	if (missile._mirange == 0) {
