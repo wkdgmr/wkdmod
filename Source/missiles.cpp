@@ -3814,7 +3814,9 @@ void ProcessAcidSplate(Missile &missile)
 	} else if (missile._mirange == missile._miAnimLen && missile.sourceType() == MissileSource::Player) {
 		Point c = missile.position.tile;
 		auto *monster = FindClosest(c, 1);
-		missile.position.tile = monster->position.tile;
+		if (monster != nullptr) {
+			missile.position.tile = monster->position.tile;
+		}
 	}
 	missile._mirange--;
 	if (missile._mirange == 0) {
