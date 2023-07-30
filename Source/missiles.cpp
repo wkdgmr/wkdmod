@@ -2263,7 +2263,7 @@ void AddAcidPuddle(Missile &missile, AddMissileParameter & /*parameter*/)
 		case MissileSource::Player: {
 			Player &player = Players[missile._misource];
 			missile._miLightFlag = true;
-			missile._mirange = GenerateRnd((player._pLevel * 2) + 1) + GenerateRnd((player._pIMMaxDam) + 1);
+			missile._mirange = GenerateRnd((player._pLevel * 2) + 1) + GenerateRnd(std::min(player._pIMMaxDam, 200) + 1);
 			missile._miPreFlag = true;
 		} break;
 		case MissileSource::Monster: {
@@ -3816,6 +3816,13 @@ void ProcessAcidSplate(Missile &missile)
 		auto *monster = FindClosest(c, 1);
 		if (monster != nullptr) {
 			missile.position.tile = monster->position.tile;
+		} else if (monster != nullptr && monster->position.tile != Point { missile.var6, missile.var7 }) {
+    		missile.var6 = monster->position.tile.x;
+    		missile.var7 = monster->position.tile.y;
+			missile.position.tile = monster->position.tile;
+		} else if (monster == nullptr || monster->position.tile == Point { missile.var6, missile.var7 }) {
+    	    Direction sd = Players[missile._misource]._pdir;
+			missile.position.tile = c;
 		}
 	}
 	missile._mirange--;
@@ -4322,8 +4329,8 @@ void ProcessBoneSpirit(Missile &missile)
     	    missile._mirange = 255;
     	    auto *monster = FindClosest(c, 19);
     	    if (monster != nullptr && monster->position.tile != Point { missile.var6, missile.var7 }) {
-    	        missile.var6 = monster->position.tile.x;  // Store this monster's position
-    	        missile.var7 = monster->position.tile.y;  // as the 'previous' monster position
+    	        missile.var6 = monster->position.tile.x;
+    	        missile.var7 = monster->position.tile.y;
     	        SetMissDir(missile, GetDirection(c, monster->position.tile));
     	        UpdateMissileVelocity(missile, monster->position.tile, 16);
     	    } else if (monster == nullptr || monster->position.tile == Point { missile.var6, missile.var7 }) {
