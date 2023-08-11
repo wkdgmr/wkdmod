@@ -904,6 +904,97 @@ int CheckReflect(Player &attacker, Player &target, int dam)
 	return mdam;
 }
 
+int HolyFireChance(Player &attacker) {
+    if (attacker._pLevel < 10) {
+        return 10; // 10% chance at level 1-9.
+    } else if (attacker._pLevel < 20) {
+        return 15; // 15% chance at level 10-19.
+    } else if (attacker._pLevel < 30) {
+        return 20; // 20% chance at level 20-29.
+    } else if (attacker._pLevel < 40) {
+        return 25; // 25% chance at level 30-39.
+    } else {
+        return 30; // 30% chance at level 40 and above.
+    }
+}
+
+
+void HolyFireDamage(Player &attacker, Player &target) {
+	if (target.position.tile.WalkingDistance(attacker.position.tile) < 2) {
+		if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::Thorns)) {
+			int eMind;
+			int eMaxd;
+			eMind = attacker._pIFMinDam;
+			eMaxd = attacker._pIFMaxDam;
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+			mdam -= mdam * (target._pFireResist / 100);
+			mdam = mdam << 6;
+			NetSendCmdDamage(true, target.getId(), mdam, DamageType::Fire);
+			AddMissile(target.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, attacker.getId(), 0, 0);
+		}
+	}
+}
+
+void CastHolyShock(Player &attacker, Player &target) 
+{
+	SpellID spellId = SpellID::Flash;
+	if (target.position.tile.WalkingDistance(attacker.position.tile) < 2) {
+    	if (attacker._pRSpell != spellId || attacker._pRSplType != SpellType::Spell) {
+    	    return;
+    	}
+    	if (attacker._pSplLvl[static_cast<int>(spellId)] <= 0) {
+    	    return;
+    	}
+    	int spellLevel = attacker._pSplLvl[static_cast<int>(spellId)];
+		PlaySFX(IS_CAST4);
+        int base = (attacker._pLevel * 4) + (spellLevel * 10);
+        double lightningPct = std::min(0.1 * (1 + (spellLevel - 1) / 2), 1.0);
+        int lightningDamage = attacker._pILMinDam + GenerateRnd(attacker._pILMaxDam - attacker._pILMinDam + 1);
+        lightningDamage = static_cast<int>(lightningPct * lightningDamage);
+		int mdam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
+		int bsmdam = mdam;
+		bsmdam -= bsmdam * (target._pLghtResist / 100);
+		bsmdam = bsmdam << 6;
+		NetSendCmdDamage(true, target.getId(), bsmdam, DamageType::Lightning);
+		AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::FlashBottom, TARGET_MONSTERS, attacker.getId(), mdam, spellLevel);
+		AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::FlashTop, TARGET_MONSTERS, attacker.getId(), mdam, spellLevel);
+	} else {
+		return;
+	}
+}
+
+
+void ExplodingBoneArmor(Player &attacker, Player &target)
+{
+	if (target.position.tile.WalkingDistance(attacker.position.tile) < 2) {
+		int eMind = attacker._pIMMinDam;
+		int eMaxd = attacker._pIMMaxDam;
+		int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+		if (!attacker.InvBody[INVLOC_CHEST].isEmpty()) {
+			auto &BoneArmor = attacker.InvBody[INVLOC_CHEST];
+			if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
+			&& HasAnyOf(attacker._pIFlags, ItemSpecialEffect::Empower)) {
+		    	int arrows = 6;
+	    		int directionIndex = static_cast<int>(attacker._pdir);
+	    		std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
+	    		for (int arrow = 0; arrow < arrows; arrow++) {
+	    		    int arrowDirectionIndex;
+					if (arrows == 6) {
+	    		        arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
+	    		    }
+	    		    if (arrowDirectionIndex < 0) {
+	    		        arrowDirectionIndex += 8;
+	    		    }
+	    		    Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
+	    		    Displacement displacement(arrowDirection);
+	    		    AddMissile(attacker.position.tile, attacker.position.old + displacement, arrowDirection,
+	    		               MissileID::BoneSpirit, TARGET_MONSTERS, attacker.getId(), mdam, 0);
+	    		}
+			}
+		}
+	}
+}
+
 bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 {
 	if (target._pInvincible) {
@@ -947,10 +1038,100 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 		return true;
 	}
 
-	if (gbIsHellfire && HasAllOf(attacker._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
-		int midam = attacker._pIFMinDam + GenerateRnd(attacker._pIFMaxDam - attacker._pIFMinDam);
-		AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_BOTH, attacker.getId(), midam, 0);
+	int misswitch = attacker._pIMisType;
+
+	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 3) {
+	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
+	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 6) {
+	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	}
+	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 4) {
+	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	}
+	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 8) {
+	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	}
+	if ((HasAllOf(attacker._pIFlags, ItemSpecialEffect::FireDamage |  ItemSpecialEffect::LightningDamage)) && misswitch == 7) {
+	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	}
+	
+	if (attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1
+	|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2
+	|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 5
+	|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9
+	|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 100
+	|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 103
+	|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 104
+	|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200
+	|| attacker.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 100
+	|| attacker.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 103
+	|| attacker.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 104) {
+	    int arrows = 0;
+	    int dmg = 0; 
+		int var3 = 0;
+		if (attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1) {
+			dmg = attacker._pIFMinDam + GenerateRnd(attacker._pIFMaxDam - attacker._pIFMinDam + 1);
+		}
+		if (attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2) {
+			dmg = attacker._pILMinDam + GenerateRnd(attacker._pILMaxDam - attacker._pILMinDam + 1);
+		}
+		if (attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 5
+		|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9
+		|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 100
+		|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 103
+		|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 104
+		|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200
+		|| attacker.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 100
+		|| attacker.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 103
+		|| attacker.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 104) {
+			dmg = attacker._pIMMinDam + GenerateRnd(attacker._pIMMaxDam - attacker._pIMMinDam + 1);
+			if (attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9)
+				var3 = 1;
+		}
+	    if (attacker.AnimInfo.currentFrame == attacker._pAFNum - 1) {
+	        arrows = HasAnyOf(attacker._pIFlags, ItemSpecialEffect::Empower) 
+			|| attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200 ? 6 : 3;
+	    }
+
+	    // Get the index of the attacker's direction in the directions array
+	    int directionIndex = static_cast<int>(attacker._pdir);
+
+	    // Define strafe patterns
+	    std::array<int, 3> strafePattern3 = { -1, 0, 1 }; // Normal strafe pattern
+	    std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 }; // Empower strafe pattern
+
+	    for (int arrow = 0; arrow < arrows; arrow++) {
+	        // Choose the correct strafe pattern based on number of arrows
+	        int arrowDirectionIndex;
+	        if (arrows == 3) {
+	            arrowDirectionIndex = (directionIndex + strafePattern3[arrow] + 8) % 8;
+	        } else if (arrows == 6) {
+	            arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
+	        }
+	        if (arrowDirectionIndex < 0) {
+	            arrowDirectionIndex += 8; // Handle negative direction indices
+	        }
+
+	        // Get the direction enum value based on the direction index
+	        Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
+
+	        // Calculate the displacement based on the arrow direction
+	        Displacement displacement(arrowDirection);
+
+	        AddMissile(attacker.position.tile, attacker.position.old + displacement, arrowDirection,
+	                   MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), dmg, var3);
+			if (misswitch == 5 && arrow == 0)
+				PlaySfxLoc(IS_FBALLBOW, attacker.position.tile);
+	    }
+	}
+
+	int pFireDam = attacker._pIFMinDam + GenerateRnd(attacker._pIFMaxDam - attacker._pIFMinDam + 1);
+	int pLightningDam = attacker._pILMinDam + GenerateRnd(attacker._pILMaxDam - attacker._pILMinDam + 1);
+	int pMagicDam = attacker._pIMMinDam + GenerateRnd(attacker._pIMMaxDam - attacker._pIMMinDam + 1);
+	pFireDam -= pFireDam * (target._pFireResist / 100);
+	pLightningDam -= pLightningDam * (target._pLghtResist / 100);
+	pMagicDam -= pMagicDam * (target._pMagResist / 100);
 	int mind = attacker._pIMinDam;
 	int maxd = attacker._pIMaxDam;
 	int dam = GenerateRnd(maxd - mind + 1) + mind;
@@ -970,6 +1151,9 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 	}
 
 	dam <<= 6;
+	pFireDam <<= 6;
+	pLightningDam <<= 6;
+	pMagicDam <<= 6;
 	if (HasAnyOf(attacker.pDamAcFlags, ItemSpecialEffectHf::Jesters)) {
 		int r = GenerateRnd(201);
 		if (r >= 100)
@@ -979,18 +1163,21 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 
 	if (adjacentDamage)
 		dam >>= 2;
+		pFireDam >>= 2;
+		pLightningDam >>= 2;
+		pMagicDam >>= 2;
 
 	if (target.wReflections > 0) {
 		int reflectedDamage = CheckReflect(attacker, target, dam);
 		dam = std::max(dam - reflectedDamage, 0);
 	}
 
-	if (&target == MyPlayer) {
-		if (HasAnyOf(target._pIFlags, ItemSpecialEffect::Thorns)) {
-			int mdam = (GenerateRnd(3) + 1) << 6;
-			NetSendCmdDamage(true, attacker.getId(), mdam, DamageType::Physical);
-		}
-  }
+	// Check for holy fire effect
+	if ((GenerateRnd(100) + 1) <= HolyFireChance(attacker)) {
+	    HolyFireDamage(attacker, target);
+		CastHolyShock(attacker, target);
+		ExplodingBoneArmor(attacker, target);
+	}
   
 	auto &SoulEater = attacker.InvBody[INVLOC_HAND_LEFT];
 	int skdam = dam << 6;
@@ -1051,6 +1238,16 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 	}
 
 	StartPlrHit(target, dam, false);
+	if (adjacentDamage)
+		if (pFireDam > 0)
+			AddMissile(target.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
+			NetSendCmdDamage(true, target.getId(), pFireDam, DamageType::Fire);
+		if (pLightningDam > 0)
+			AddMissile(target.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
+			NetSendCmdDamage(true, target.getId(), pLightningDam, DamageType::Lightning);
+		if (pMagicDam > 0)
+			AddMissile(target.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
+			NetSendCmdDamage(true, target.getId(), pMagicDam, DamageType::Magic);
 
 	return true;
 }
