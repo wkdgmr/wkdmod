@@ -1420,6 +1420,16 @@ bool DoRangeAttack(Player &player)
 		|| HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) && player._pIMisType > 0 ? 3 : 1;
 	}
 
+	Point position = player.position.tile + player._pdir;
+	if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
+		// Check for holy fire effect
+		if ((GenerateRnd(100) + 1) <= HolyFireChance(*PlayerAtPosition(position))) {
+		    HolyFireDamage(player, *PlayerAtPosition(position));
+			CastHolyShock(player, *PlayerAtPosition(position));
+			ExplodingBoneArmor(player, *PlayerAtPosition(position));
+		}
+	}
+
 	for (int arrow = 0; arrow < arrows; arrow++) {
 	    int xoff = 0;
 	    int yoff = 0;
@@ -1604,6 +1614,16 @@ bool DoSpell(Player &player)
 
 		if (IsAnyOf(player.executedSpell.spellType, SpellType::Scroll, SpellType::Charges)) {
 			EnsureValidReadiedSpell(player);
+		}
+	}
+
+	Point position = player.position.tile + player._pdir;
+	if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
+		// Check for holy fire effect
+		if ((GenerateRnd(100) + 1) <= HolyFireChance(*PlayerAtPosition(position))) {
+		    HolyFireDamage(player, *PlayerAtPosition(position));
+			CastHolyShock(player, *PlayerAtPosition(position));
+			ExplodingBoneArmor(player, *PlayerAtPosition(position));
 		}
 	}
 
