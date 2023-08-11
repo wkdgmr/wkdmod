@@ -436,10 +436,12 @@ void CheckInvPaste(Player &player, Point cursorPosition)
 
 		inv_body_loc pasteHand = pasteIntoSelectedHand ? selectedHand : otherHand;
 		Item previouslyEquippedItem = dequipTwoHandedWeapon ? player.InvBody[otherHand] : player.InvBody[pasteHand];
-		if (dequipTwoHandedWeapon) {
+    	if (dequipTwoHandedWeapon) {
 			RemoveEquipment(player, otherHand, false);
-		}
+        }
+
 		ChangeEquipment(player, pasteHand, player.HoldItem.pop());
+
 		if (!previouslyEquippedItem.isEmpty()) {
 			player.HoldItem = previouslyEquippedItem;
 		}
@@ -1746,31 +1748,8 @@ bool CanPut(Point position)
 	return true;
 }
 
-int ClampDurability(const Item &item, int durability)
-{
-	if (item._iMaxDur == 0)
-		return 0;
-
-	return clamp<int>(durability, 1, item._iMaxDur);
-}
-
-int16_t ClampToHit(const Item &item, int16_t toHit)
-{
-	if (toHit < item._iPLToHit || toHit > 51)
-		return item._iPLToHit;
-
-	return toHit;
-}
-
-uint8_t ClampMaxDam(const Item &item, uint8_t maxDam)
-{
-	if (maxDam < item._iMaxDam || maxDam - item._iMinDam > 30)
-		return item._iMaxDam;
-
-	return maxDam;
-}
-
-int SyncDropItem(Point position, _item_indexes idx, uint16_t icreateinfo, int iseed, int id, int dur, int mdur, int ch, int mch, int ivalue, uint32_t ibuff, int toHit, int maxDam)
+int SyncDropItem(Point position, _item_indexes idx, uint16_t icreateinfo, int iseed, int id, int AC, int dur, int mdur, int ch, int mch, 
+int ivalue, uint32_t ibuff, int toHit, int minDam, int maxDam, int minStr, int minMag, int minDex, int minFDam, int maxFDam, int minLDam, int maxLDam, int IMis)
 {
 	if (ActiveItemCount >= MAXITEMS)
 		return -1;
@@ -1780,15 +1759,23 @@ int SyncDropItem(Point position, _item_indexes idx, uint16_t icreateinfo, int is
 	RecreateItem(*MyPlayer, item, idx, icreateinfo, iseed, ivalue, (ibuff & CF_HELLFIRE) != 0);
 	if (id != 0)
 		item._iIdentified = true;
+	item._iAC = AC;
+	item._iDurability = dur;
 	item._iMaxDur = mdur;
-	item._iDurability = ClampDurability(item, dur);
-	item._iMaxCharges = clamp<int>(mch, 0, item._iMaxCharges);
-	item._iCharges = clamp<int>(ch, 0, item._iMaxCharges);
-	if (gbIsHellfire) {
-		item._iPLToHit = ClampToHit(item, toHit);
-		item._iMaxDam = ClampMaxDam(item, maxDam);
-	}
+	item._iCharges = ch;
+	item._iMaxCharges = mch;
+	item._iPLToHit = toHit;
+	item._iMinDam = minDam;
+	item._iMaxDam = maxDam;
+	item._iMinStr = minStr;
+	item._iMinMag = minMag;
+	item._iMinDex = minDex;
+	item._iFMinDam = minFDam;
+	item._iFMaxDam = maxFDam;
+	item._iLMinDam = minLDam;
+	item._iLMaxDam = maxLDam;
 	item.dwBuff = ibuff;
+	item._iMisType = IMis;
 
 	return PlaceItemInWorld(std::move(item), position);
 }

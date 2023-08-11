@@ -244,7 +244,7 @@ void LoadItemData(LoadHelper &file, Item &item)
 	item.AnimInfo.numberOfFrames = file.NextLENarrow<int32_t, int8_t>();
 	item.AnimInfo.currentFrame = file.NextLENarrow<int32_t, int8_t>(-1);
 	file.Skip(8); // Skip _iAnimWidth and _iAnimWidth2
-	file.Skip(4); // Unused since 1.02
+	item._iMisType = file.NextLE<int32_t>();
 	item._iSelFlag = file.NextLE<uint8_t>();
 	file.Skip(3); // Alignment
 	item._iPostDraw = file.NextBool32();
@@ -516,7 +516,7 @@ void LoadPlayer(LoadHelper &file, Player &player)
 	player._pIFlags = static_cast<ItemSpecialEffect>(file.NextLE<int32_t>());
 	player._pIGetHit = file.NextLE<int32_t>();
 	player._pISplLvlAdd = file.NextLE<int8_t>();
-	file.Skip(1);         // Unused
+	player._pIMisType = file.NextLE<int32_t>();
 	file.Skip(2);         // Alignment
 	file.Skip<int32_t>(); // _pISplDur
 	player._pIEnAc = file.NextLE<int32_t>();
@@ -549,7 +549,9 @@ void LoadPlayer(LoadHelper &file, Player &player)
 	player.pDiabloKillLevel = file.NextLE<uint32_t>();
 	sgGameInitInfo.nDifficulty = static_cast<_difficulty>(file.NextLE<uint32_t>());
 	player.pDamAcFlags = static_cast<ItemSpecialEffectHf>(file.NextLE<uint32_t>());
-	file.Skip(20); // Available bytes
+	player._pIMMinDam = file.NextLE<int32_t>();
+	player._pIMMaxDam = file.NextLE<int32_t>();
+	file.Skip(18); // Available bytes
 	CalcPlrItemVals(player, false);
 
 	player.executedSpell = player.queuedSpell; // Ensures backwards compatibility
@@ -931,55 +933,19 @@ bool LevelFileExists(SaveWriter &archive)
 	return archive.HasFile(szName);
 }
 
-bool IsShopPriceValid(const Item &item)
+void LoadMatchingItems(LoadHelper &file, const int n, Item *pItem)
 {
-	const int boyPriceLimit = 90000;
-	if (!gbIsHellfire && (item._iCreateInfo & CF_BOY) != 0 && item._iIvalue > boyPriceLimit)
-		return false;
-
-	const int premiumPriceLimit = 140000;
-	if (!gbIsHellfire && (item._iCreateInfo & CF_SMITHPREMIUM) != 0 && item._iIvalue > premiumPriceLimit)
-		return false;
-
-	const uint16_t smithOrWitch = CF_SMITH | CF_WITCH;
-	const int smithAndWitchPriceLimit = gbIsHellfire ? 200000 : 140000;
-	if ((item._iCreateInfo & smithOrWitch) != 0 && item._iIvalue > smithAndWitchPriceLimit)
-		return false;
-
-	return true;
-}
-
-void LoadMatchingItems(LoadHelper &file, const Player &player, const int n, Item *pItem)
-{
-	Item heroItem;
+	Item tempItem;
 
 	for (int i = 0; i < n; i++) {
-		Item &unpackedItem = pItem[i];
-		LoadItemData(file, heroItem);
-		if (unpackedItem.isEmpty() || heroItem.isEmpty())
+		LoadItemData(file, tempItem);
+		if (pItem[i].isEmpty() || tempItem.isEmpty())
 			continue;
-		if (unpackedItem._iSeed != heroItem._iSeed)
+		if (pItem[i]._iSeed != tempItem._iSeed)
 			continue;
-		if (heroItem.IDidx == IDI_EAR)
+		if (tempItem.IDidx == IDI_EAR)
 			continue;
-		if (gbIsMultiplayer) {
-			// Ensure that the unpacked item was regenerated using the appropriate
-			// game's item generation logic before attempting to use it for validation
-			if ((heroItem.dwBuff & CF_HELLFIRE) != (unpackedItem.dwBuff & CF_HELLFIRE)) {
-				unpackedItem = {};
-				RecreateItem(player, unpackedItem, heroItem.IDidx, heroItem._iCreateInfo, heroItem._iSeed, heroItem._ivalue, (heroItem.dwBuff & CF_HELLFIRE) != 0);
-			}
-			if (!IsShopPriceValid(unpackedItem)) {
-				unpackedItem.clear();
-				continue;
-			}
-			if (gbIsHellfire) {
-				unpackedItem._iPLToHit = ClampToHit(unpackedItem, heroItem._iPLToHit); // Oil of Accuracy
-				unpackedItem._iMaxDam = ClampMaxDam(unpackedItem, heroItem._iMaxDam);  // Oil of Sharpness
-			}
-		} else {
-			unpackedItem = heroItem;
-		}
+		pItem[i] = tempItem;
 	}
 }
 
@@ -1050,7 +1016,7 @@ void SaveItem(SaveHelper &file, const Item &item)
 	file.WriteLE<int32_t>(ItemAnimWidth);
 	// write _iAnimWidth2 for vanilla compatibility
 	file.WriteLE<int32_t>(CalculateWidth2(ItemAnimWidth));
-	file.Skip<uint32_t>(); // _delFlag, unused since 1.02
+	file.WriteLE<int32_t>(item._iMisType);
 	file.WriteLE<uint8_t>(item._iSelFlag);
 	file.Skip(3); // Alignment
 	file.WriteLE<uint32_t>(item._iPostDraw ? 1 : 0);
@@ -1345,9 +1311,12 @@ void SavePlayer(SaveHelper &file, const Player &player)
 		file.WriteLE<uint8_t>(0);
 	file.WriteLE<uint8_t>(player.pManaShield ? 1 : 0);
 	file.WriteLE<uint8_t>(player.pOriginalCathedral ? 1 : 0);
-	file.Skip(2); // Available bytes
+	file.WriteLE<int32_t>(player._pIMisType);
+	file.Skip(1); // Available bytes
 	file.WriteLE<uint16_t>(player.wReflections);
-	file.Skip(14); // Available bytes
+	file.WriteLE<int32_t>(player._pIMMinDam);
+	file.WriteLE<int32_t>(player._pIMMaxDam);
+	file.Skip(12); // Available bytes
 
 	file.WriteLE<uint32_t>(player.pDiabloKillLevel);
 	file.WriteLE<uint32_t>(sgGameInitInfo.nDifficulty);
@@ -2027,9 +1996,9 @@ void LoadHeroItems(Player &player)
 
 	gbIsHellfireSaveGame = file.NextBool8();
 
-	LoadMatchingItems(file, player, NUM_INVLOC, player.InvBody);
-	LoadMatchingItems(file, player, InventoryGridCells, player.InvList);
-	LoadMatchingItems(file, player, MaxBeltItems, player.SpdList);
+	LoadMatchingItems(file, NUM_INVLOC, player.InvBody);
+	LoadMatchingItems(file, InventoryGridCells, player.InvList);
+	LoadMatchingItems(file, MaxBeltItems, player.SpdList);
 
 	gbIsHellfireSaveGame = gbIsHellfire;
 }

@@ -30,6 +30,7 @@
 #include "utils/str_cat.hpp"
 #include "utils/str_split.hpp"
 #include "utils/utf8.hpp"
+#include "options.h"
 
 #ifdef UNPACKED_SAVES
 #include "utils/file_util.h"
@@ -43,6 +44,7 @@ namespace devilution {
 #define PASSWORD_SPAWN_MULTI "lshbkfg1"
 #define PASSWORD_SINGLE "xrgyrkj1"
 #define PASSWORD_MULTI "szqnlsk1"
+#define PASSWORD_INVADER "asdfjklp"
 
 bool gbValidSaveFile;
 
@@ -57,6 +59,7 @@ std::string GetSavePath(uint32_t saveNum, string_view savePrefix = {})
 	    gbIsSpawn
 	        ? (gbIsMultiplayer ? "share_" : "spawn_")
 	        : (gbIsMultiplayer ? "multi_" : "single_"),
+		 *sgOptions.Gameplay.friendlyFire ? "invader_" : "",
 	    saveNum,
 #ifdef UNPACKED_SAVES
 	    gbIsHellfire ? "_hsv" DIRECTORY_SEPARATOR_STR : "_sv" DIRECTORY_SEPARATOR_STR
@@ -69,6 +72,7 @@ std::string GetSavePath(uint32_t saveNum, string_view savePrefix = {})
 std::string GetStashSavePath()
 {
 	return StrCat(paths::PrefPath(),
+		 *sgOptions.Gameplay.friendlyFire ? "invader_" : "",
 	    gbIsSpawn ? "stash_spawn" : "stash",
 #ifdef UNPACKED_SAVES
 	    gbIsHellfire ? "_hsv" DIRECTORY_SEPARATOR_STR : "_sv" DIRECTORY_SEPARATOR_STR
@@ -575,9 +579,11 @@ std::unique_ptr<byte[]> ReadArchive(SaveReader &archive, const char *pszName, si
 
 const char *pfile_get_password()
 {
-	if (gbIsSpawn)
-		return gbIsMultiplayer ? PASSWORD_SPAWN_MULTI : PASSWORD_SPAWN_SINGLE;
-	return gbIsMultiplayer ? PASSWORD_MULTI : PASSWORD_SINGLE;
+    if (gbIsSpawn)
+        return gbIsMultiplayer ? PASSWORD_SPAWN_MULTI : PASSWORD_SPAWN_SINGLE;
+    else if (*sgOptions.Gameplay.friendlyFire)
+        return PASSWORD_INVADER;
+    return gbIsMultiplayer ? PASSWORD_MULTI : PASSWORD_SINGLE;
 }
 
 void pfile_write_hero(bool writeGameData)

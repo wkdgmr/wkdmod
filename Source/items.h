@@ -226,7 +226,7 @@ struct Item {
 	int16_t _iPLLight = 0;
 	int8_t _iSplLvlAdd = 0;
 	bool _iRequest = false;
-	/** Unique item ID, used as an index into UniqueItemList */
+	int8_t _iMisType = 0;
 	int _iUid = 0;
 	int16_t _iFMinDam = 0;
 	int16_t _iFMaxDam = 0;

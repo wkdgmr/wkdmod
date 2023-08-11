@@ -2437,7 +2437,6 @@ void OperateShrineGloomy(Player &player)
 		case ItemType::Axe:
 		case ItemType::Bow:
 		case ItemType::Mace:
-		case ItemType::Staff:
 			item._iMaxDam--;
 			if (item._iMaxDam < item._iMinDam)
 				item._iMaxDam = item._iMinDam;
@@ -2447,7 +2446,21 @@ void OperateShrineGloomy(Player &player)
 		case ItemType::LightArmor:
 		case ItemType::MediumArmor:
 		case ItemType::HeavyArmor:
-			item._iAC += 2;
+		case ItemType::Staff:
+			if (item._iAC > 0 || item._itype == ItemType:: Staff) {
+				if ((item._itype == ItemType::LightArmor && item._iAC < 45)
+				|| (item._itype == ItemType::MediumArmor && item._iAC < 75)
+				|| (item._itype == ItemType::HeavyArmor && item._iAC < 105)
+				|| (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)) {
+					item._iAC += 2;
+					if (item._itype == ItemType::Staff)
+						item._iMaxDam--;
+						if (item._iMaxDam < item._iMinDam)
+							item._iMaxDam = item._iMinDam;
+						break;
+				}
+				break;
+			}
 			break;
 		default:
 			break;
@@ -2476,7 +2489,53 @@ void OperateShrineWeird(Player &player)
 		case ItemType::Bow:
 		case ItemType::Mace:
 		case ItemType::Staff:
-			item._iMaxDam++;
+			if (item._iFMaxDam > 0 && item._iFMaxDam < 200) {
+				item._iFMaxDam++;
+				if (item._iFMaxDam > 200) {
+					item._iFMaxDam = 200;
+				}
+				break;
+			}
+			if (item._iLMaxDam > 0 && item._iLMaxDam < 200) {
+				item._iLMaxDam++;
+				if (item._iLMaxDam > 200) {
+					item._iLMaxDam = 200;
+				}
+				break;
+			}
+			if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Axe && item._itype != ItemType::Bow) {
+				if (item._iMaxDam > 0 && item._iMaxDam < 60) {
+					item._iMaxDam++;
+					if (item._iMaxDam >= 60) {
+						item._iMaxDam = 60;
+					}
+				}
+				break;
+			} else if (item._itype == ItemType::Axe) {
+				if (item._iMaxDam > 0 && item._iMaxDam < 80) {
+					item._iMaxDam++;
+					if (item._iMaxDam >= 80) {
+						item._iMaxDam = 80;
+					}
+				}
+				break;
+			} else if (item._itype == ItemType::Bow) {
+				if (item._iMaxDam > 0 && item._iMaxDam < 30) {
+					item._iMaxDam++;
+					if (item._iMaxDam >= 30) {
+						item._iMaxDam = 30;
+					}
+				}
+				break;
+			} else {
+				if (item._iMaxDam > 0 && item._iMaxDam < 35) {
+					item._iMaxDam++;
+					if (item._iMaxDam >= 35) {
+						item._iMaxDam = 35;
+					}
+				}
+				break;
+			}
 			break;
 		default:
 			break;
@@ -2508,19 +2567,38 @@ void OperateShrineMagical(const Player &player)
 
 void OperateShrineStone(Player &player)
 {
-	if (&player != MyPlayer)
-		return;
+    if (&player != MyPlayer)
+        return;
 
-	for (Item &item : PlayerItemsRange { player }) {
-		if (item._itype == ItemType::Staff)
-			item._iCharges = item._iMaxCharges;
-	}
+    for (Item &item : PlayerItemsRange { player }) {
+        if (item._itype == ItemType::Staff && IsValidSpell(item._iSpell)) {
+            // calculate the increment based on player level
+            int inc;
+            if (player._pLevel == 50) {
+                inc = 20;
+            } else if (player._pLevel >= 21 && player._pLevel < 50) {
+				if (player._pLevel <= 24) {
+					inc = GenerateRnd(20) + 1; // range 1-20
+				} else if (player._pLevel >= 25) {
+                	inc = GenerateRnd(11) + 10; // range 10-20
+				}
+            } else if (player._pLevel <= 20) {
+                inc = GenerateRnd(player._pLevel) + 1; // range 1-pLevel
+            }
 
-	CalcPlrInv(player, true);
+            // increase max charges by the increment, up to 200
+            item._iMaxCharges = std::min(item._iMaxCharges + inc, 200);
 
-	RedrawEverything();
+            // ensure the current charges are at least the maximum charges
+            item._iCharges = std::max(item._iCharges, item._iMaxCharges);
+        }
+    }
 
-	InitDiabloMsg(EMSG_SHRINE_STONE);
+    CalcPlrInv(player, true);
+
+    RedrawEverything();
+
+    InitDiabloMsg(EMSG_SHRINE_STONE);
 }
 
 void OperateShrineReligious(Player &player)
@@ -2614,31 +2692,12 @@ void OperateShrineCostOfWisdom(Player &player, SpellID spellId, diablo_message m
 		player._pSplLvl[static_cast<int8_t>(spellId)] = newSpellLevel;
 		NetSendCmdParam2(true, CMD_CHANGE_SPELL_LEVEL, static_cast<uint16_t>(spellId), newSpellLevel);
 	}
-
-	if (&player == MyPlayer) {
-		for (Item &item : InventoryPlayerItemsRange { player }) {
-			item.updateRequiredStatsCacheForPlayer(player);
-		}
-		if (IsStashOpen) {
-			Stash.RefreshItemStatFlags();
-		}
-	}
-
-	uint32_t t = player._pMaxManaBase / 10;
-	int v1 = player._pMana - player._pManaBase;
-	int v2 = player._pMaxMana - player._pMaxManaBase;
-	player._pManaBase -= t;
-	player._pMana -= t;
-	player._pMaxMana -= t;
-	player._pMaxManaBase -= t;
-	if (player._pMana >> 6 <= 0) {
-		player._pMana = v1;
-		player._pManaBase = 0;
-	}
-	if (player._pMaxMana >> 6 <= 0) {
-		player._pMaxMana = v2;
-		player._pMaxManaBase = 0;
-	}
+	if (player._pBaseMag = 0)
+		ModifyPlrVit(player, -2);
+	else ModifyPlrMag(player, -2);
+	CheckStats(player);
+	CalcPlrInv(player, true);
+	RedrawEverything();
 
 	RedrawEverything();
 
@@ -2706,7 +2765,9 @@ void OperateShrineEerie(Player &player)
 	if (&player != MyPlayer)
 		return;
 
-	ModifyPlrMag(player, 2);
+	if (player._pBaseMag = 0)
+		ModifyPlrVit(player, 2);
+	else ModifyPlrMag(player, 2);
 	CheckStats(player);
 	CalcPlrInv(player, true);
 	RedrawEverything();
@@ -2761,7 +2822,7 @@ void OperateShrineSpiritual(Player &player)
 	for (int8_t &itemIndex : player.InvGrid) {
 		if (itemIndex == 0) {
 			Item &goldItem = player.InvList[player._pNumInv];
-			MakeGoldStack(goldItem, 5 * leveltype + GenerateRnd(10 * leveltype));
+			MakeGoldStack(goldItem, 20 * (5 * leveltype + GenerateRnd(10 * leveltype)));
 			player._pNumInv++;
 			itemIndex = player._pNumInv;
 
@@ -2943,20 +3004,23 @@ void OperateShrineGlowing(Player &player)
 	if (&player != MyPlayer)
 		return;
 
-	// Add 0-5 points to Magic (0.1% of the players XP)
-	ModifyPlrMag(player, static_cast<int>(std::min<uint32_t>(player._pExperience / 1000, 5)));
+	int modplrmag = std::max(1, static_cast<int>(player._pExperience / 1000));
+	modplrmag = std::min(modplrmag, 5);
 
-	// Take 5% of the players experience to offset the bonus, unless they're very low level in which case take all their experience.
-	if (player._pExperience > 5000)
-		player._pExperience = static_cast<uint32_t>(player._pExperience * 0.95);
-	else
-		player._pExperience = 0;
+	// Add 1-5 points to Magic
+	if (player._pBaseMag = 0)
+		ModifyPlrVit(player, modplrmag);
+	else ModifyPlrMag(player, modplrmag);
+
+	// Add 1000 - 5000 xp
+	player._pExperience += static_cast<uint32_t>(modplrmag * 1000);
 
 	CheckStats(player);
 	RedrawEverything();
 
 	InitDiabloMsg(EMSG_SHRINE_GLOWING);
 }
+
 
 void OperateShrineMendicant(Player &player)
 {
@@ -3048,7 +3112,9 @@ void OperateShrineSolar(Player &player)
 		ModifyPlrVit(player, 2);
 	} else if (hour >= 18) {
 		InitDiabloMsg(EMSG_SHRINE_SOLAR3);
-		ModifyPlrMag(player, 2);
+		if (player._pBaseMag = 0)
+			ModifyPlrVit(player, 2);
+		else ModifyPlrMag(player, 2);
 	} else if (hour >= 12) {
 		InitDiabloMsg(EMSG_SHRINE_SOLAR2);
 		ModifyPlrStr(player, 2);
@@ -3067,20 +3133,53 @@ void OperateShrineMurphys(Player &player)
 	if (&player != MyPlayer)
 		return;
 
-	bool broke = false;
-	for (auto &item : player.InvBody) {
-		if (!item.isEmpty() && FlipCoin(3)) {
-			if (item._iDurability != DUR_INDESTRUCTIBLE) {
-				if (item._iDurability > 0) {
-					item._iDurability /= 2;
-					broke = true;
-					break;
+	if (FlipCoin(2)) {  // 50% chance
+		// Increase durability and give money.
+		for (auto &item : player.InvBody) {
+			if (!item.isEmpty()) {
+				if (item._iDurability != DUR_INDESTRUCTIBLE) {
+					// Increase the item's durability.
+					int r = GenerateRnd(41) + 10;
+					item._iMaxDur += r;
+					item._iDurability += r;
+					// Limit to the maximum durability.
+					item._iMaxDur = std::min(item._iMaxDur, 255);
+					item._iDurability = std::min(item._iDurability, 255);
+					if (item._iDurability >= 255) {
+						item._iDurability = DUR_INDESTRUCTIBLE;
+					}
 				}
 			}
 		}
+
+		// Add gold to the player's inventory.
+		for (int8_t &itemIndex : player.InvGrid) {
+			if (itemIndex == 0) {
+				Item &goldItem = player.InvList[player._pNumInv];
+				MakeGoldStack(goldItem, 20 * (5 * leveltype + GenerateRnd(10 * leveltype)));
+				player._pNumInv++;
+				itemIndex = player._pNumInv;
+				player._pGold += goldItem._ivalue;
+			}
+		}
 	}
-	if (!broke) {
-		TakePlrsMoney(player._pGold / 3);
+	else {
+		// Decrease durability and take money.
+		bool broke = false;
+		for (auto &item : player.InvBody) {
+			if (!item.isEmpty()) {
+				if (item._iDurability != DUR_INDESTRUCTIBLE) {
+					if (item._iDurability > 0) {
+						item._iDurability /= 2;
+						broke = true;
+						break;
+					}
+				}
+			}
+		}
+		if (!broke) {
+			TakePlrsMoney(player._pGold / 3);
+		}
 	}
 
 	InitDiabloMsg(EMSG_SHRINE_MURPHYS);

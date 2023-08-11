@@ -738,6 +738,7 @@ bool DeltaGetItem(const TCmdGItem &message, uint8_t bLevel)
 				CopyUtf8(delta.ear.heroname, message.ear.heroname, sizeof(delta.ear.heroname));
 			} else {
 				delta.item.bId = message.item.bId;
+				delta.item.bAC = message.item.bAC;
 				delta.item.bDur = message.item.bDur;
 				delta.item.bMDur = message.item.bMDur;
 				delta.item.bCh = message.item.bCh;
@@ -745,6 +746,16 @@ bool DeltaGetItem(const TCmdGItem &message, uint8_t bLevel)
 				delta.item.wValue = message.item.wValue;
 				delta.item.dwBuff = message.item.dwBuff;
 				delta.item.wToHit = message.item.wToHit;
+				delta.item.wMinDam = message.item.wMinDam;
+				delta.item.wMaxDam = message.item.wMaxDam;
+				delta.item.bMinStr = message.item.bMinStr;
+				delta.item.bMinMag = message.item.bMinMag;
+				delta.item.bMinDex = message.item.bMinDex;
+				delta.item.wFMinDam = message.item.wFMinDam;
+				delta.item.wFMaxDam = message.item.wFMaxDam;
+				delta.item.wLMinDam = message.item.wLMinDam;
+				delta.item.wLMaxDam = message.item.wLMaxDam;
+				delta.item.wIMisType = message.item.wIMisType;
 			}
 			break;
 		}
@@ -1030,6 +1041,7 @@ int SyncDropItem(Point position, const TItem &item)
 	    SDL_SwapLE16(item.wCI),
 	    SDL_SwapLE32(item.dwSeed),
 	    item.bId,
+		item.bAC,
 	    item.bDur,
 	    item.bMDur,
 	    item.bCh,
@@ -1037,7 +1049,16 @@ int SyncDropItem(Point position, const TItem &item)
 	    SDL_SwapLE16(item.wValue),
 	    SDL_SwapLE32(item.dwBuff),
 	    SDL_SwapLE16(item.wToHit),
-	    SDL_SwapLE16(item.wMaxDam));
+		SDL_SwapLE16(item.wMinDam),
+	    SDL_SwapLE16(item.wMaxDam),
+	    SDL_SwapLE16(item.bMinStr),
+	    SDL_SwapLE16(item.bMinMag),
+	    SDL_SwapLE16(item.bMinDex),
+		SDL_SwapLE16(item.wFMinDam),
+	    SDL_SwapLE16(item.wFMaxDam),
+		SDL_SwapLE16(item.wLMinDam),
+	    SDL_SwapLE16(item.wLMaxDam),
+		SDL_SwapLE16(item.wIMisType));
 }
 
 int SyncDropEar(Point position, const TEar &ear)
@@ -2324,13 +2345,23 @@ size_t OnOpenGrave(const TCmd *pCmd)
 void PrepareItemForNetwork(const Item &item, TItem &messageItem)
 {
 	messageItem.bId = item._iIdentified ? 1 : 0;
+	messageItem.bAC = item._iAC;
 	messageItem.bDur = item._iDurability;
 	messageItem.bMDur = item._iMaxDur;
 	messageItem.bCh = item._iCharges;
 	messageItem.bMCh = item._iMaxCharges;
 	messageItem.wValue = SDL_SwapLE16(item._ivalue);
 	messageItem.wToHit = SDL_SwapLE16(item._iPLToHit);
+	messageItem.wMinDam = SDL_SwapLE16(item._iMinDam);
 	messageItem.wMaxDam = SDL_SwapLE16(item._iMaxDam);
+	messageItem.bMinStr = SDL_SwapLE16(item._iMinStr);
+	messageItem.bMinMag = SDL_SwapLE16(item._iMinMag);
+	messageItem.bMinDex = SDL_SwapLE16(item._iMinDex);
+	messageItem.wFMinDam = SDL_SwapLE16(item._iFMinDam);
+	messageItem.wFMaxDam = SDL_SwapLE16(item._iFMaxDam);
+	messageItem.wLMinDam = SDL_SwapLE16(item._iLMinDam);
+	messageItem.wLMaxDam = SDL_SwapLE16(item._iLMaxDam);
+	messageItem.wIMisType = SDL_SwapLE16(item._iMisType);
 	messageItem.dwBuff = SDL_SwapLE32(item.dwBuff);
 }
 
@@ -2348,14 +2379,22 @@ void RecreateItem(const Player &player, const TItem &messageItem, Item &item)
 	    SDL_SwapLE32(messageItem.dwSeed), SDL_SwapLE16(messageItem.wValue), (dwBuff & CF_HELLFIRE) != 0);
 	if (messageItem.bId != 0)
 		item._iIdentified = true;
+	item._iAC = messageItem.bAC;
+	item._iDurability = messageItem.bDur;
 	item._iMaxDur = messageItem.bMDur;
-	item._iDurability = ClampDurability(item, messageItem.bDur);
-	item._iMaxCharges = clamp<int>(messageItem.bMCh, 0, item._iMaxCharges);
-	item._iCharges = clamp<int>(messageItem.bCh, 0, item._iMaxCharges);
-	if (gbIsHellfire) {
-		item._iPLToHit = ClampToHit(item, SDL_SwapLE16(messageItem.wToHit));
-		item._iMaxDam = ClampMaxDam(item, SDL_SwapLE16(messageItem.wMaxDam));
-	}
+	item._iCharges = messageItem.bCh;
+	item._iMaxCharges = messageItem.bMCh;
+	item._iPLToHit = SDL_SwapLE16(messageItem.wToHit);
+	item._iMinDam = SDL_SwapLE16(messageItem.wMinDam);
+	item._iMaxDam = SDL_SwapLE16(messageItem.wMaxDam);
+	item._iMinStr = SDL_SwapLE16(messageItem.bMinStr);
+	item._iMinMag = SDL_SwapLE16(messageItem.bMinMag);
+	item._iMinDex = SDL_SwapLE16(messageItem.bMinDex);
+	item._iFMinDam = SDL_SwapLE16(messageItem.wFMinDam);
+	item._iFMaxDam = SDL_SwapLE16(messageItem.wFMaxDam);
+	item._iLMinDam = SDL_SwapLE16(messageItem.wLMinDam);
+	item._iLMaxDam = SDL_SwapLE16(messageItem.wLMaxDam);
+	item._iMisType = SDL_SwapLE16(item._iMisType);
 	item.dwBuff = dwBuff;
 }
 

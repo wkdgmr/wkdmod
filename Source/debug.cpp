@@ -1034,6 +1034,26 @@ std::string DebugCmdClearSearch(const string_view parameter)
 	return "Now you have to find it yourself.";
 }
 
+std::string DebugCmdLegitOil(const string_view parameter)
+{
+	Player &myPlayer = *MyPlayer;
+
+	for (int potNumber = std::max(1, atoi(parameter.data())); potNumber > 0; potNumber--) {
+		Item &item = myPlayer.InvList[myPlayer._pNumInv];
+		InitializeItem(item, IDI_OILDEBUG);
+		GenerateNewSeed(item);
+		item.updateRequiredStatsCacheForPlayer(myPlayer);
+
+		if (!AutoPlaceItemInBelt(myPlayer, item, true) && !AutoPlaceItemInInventory(myPlayer, item, true)) {
+			break; // inventory is full
+		}
+	}
+
+	std::string ret;
+	StrAppend(ret, _("The most legitimate oil ever conceived."));
+	return ret;
+}
+
 std::vector<DebugCmdItem> DebugCmdList = {
 	{ "help", "Prints help overview or help for a specific command.", "({command})", &DebugCmdHelp },
 	{ "givegold", "Fills the inventory with gold.", "", &DebugCmdGiveGoldCheat },
@@ -1077,6 +1097,7 @@ std::vector<DebugCmdItem> DebugCmdList = {
 	{ "searchitem", "Searches the automap for {item}", "{item}", &DebugCmdSearchItem },
 	{ "searchobject", "Searches the automap for {object}", "{object}", &DebugCmdSearchObject },
 	{ "clearsearch", "Search in the auto map is cleared", "", &DebugCmdClearSearch },
+	{ "legitoil", "debug oil max all applicable item stats", "", &DebugCmdLegitOil },
 };
 
 } // namespace

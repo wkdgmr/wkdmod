@@ -73,8 +73,9 @@ enum _item_indexes : int16_t { // TODO defines all indexes in AllItemsList
 	IDI_RUNEOFSTONE = 165,
 	IDI_SORCERER_DIABLO,
 	IDI_ARENAPOT,
+	IDI_OILDEBUG,
 
-	IDI_LAST = IDI_ARENAPOT,
+	IDI_LAST = IDI_OILDEBUG,
 	IDI_NONE = -1,
 };
 
@@ -338,6 +339,8 @@ enum class ItemSpecialEffect : uint32_t {
 	FireDamage             = 1 << 4,
 	LightningDamage        = 1 << 5,
 	DrainLife              = 1 << 6,
+	DrainMana              = 1 << 7,
+	Empower                = 1 << 8,
 	MultipleArrows         = 1 << 9,
 	Knockback              = 1 << 11,
 	StealMana3             = 1 << 13,
@@ -357,12 +360,12 @@ enum class ItemSpecialEffect : uint32_t {
 	NoMana                 = 1 << 27,
 	HalfTrapDamage         = 1 << 28,
 	TripleDemonDamage      = 1 << 30,
-	ZeroResistance         = 1U << 31,
+	MagicDamage            = 1U << 31,
 	// clang-format on
 };
 use_enum_as_flags(ItemSpecialEffect);
 
-enum class ItemSpecialEffectHf : uint8_t {
+enum class ItemSpecialEffectHf : uint16_t {
 	// clang-format off
 	None               = 0,
 	Devastation        = 1 << 0,
@@ -372,6 +375,8 @@ enum class ItemSpecialEffectHf : uint8_t {
 	Doppelganger       = 1 << 4,
 	ACAgainstDemons    = 1 << 5,
 	ACAgainstUndead    = 1 << 6,
+	ManaToLife         = 1 << 7,
+	LifeToMana         = 1 << 8,
 	// clang-format on
 };
 use_enum_as_flags(ItemSpecialEffectHf);
@@ -409,15 +414,17 @@ enum item_misc_id : int8_t {
 	IMISC_OILFIRST,
 	IMISC_OILOF, /* oils are beta or hellfire only */
 	IMISC_OILACC,
-	IMISC_OILMAST,
-	IMISC_OILSHARP,
 	IMISC_OILDEATH,
+	IMISC_OILSHARP,
+	IMISC_OILMAST,
 	IMISC_OILSKILL,
-	IMISC_OILBSMTH,
-	IMISC_OILFORT,
+	IMISC_OILIMP,
 	IMISC_OILPERM,
 	IMISC_OILHARD,
-	IMISC_OILIMP,
+	IMISC_OILFORT,
+	IMISC_OILWICK,
+	IMISC_OILFIRE,
+	IMISC_OILDEBUG,
 	IMISC_OILLAST,
 	IMISC_MAPOFDOOM,
 	IMISC_EAR,
@@ -478,6 +485,7 @@ enum item_effect_type : int8_t {
 	IPL_CHARGES,
 	IPL_FIREDAM,
 	IPL_LIGHTDAM,
+	IPL_MAGICDAM,
 	IPL_STR = 19,
 	IPL_STR_CURSE,
 	IPL_MAG,
@@ -505,9 +513,12 @@ enum item_effect_type : int8_t {
 	IPL_INVCURS,
 	IPL_THORNS,
 	IPL_NOMANA,
+	IPL_EMPOWER = 49,
 	IPL_FIREBALL = 50, /* only used in hellfire */
+	IPL_INFERNO,
 	IPL_ABSHALFTRAP = 52,
 	IPL_KNOCKBACK,
+	IPL_BLOODSTARBOW,
 	IPL_STEALMANA = 55,
 	IPL_STEALLIFE,
 	IPL_TARGAC,
@@ -522,12 +533,15 @@ enum item_effect_type : int8_t {
 	IPL_SPELL,
 	IPL_ONEHAND = 68,
 	IPL_3XDAMVDEM,
-	IPL_ALLRESZERO,
+	IPL_BONESPIRITBOW,
+	IPL_ACIDBOW,
 	IPL_DRAINLIFE = 72,
 	IPL_RNDSTEALLIFE,
+	IPL_DRAINMANA,
 	IPL_SETAC = 75,
 	IPL_ADDACLIFE,
 	IPL_ADDMANAAC,
+	IPL_HOLYBOLTBOW,
 	IPL_AC_CURSE = 79,
 	IPL_LASTDIABLO = IPL_AC_CURSE,
 	IPL_FIRERES_CURSE,

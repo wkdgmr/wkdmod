@@ -62,11 +62,11 @@ bool sgbSaveSoundOn;
 
 namespace {
 
-constexpr int NightmareToHitBonus = 85;
-constexpr int HellToHitBonus = 120;
+constexpr int NightmareToHitBonus = 120;
+constexpr int HellToHitBonus = 240;
 
-constexpr int NightmareAcBonus = 50;
-constexpr int HellAcBonus = 80;
+constexpr int NightmareAcBonus = 70;
+constexpr int HellAcBonus = 130;
 
 /** Tracks which missile files are already loaded */
 size_t totalmonsters;
@@ -133,9 +133,6 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 	monster.animInfo.currentFrame = GenerateRnd(monster.animInfo.numberOfFrames - 1);
 
 	int maxhp = monster.data().hitPointsMinimum + GenerateRnd(monster.data().hitPointsMaximum - monster.data().hitPointsMinimum + 1);
-	if (monster.type().type == MT_DIABLO && !gbIsHellfire) {
-		maxhp /= 2;
-	}
 	monster.maxHitPoints = maxhp << 6;
 
 	if (!gbIsMultiplayer)
@@ -176,11 +173,11 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 	}
 
 	if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-		monster.maxHitPoints = 3 * monster.maxHitPoints;
+		monster.maxHitPoints = 4 * monster.maxHitPoints;
 		if (gbIsHellfire)
-			monster.maxHitPoints += (gbIsMultiplayer ? 100 : 50) << 6;
+			monster.maxHitPoints += (gbIsMultiplayer ? 200 : 100) << 6;
 		else
-			monster.maxHitPoints += 100 << 6;
+			monster.maxHitPoints += 200 << 6;
 		monster.hitPoints = monster.maxHitPoints;
 		monster.toHit += NightmareToHitBonus;
 		monster.minDamage = 2 * (monster.minDamage + 2);
@@ -189,11 +186,11 @@ void InitMonster(Monster &monster, Direction rd, size_t typeIndex, Point positio
 		monster.maxDamageSpecial = 2 * (monster.maxDamageSpecial + 2);
 		monster.armorClass += NightmareAcBonus;
 	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-		monster.maxHitPoints = 4 * monster.maxHitPoints;
+		monster.maxHitPoints = 5 * monster.maxHitPoints;
 		if (gbIsHellfire)
-			monster.maxHitPoints += (gbIsMultiplayer ? 200 : 100) << 6;
+			monster.maxHitPoints += (gbIsMultiplayer ? 400 : 200) << 6;
 		else
-			monster.maxHitPoints += 200 << 6;
+			monster.maxHitPoints += 400 << 6;
 		monster.hitPoints = monster.maxHitPoints;
 		monster.toHit += HellToHitBonus;
 		monster.minDamage = 4 * monster.minDamage + 6;
@@ -779,8 +776,139 @@ void StartAttack(Monster &monster)
 	monster.position.old = monster.position.tile;
 }
 
+int HolyFireChance(Player &player) {
+    if (player._pLevel < 10) {
+        return 10; // 10% chance at level 1-9.
+    } else if (player._pLevel < 20) {
+        return 15; // 15% chance at level 10-19.
+    } else if (player._pLevel < 30) {
+        return 20; // 20% chance at level 20-29.
+    } else if (player._pLevel < 40) {
+        return 25; // 25% chance at level 30-39.
+    } else {
+        return 30; // 30% chance at level 40 and above.
+    }
+}
+
+
+void HolyFireDamage(Player &player, Monster &monster) {
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
+			int eMind;
+			int eMaxd;
+			eMind = player._pIFMinDam;
+			eMaxd = player._pIFMaxDam;
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0) {
+				mdam -= mdam / 2;
+				mdam -= mdam / 2;
+			}
+			mdam = mdam << 6;
+			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
+			AddMissile(monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
+		}
+	}
+}
+
+void CastHolyShock(Player &player, Monster &monster) 
+{
+	SpellID spellId = SpellID::Flash;
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+    	if (player._pRSpell != spellId || player._pRSplType != SpellType::Spell) {
+    	    return;
+    	}
+    	if (player._pSplLvl[static_cast<int>(spellId)] <= 0) {
+    	    return;
+    	}
+		if (monster.mode == MonsterMode::Death) {
+			return;
+		}
+    	int spellLevel = player._pSplLvl[static_cast<int>(spellId)];
+		PlaySFX(IS_CAST4);
+        int base = (player._pLevel * 4) + (spellLevel * 10);
+        double lightningPct = std::min(0.1 * (1 + (spellLevel - 1) / 2), 1.0);
+        int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
+        lightningDamage = static_cast<int>(lightningPct * lightningDamage);
+		int mdam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
+		int bsmdam = mdam;
+		int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+		if ((res & (RESIST_LIGHTNING | IMMUNE_LIGHTNING)) != 0) {
+			bsmdam -= bsmdam / 2;
+			bsmdam -= bsmdam / 2;
+		}
+		bsmdam = bsmdam << 6;
+		if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+			ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
+			AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+			AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, bsmdam);
+		} else {
+			return;
+		}
+	} else {
+		return;
+	}
+}
+
+
+void ExplodingBoneArmor(Player &player, Monster &monster)
+{
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		int eMind = player._pIMMinDam;
+		int eMaxd = player._pIMMaxDam;
+		int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+		if (!player.InvBody[INVLOC_CHEST].isEmpty()) {
+			auto &BoneArmor = player.InvBody[INVLOC_CHEST];
+			if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
+			&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+				/*
+				int bsmdam = mdam;
+				int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+				if ((res & (RESIST_MAGIC | IMMUNE_MAGIC)) != 0) {
+					bsmdam -= bsmdam / 2;
+					bsmdam -= bsmdam / 2;
+				}
+				bsmdam = bsmdam << 6;
+				PlaySFX(LS_BONESP);
+				ApplyMonsterDamage(DamageType::Magic, monster, bsmdam);
+				if (monster.hitPoints >> 6 <= 0)
+					M_StartKill(monster, player);
+				else
+					M_StartHit(monster, player, bsmdam);
+				*/
+		    	int arrows = 6;
+	   			int dmg = mdam; 
+	    		int directionIndex = static_cast<int>(player._pdir);
+	    		std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
+	    		for (int arrow = 0; arrow < arrows; arrow++) {
+	    		    int arrowDirectionIndex;
+					if (arrows == 6) {
+	    		        arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
+	    		    }
+	    		    if (arrowDirectionIndex < 0) {
+	    		        arrowDirectionIndex += 8;
+	    		    }
+	    		    Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
+	    		    Displacement displacement(arrowDirection);
+	    		    AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
+	    		               MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), dmg, 0);
+	    		}
+			}
+		}
+	}
+}
+
 void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 {
+	Player& player = Players[monster.enemy];
 	Direction md = GetMonsterDirection(monster);
 	NewMonsterAnim(monster, MonsterGraphic::Attack, md, AnimationDistributionFlags::ProcessAnimationPending);
 	monster.mode = MonsterMode::RangedAttack;
@@ -788,10 +916,17 @@ void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 	monster.var2 = dam;
 	monster.position.future = monster.position.tile;
 	monster.position.old = monster.position.tile;
+	// Check for holy fire effect
+	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
+	    HolyFireDamage(player, monster);
+		CastHolyShock(player, monster);
+		ExplodingBoneArmor(player, monster);
+	}
 }
 
 void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 {
+	Player& player = Players[monster.enemy];
 	Direction md = GetMonsterDirection(monster);
 	int8_t distributeFramesBeforeFrame = 0;
 	if (monster.ai == MonsterAIID::Mega)
@@ -803,6 +938,12 @@ void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 	monster.var3 = dam;
 	monster.position.future = monster.position.tile;
 	monster.position.old = monster.position.tile;
+	// Check for holy fire effect
+	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
+	    HolyFireDamage(player, monster);
+		CastHolyShock(player, monster);
+		ExplodingBoneArmor(player, monster);
+	}
 }
 
 void StartSpecialAttack(Monster &monster)
@@ -827,47 +968,79 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 	PlaySFX(USFX_DIABLOD);
 	auto &quest = Quests[Q_DIABLO];
 	quest._qactive = QUEST_DONE;
+
 	if (sendmsg)
 		NetSendCmdQuest(true, quest);
-	sgbSaveSoundOn = gbSoundOn;
-	gbProcessPlayers = false;
-	for (size_t i = 0; i < ActiveMonsterCount; i++) {
-		int monsterId = ActiveMonsters[i];
-		Monster &monster = Monsters[monsterId];
-		if (monster.type().type == MT_DIABLO || diablo.activeForTicks == 0)
-			continue;
 
-		NewMonsterAnim(monster, MonsterGraphic::Death, monster.direction);
-		monster.mode = MonsterMode::Death;
-		monster.var1 = 0;
-		monster.position.tile = monster.position.old;
-		monster.position.future = monster.position.tile;
-		M_ClearSquares(monster);
-		dMonster[monster.position.tile.x][monster.position.tile.y] = monsterId + 1;
+	if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BROAD_AXE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
+
+	} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
+
+	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
 	}
-	AddLight(diablo.position.tile, 8);
-	DoVision(diablo.position.tile, 8, MAP_EXP_NONE, true);
-	int dist = diablo.position.tile.WalkingDistance(ViewPosition);
-	if (dist > 20)
-		dist = 20;
-	diablo.var3 = ViewPosition.x << 16;
-	diablo.position.temp.x = ViewPosition.y << 16;
-	diablo.position.temp.y = (int)((diablo.var3 - (diablo.position.tile.x << 16)) / (double)dist);
-	if (!gbIsMultiplayer) {
-		Player &myPlayer = *MyPlayer;
-		myPlayer.pDiabloKillLevel = std::max(myPlayer.pDiabloKillLevel, static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1));
-	}
+
+	Player &myPlayer = *MyPlayer;
+	myPlayer.pDiabloKillLevel = std::max(myPlayer.pDiabloKillLevel, static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1));
 }
 
 void SpawnLoot(Monster &monster, bool sendmsg)
 {
 	if (monster.type().type == MT_HORKSPWN) {
-		return;
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+		}
 	}
 
 	if (Quests[Q_GARBUD].IsAvailable() && monster.uniqueType == UniqueMonsterType::Garbud) {
+		
 		CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+		}
+
 	} else if (monster.uniqueType == UniqueMonsterType::Defiler) {
+
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		SpawnItem(monster, monster.position.tile, sendmsg);
+
 		if (effect_is_playing(USFX_DEFILER8))
 			stream_stop();
 		SpawnMapOfDoom(monster.position.tile, sendmsg);
@@ -877,21 +1050,72 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 		if (sgGameInitInfo.bTheoQuest != 0) {
 			SpawnTheodore(monster.position.tile, sendmsg);
 		} else {
-			CreateAmulet(monster.position.tile, 13, sendmsg, false);
+			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+				CreateAmulet(monster.position.tile, 15, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+
+			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+				CreateAmulet(monster.position.tile, 20, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+
+			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+				CreateAmulet(monster.position.tile, 30, sendmsg, false);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+				SpawnItem(monster, monster.position.tile, sendmsg);
+			}
 		}
 	} else if (monster.type().type == MT_NAKRUL) {
+
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_TWO_HANDED_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_BROAD_AXE, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			CreateSpellBook(monster.position.tile, SpellID::Apocalypse, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
+		}
+		
 		int nSFX = IsUberRoomOpened ? USFX_NAKRUL4 : USFX_NAKRUL5;
 		if (sgGameInitInfo.bCowQuest != 0)
 			nSFX = USFX_NAKRUL6;
 		if (effect_is_playing(nSFX))
 			stream_stop();
 		UberDiabloMonsterIndex = -2;
-		CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
-		CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
-		CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
-		CreateSpellBook(monster.position.tile, SpellID::Apocalypse, sendmsg, false);
+
 	} else if (!monster.isPlayerMinion()) {
-		SpawnItem(monster, monster.position.tile, sendmsg);
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+			SpawnItem(monster, monster.position.tile, sendmsg);
+		}
 	}
 }
 
@@ -1145,8 +1369,16 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 {
 	if (player._pHitPoints >> 6 <= 0 || player._pInvincible || HasAnyOf(player._pSpellFlags, SpellFlag::Etherealize))
 		return;
-	if (monster.position.tile.WalkingDistance(player.position.tile) >= 2)
+	if (monster.position.tile.WalkingDistance(player.position.tile) >= 2) {
 		return;
+	} else {
+		// Check for holy fire effect
+		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
+		    HolyFireDamage(player, monster);
+			CastHolyShock(player, monster);
+			ExplodingBoneArmor(player, monster);
+		}
+	}	
 
 	int hper = GenerateRnd(100);
 #ifdef _DEBUG
@@ -1155,9 +1387,9 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 #endif
 	int ac = player.GetArmor();
 	if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::ACAgainstDemons) && monster.data().monsterClass == MonsterClass::Demon)
-		ac += 40;
+		ac += 100;
 	if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::ACAgainstUndead) && monster.data().monsterClass == MonsterClass::Undead)
-		ac += 20;
+		ac += 100;
 	hit += 2 * (monster.level(sgGameInitInfo.nDifficulty) - player._pLevel)
 	    + 30
 	    - ac;
@@ -1179,22 +1411,34 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 			dam = std::max(dam + (player._pIGetHit << 6), 64);
 			CheckReflect(monster, player, dam);
 		}
-		return;
-	}
-	if (monster.type().type == MT_YZOMBIE && &player == MyPlayer) {
-		if (player._pMaxHP > 64) {
-			if (player._pMaxHPBase > 64) {
-				player._pMaxHP -= 64;
-				if (player._pHitPoints > player._pMaxHP) {
-					player._pHitPoints = player._pMaxHP;
-				}
-				player._pMaxHPBase -= 64;
-				if (player._pHPBase > player._pMaxHPBase) {
-					player._pHPBase = player._pMaxHPBase;
-				}
-			}
+		// Check for holy fire effect
+		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
+		    HolyFireDamage(player, monster);
+			CastHolyShock(player, monster);
+			ExplodingBoneArmor(player, monster);
 		}
 	}
+	// Check if the monster is a type of zombie and the player is MyPlayer.
+	if (monster.type().type == MT_YZOMBIE && &player == MyPlayer) {
+	    // Determine the chance of vitality drain based on the player's level.
+	    int vitalityDrainChancePercent;
+	    if (player._pLevel <= 25) {
+	        vitalityDrainChancePercent = 30;  // 30% chance if level is 25 or below.
+	    } else {
+	        vitalityDrainChancePercent = std::max(5, 30 - (player._pLevel - 25));  // Decrease 1% per level over 25, but never go below 5%.
+	    }
+	    // Generate a random integer from 0 to 99.
+	    int roll = GenerateRnd(100); // Range is 0 to 99.
+
+	    // Check if the roll is within the vitality drain chance.
+	    if (roll < vitalityDrainChancePercent) { // Since roll is from 0 to 99, use < not <=
+	        // If player's vitality is more than 0, decrease it by 1.
+	        if (player._pVitality > 9) {
+	            player._pVitality -= 1;
+	        }
+	    }
+	}
+
 	int dam = (minDam << 6) + GenerateRnd(((maxDam - minDam) << 6) + 1);
 	dam = std::max(dam + (player._pIGetHit << 6), 64);
 	if (&player == MyPlayer) {
@@ -1205,18 +1449,18 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		ApplyPlrDamage(DamageType::Physical, player, 0, 0, dam);
 	}
 
-	// Reflect can also kill a monster, so make sure the monster is still alive
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
-		int mdam = (GenerateRnd(3) + 1) << 6;
-		ApplyMonsterDamage(DamageType::Physical, monster, mdam);
-		if (monster.hitPoints >> 6 <= 0)
-			M_StartKill(monster, player);
-		else
-			M_StartHit(monster, player, mdam);
+	// Check for holy fire effect
+	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
+	    HolyFireDamage(player, monster);
+		CastHolyShock(player, monster);
+		ExplodingBoneArmor(player, monster);
 	}
 
-	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING && gbIsMultiplayer)
+	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING
+	|| (monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_YZOMBIE
+	|| (monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_GOLEM)
 		monster.hitPoints += dam;
+
 	if (player._pHitPoints >> 6 <= 0) {
 		if (gbIsHellfire)
 			M_StartStand(monster, monster.direction);
@@ -1476,26 +1720,13 @@ void ShrinkLeaderPacksize(const Monster &monster)
 void MonsterDeath(Monster &monster)
 {
 	monster.var1++;
-	if (monster.type().type == MT_DIABLO) {
-		if (monster.position.tile.x < ViewPosition.x) {
-			ViewPosition.x--;
-		} else if (monster.position.tile.x > ViewPosition.x) {
-			ViewPosition.x++;
+	if (monster.animInfo.isLastFrame()) {
+		if (monster.type().type != MT_DIABLO) {
+			if (monster.isUnique())
+				AddCorpse(monster.position.tile, monster.corpseId, monster.direction);
+			else
+				AddCorpse(monster.position.tile, monster.type().corpseId, monster.direction);
 		}
-
-		if (monster.position.tile.y < ViewPosition.y) {
-			ViewPosition.y--;
-		} else if (monster.position.tile.y > ViewPosition.y) {
-			ViewPosition.y++;
-		}
-
-		if (monster.var1 == 140)
-			PrepDoEnding();
-	} else if (monster.animInfo.isLastFrame()) {
-		if (monster.isUnique())
-			AddCorpse(monster.position.tile, monster.corpseId, monster.direction);
-		else
-			AddCorpse(monster.position.tile, monster.type().corpseId, monster.direction);
 
 		dMonster[monster.position.tile.x][monster.position.tile.y] = 0;
 		monster.isInvalid = true;
@@ -1673,8 +1904,8 @@ bool IsTileSafe(const Monster &monster, Point position)
 	if (!InDungeonBounds(position))
 		return false;
 
-	const bool fearsFire = (monster.resistance & IMMUNE_FIRE) == 0 || monster.type().type == MT_DIABLO;
-	const bool fearsLightning = (monster.resistance & IMMUNE_LIGHTNING) == 0 || monster.type().type == MT_DIABLO;
+	const bool fearsFire = (monster.resistance & IMMUNE_FIRE) == 0;
+	const bool fearsLightning = (monster.resistance & IMMUNE_LIGHTNING) == 0;
 
 	return !(fearsFire && HasAnyOf(dFlags[position.x][position.y], DungeonFlag::MissileFireWall))
 	    && !(fearsLightning && HasAnyOf(dFlags[position.x][position.y], DungeonFlag::MissileLightningWall));
@@ -3457,11 +3688,10 @@ void WeakenNaKrul()
 
 	auto &monster = Monsters[UberDiabloMonsterIndex];
 	PlayEffect(monster, MonsterSound::Death);
-	monster.armorClass -= 50;
-	int hp = monster.maxHitPoints / 2;
-	monster.resistance = 0;
-	monster.hitPoints = hp;
-	monster.maxHitPoints = hp;
+	Quests[Q_NAKRUL]._qlog = false;
+	if (sgGameInitInfo.nDifficulty != DIFF_HELL) {
+		monster.resistance = 7;
+	}
 }
 
 void InitGolems()
@@ -3599,7 +3829,8 @@ void AddDoppelganger(Monster &monster)
 
 void ApplyMonsterDamage(DamageType damageType, Monster &monster, int damage)
 {
-	AddFloatingNumber(damageType, monster, damage);
+	if (damage > 0)
+		AddFloatingNumber(damageType, monster, damage);
 
 	monster.hitPoints -= damage;
 
@@ -3698,9 +3929,9 @@ void MonsterDeath(Monster &monster, Direction md, bool sendmsg)
 
 	SpawnLoot(monster, sendmsg);
 
-	if (monster.type().type == MT_DIABLO)
+	if (monster.type().type == MT_DIABLO) {
 		DiabloDeath(monster, true);
-	else
+	} else
 		PlayEffect(monster, MonsterSound::Death);
 
 	if (monster.mode != MonsterMode::Petrified) {
@@ -4259,11 +4490,11 @@ void PrintMonstHistory(int mt)
 		if (maxHP < 1)
 			maxHP = 1;
 
-		int hpBonusNightmare = 100;
-		int hpBonusHell = 200;
+		int hpBonusNightmare = 200;
+		int hpBonusHell = 400;
 		if (gbIsHellfire) {
-			hpBonusNightmare = (!gbIsMultiplayer ? 50 : 100);
-			hpBonusHell = (!gbIsMultiplayer ? 100 : 200);
+			hpBonusNightmare = (!gbIsMultiplayer ? 100 : 200);
+			hpBonusHell = (!gbIsMultiplayer ? 200 : 400);
 		}
 		if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 			minHP = 3 * minHP + hpBonusNightmare;
@@ -4562,17 +4793,19 @@ void TalktoMonster(Player &player, Monster &monster)
 
 void SpawnGolem(Player &player, Monster &golem, Point position, Missile &missile)
 {
+	Player &myPlayer = *MyPlayer;
 	dMonster[position.x][position.y] = golem.getId() + 1;
 	golem.position.tile = position;
 	golem.position.future = position;
 	golem.position.old = position;
 	golem.pathCount = 0;
-	golem.maxHitPoints = 2 * (320 * missile._mispllvl + player._pMaxMana / 3);
+	golem.maxHitPoints = (100 * missile._mispllvl + player._pMaxMana + player._pMaxHP);
 	golem.hitPoints = golem.maxHitPoints;
-	golem.armorClass = 25;
-	golem.toHit = 5 * (missile._mispllvl + 8) + 2 * player._pLevel;
-	golem.minDamage = 2 * (missile._mispllvl + 4);
-	golem.maxDamage = 2 * (missile._mispllvl + 8);
+	golem.armorClass = player._pVitality + (20 * missile._mispllvl);
+	golem.toHit = 5 * (missile._mispllvl * 2) + 3 * player._pLevel;
+	golem.minDamage = 2 * (missile._mispllvl) + player._pLevel;
+	golem.maxDamage = 2 * (missile._mispllvl * 2) + (2 * player._pLevel);
+	golem.resistance = 7;
 	golem.flags |= MFLAG_GOLEM;
 	StartSpecialStand(golem, Direction::South);
 	UpdateEnemy(golem);
@@ -4677,25 +4910,66 @@ bool Monster::isWalking() const
 
 bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 {
-	if (((resistance & IMMUNE_MAGIC) != 0 && missileElement == DamageType::Magic)
-	    || ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-	    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid))
-		return true;
-	if (missileType == MissileID::HolyBolt && type().type != MT_DIABLO && data().monsterClass != MonsterClass::Undead)
-		return true;
-	return false;
+	const Player &myPlayer = *MyPlayer;
+	if ((missileType == MissileID::FireArrow)
+	|| (missileType == MissileID::WeaponExplosion)
+	|| (missileType == MissileID::FireballBow && myPlayer._pIMisType == 1)
+	|| (missileType == MissileID::LightningArrow)
+	|| (missileType == MissileID::LightningBow)
+	|| (missileType == MissileID::ChargedBoltBow)
+	|| (missileType == MissileID::Firebolt)
+	|| (missileType == MissileID::Inferno)
+	|| (missileType == MissileID::ChargedBolt)
+	|| (missileType == MissileID::FlashBottom)
+	|| (missileType == MissileID::FlashTop)
+	|| (missileType == MissileID::Acid && myPlayer._pIMisType == 10)
+	|| (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
+		return false;
+	} else {
+		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
+		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		|| ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
 bool Monster::isResistant(MissileID missileType, DamageType missileElement) const
 {
-	if (((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
-	    || ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-	    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning))
-		return true;
-	if (gbIsHellfire && missileType == MissileID::HolyBolt && IsAnyOf(type().type, MT_DIABLO, MT_BONEDEMN))
-		return true;
-	return false;
+	const Player &myPlayer = *MyPlayer;
+	if ((missileType == MissileID::FireArrow)
+	|| (missileType == MissileID::WeaponExplosion)
+	|| (missileType == MissileID::FireballBow && myPlayer._pIMisType == 1)
+	|| (missileType == MissileID::LightningArrow)
+	|| (missileType == MissileID::LightningBow)
+	|| (missileType == MissileID::ChargedBoltBow)
+	|| (missileType == MissileID::Firebolt)
+	|| (missileType == MissileID::Inferno)
+	|| (missileType == MissileID::ChargedBolt)
+	|| (missileType == MissileID::FlashBottom)
+	|| (missileType == MissileID::FlashTop)
+	|| (missileType == MissileID::Acid && myPlayer._pIMisType == 10)
+	|| (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
+		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
+		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
+		|| ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		|| ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Acid)) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		if (((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
+		|| ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
+		|| ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
 bool Monster::isPlayerMinion() const

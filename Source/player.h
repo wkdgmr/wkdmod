@@ -273,6 +273,9 @@ struct Player {
 	int _pIFMaxDam;
 	int _pILMinDam;
 	int _pILMaxDam;
+	int _pIMMinDam;
+	int _pIMMaxDam;
+	int _pIMisType;
 	uint32_t _pExperience;
 	uint32_t _pNextExper;
 	PLR_MODE _pmode;
@@ -383,7 +386,8 @@ struct Player {
 	{
 		return _pStrength >= item._iMinStr
 		    && _pMagic >= item._iMinMag
-		    && _pDexterity >= item._iMinDex;
+		    && _pDexterity >= item._iMinDex
+			&& (IsAnyOf(item._iClass, ICLASS_MISC, ICLASS_GOLD, ICLASS_QUEST) || item._iDurability != 0);
 	}
 
 	/**
@@ -513,8 +517,8 @@ struct Player {
 	int GetMeleeToHit() const
 	{
 		int hper = _pLevel + _pDexterity / 2 + _pIBonusToHit + BaseHitChance;
-		if (_pClass == HeroClass::Warrior)
-			hper += 20;
+		if (_pClass == HeroClass::Warrior || _pClass == HeroClass::Barbarian)
+			hper += _pDexterity / 2;
 		return hper;
 	}
 
@@ -538,8 +542,8 @@ struct Player {
 		int hper = _pLevel + _pDexterity + _pIBonusToHit + BaseHitChance;
 		if (_pClass == HeroClass::Rogue)
 			hper += 20;
-		else if (_pClass == HeroClass::Warrior || _pClass == HeroClass::Bard)
-			hper += 10;
+		else if (_pClass == HeroClass::Warrior || _pClass == HeroClass::Barbarian)
+			hper += _pDexterity / 2;
 		return hper;
 	}
 
@@ -607,13 +611,11 @@ struct Player {
 	{
 		int tmac = monsterArmor;
 		if (_pIEnAc > 0) {
-			if (gbIsHellfire) {
-				int pIEnAc = _pIEnAc - 1;
-				if (pIEnAc > 0)
-					tmac >>= pIEnAc;
-				else
-					tmac -= tmac / 4;
-			}
+			int pIEnAc = _pIEnAc - 1;
+			if (pIEnAc > 0)
+				tmac >>= pIEnAc;
+			else
+				tmac -= tmac / 4;
 			if (isMelee && _pClass == HeroClass::Barbarian) {
 				tmac -= monsterArmor / 8;
 			}
@@ -773,11 +775,6 @@ struct Player {
 		this->plrIsOnSetLevel = true;
 	}
 
-	/** @brief Returns a character's life based on starting life, character level, and base vitality. */
-	int32_t calculateBaseLife() const;
-
-	/** @brief Returns a character's mana based on starting mana, character level, and base magic. */
-	int32_t calculateBaseMana() const;
 };
 
 extern DVL_API_FOR_TEST size_t MyPlayerId;
@@ -819,6 +816,7 @@ void NextPlrLevel(Player &player);
 void AddPlrExperience(Player &player, int lvl, int exp);
 void AddPlrMonstExper(int lvl, int exp, char pmask);
 void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP = 0, int frac = 0, DeathReason deathReason = DeathReason::MonsterOrTrap);
+void ApplyManaDrain(DamageType damageType, Player &player, int dam, int minMP = 0, int minHP = 0, int frac = 0, DeathReason deathReason = DeathReason::MonsterOrTrap);
 void InitPlayer(Player &player, bool FirstTime);
 void InitMultiView();
 void PlrClrTrans(Point position);

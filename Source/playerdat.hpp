@@ -35,22 +35,18 @@ struct PlayerData {
 	uint8_t maxVit;
 	/* Class Block Bonus % */
 	uint8_t blockBonus;
-	/* Class Life Adjustment */
-	int16_t adjLife;
-	/* Class Mana Adjustment */
-	int16_t adjMana;
 	/* Life gained on level up */
-	int16_t lvlLife;
+	uint16_t lvlUpLife;
 	/* Mana gained on level up */
-	int16_t lvlMana;
+	uint16_t lvlUpMana;
 	/* Life from base Vitality */
-	int16_t chrLife;
+	uint16_t chrLife;
 	/* Mana from base Magic */
-	int16_t chrMana;
+	uint16_t chrMana;
 	/* Life from item bonus Vitality */
-	int16_t itmLife;
+	uint16_t itmLife;
 	/* Mana from item bonus Magic */
-	int16_t itmMana;
+	uint16_t itmMana;
 	/* Class Skill */
 	SpellID skill;
 };

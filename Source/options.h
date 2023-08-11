@@ -596,6 +596,8 @@ struct GameplayOptions : OptionCategoryBase {
 	OptionEntryInt<int> numFullRejuPotionPickup;
 	/** @brief Enable floating numbers. */
 	OptionEntryEnum<FloatingNumbers> enableFloatingNumbers;
+	/** @brief Allow items to reach 0 Current Durability */
+	OptionEntryBoolean allowZeroDurabilityItems;
 };
 
 struct ControllerOptions : OptionCategoryBase {

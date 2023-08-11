@@ -200,7 +200,8 @@ void StartAttack(Player &player, Direction d, bool includesFirstFrame)
 
 	int8_t skippedAnimationFrames = 0;
 	if (includesFirstFrame) {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack) && HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack | ItemSpecialEffect::FastAttack)) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack) && HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack | ItemSpecialEffect::FastAttack)
+		|| HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack) && HasInventoryItemWithId(player, IDI_AURIC) && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 			// Combining Fastest Attack with any other attack speed modifier skips over the fourth frame, reducing the effectiveness of Fastest Attack.
 			// Faster Attack makes up for this by also skipping the sixth frame so this case only applies when using Quick or Fast Attack modifiers.
 			skippedAnimationFrames = 3;
@@ -210,14 +211,16 @@ void StartAttack(Player &player, Direction d, bool includesFirstFrame)
 			skippedAnimationFrames = 3;
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)) {
 			skippedAnimationFrames = 2;
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack)
+		|| HasInventoryItemWithId(player, IDI_AURIC) && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 			skippedAnimationFrames = 1;
 		}
 	} else {
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FasterAttack)) {
 			// The combination of Faster and Fast Attack doesn't result in more skipped frames, because the second frame skip of Faster Attack is not triggered.
 			skippedAnimationFrames = 2;
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)
+		|| HasInventoryItemWithId(player, IDI_AURIC) && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 			skippedAnimationFrames = 1;
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack)) {
 			// Fastest Attack is skipped if Fast or Faster Attack is also specified, because both skip the frame that triggers Fastest Attack skipping.
@@ -242,13 +245,11 @@ void StartRangeAttack(Player &player, Direction d, WorldTileCoord cx, WorldTileC
 	}
 
 	int8_t skippedAnimationFrames = 0;
-	if (!gbIsHellfire) {
-		if (includesFirstFrame && HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack | ItemSpecialEffect::FastAttack)) {
-			skippedAnimationFrames += 1;
-		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)) {
-			skippedAnimationFrames += 1;
-		}
+	if (includesFirstFrame && HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack | ItemSpecialEffect::FastAttack)) {
+		skippedAnimationFrames += 1;
+	}
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)) {
+		skippedAnimationFrames += 1;
 	}
 
 	auto animationFlags = AnimationDistributionFlags::ProcessAnimationPending;
@@ -514,53 +515,100 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 		return false;
 	}
 
-	if (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON) {
+	if (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON
+	|| (player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON)
+	|| (player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON && player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON)
+	|| (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield)
+	|| (player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield)) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
 			return false;
 		}
-
-		player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability <= 0) {
-			RemoveEquipment(player, INVLOC_HAND_LEFT, true);
-			CalcPlrInv(player, true);
-			return true;
-		}
-	}
-
-	if (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON) {
-		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == DUR_INDESTRUCTIBLE) {
-			return false;
-		}
-
-		player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-			RemoveEquipment(player, INVLOC_HAND_RIGHT, true);
-			CalcPlrInv(player, true);
-			return true;
-		}
-	}
-
-	if (player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield) {
-		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == DUR_INDESTRUCTIBLE) {
-			return false;
-		}
-
-		player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-			RemoveEquipment(player, INVLOC_HAND_RIGHT, true);
-			CalcPlrInv(player, true);
-			return true;
-		}
-	}
-
-	if (player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield) {
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
-			return false;
-		}
-
-		player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			RemoveEquipment(player, INVLOC_HAND_LEFT, true);
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON
+	|| (player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON)
+	|| (player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON && player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON)
+	|| (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)
+	|| (player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)) {
+		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {		
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Axe && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
 			CalcPlrInv(player, true);
 			return true;
 		}
@@ -601,10 +649,98 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 			return false;
 	}
 
-	if (gbIsHellfire && HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
-		int midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), midam, 0);
+	int misswitch = player._pIMisType;
+
+	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 3) {
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
+	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 6) {
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	}
+	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 4) {
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	}
+	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 8) {
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	}
+	if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage |  ItemSpecialEffect::LightningDamage)) && misswitch == 7) {
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	}
+	
+	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 5
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 100
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 103
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 104
+	|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200
+	|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 100
+	|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 103
+	|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 104) {
+	    int arrows = 0;
+	    int dmg = 0; 
+		int var3 = 0;
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1) {
+			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
+		}
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 2) {
+			dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
+		}
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 5
+		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9
+		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 100
+		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 103
+		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 104
+		|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200
+		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 100
+		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 103
+		|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && misswitch == 104) {
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
+			if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 9)
+				var3 = 1;
+		}
+	    if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
+	        arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) 
+			|| player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && misswitch == 200 ? 6 : 3;
+	    }
+
+	    // Get the index of the player's direction in the directions array
+	    int directionIndex = static_cast<int>(player._pdir);
+
+	    // Define strafe patterns
+	    std::array<int, 3> strafePattern3 = { -1, 0, 1 }; // Normal strafe pattern
+	    std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 }; // Empower strafe pattern
+
+	    for (int arrow = 0; arrow < arrows; arrow++) {
+	        // Choose the correct strafe pattern based on number of arrows
+	        int arrowDirectionIndex;
+	        if (arrows == 3) {
+	            arrowDirectionIndex = (directionIndex + strafePattern3[arrow] + 8) % 8;
+	        } else if (arrows == 6) {
+	            arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
+	        }
+	        if (arrowDirectionIndex < 0) {
+	            arrowDirectionIndex += 8; // Handle negative direction indices
+	        }
+
+	        // Get the direction enum value based on the direction index
+	        Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
+
+	        // Calculate the displacement based on the arrow direction
+	        Displacement displacement(arrowDirection);
+
+	        AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
+	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, var3);
+			if (misswitch == 5 && arrow == 0)
+				PlaySfxLoc(IS_FBALLBOW, player.position.tile);
+	    }
+	}
+
+	int pFireDam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
+	int pLightningDam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
+	int pMagicDam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
+
 	int mind = player._pIMinDam;
 	int maxd = player._pIMaxDam;
 	int dam = GenerateRnd(maxd - mind + 1) + mind;
@@ -657,6 +793,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	}
 
 	dam <<= 6;
+	pFireDam <<= 6;
+	pLightningDam <<= 6;
+	pMagicDam <<= 6;
 	if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::Jesters)) {
 		int r = GenerateRnd(201);
 		if (r >= 100)
@@ -666,6 +805,9 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 
 	if (adjacentDamage)
 		dam >>= 2;
+		pFireDam >>= 2;
+		pLightningDam >>= 2;
+		pMagicDam >>= 2;
 
 	if (&player == MyPlayer) {
 		if (HasAnyOf(player.pDamAcFlags, ItemSpecialEffectHf::Peril)) {
@@ -681,60 +823,69 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		}
 #endif
 		ApplyMonsterDamage(DamageType::Physical, monster, dam);
+		if (pFireDam > 0)
+			AddMissile(monster.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			ApplyMonsterDamage(DamageType::Fire, monster, pFireDam);
+		if (pLightningDam > 0)
+			AddMissile(monster.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			ApplyMonsterDamage(DamageType::Lightning, monster, pLightningDam);
+		if (pMagicDam > 0)
+			AddMissile(monster.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			ApplyMonsterDamage(DamageType::Magic, monster, pMagicDam);
 	}
 
-	int skdam = 0;
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::RandomStealLife)) {
-		skdam = GenerateRnd(dam / 8);
-		player._pHitPoints += skdam;
-		if (player._pHitPoints > player._pMaxHP) {
-			player._pHitPoints = player._pMaxHP;
-		}
-		player._pHPBase += skdam;
-		if (player._pHPBase > player._pMaxHPBase) {
-			player._pHPBase = player._pMaxHPBase;
-		}
-		RedrawComponent(PanelDrawComponent::Health);
+	int manaSteal = 0;
+	int lifeSteal = 0;
+	auto &SoulEater = player.InvBody[INVLOC_HAND_LEFT];
+	for (Item &item : EquippedPlayerItemsRange { player }) {
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana3)) {
+	        manaSteal += 3 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana5)) {
+	        manaSteal += 5 * dam / 100;
+	    }
+
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealLife3)) {
+	        lifeSteal += 3 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealLife5)) {
+	        lifeSteal += 5 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::RandomStealLife) 
+		|| HasAllOf(SoulEater._iFlags, ItemSpecialEffect::FastestAttack | ItemSpecialEffect::DrainMana)
+		&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+	        lifeSteal += GenerateRnd(dam / 8);
+	    }
 	}
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana3 | ItemSpecialEffect::StealMana5) && HasNoneOf(player._pIFlags, ItemSpecialEffect::NoMana)) {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana3)) {
-			skdam = 3 * dam / 100;
-		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealMana5)) {
-			skdam = 5 * dam / 100;
-		}
-		player._pMana += skdam;
-		if (player._pMana > player._pMaxMana) {
-			player._pMana = player._pMaxMana;
-		}
-		player._pManaBase += skdam;
-		if (player._pManaBase > player._pMaxManaBase) {
-			player._pManaBase = player._pMaxManaBase;
-		}
-		RedrawComponent(PanelDrawComponent::Mana);
+	if (manaSteal > 0 && HasNoneOf(player._pIFlags, ItemSpecialEffect::NoMana)) {
+	    player._pMana += manaSteal;
+	    if (player._pMana > player._pMaxMana) {
+	        player._pMana = player._pMaxMana;
+	    }
+	    player._pManaBase += manaSteal;
+	    if (player._pManaBase > player._pMaxManaBase) {
+	        player._pManaBase = player._pMaxManaBase;
+	    }
+	    RedrawComponent(PanelDrawComponent::Mana);
 	}
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealLife3 | ItemSpecialEffect::StealLife5)) {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealLife3)) {
-			skdam = 3 * dam / 100;
-		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::StealLife5)) {
-			skdam = 5 * dam / 100;
-		}
-		player._pHitPoints += skdam;
-		if (player._pHitPoints > player._pMaxHP) {
-			player._pHitPoints = player._pMaxHP;
-		}
-		player._pHPBase += skdam;
-		if (player._pHPBase > player._pMaxHPBase) {
-			player._pHPBase = player._pMaxHPBase;
-		}
-		RedrawComponent(PanelDrawComponent::Health);
+	if (lifeSteal > 0) {
+	    player._pHitPoints += lifeSteal;
+	    if (player._pHitPoints > player._pMaxHP) {
+	        player._pHitPoints = player._pMaxHP;
+	    }
+	    player._pHPBase += lifeSteal;
+	    if (player._pHPBase > player._pMaxHPBase) {
+	        player._pHPBase = player._pMaxHPBase;
+	    }
+	    RedrawComponent(PanelDrawComponent::Health);
 	}
+
 	if ((monster.hitPoints >> 6) <= 0) {
 		M_StartKill(monster, player);
 	} else {
-		if (monster.mode != MonsterMode::Petrified && HasAnyOf(player._pIFlags, ItemSpecialEffect::Knockback))
+		if (monster.mode != MonsterMode::Petrified && HasAnyOf(player._pIFlags, ItemSpecialEffect::Knockback)) {
 			M_GetKnockback(monster);
+		}
 		M_StartHit(monster, player, dam);
 	}
 	return true;
@@ -839,6 +990,53 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 			int mdam = (GenerateRnd(3) + 1) << 6;
 			NetSendCmdDamage(true, attacker.getId(), mdam, DamageType::Physical);
 		}
+  }
+  
+	auto &SoulEater = attacker.InvBody[INVLOC_HAND_LEFT];
+	int skdam = dam << 6;
+	int manaSteal = 0;
+	int lifeSteal = 0;
+	for (Item &item : EquippedPlayerItemsRange { attacker }) {
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana3)) {
+	        manaSteal += 3 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealMana5)) {
+	        manaSteal += 5 * dam / 100;
+	    }
+
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealLife3)) {
+	        lifeSteal += 3 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::StealLife5)) {
+	        lifeSteal += 5 * dam / 100;
+	    }
+	    if (HasAnyOf(item._iFlags, ItemSpecialEffect::RandomStealLife) 
+	        || (HasAllOf(SoulEater._iFlags, ItemSpecialEffect::FastestAttack | ItemSpecialEffect::DrainMana)
+	        && HasAnyOf(attacker._pIFlags, ItemSpecialEffect::Empower))) {
+	        lifeSteal += GenerateRnd(skdam / 8);
+	    }
+	}
+	if (manaSteal > 0 && HasNoneOf(attacker._pIFlags, ItemSpecialEffect::NoMana)) {
+	    attacker._pMana += manaSteal;
+	    if (attacker._pMana > attacker._pMaxMana) {
+	        attacker._pMana = attacker._pMaxMana;
+	    }
+	    attacker._pManaBase += manaSteal;
+	    if (attacker._pManaBase > attacker._pMaxManaBase) {
+	        attacker._pManaBase = attacker._pMaxManaBase;
+	    }
+	    RedrawComponent(PanelDrawComponent::Mana);
+	}
+	if (lifeSteal > 0) {
+	    attacker._pHitPoints += lifeSteal;
+	    if (attacker._pHitPoints > attacker._pMaxHP) {
+	        attacker._pHitPoints = attacker._pMaxHP;
+	    }
+	    attacker._pHPBase += lifeSteal;
+	    if (attacker._pHPBase > attacker._pMaxHPBase) {
+	        attacker._pHPBase = attacker._pMaxHPBase;
+	    }
+	    RedrawComponent(PanelDrawComponent::Health);
 	}
 
 	if (&attacker == MyPlayer) {
@@ -849,57 +1047,6 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 			}
 			dam *= 2;
 		}
-
-		int skdam = 0;
-		if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::RandomStealLife)) {
-			skdam = GenerateRnd(dam / 8);
-			attacker._pHitPoints += skdam;
-			if (attacker._pHitPoints > attacker._pMaxHP) {
-				attacker._pHitPoints = attacker._pMaxHP;
-			}
-			attacker._pHPBase += skdam;
-			if (attacker._pHPBase > attacker._pMaxHPBase) {
-				attacker._pHPBase = attacker._pMaxHPBase;
-			}
-			RedrawComponent(PanelDrawComponent::Health);
-		}
-
-		if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::StealMana3 | ItemSpecialEffect::StealMana5) && HasNoneOf(attacker._pIFlags, ItemSpecialEffect::NoMana)) {
-			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::StealMana3)) {
-				skdam = 3 * dam / 100;
-			}
-			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::StealMana5)) {
-				skdam = 5 * dam / 100;
-			}
-			attacker._pMana += skdam;
-			if (attacker._pMana > attacker._pMaxMana) {
-				attacker._pMana = attacker._pMaxMana;
-			}
-			attacker._pManaBase += skdam;
-			if (attacker._pManaBase > attacker._pMaxManaBase) {
-				attacker._pManaBase = attacker._pMaxManaBase;
-			}
-			RedrawComponent(PanelDrawComponent::Mana);
-		}
-
-		if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::StealLife3 | ItemSpecialEffect::StealLife5)) {
-			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::StealLife3)) {
-				skdam = 3 * dam / 100;
-			}
-			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::StealLife5)) {
-				skdam = 5 * dam / 100;
-			}
-			attacker._pHitPoints += skdam;
-			if (attacker._pHitPoints > attacker._pMaxHP) {
-				attacker._pHitPoints = attacker._pMaxHP;
-			}
-			attacker._pHPBase += skdam;
-			if (attacker._pHPBase > attacker._pMaxHPBase) {
-				attacker._pHPBase = attacker._pMaxHPBase;
-			}
-			RedrawComponent(PanelDrawComponent::Health);
-		}
-
 		NetSendCmdDamage(true, target.getId(), dam, DamageType::Physical);
 	}
 
@@ -917,6 +1064,7 @@ bool PlrHitObj(const Player &player, Object &targetObject)
 
 	return false;
 }
+
 
 bool DoAttack(Player &player)
 {
@@ -937,17 +1085,17 @@ bool DoAttack(Player &player)
 			}
 		}
 
-		if (!gbIsHellfire || !HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage)) {
-			const size_t playerId = player.getId();
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-				AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-			}
-			if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-				AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-			}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
+		    AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
+		    AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
+		    AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 
-		if (monster != nullptr) {
+		if (monster !=nullptr && !monster->isPlayerMinion() ) {
 			didhit = PlrHitMonst(player, *monster);
 		} else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
 			didhit = PlrHitPlr(player, *PlayerAtPosition(position));
@@ -957,21 +1105,57 @@ bool DoAttack(Player &player)
 				didhit = PlrHitObj(player, *object);
 			}
 		}
-		if ((player._pClass == HeroClass::Monk
-		        && (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Staff))
-		    || (player._pClass == HeroClass::Bard
-		        && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword)
-		    || (player._pClass == HeroClass::Barbarian
-		        && (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Axe || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Axe
-		            || (((player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND)
-		                    || (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND)
-		                    || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND)
-		                    || (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND))
-		                && !(player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield))))) {
+		if (player._pLevel >= 40 && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow
+			|| (player._pClass == HeroClass::Monk && player._pLevel <= 39
+				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
+				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
+					&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0))
+		    || (player._pClass == HeroClass::Bard && player._pLevel <= 39
+				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+				&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0
+					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+					&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+							|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+							&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+							|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+							&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0))
+			|| (player._pClass == HeroClass::Warrior && player._pLevel <= 39
+				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
+				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+					&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+					&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+					&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+					&& player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0))
+			|| (player._pClass == HeroClass::Sorcerer && player._pLevel <= 39
+				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
+				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+			|| (player._pClass == HeroClass::Barbarian && player._pLevel <= 39
+				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
+				&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
+				|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
+				&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0
+					|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Axe && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
+					&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+					|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Axe && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
+					&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+						|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
+						&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+						|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
+						&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+							|| (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
+							&& player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+							|| (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
+							&& player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+		                		&& !(player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)))) {	
 			// playing as a class/weapon with cleave
 			position = player.position.tile + Right(player._pdir);
 			monster = FindMonsterAtPosition(position);
-			if (monster != nullptr) {
+			if (monster != nullptr && !monster->isPlayerMinion()) {
 				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
 					if (PlrHitMonst(player, *monster, true))
 						didhit = true;
@@ -982,7 +1166,23 @@ bool DoAttack(Player &player)
 			}
 			position = player.position.tile + Left(player._pdir);
 			monster = FindMonsterAtPosition(position);
-			if (monster != nullptr) {
+			if (monster != nullptr && !monster->isPlayerMinion()) {
+				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
+					if (PlrHitMonst(player, *monster, true))
+						didhit = true;
+				}
+			}
+			position = player.position.tile + Left(Left(player._pdir));
+			monster = FindMonsterAtPosition(position);
+			if (monster != nullptr && !monster->isPlayerMinion()) {
+				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
+					if (PlrHitMonst(player, *monster, true))
+						didhit = true;
+				}
+			}
+			position = player.position.tile + Right(Right(player._pdir));
+			monster = FindMonsterAtPosition(position);
+			if (monster != nullptr && !monster->isPlayerMinion()) {
 				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
 					if (PlrHitMonst(player, *monster, true))
 						didhit = true;
@@ -1013,52 +1213,82 @@ bool DoRangeAttack(Player &player)
 {
 	int arrows = 0;
 	if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
-		arrows = 1;
-	}
-
-	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows) && player.AnimInfo.currentFrame == player._pAFNum + 1) {
-		arrows = 2;
+	    arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::MultipleArrows)
+		|| HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) && player._pIMisType > 0 ? 3 : 1;
 	}
 
 	for (int arrow = 0; arrow < arrows; arrow++) {
-		int xoff = 0;
-		int yoff = 0;
-		if (arrows != 1) {
-			int angle = arrow == 0 ? -1 : 1;
-			int x = player.position.temp.x - player.position.tile.x;
-			if (x != 0)
-				yoff = x < 0 ? angle : -angle;
-			int y = player.position.temp.y - player.position.tile.y;
-			if (y != 0)
-				xoff = y < 0 ? -angle : angle;
-		}
+	    int xoff = 0;
+	    int yoff = 0;
 
-		int dmg = 4;
+	    if (arrows == 3) {
+	        int angle = arrow - 1;  // This will result in -1, 0, or 1
+	        int x = player.position.temp.x - player.position.tile.x;
+	        if (x != 0)
+	            yoff = x < 0 ? angle : -angle;
+	        int y = player.position.temp.y - player.position.tile.y;
+	        if (y != 0)
+	            xoff = y < 0 ? -angle : angle;
+	    }
+
+		int dmg = 0;
+		int var3 = 0;
 		MissileID mistype = MissileID::Arrow;
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireArrows)) {
+		int misswitch = player._pIMisType;
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireArrows) && misswitch != 1) {
 			mistype = MissileID::FireArrow;
 		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows)) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows) && misswitch != 2) {
 			mistype = MissileID::LightningArrow;
 		}
-		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows)) {
-			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 1) {
+			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
+			mistype = MissileID::SpectralArrow;
+		}
+		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 2) {
+			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1));
+			mistype = MissileID::SpectralArrow;
+		}
+	    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 100) {
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
+			mistype = MissileID::SpectralArrow;
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 5) {
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
+			mistype = MissileID::SpectralArrow;
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 9) {
+			dmg = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
+			var3 = 1;
+			mistype = MissileID::SpectralArrow;
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && misswitch == 10) {
 			mistype = MissileID::SpectralArrow;
 		}
 
-		AddMissile(
-		    player.position.tile,
-		    player.position.temp + Displacement { xoff, yoff },
-		    player._pdir,
-		    mistype,
-		    TARGET_MONSTERS,
-		    player.getId(),
-		    dmg,
-		    0);
 
-		if (arrow == 0 && mistype != MissileID::SpectralArrow) {
-			PlaySfxLoc(arrows != 1 ? IS_STING1 : PS_BFIRE, player.position.tile);
+		AddMissile(
+		player.position.tile,
+		player.position.temp + Displacement { xoff, yoff },
+		player._pdir,
+		mistype,
+		TARGET_MONSTERS,
+		player.getId(),
+		dmg,
+		var3);
+		
+
+    	if (mistype != MissileID::SpectralArrow) {
+    	    if (arrow == 0) {
+    	        PlaySfxLoc(PS_BFIRE, player.position.tile);
+    	    } else if (arrow == 1) {
+    	        PlaySfxLoc(IS_STING1, player.position.tile);
+    	    }
+    	} else if (mistype == MissileID::SpectralArrow && misswitch == 5 && arrow == 0
+		|| mistype == MissileID::SpectralArrow && misswitch == 10 && arrow == 0) {
+			PlaySfxLoc(IS_FBALLBOW, player.position.tile);			
 		}
+
 
 		if (DamageWeapon(player, 40)) {
 			StartStand(player, player._pdir);
@@ -1086,18 +1316,18 @@ void DamageParryItem(Player &player)
 			return;
 		}
 
-		player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
+			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			RemoveEquipment(player, INVLOC_HAND_LEFT, true);
 			CalcPlrInv(player, true);
 		}
 	}
 
 	if (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield) {
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != DUR_INDESTRUCTIBLE) {
-			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
+			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
+				player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-				RemoveEquipment(player, INVLOC_HAND_RIGHT, true);
 				CalcPlrInv(player, true);
 			}
 		}
@@ -1147,16 +1377,13 @@ void DamageArmor(Player &player)
 		return;
 	}
 
-	pi->_iDurability--;
 	if (pi->_iDurability != 0) {
+		pi->_iDurability--;
+		if (pi->_iDurability == 0)
+			CalcPlrInv(player, true);
 		return;
 	}
 
-	if (targetHead) {
-		RemoveEquipment(player, INVLOC_HEAD, true);
-	} else {
-		RemoveEquipment(player, INVLOC_CHEST, true);
-	}
 	CalcPlrInv(player, true);
 }
 
@@ -1910,8 +2137,14 @@ bool Player::isWalking() const
 
 int Player::GetManaShieldDamageReduction()
 {
-	constexpr uint8_t Max = 7;
-	return 24 - std::min(_pSplLvl[static_cast<int8_t>(SpellID::ManaShield)], Max) * 3;
+	uint8_t manaShieldLevel = _pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
+	if (manaShieldLevel <= 15) {
+		// Starting at 20% and increasing to 35% from level 1 to 15
+		return 20 + (manaShieldLevel - 1) * (35 - 20) / 14;
+	} else {
+		// Starting at 36% and increasing by 2% per level to 50% from level 16
+		return 35 + std::min((manaShieldLevel - 15) * 2, 15);
+	}
 }
 
 void Player::RestorePartialLife()
@@ -2164,18 +2397,6 @@ void Player::UpdatePreviewCelSprite(_cmd_id cmdId, Point point, uint16_t wParam1
 	}
 }
 
-int32_t Player::calculateBaseLife() const
-{
-	const PlayerData &playerData = PlayersData[static_cast<size_t>(_pClass)];
-	return playerData.adjLife + (playerData.lvlLife * _pLevel) + (playerData.chrLife * _pBaseVit);
-}
-
-int32_t Player::calculateBaseMana() const
-{
-	const PlayerData &playerData = PlayersData[static_cast<size_t>(_pClass)];
-	return playerData.adjMana + (playerData.lvlMana * _pLevel) + (playerData.chrMana * _pBaseMag);
-}
-
 Player *PlayerAtPosition(Point position)
 {
 	if (!InDungeonBounds(position))
@@ -2386,31 +2607,44 @@ void CreatePlayer(Player &player, HeroClass c)
 	player = {};
 	SetRndSeed(SDL_GetTicks());
 
-	const PlayerData &playerData = PlayersData[static_cast<size_t>(c)];
-
-	player._pLevel = 1;
 	player._pClass = c;
 
-	player._pBaseStr = playerData.baseStr;
+	player._pBaseStr = PlayersData[static_cast<std::size_t>(c)].baseStr;
 	player._pStrength = player._pBaseStr;
 
-	player._pBaseMag = playerData.baseMag;
+	player._pBaseMag = PlayersData[static_cast<std::size_t>(c)].baseMag;
 	player._pMagic = player._pBaseMag;
 
-	player._pBaseDex = playerData.baseDex;
+	player._pBaseDex = PlayersData[static_cast<std::size_t>(c)].baseDex;
 	player._pDexterity = player._pBaseDex;
 
-	player._pBaseVit = playerData.baseVit;
+	player._pBaseVit = PlayersData[static_cast<std::size_t>(c)].baseVit;
 	player._pVitality = player._pBaseVit;
 
-	player._pBaseToBlk = playerData.blockBonus;
+	player._pLevel = 1;
 
-	player._pHitPoints = player.calculateBaseLife();
+	player._pBaseToBlk = PlayersData[static_cast<std::size_t>(c)].blockBonus;
+
+	player._pHitPoints = (player._pVitality + 10) << 6;
+	if (player._pClass == HeroClass::Warrior || player._pClass == HeroClass::Barbarian) {
+		player._pHitPoints *= 2;
+	} else if (player._pClass == HeroClass::Rogue || player._pClass == HeroClass::Monk || player._pClass == HeroClass::Bard) {
+		player._pHitPoints += player._pHitPoints / 2;
+	}
+
 	player._pMaxHP = player._pHitPoints;
 	player._pHPBase = player._pHitPoints;
 	player._pMaxHPBase = player._pHitPoints;
 
-	player._pMana = player.calculateBaseMana();
+	player._pMana = player._pMagic << 6;
+	if (player._pClass == HeroClass::Sorcerer) {
+		player._pMana *= 2;
+	} else if (player._pClass == HeroClass::Bard) {
+		player._pMana += player._pMana * 3 / 4;
+	} else if (player._pClass == HeroClass::Rogue || player._pClass == HeroClass::Monk) {
+		player._pMana += player._pMana / 2;
+	}
+
 	player._pMaxMana = player._pMana;
 	player._pManaBase = player._pMana;
 	player._pMaxManaBase = player._pMana;
@@ -2423,7 +2657,7 @@ void CreatePlayer(Player &player, HeroClass c)
 	player._pInfraFlag = false;
 
 	player._pRSplType = SpellType::Skill;
-	SpellID s = playerData.skill;
+	SpellID s = PlayersData[static_cast<size_t>(c)].skill;
 	player._pAblSpells = GetSpellBitmask(s);
 	player._pRSpell = s;
 
@@ -2509,7 +2743,7 @@ void NextPlrLevel(Player &player)
 	}
 	player._pNextExper = ExpLvlsTbl[std::min<int8_t>(player._pLevel, MaxCharacterLevel - 1)];
 
-	int hp = PlayersData[static_cast<size_t>(player._pClass)].lvlLife;
+	int hp = PlayersData[static_cast<size_t>(player._pClass)].lvlUpLife;
 
 	player._pMaxHP += hp;
 	player._pHitPoints = player._pMaxHP;
@@ -2520,7 +2754,7 @@ void NextPlrLevel(Player &player)
 		RedrawComponent(PanelDrawComponent::Health);
 	}
 
-	int mana = PlayersData[static_cast<size_t>(player._pClass)].lvlMana;
+	int mana = PlayersData[static_cast<size_t>(player._pClass)].lvlUpMana;
 
 	player._pMaxMana += mana;
 	player._pMaxManaBase += mana;
@@ -2553,13 +2787,13 @@ void AddPlrExperience(Player &player, int lvl, int exp)
 	// Adjust xp based on difference in level between player and monster
 	uint32_t clampedExp = std::max(static_cast<int>(exp * (1 + (lvl - player._pLevel) / 10.0)), 0);
 
-	// Prevent power leveling
-	if (gbIsMultiplayer) {
+	// Prevent power leveling for low level characters
+	 if (gbIsMultiplayer) {
 		const uint32_t clampedPlayerLevel = clamp(static_cast<int>(player._pLevel), 1, MaxCharacterLevel);
 
 		// for low level characters experience gain is capped to 1/20 of current levels xp
-		// for high level characters experience gain is capped to 200 * current level - this is a smaller value than 1/20 of the exp needed for the next level after level 5.
-		clampedExp = std::min({ clampedExp, /* level 0-5: */ ExpLvlsTbl[clampedPlayerLevel] / 20U, /* level 6-50: */ 200U * clampedPlayerLevel });
+		// REMOVED - for high level characters experience gain is capped to 200 * current level - this is a smaller value than 1/20 of the exp needed for the next level after level 5.
+		clampedExp = std::min({ clampedExp, /* level 0-5: */ ExpLvlsTbl[clampedPlayerLevel] / 20U});
 	}
 
 	const uint32_t MaxExperience = ExpLvlsTbl[MaxCharacterLevel - 1];
@@ -2585,19 +2819,24 @@ void AddPlrExperience(Player &player, int lvl, int exp)
 	NetSendCmdParam1(false, CMD_PLRLEVEL, player._pLevel);
 }
 
+int GetActivePlrsOnLevel()
+{
+	int activePlrs = 0;
+	for (size_t i = 0; i < Players.size(); i++) {
+		auto &player = Players[i];
+		if (player.plractive && player.plrlevel == currlevel)
+			activePlrs++;
+	}
+	return activePlrs;
+}
+
 void AddPlrMonstExper(int lvl, int exp, char pmask)
 {
-	int totplrs = 0;
-	for (size_t i = 0; i < Players.size(); i++) {
-		if (((1 << i) & pmask) != 0) {
-			totplrs++;
-		}
-	}
+	int totplrs = GetActivePlrsOnLevel();
 
 	if (totplrs != 0) {
 		int e = exp / totplrs;
-		if ((pmask & (1 << MyPlayerId)) != 0)
-			AddPlrExperience(*MyPlayer, lvl, e);
+		AddPlrExperience(*MyPlayer, lvl, e);
 	}
 }
 
@@ -2813,8 +3052,8 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 		NetSendCmdParam1(true, CMD_PLRDEAD, static_cast<uint16_t>(deathReason));
 	}
 
-	const bool dropGold = !gbIsMultiplayer || !(player.isOnLevel(16) || player.isOnArenaLevel());
-	const bool dropItems = dropGold && deathReason == DeathReason::MonsterOrTrap;
+	const bool dropGold = !gbIsMultiplayer || player.isOnArenaLevel();
+	const bool dropItems = dropGold && deathReason == DeathReason::MonsterOrTrap || deathReason == DeathReason::Player;
 	const bool dropEar = dropGold && deathReason == DeathReason::Player;
 
 	player.Say(HeroSpeech::AuughUh);
@@ -2866,42 +3105,54 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 			if (dropGold) {
 				DropHalfPlayersGold(player);
 			}
-			if (dropEar) {
-				Item ear;
-				InitializeItem(ear, IDI_EAR);
-				CopyUtf8(ear._iName, fmt::format(fmt::runtime("Ear of {:s}"), player._pName), sizeof(ear._iName));
-				CopyUtf8(ear._iIName, player._pName, sizeof(ear._iIName));
-				switch (player._pClass) {
-				case HeroClass::Sorcerer:
-					ear._iCurs = ICURS_EAR_SORCERER;
-					break;
-				case HeroClass::Warrior:
-					ear._iCurs = ICURS_EAR_WARRIOR;
-					break;
-				case HeroClass::Rogue:
-				case HeroClass::Monk:
-				case HeroClass::Bard:
-				case HeroClass::Barbarian:
-					ear._iCurs = ICURS_EAR_ROGUE;
-					break;
+			if (!*sgOptions.Gameplay.friendlyFire) {
+				int pExperience_penalty = round(player._pExperience / 100);
+				player._pExperience -= pExperience_penalty;
+			} else {
+				if (!player.isOnArenaLevel()) {
+					int pExperience_penalty = round(player._pExperience / 100);
+					player._pExperience -= pExperience_penalty;
+					if (dropItems) {
+						Direction pdd = player._pdir;
+						for (auto &item : player.InvBody) {
+							pdd = Left(pdd);
+							DeadItem(player, item.pop(), Displacement(pdd));
+						}
+	
+						CalcPlrInv(player, false);
+					}
 				}
+				if (dropEar) {
+					Item ear;
+					InitializeItem(ear, IDI_EAR);
+					CopyUtf8(ear._iName, fmt::format(fmt::runtime("Ear of {:s}"), player._pName), sizeof(ear._iName));
+					CopyUtf8(ear._iIName, player._pName, sizeof(ear._iIName));
+					switch (player._pClass) {
+					case HeroClass::Sorcerer:
+						ear._iCurs = ICURS_EAR_SORCERER;
+						break;
+					case HeroClass::Warrior:
+						ear._iCurs = ICURS_EAR_WARRIOR;
+						break;
+					case HeroClass::Rogue:
+					case HeroClass::Monk:
+					case HeroClass::Bard:
+					case HeroClass::Barbarian:
+						ear._iCurs = ICURS_EAR_ROGUE;
+						break;
+					}
 
-				ear._iCreateInfo = player._pName[0] << 8 | player._pName[1];
-				ear._iSeed = player._pName[2] << 24 | player._pName[3] << 16 | player._pName[4] << 8 | player._pName[5];
-				ear._ivalue = player._pLevel;
+					ear._iCreateInfo = player._pName[0] << 8 | player._pName[1];
+					ear._iSeed = player._pName[2] << 24 | player._pName[3] << 16 | player._pName[4] << 8 | player._pName[5];
+					ear._ivalue = player._pLevel;
 
-				if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
-					DeadItem(player, std::move(ear), { 0, 0 });
+					if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
+						DeadItem(player, std::move(ear), { 0, 0 });
+					}
+
+					CalcPlrInv(player, false);
+
 				}
-			}
-			if (dropItems) {
-				Direction pdd = player._pdir;
-				for (auto &item : player.InvBody) {
-					pdd = Left(pdd);
-					DeadItem(player, item.pop(), Displacement(pdd));
-				}
-
-				CalcPlrInv(player, false);
 			}
 		}
 	}
@@ -2934,24 +3185,68 @@ void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*
 	}
 	if (totalDamage > 0 && player.pManaShield) {
 		uint8_t manaShieldLevel = player._pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
-		if (manaShieldLevel > 0) {
-			totalDamage += totalDamage / -player.GetManaShieldDamageReduction();
+		int damageAfterReduction = totalDamage * player.GetManaShieldDamageReduction() / 100;
+		int damageRedirectedToMana = 0;
+		if (manaShieldLevel <= 15) {
+			damageRedirectedToMana = damageAfterReduction * (30 + (manaShieldLevel - 1) * (75 - 30) / 14) / 100; // up to 75% at level 15
+		} else {
+			damageRedirectedToMana = damageAfterReduction * (75 + std::min((manaShieldLevel - 15) * 2, 30)) / 100; // additional 2% per level, capped at 90%
 		}
+		totalDamage = damageAfterReduction - damageRedirectedToMana;
 		if (&player == MyPlayer)
 			RedrawComponent(PanelDrawComponent::Mana);
-		if (player._pMana >= totalDamage) {
-			player._pMana -= totalDamage;
-			player._pManaBase -= totalDamage;
-			totalDamage = 0;
+		if (player._pMana >= damageRedirectedToMana) {
+			player._pMana -= damageRedirectedToMana;
+			player._pManaBase -= damageRedirectedToMana;
 		} else {
-			totalDamage -= player._pMana;
-			if (manaShieldLevel > 0) {
-				totalDamage += totalDamage / (player.GetManaShieldDamageReduction() - 1);
-			}
+			totalDamage += player._pMana;
 			player._pMana = 0;
 			player._pManaBase = player._pMaxManaBase - player._pMaxMana;
 			if (&player == MyPlayer)
 				NetSendCmd(true, CMD_REMSHIELD);
+		}
+	}
+
+	if (totalDamage == 0)
+		return;
+
+	RedrawComponent(PanelDrawComponent::Health);
+	player._pHitPoints -= totalDamage;
+	player._pHPBase -= totalDamage;
+	if (player._pHitPoints > player._pMaxHP) {
+		player._pHitPoints = player._pMaxHP;
+		player._pHPBase = player._pMaxHPBase;
+	}
+	int minHitPoints = minHP << 6;
+	if (player._pHitPoints < minHitPoints) {
+		SetPlayerHitPoints(player, minHitPoints);
+	}
+	if (player._pHitPoints >> 6 <= 0) {
+		SyncPlrKill(player, deathReason);
+	}
+}
+
+void ApplyManaDrain(DamageType damageType, Player &player, int dam, int minMP, int minHP /*= 0*/, int frac /*= 0*/, DeathReason deathReason /*= DeathReason::MonsterOrTrap*/)
+{
+	int totalDamage = (dam << 6) + frac;
+	if (&player == MyPlayer) {
+		AddFloatingNumber(damageType, player, totalDamage);
+	}
+	if (player._pMana > 0) {
+		if (totalDamage > 0) {
+			if (&player == MyPlayer)
+				RedrawComponent(PanelDrawComponent::Mana);
+			if (player._pMana >= totalDamage) {
+				player._pMana -= totalDamage;
+				player._pManaBase -= totalDamage;
+				totalDamage = 0;
+			} else {
+				totalDamage -= player._pMana;
+				player._pMana = 0;
+				player._pManaBase = player._pMaxManaBase - player._pMaxMana;
+				if (&player == MyPlayer)
+					NetSendCmd(true, CMD_REMSHIELD);
+			}
 		}
 	}
 
@@ -3142,6 +3437,9 @@ void ProcessPlayers()
 			if (&player == MyPlayer) {
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainLife) && leveltype != DTYPE_TOWN) {
 					ApplyPlrDamage(DamageType::Physical, player, 0, 0, 4);
+				}
+				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainMana) && leveltype != DTYPE_TOWN) {
+					ApplyManaDrain(DamageType::Physical, player, 0, 0, 0, 4);
 				}
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::NoMana) && player._pManaBase > 0) {
 					player._pManaBase -= player._pMana;
