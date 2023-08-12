@@ -109,6 +109,7 @@ string_view CmdIdString(_cmd_id cmd)
 	case CMD_CHANGEBELTITEMS: return "CMD_CHANGEBELTITEMS";
 	case CMD_DELBELTITEMS: return "CMD_DELBELTITEMS";
 	case CMD_PLRDAMAGE: return "CMD_PLRDAMAGE";
+	case CMD_ADDMISSILE: return "CMD_ADDMISSILE";
 	case CMD_PLRLEVEL: return "CMD_PLRLEVEL";
 	case CMD_DROPITEM: return "CMD_DROPITEM";
 	case CMD_PLAYER_JOINLEVEL: return "CMD_PLAYER_JOINLEVEL";
@@ -1814,6 +1815,16 @@ size_t OnPlayerDamage(const TCmd *pCmd, Player &player)
 	return sizeof(message);
 }
 
+size_t OnAddMissile(const TCmd *pCmd, Player &player)
+{
+    const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
+
+    AddMissile(message.src, message.dst, message.midir, message.mitype,
+               message.micaster, message.id, message.midam, message.spllvl);
+
+    return sizeof(message);
+}
+
 size_t OnOperateObject(const TCmd &pCmd, size_t pnum)
 {
 	const auto &message = reinterpret_cast<const TCmdLoc &>(pCmd);
@@ -3105,6 +3116,27 @@ void NetSendCmdDamage(bool bHiPri, uint8_t bPlr, uint32_t dwDam, DamageType dama
 		NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 }
 
+void NetSendAddMissile(bool bHiPri, Point src, Point dst, Direction midir, MissileID mitype,
+                       mienemy_type micaster, int id, int midam, int spllvl)
+{
+    TCmdAddMissile cmd;
+
+    cmd.bCmd = CMD_ADDMISSILE;
+    cmd.src = src;
+    cmd.dst = dst;
+    cmd.midir = midir;
+    cmd.mitype = mitype;
+    cmd.micaster = micaster;
+    cmd.id = id;
+    cmd.midam = midam;
+    cmd.spllvl = spllvl;
+
+    if (bHiPri)
+        NetSendHiPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
+    else
+        NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
+}
+
 void NetSendCmdMonDmg(bool bHiPri, uint16_t wMon, uint32_t dwDam)
 {
 	TCmdMonDamage cmd;
@@ -3231,6 +3263,8 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 		return OnPlayerDeath(pCmd, pnum);
 	case CMD_PLRDAMAGE:
 		return OnPlayerDamage(pCmd, player);
+    case CMD_ADDMISSILE:
+        return OnAddMissile(pCmd, player);
 	case CMD_OPENDOOR:
 	case CMD_CLOSEDOOR:
 	case CMD_OPERATEOBJ:
