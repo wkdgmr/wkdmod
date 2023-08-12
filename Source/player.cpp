@@ -824,13 +824,13 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 #endif
 		ApplyMonsterDamage(DamageType::Physical, monster, dam);
 		if (pFireDam > 0)
-			AddMissile(monster.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			NetSendAddMissile(true, monster.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 			ApplyMonsterDamage(DamageType::Fire, monster, pFireDam);
 		if (pLightningDam > 0)
-			AddMissile(monster.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			NetSendAddMissile(true, monster.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 			ApplyMonsterDamage(DamageType::Lightning, monster, pLightningDam);
 		if (pMagicDam > 0)
-			AddMissile(monster.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			NetSendAddMissile(true, monster.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 			ApplyMonsterDamage(DamageType::Magic, monster, pMagicDam);
 	}
 
@@ -1239,13 +1239,13 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 	StartPlrHit(target, dam, false);
 	if (adjacentDamage)
 		if (pFireDam > 0)
-			AddMissile(target.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
+			NetSendAddMissile(true, target.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 			NetSendCmdDamage(true, target.getId(), pFireDam, DamageType::Fire);
 		if (pLightningDam > 0)
-			AddMissile(target.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
+			NetSendAddMissile(true, target.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 			NetSendCmdDamage(true, target.getId(), pLightningDam, DamageType::Lightning);
 		if (pMagicDam > 0)
-			AddMissile(target.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
+			NetSendAddMissile(true, target.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 			NetSendCmdDamage(true, target.getId(), pMagicDam, DamageType::Magic);
 
 	return true;

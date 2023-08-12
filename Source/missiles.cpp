@@ -96,6 +96,24 @@ Monster *FindClosest(Point source, int rad)
 	return nullptr;
 }
 
+Player *FindClosestPlayer(Point source, int rad)
+{
+    std::optional<Point> playerPosition = FindClosestValidPosition(
+        [&source](Point target) {
+            // search for a player with clear line of sight
+            return InDungeonBounds(target) && dPlayer[target.x][target.y] != 0 && !CheckBlock(source, target);
+        },
+        source, 1, rad);
+
+    if (playerPosition) {
+        int pid = dPlayer[playerPosition->x][playerPosition->y];
+        // Convert to zero-based index and handle negative values (indicating players behind closed doors)
+        return &Players[abs(pid) - 1];
+    }
+
+    return nullptr;
+}
+
 constexpr Direction16 Direction16Flip(Direction16 x, Direction16 pivot)
 {
 	std::underlying_type_t<Direction16> ret = (2 * static_cast<std::underlying_type_t<Direction16>>(pivot) + 16 - static_cast<std::underlying_type_t<Direction16>>(x)) % 16;
@@ -3412,91 +3430,91 @@ void ProcessSpectralArrow(Missile &missile)
 	if (misswitch != 3 || misswitch != 6 || misswitch != 4 
 	|| misswitch != 8 || misswitch != 7 || misswitch != 103
 	|| misswitch != 104) {
-		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 3) {
 		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 		std::pair<Direction, Direction> novadir = NextIMisDir(dir);
-		AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
-		AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
 		dir = OppositeIMisDir(dir);
-		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, src, dst, dir, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 6 || misswitch == 3 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 		dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 		std::pair<Direction, Direction> novadir = NextIMisDir(dir);
-		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-		AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
-		AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, src, dst, dir, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
 		dir = OppositeIMisDir(dir);
 		std::pair<Direction, Direction> novadir2 = NextIMisDir(dir);
-		AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-		AddMissile(src, dst, novadir2.first, mitype, micaster, id, dam, spllvl);
-		AddMissile(src, dst, novadir2.second, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, src, dst, dir, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, src, dst, novadir2.first, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, src, dst, novadir2.second, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 4) {
 		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 		std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
-		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-		AddMissile(missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
-		AddMissile(missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
+		NetSendAddMissile(true, missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 8 || misswitch == 4 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 		dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 		std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
-		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-		AddMissile(missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
-		AddMissile(missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
+		NetSendAddMissile(true, missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl);
 		dir = OppositeIMisDir(dir);
 		std::pair<Direction, Direction> infernodir2 = NextIMisDir(dir);
-		AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-		AddMissile(missile.position.tile, missile.position.start, infernodir2.first, mitype, micaster, id, dam, spllvl, &missile);
-		AddMissile(missile.position.tile, missile.position.start, infernodir2.second, mitype, micaster, id, dam, spllvl, &missile);
+		NetSendAddMissile(true, missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, missile.position.tile, missile.position.start, infernodir2.first, mitype, micaster, id, dam, spllvl);
+		NetSendAddMissile(true, missile.position.tile, missile.position.start, infernodir2.second, mitype, micaster, id, dam, spllvl);
 	}
 	if (misswitch == 7) {
 		if (mitype == MissileID::InfernoControl) {
 			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 			std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
-			AddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl, &missile);
-			AddMissile(missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
-			AddMissile(missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
+			NetSendAddMissile(true, missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl);
+			NetSendAddMissile(true, missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl);
+			NetSendAddMissile(true, missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl);
 			mitype = MissileID::ChargedBoltBow;
 		}
 		if (mitype == MissileID::ChargedBoltBow) {
 			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 			std::pair<Direction, Direction> novadir = NextIMisDir(dir);
-			AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
-			AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
+			NetSendAddMissile(true, src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
+			NetSendAddMissile(true, src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
 			dir = OppositeIMisDir(dir);
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			NetSendAddMissile(true, src, dst, dir, mitype, micaster, id, dam, spllvl);
 		}
 	}
 	if (misswitch == 103) {
 		if (mitype == MissileID::HolyBoltBow) {
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			NetSendAddMissile(true, src, dst, dir, mitype, micaster, id, dam, spllvl);
 			mitype = MissileID::ChargedBoltBow;
 		}
 		if (mitype == MissileID::ChargedBoltBow) {
 			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 			std::pair<Direction, Direction> novadir = NextIMisDir(player._pdir);
-			AddMissile(player.position.tile, player.position.temp, novadir.first, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-			AddMissile(player.position.tile, player.position.temp, novadir.second, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
+			NetSendAddMissile(true, player.position.tile, player.position.temp, novadir.first, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
+			NetSendAddMissile(true, player.position.tile, player.position.temp, novadir.second, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
 			dir = OppositeIMisDir(player._pdir);
-			AddMissile(player.position.tile, player.position.temp, dir, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
+			NetSendAddMissile(true, player.position.tile, player.position.temp, dir, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
 		}
 
 	}
 	if (misswitch == 104) {
 		if (mitype == MissileID::HolyBoltBow) {
-			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			NetSendAddMissile(true, src, dst, dir, mitype, micaster, id, dam, spllvl);
 			mitype = MissileID::InfernoControl;
 		}
 		if (mitype == MissileID::InfernoControl) {
 			dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 			std::pair<Direction, Direction> infernodir = NextIMisDir(player._pdir);
-			AddMissile(missile.position.tile, missile.position.start, player._pdir, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
-			AddMissile(missile.position.tile, missile.position.start, infernodir.first, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
-			AddMissile(missile.position.tile, missile.position.start, infernodir.second, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
+			NetSendAddMissile(true, missile.position.tile, missile.position.start, player._pdir, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl);
+			NetSendAddMissile(true, missile.position.tile, missile.position.start, infernodir.first, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl);
+			NetSendAddMissile(true, missile.position.tile, missile.position.start, infernodir.second, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl);
 		}
 	}
 	missile._mirange--;
@@ -4330,25 +4348,34 @@ void ProcessBoneSpirit(Missile &missile)
 		}
 		PutMissile(missile);
 	} else {
-    	MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);
-    	Point c = missile.position.tile;
-    	if (missile.var3 == 0 && c == Point { missile.var4, missile.var5 })
-    	    missile.var3 = 1;
-    	if (missile.var3 == 1) {
-    	    missile.var3 = 2;
-    	    missile._mirange = 255;
-    	    auto *monster = FindClosest(c, 19);
-    	    if (monster != nullptr && monster->position.tile != Point { missile.var6, missile.var7 }) {
-    	        missile.var6 = monster->position.tile.x;
-    	        missile.var7 = monster->position.tile.y;
-    	        SetMissDir(missile, GetDirection(c, monster->position.tile));
-    	        UpdateMissileVelocity(missile, monster->position.tile, 16);
-    	    } else if (monster == nullptr || monster->position.tile == Point { missile.var6, missile.var7 }) {
-    	        Direction sd = Players[missile._misource]._pdir;
-    	        SetMissDir(missile, sd);
-    	        UpdateMissileVelocity(missile, c + sd, 16);
-    	    }
-    	}
+	    MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);
+	    Point c = missile.position.tile;
+	    if (missile.var3 == 0 && c == Point { missile.var4, missile.var5 })
+	        missile.var3 = 1;
+	    if (missile.var3 == 1) {
+	        missile.var3 = 2;
+	        missile._mirange = 255;
+	        Monster *monster = FindClosest(c, 19);
+	        Player *targetPlayer = FindClosestPlayer(c, 19);
+	        if (monster != nullptr && monster->position.tile != Point { missile.var6, missile.var7 }) {
+	            // If monster is available and not at the last known position
+	            missile.var6 = monster->position.tile.x;
+	            missile.var7 = monster->position.tile.y;
+	            SetMissDir(missile, GetDirection(c, monster->position.tile));
+	            UpdateMissileVelocity(missile, monster->position.tile, 16);
+	        } else if (targetPlayer != nullptr && !Players[missile._misource].friendlyMode) {
+	            // If player is available and not in friendly mode
+	            missile.var6 = targetPlayer->position.tile.x;
+	            missile.var7 = targetPlayer->position.tile.y;
+	            SetMissDir(missile, GetDirection(c, targetPlayer->position.tile));
+	            UpdateMissileVelocity(missile, targetPlayer->position.tile, 16);
+	        } else {
+	            // Default behavior (e.g. when neither a monster nor a player is found)
+	            Direction sd = Players[missile._misource]._pdir;
+	            SetMissDir(missile, sd);
+	            UpdateMissileVelocity(missile, c + sd, 16);
+	        }
+	    }
 		if (c != Point { missile.var1, missile.var2 }) {
 			missile.var1 = c.x;
 			missile.var2 = c.y;

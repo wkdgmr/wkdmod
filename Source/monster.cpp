@@ -806,7 +806,7 @@ void HolyFireDamage(Player &player, Monster &monster) {
 			}
 			mdam = mdam << 6;
 			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
-			AddMissile(monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0);
+			NetSendAddMissile(true, monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0);
 			if (monster.hitPoints >> 6 <= 0)
 				M_StartKill(monster, player);
 			else
@@ -844,8 +844,8 @@ void CastHolyShock(Player &player, Monster &monster)
 		bsmdam = bsmdam << 6;
 		if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
 			ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
-			AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
-			AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+			NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+			NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
 			if (monster.hitPoints >> 6 <= 0)
 				M_StartKill(monster, player);
 			else
@@ -869,23 +869,7 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 			auto &BoneArmor = player.InvBody[INVLOC_CHEST];
 			if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
 			&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-				/*
-				int bsmdam = mdam;
-				int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-				if ((res & (RESIST_MAGIC | IMMUNE_MAGIC)) != 0) {
-					bsmdam -= bsmdam / 2;
-					bsmdam -= bsmdam / 2;
-				}
-				bsmdam = bsmdam << 6;
-				PlaySFX(LS_BONESP);
-				ApplyMonsterDamage(DamageType::Magic, monster, bsmdam);
-				if (monster.hitPoints >> 6 <= 0)
-					M_StartKill(monster, player);
-				else
-					M_StartHit(monster, player, bsmdam);
-				*/
 		    	int arrows = 6;
-	   			int dmg = mdam; 
 	    		int directionIndex = static_cast<int>(player._pdir);
 	    		std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
 	    		for (int arrow = 0; arrow < arrows; arrow++) {
@@ -898,8 +882,8 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 	    		    }
 	    		    Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
 	    		    Displacement displacement(arrowDirection);
-	    		    AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
-	    		               MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), dmg, 0);
+	    		    NetSendAddMissile(true, player.position.tile, player.position.old + displacement, arrowDirection,
+	    		               MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), mdam, 0);
 	    		}
 			}
 		}
