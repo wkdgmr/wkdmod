@@ -1819,8 +1819,11 @@ size_t OnAddMissile(const TCmd *pCmd, Player &player)
 {
     const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
 
-    AddMissile(message.src, message.dst, message.midir, message.mitype,
-               message.micaster, message.id, message.midam, message.spllvl);
+	if (message.mitype == MissileID::InfernoControl) {
+    	AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl, message.parent);
+	} else {
+		AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl);
+	}
 
     return sizeof(message);
 }
@@ -3117,7 +3120,7 @@ void NetSendCmdDamage(bool bHiPri, uint8_t bPlr, uint32_t dwDam, DamageType dama
 }
 
 void NetSendAddMissile(bool bHiPri, Point src, Point dst, Direction midir, MissileID mitype,
-                       mienemy_type micaster, int id, int midam, int spllvl)
+mienemy_type micaster, int id, int midam, int spllvl, Missile *parent = nullptr, std::optional<_sfx_id> lSFX = std::nullopt)
 {
     TCmdAddMissile cmd;
 
@@ -3130,6 +3133,8 @@ void NetSendAddMissile(bool bHiPri, Point src, Point dst, Direction midir, Missi
     cmd.id = id;
     cmd.midam = midam;
     cmd.spllvl = spllvl;
+	cmd.parent = *parent;
+	cmd.lSFX = lSFX;
 
     if (bHiPri)
         NetSendHiPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
