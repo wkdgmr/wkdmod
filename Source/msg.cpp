@@ -179,6 +179,20 @@ struct DLevel {
 	DMonsterStr monster[MaxMonsters];
 };
 
+struct TCmdAddMissile {
+    uint8_t bCmd;
+    Point src;
+    Point dst;
+    Direction midir;
+    MissileID mitype;
+    mienemy_type micaster;
+    int id;
+    int midam;
+    int spllvl;
+	Missile *parent;
+	std::optional<_sfx_id> lSFX;
+};
+
 #pragma pack(push, 1)
 struct LocalLevel {
 	LocalLevel(const uint8_t (&other)[DMAXX][DMAXY])

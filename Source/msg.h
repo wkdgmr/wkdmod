@@ -642,20 +642,6 @@ struct TCmdDamage {
 	DamageType damageType;
 };
 
-struct TCmdAddMissile {
-    uint8_t bCmd;
-    Point src;
-    Point dst;
-    Direction midir;
-    MissileID mitype;
-    mienemy_type micaster;
-    int id;
-    int midam;
-    int spllvl;
-	Missile parent;
-	std::optional<_sfx_id> lSFX;
-};
-
 struct TCmdMonDamage {
 	_cmd_id bCmd;
 	uint16_t wMon;
@@ -789,7 +775,6 @@ void NetSendCmdDelItem(bool bHiPri, uint8_t bLoc);
 void NetSendCmdChInvItem(bool bHiPri, int invGridIndex);
 void NetSendCmdChBeltItem(bool bHiPri, int invGridIndex);
 void NetSendCmdDamage(bool bHiPri, uint8_t bPlr, uint32_t dwDam, DamageType damageType);
-const MissileID INVALID_MISSILE_ID = static_cast<MissileID>(-1);
 Missile *NetSendAddMissile(bool bHiPri, Point src, Point dst, Direction midir, MissileID mitype, mienemy_type micaster, int id, int midam, int spllvl,
 Missile *parent = nullptr, std::optional<_sfx_id> lSFX = std::nullopt);
 void NetSendCmdMonDmg(bool bHiPri, uint16_t wMon, uint32_t dwDam);
