@@ -652,19 +652,19 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	int misswitch = player._pIMisType;
 
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 3) {
-	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	    NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 6) {
-	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	    NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 4) {
-	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	    NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 8) {
-	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	    NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage |  ItemSpecialEffect::LightningDamage)) && misswitch == 7) {
-	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	    NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	
 	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1
@@ -730,7 +730,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        // Calculate the displacement based on the arrow direction
 	        Displacement displacement(arrowDirection);
 
-	        AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
+	        NetSendAddMissile(true, player.position.tile, player.position.old + displacement, arrowDirection,
 	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, var3);
 			if (misswitch == 5 && arrow == 0)
 				PlaySfxLoc(IS_FBALLBOW, player.position.tile);
@@ -1040,19 +1040,19 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 	int misswitch = attacker._pIMisType;
 
 	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 3) {
-	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	    NetSendAddMissile(true, attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
 	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 6) {
-	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	    NetSendAddMissile(true, attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
 	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 4) {
-	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	    NetSendAddMissile(true, attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
 	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 8) {
-	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	    NetSendAddMissile(true, attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
 	if ((HasAllOf(attacker._pIFlags, ItemSpecialEffect::FireDamage |  ItemSpecialEffect::LightningDamage)) && misswitch == 7) {
-	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	    NetSendAddMissile(true, attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
 	
 	if (attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1
@@ -3274,9 +3274,9 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 		NetSendCmdParam1(true, CMD_PLRDEAD, static_cast<uint16_t>(deathReason));
 	}
 
-	const bool dropGold = !gbIsMultiplayer || player.isOnArenaLevel();
-	const bool dropItems = dropGold && deathReason == DeathReason::MonsterOrTrap || deathReason == DeathReason::Player;
-	const bool dropEar = dropGold && deathReason == DeathReason::Player;
+	const bool dropGold = !gbIsMultiplayer || !player.isOnArenaLevel();
+	const bool dropItems = dropGold && *sgOptions.Gameplay.friendlyFire;
+	const bool dropEar = !gbIsMultiplayer && deathReason == DeathReason::Player;
 
 	player.Say(HeroSpeech::AuughUh);
 
@@ -3299,6 +3299,7 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 	player._pmode = PM_DEATH;
 	player._pInvincible = true;
 	SetPlayerHitPoints(player, 0);
+	int pExperience_penalty = round(player._pExperience / 100);
 
 	if (&player != MyPlayer && dropItems) {
 		// Ensure that items are removed for remote players
@@ -3327,54 +3328,41 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 			if (dropGold) {
 				DropHalfPlayersGold(player);
 			}
-			if (!*sgOptions.Gameplay.friendlyFire) {
-				int pExperience_penalty = round(player._pExperience / 100);
-				player._pExperience -= pExperience_penalty;
-			} else {
-				if (!player.isOnArenaLevel()) {
-					int pExperience_penalty = round(player._pExperience / 100);
-					player._pExperience -= pExperience_penalty;
-					if (dropItems) {
-						Direction pdd = player._pdir;
-						for (auto &item : player.InvBody) {
-							pdd = Left(pdd);
-							DeadItem(player, item.pop(), Displacement(pdd));
-						}
-	
-						CalcPlrInv(player, false);
-					}
+			player._pExperience -= pExperience_penalty;
+			if (dropItems) {
+				Direction pdd = player._pdir;
+				for (auto &item : player.InvBody) {
+					pdd = Left(pdd);
+					DeadItem(player, item.pop(), Displacement(pdd));
 				}
-				if (dropEar) {
-					Item ear;
-					InitializeItem(ear, IDI_EAR);
-					CopyUtf8(ear._iName, fmt::format(fmt::runtime("Ear of {:s}"), player._pName), sizeof(ear._iName));
-					CopyUtf8(ear._iIName, player._pName, sizeof(ear._iIName));
-					switch (player._pClass) {
-					case HeroClass::Sorcerer:
-						ear._iCurs = ICURS_EAR_SORCERER;
-						break;
-					case HeroClass::Warrior:
-						ear._iCurs = ICURS_EAR_WARRIOR;
-						break;
-					case HeroClass::Rogue:
-					case HeroClass::Monk:
-					case HeroClass::Bard:
-					case HeroClass::Barbarian:
-						ear._iCurs = ICURS_EAR_ROGUE;
-						break;
-					}
-
-					ear._iCreateInfo = player._pName[0] << 8 | player._pName[1];
-					ear._iSeed = player._pName[2] << 24 | player._pName[3] << 16 | player._pName[4] << 8 | player._pName[5];
-					ear._ivalue = player._pLevel;
-
-					if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
-						DeadItem(player, std::move(ear), { 0, 0 });
-					}
-
-					CalcPlrInv(player, false);
-
+				CalcPlrInv(player, false);
+			}
+			if (dropEar) {
+				Item ear;
+				InitializeItem(ear, IDI_EAR);
+				CopyUtf8(ear._iName, fmt::format(fmt::runtime("Ear of {:s}"), player._pName), sizeof(ear._iName));
+				CopyUtf8(ear._iIName, player._pName, sizeof(ear._iIName));
+				switch (player._pClass) {
+				case HeroClass::Sorcerer:
+					ear._iCurs = ICURS_EAR_SORCERER;
+					break;
+				case HeroClass::Warrior:
+					ear._iCurs = ICURS_EAR_WARRIOR;
+					break;
+				case HeroClass::Rogue:
+				case HeroClass::Monk:
+				case HeroClass::Bard:
+				case HeroClass::Barbarian:
+					ear._iCurs = ICURS_EAR_ROGUE;
+					break;
 				}
+				ear._iCreateInfo = player._pName[0] << 8 | player._pName[1];
+				ear._iSeed = player._pName[2] << 24 | player._pName[3] << 16 | player._pName[4] << 8 | player._pName[5];
+				ear._ivalue = player._pLevel;
+				if (FindGetItem(ear._iSeed, IDI_EAR, ear._iCreateInfo) == -1) {
+					DeadItem(player, std::move(ear), { 0, 0 });
+				}
+				CalcPlrInv(player, false);
 			}
 		}
 	}
