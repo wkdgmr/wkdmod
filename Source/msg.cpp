@@ -3134,7 +3134,7 @@ void NetSendCmdDamage(bool bHiPri, uint8_t bPlr, uint32_t dwDam, DamageType dama
 }
 
 void NetSendAddMissile(bool bHiPri, Point src, Point dst, Direction midir, MissileID mitype,
-mienemy_type micaster, int id, int midam, int spllvl, Missile *parent = nullptr, std::optional<_sfx_id> lSFX = std::nullopt)
+mienemy_type micaster, int id, int midam, int spllvl, Missile *parent, std::optional<_sfx_id> lSFX)
 {
     TCmdAddMissile cmd;
 
