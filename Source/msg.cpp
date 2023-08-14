@@ -3119,7 +3119,7 @@ void NetSendCmdDamage(bool bHiPri, uint8_t bPlr, uint32_t dwDam, DamageType dama
 		NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 }
 
-void NetSendAddMissile(bool bHiPri, Point src, Point dst, Direction midir, MissileID mitype,
+Missile *NetSendAddMissile(bool bHiPri, Point src, Point dst, Direction midir, MissileID mitype,
 mienemy_type micaster, int id, int midam, int spllvl, Missile *parent = nullptr, std::optional<_sfx_id> lSFX = std::nullopt)
 {
     TCmdAddMissile cmd;
@@ -3133,7 +3133,7 @@ mienemy_type micaster, int id, int midam, int spllvl, Missile *parent = nullptr,
     cmd.id = id;
     cmd.midam = midam;
     cmd.spllvl = spllvl;
-	cmd.parent = *parent;
+	cmd.parent = parent;
 	cmd.lSFX = lSFX;
 
     if (bHiPri)
