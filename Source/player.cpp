@@ -3274,9 +3274,10 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 		NetSendCmdParam1(true, CMD_PLRDEAD, static_cast<uint16_t>(deathReason));
 	}
 
-	const bool dropGold = !gbIsMultiplayer || !player.isOnArenaLevel();
+	const bool dropGold = !gbIsMultiplayer;
 	const bool dropItems = dropGold && *sgOptions.Gameplay.friendlyFire;
-	const bool dropEar = !gbIsMultiplayer && deathReason == DeathReason::Player;
+	const bool dropEar = dropGold && deathReason == DeathReason::Player;
+	const bool loseXP = !player.isOnArenaLevel();
 
 	player.Say(HeroSpeech::AuughUh);
 
@@ -3299,8 +3300,7 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 	player._pmode = PM_DEATH;
 	player._pInvincible = true;
 	SetPlayerHitPoints(player, 0);
-	int pExperience_penalty = round(player._pExperience / 100);
-
+	
 	if (&player != MyPlayer && dropItems) {
 		// Ensure that items are removed for remote players
 		// The dropped items will be synced seperatly (by the remote client)
@@ -3325,10 +3325,13 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 				DeadItem(player, std::move(player.HoldItem), { 0, 0 });
 				NewCursor(CURSOR_HAND);
 			}
+
+			if (loseXP) {
+				player._pExperience -= player._pExperience / 100;
+			}
 			if (dropGold) {
 				DropHalfPlayersGold(player);
 			}
-			player._pExperience -= pExperience_penalty;
 			if (dropItems) {
 				Direction pdd = player._pdir;
 				for (auto &item : player.InvBody) {
@@ -3344,15 +3347,15 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 				CopyUtf8(ear._iIName, player._pName, sizeof(ear._iIName));
 				switch (player._pClass) {
 				case HeroClass::Sorcerer:
+				case HeroClass::Monk:
 					ear._iCurs = ICURS_EAR_SORCERER;
 					break;
 				case HeroClass::Warrior:
+				case HeroClass::Barbarian:
 					ear._iCurs = ICURS_EAR_WARRIOR;
 					break;
 				case HeroClass::Rogue:
-				case HeroClass::Monk:
 				case HeroClass::Bard:
-				case HeroClass::Barbarian:
 					ear._iCurs = ICURS_EAR_ROGUE;
 					break;
 				}
