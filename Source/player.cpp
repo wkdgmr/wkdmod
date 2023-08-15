@@ -1171,13 +1171,6 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 		dam = std::max(dam - reflectedDamage, 0);
 	}
 
-	// Check for holy fire effect
-	if ((GenerateRnd(100) + 1) <= HolyFireChance(target)) {
-	    HolyFireDamage(attacker, target);
-		CastHolyShock(attacker, target);
-		ExplodingBoneArmor(attacker, target);
-	}
-  
 	auto &SoulEater = attacker.InvBody[INVLOC_HAND_LEFT];
 	int skdam = dam << 6;
 	int manaSteal = 0;
@@ -1247,6 +1240,12 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 		if (pMagicDam > 0)
 			NetSendAddMissile(true, target.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 			NetSendCmdDamage(true, target.getId(), pMagicDam, DamageType::Magic);
+	// Check for holy fire effect
+	if ((GenerateRnd(100) + 1) <= HolyFireChance(target)) {
+	    HolyFireDamage(attacker, target);
+		CastHolyShock(attacker, target);
+		ExplodingBoneArmor(attacker, target);
+	}
 
 	return true;
 }
