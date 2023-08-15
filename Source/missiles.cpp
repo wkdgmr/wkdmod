@@ -3857,14 +3857,9 @@ void ProcessAcidSplate(Missile &missile)
 			missile.var6 = targetPlayer->position.tile.x;
     		missile.var7 = targetPlayer->position.tile.y;
 			missile.position.tile = targetPlayer->position.tile;
-    	} else if (targetPlayer == nullptr && !Players[missile._misource].friendlyMode
+    	} else if (targetPlayer == nullptr
 		|| targetPlayer->position.tile == Point { missile.var6, missile.var7 } && !Players[missile._misource].friendlyMode) {
     	    Direction sd = Players[missile._misource]._pdir;
-			if (targetPlayer == nullptr)
-				missile.position.tile = c;
-			else missile.position.tile = targetPlayer->position.tile;
-		} else {
-			Direction sd = Players[missile._misource]._pdir;
 			missile.position.tile = c;
 		}
 	}
@@ -4392,21 +4387,12 @@ void ProcessBoneSpirit(Missile &missile)
 	            missile.var7 = targetPlayer->position.tile.y;
 	            SetMissDir(missile, GetDirection(c, targetPlayer->position.tile));
 	            UpdateMissileVelocity(missile, targetPlayer->position.tile, 16);
-    	    } else if (targetPlayer == nullptr && !Players[missile._misource].friendlyMode
+    	    } else if (targetPlayer == nullptr
 			|| targetPlayer->position.tile == Point { missile.var6, missile.var7 } && !Players[missile._misource].friendlyMode) {
     	        Direction sd = Players[missile._misource]._pdir;
-				if (targetPlayer == nullptr) {
-    	        	SetMissDir(missile, sd);
-    	        	UpdateMissileVelocity(missile, c + sd, 16);
-				} else { 
-					SetMissDir(missile, GetDirection(c, targetPlayer->position.tile));
-					UpdateMissileVelocity(missile, targetPlayer->position.tile, 16);
-				}
-	        } else {
-	            Direction sd = Players[missile._misource]._pdir;
-	            SetMissDir(missile, sd);
-	            UpdateMissileVelocity(missile, c + sd, 16);
-	        }
+    	        SetMissDir(missile, sd);
+    	        UpdateMissileVelocity(missile, c + sd, 16);
+			}
 	    }
 		if (c != Point { missile.var1, missile.var2 }) {
 			missile.var1 = c.x;

@@ -652,19 +652,19 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	int misswitch = player._pIMisType;
 
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 3) {
-	    NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 6) {
-	    NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 4) {
-	    NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 8) {
-	    NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage |  ItemSpecialEffect::LightningDamage)) && misswitch == 7) {
-	    NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+	    AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	
 	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1
@@ -730,7 +730,7 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	        // Calculate the displacement based on the arrow direction
 	        Displacement displacement(arrowDirection);
 
-	        NetSendAddMissile(true, player.position.tile, player.position.old + displacement, arrowDirection,
+	        AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
 	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), dmg, var3);
 			if (misswitch == 5 && arrow == 0)
 				PlaySfxLoc(IS_FBALLBOW, player.position.tile);
@@ -1040,19 +1040,19 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 	int misswitch = attacker._pIMisType;
 
 	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 3) {
-	    NetSendAddMissile(true, attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
 	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 6) {
-	    NetSendAddMissile(true, attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
 	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 4) {
-	    NetSendAddMissile(true, attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
 	if ((HasAnyOf(attacker._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 8) {
-	    NetSendAddMissile(true, attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
 	if ((HasAllOf(attacker._pIFlags, ItemSpecialEffect::FireDamage |  ItemSpecialEffect::LightningDamage)) && misswitch == 7) {
-	    NetSendAddMissile(true, attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
+	    AddMissile(attacker.position.tile, attacker.position.temp, attacker._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0);
 	}
 	
 	if (attacker.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && misswitch == 1
