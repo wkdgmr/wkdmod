@@ -4780,7 +4780,7 @@ std::string DebugSpawnItem(std::string itemName)
 		if (i > max_iter)
 			return StrCat("Item not found in ", max_iter, " tries!");
 
-		const int8_t monsterLevel = dist(BetterRng) % CF_LEVEL + 1;
+		const int8_t monsterLevel = std::min((dist(BetterRng) % CF_LEVEL + 1), 60);
 		_item_indexes idx = RndItemForMonsterLevel(monsterLevel);
 		if (IsAnyOf(idx, IDI_NONE, IDI_GOLD))
 			continue;
@@ -4862,7 +4862,7 @@ std::string DebugSpawnUniqueItem(std::string itemName)
 		for (auto &flag : UniqueItemFlags)
 			flag = true;
 		UniqueItemFlags[uniqueIndex] = false;
-		SetupAllItems(*MyPlayer, testItem, uniqueBaseIndex, testItem._iMiscId == IMISC_UNIQUE ? uniqueIndex : AdvanceRndSeed(), uniqueItem.UIMinLvl, 1, false, false, false);
+		SetupAllItems(*MyPlayer, testItem, uniqueBaseIndex, testItem._iMiscId == IMISC_UNIQUE ? uniqueIndex : AdvanceRndSeed(), std::min(uniqueItem.UIMinLvl, static_cast<int8_t>(60)), 1, false, false, false);
 		for (auto &flag : UniqueItemFlags)
 			flag = false;
 
