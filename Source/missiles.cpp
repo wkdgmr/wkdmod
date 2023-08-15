@@ -2745,6 +2745,7 @@ void AddBoneSpirit(Missile &missile, AddMissileParameter &parameter)
     missile._mirange = 256;
     missile.var1 = missile.position.start.x;
     missile.var2 = missile.position.start.y;
+	missile.var3 = 0;
     missile.var4 = dst.x;
     missile.var5 = dst.y;
     missile.var6 = -1;  // Initialize to -1 to not ignore any monster initially
@@ -4361,31 +4362,31 @@ void ProcessBoneSpirit(Missile &missile)
 		PutMissile(missile);
 	} else {
 	    MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);
-    	Point c = missile.position.tile;
-    	if (missile.var3 == 1) {
-    	    missile.var3 = 2;
-    	    missile._mirange = 255;
-    	    auto *monster = FindClosest(c, 19);
-    	    auto *targetPlayer = FindClosestPlayer(c, 19);
-
-    	    if (targetPlayer != nullptr 
-    	        && targetPlayer->position.tile != Point { missile.var6, missile.var7 }
-    	        && !Players[missile._misource].friendlyMode) {
-    	        missile.var6 = targetPlayer->position.tile.x;
-    	        missile.var7 = targetPlayer->position.tile.y;
-    	        SetMissDir(missile, GetDirection(c, targetPlayer->position.tile));
-    	        UpdateMissileVelocity(missile, targetPlayer->position.tile, 16);
-    	    } else if (monster != nullptr && monster->position.tile != Point { missile.var6, missile.var7 }) {
-    	        missile.var6 = monster->position.tile.x;
-    	        missile.var7 = monster->position.tile.y;
-    	        SetMissDir(missile, GetDirection(c, monster->position.tile));
-    	        UpdateMissileVelocity(missile, monster->position.tile, 16);
-    	    } else {
-    	        Direction sd = Players[missile._misource]._pdir;
-    	        SetMissDir(missile, sd);
-    	        UpdateMissileVelocity(missile, c + sd, 16);
-    	    }
-    	}
+	    Point c = missile.position.tile;
+	    if (missile.var3 == 0 && c == Point { missile.var4, missile.var5 })
+	        missile.var3 = 1;
+	    if (missile.var3 == 1) {
+	        missile.var3 = 2;
+	        missile._mirange = 255;
+	        Monster *monster = FindClosest(c, 19);
+	        Player *targetPlayer = FindClosestPlayer(c, 19);
+	        if (monster != nullptr && monster->position.tile != Point { missile.var6, missile.var7 }) {
+	            // If monster is available and not at the last known position
+	            missile.var6 = monster->position.tile.x;
+	            missile.var7 = monster->position.tile.y;
+	            SetMissDir(missile, GetDirection(c, monster->position.tile));
+	            UpdateMissileVelocity(missile, monster->position.tile, 16);
+	        } else if (targetPlayer != nullptr && !Players[missile._misource].friendlyMode) {
+	            // If player is available and not in friendly mode
+	            SetMissDir(missile, GetDirection(c, targetPlayer->position.tile));
+	            UpdateMissileVelocity(missile, targetPlayer->position.tile, 16);
+	        } else {
+	            // Default behavior (e.g. when neither a monster nor a player is found)
+	            Direction sd = Players[missile._misource]._pdir;
+	            SetMissDir(missile, sd);
+	            UpdateMissileVelocity(missile, c + sd, 16);
+	        }
+	    }
 		if (c != Point { missile.var1, missile.var2 }) {
 			missile.var1 = c.x;
 			missile.var2 = c.y;
