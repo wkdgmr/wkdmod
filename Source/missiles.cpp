@@ -3836,52 +3836,53 @@ void ProcessMissileExplosion(Missile &missile)
 
 void ProcessAcidSplate(Missile &missile)
 {
-	if (missile._mirange == missile._miAnimLen && missile.sourceType() == MissileSource::Monster) {
-		missile.position.tile += Displacement { 1, 1 };
-		missile.position.offset.deltaY -= 32;
-	} else if (missile._mirange == missile._miAnimLen && missile.sourceType() == MissileSource::Player) {
-		Point c = missile.position.tile;
-		Monster *monster = FindClosest(c, 1);
-		Player *targetPlayer = FindClosestPlayer(c, 1);
-		if (monster != nullptr && monster->position.tile != Point { missile.var6, missile.var7 }) {
-    		missile.var6 = monster->position.tile.x;
-    		missile.var7 = monster->position.tile.y;
-			missile.position.tile = monster->position.tile;
-		} else if (monster == nullptr || monster->position.tile == Point { missile.var6, missile.var7 }) {
-    	    Direction sd = Players[missile._misource]._pdir;
-			if (monster == nullptr)
-				missile.position.tile = c;
-			else missile.position.tile = monster->position.tile;
-		} else if (targetPlayer != nullptr && targetPlayer->position.tile != Point { missile.var6, missile.var7 }
-		&& !Players[missile._misource].friendlyMode) {
-			missile.var6 = targetPlayer->position.tile.x;
-    		missile.var7 = targetPlayer->position.tile.y;
-			missile.position.tile = targetPlayer->position.tile;
-    	} else if (targetPlayer == nullptr
-		|| targetPlayer->position.tile == Point { missile.var6, missile.var7 } && !Players[missile._misource].friendlyMode) {
-    	    Direction sd = Players[missile._misource]._pdir;
-			missile.position.tile = c;
-		}
-	}
-	missile._mirange--;
-	if (missile._mirange == 0) {
-		missile._miDelFlag = true;
-		switch (missile.sourceType()) {
-			case MissileSource::Player: {
-				Player &player = Players[missile._misource];
-				int dam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
-				NetSendAddMissile(true, missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_MONSTERS, player.getId(), dam, missile._mispllvl);
-			} break;
-			case MissileSource::Monster: {
-				int monst = missile._misource;
-				int dam = (Monsters[monst].data().level >= 2 ? 2 : 1);
-				AddMissile(missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_PLAYERS, monst, dam, missile._mispllvl);
-			} break;
-		}
-	} else {
-		PutMissile(missile);
-	}
+    if (missile._mirange == missile._miAnimLen) {
+        if (missile.sourceType() == MissileSource::Monster) {
+            missile.position.tile += Displacement { 1, 1 };
+            missile.position.offset.deltaY -= 32;
+        } else if (missile.sourceType() == MissileSource::Player) {
+            Point c = missile.position.tile;
+            auto *monster = FindClosest(c, 1);
+            auto *targetPlayer = FindClosestPlayer(c, 1);
+
+            if (monster && monster->position.tile != Point { missile.var6, missile.var7 }) {
+                missile.var6 = monster->position.tile.x;
+                missile.var7 = monster->position.tile.y;
+                missile.position.tile = monster->position.tile;
+            } else if (targetPlayer && targetPlayer->position.tile != Point { missile.var6, missile.var7 } && !Players[missile._misource].friendlyMode) {
+                missile.var6 = targetPlayer->position.tile.x;
+                missile.var7 = targetPlayer->position.tile.y;
+                missile.position.tile = targetPlayer->position.tile;
+            } else {
+                // The direction the player is facing
+                Direction sd = Players[missile._misource]._pdir;
+                missile.position.tile = c;
+            }
+        }
+    }
+
+    missile._mirange--;
+    if (missile._mirange == 0) {
+        missile._miDelFlag = true;
+        switch (missile.sourceType()) {
+            case MissileSource::Player: {
+                Player &player = Players[missile._misource];
+                int dam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
+                NetSendAddMissile(true, missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_MONSTERS, player.getId(), dam, missile._mispllvl);
+                break;
+            }
+            case MissileSource::Monster: {
+                int monst = missile._misource;
+                int dam = (Monsters[monst].data().level >= 2 ? 2 : 1);
+                AddMissile(missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_PLAYERS, monst, dam, missile._mispllvl);
+                break;
+            }
+        }
+    } else {
+        PutMissile(missile);
+    }
 }
+
 
 void ProcessTeleport(Missile &missile)
 {
@@ -4345,10 +4346,11 @@ void ProcessBoneSpirit(Missile &missile)
 	&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 		if (player.queuedSpell.spellType != SpellType::Spell 
         && player.queuedSpell.spellType != SpellType::Scroll
-        && player.queuedSpell.spellType != SpellType::Charges)
+        && player.queuedSpell.spellType != SpellType::Charges) {
 			minDmg = player._pIMMinDam;
 			maxDmg = player._pIMMaxDam;
 			missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
+		}
 	}
 	if (missile._mimfnum == 8) {
 		ChangeLight(missile._mlid, missile.position.tile, missile._miAnimFrame);
@@ -4359,41 +4361,31 @@ void ProcessBoneSpirit(Missile &missile)
 		PutMissile(missile);
 	} else {
 	    MoveMissileAndCheckMissileCol(missile, GetMissileData(missile._mitype).damageType(), minDmg, maxDmg, false, false);
-	    Point c = missile.position.tile;
-	    if (missile.var3 == 0 && c == Point { missile.var4, missile.var5 })
-	        missile.var3 = 1;
-	    if (missile.var3 == 1) {
-	        missile.var3 = 2;
-	        missile._mirange = 255;
-	        Monster *monster = FindClosest(c, 19);
-	        Player *targetPlayer = FindClosestPlayer(c, 19);
-    	    if (monster != nullptr && monster->position.tile != Point { missile.var6, missile.var7 }) {
+    	Point c = missile.position.tile;
+    	if (missile.var3 == 1) {
+    	    missile.var3 = 2;
+    	    missile._mirange = 255;
+    	    auto *monster = FindClosest(c, 19);
+    	    auto *targetPlayer = FindClosestPlayer(c, 19);
+
+    	    if (targetPlayer != nullptr 
+    	        && targetPlayer->position.tile != Point { missile.var6, missile.var7 }
+    	        && !Players[missile._misource].friendlyMode) {
+    	        missile.var6 = targetPlayer->position.tile.x;
+    	        missile.var7 = targetPlayer->position.tile.y;
+    	        SetMissDir(missile, GetDirection(c, targetPlayer->position.tile));
+    	        UpdateMissileVelocity(missile, targetPlayer->position.tile, 16);
+    	    } else if (monster != nullptr && monster->position.tile != Point { missile.var6, missile.var7 }) {
     	        missile.var6 = monster->position.tile.x;
     	        missile.var7 = monster->position.tile.y;
     	        SetMissDir(missile, GetDirection(c, monster->position.tile));
     	        UpdateMissileVelocity(missile, monster->position.tile, 16);
-    	    } else if (monster == nullptr || monster->position.tile == Point { missile.var6, missile.var7 }) {
-    	        Direction sd = Players[missile._misource]._pdir;
-				if (monster == nullptr) {
-    	        	SetMissDir(missile, sd);
-    	        	UpdateMissileVelocity(missile, c + sd, 16);
-				} else { 
-					SetMissDir(missile, GetDirection(c, monster->position.tile));
-					UpdateMissileVelocity(missile, monster->position.tile, 16);
-				}
-	        } else if (targetPlayer != nullptr && targetPlayer->position.tile != Point { missile.var6, missile.var7 } 
-			&& !Players[missile._misource].friendlyMode) {
-	            missile.var6 = targetPlayer->position.tile.x;
-	            missile.var7 = targetPlayer->position.tile.y;
-	            SetMissDir(missile, GetDirection(c, targetPlayer->position.tile));
-	            UpdateMissileVelocity(missile, targetPlayer->position.tile, 16);
-    	    } else if (targetPlayer == nullptr
-			|| targetPlayer->position.tile == Point { missile.var6, missile.var7 } && !Players[missile._misource].friendlyMode) {
+    	    } else {
     	        Direction sd = Players[missile._misource]._pdir;
     	        SetMissDir(missile, sd);
     	        UpdateMissileVelocity(missile, c + sd, 16);
-			}
-	    }
+    	    }
+    	}
 		if (c != Point { missile.var1, missile.var2 }) {
 			missile.var1 = c.x;
 			missile.var2 = c.y;
