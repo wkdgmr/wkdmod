@@ -1833,6 +1833,9 @@ size_t OnAddMissile(const TCmd *pCmd, Player &player)
 {
     const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
 
+    if (&player == MyPlayer)
+        return sizeof(message);
+
 	if (message.mitype == MissileID::InfernoControl) {
     	AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl, message.parent);
 	} else {
