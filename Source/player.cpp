@@ -1345,9 +1345,7 @@ bool DoAttack(Player &player)
 			}
 		} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
 			auto *targetPlayer = FindClosestPlayer(position, 1);
-			if (FindClosestPlayer(player.position.tile, 1) == nullptr) {
-				return;
-			} else {
+			if (FindClosestPlayer(player.position.tile, 1) != nullptr) {
 				// Check for holy fire effect
 				((GenerateRnd(100) + 1) <= HolyFireChance(*targetPlayer));
 			    HolyFireDamage(player, *targetPlayer);
@@ -1478,9 +1476,7 @@ bool DoRangeAttack(Player &player)
 		}
 	} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
 		auto *targetPlayer = FindClosestPlayer(position, 1);
-		if (FindClosestPlayer(player.position.tile, 1) == nullptr) {
-			return;
-		} else {
+		if (FindClosestPlayer(player.position.tile, 1) != nullptr) {
 			// Check for holy fire effect
 			((GenerateRnd(100) + 1) <= HolyFireChance(*targetPlayer));
 		    HolyFireDamage(player, *targetPlayer);
@@ -1686,9 +1682,7 @@ bool DoSpell(Player &player)
 		}
 	} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
 		auto *targetPlayer = FindClosestPlayer(position, 1);
-		if (FindClosestPlayer(player.position.tile, 1) == nullptr) {
-			return;
-		} else {
+		if (FindClosestPlayer(player.position.tile, 1) != nullptr) {
 			// Check for holy fire effect
 			((GenerateRnd(100) + 1) <= HolyFireChance(*targetPlayer));
 		    HolyFireDamage(player, *targetPlayer);
