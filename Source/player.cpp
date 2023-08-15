@@ -191,6 +191,35 @@ void ClearStateVariables(Player &player)
 	player.queuedSpell.spellLevel = 0;
 }
 
+bool CheckBlock(Point from, Point to)
+{
+	while (from != to) {
+		from += GetDirection(from, to);
+		if (TileHasAny(dPiece[from.x][from.y], TileProperties::Solid))
+			return true;
+	}
+
+	return false;
+}
+
+Player *FindClosestPlayer(Point source, int rad)
+{
+    std::optional<Point> playerPosition = FindClosestValidPosition(
+        [&source](Point target) {
+            // search for a player with clear line of sight
+            return InDungeonBounds(target) && dPlayer[target.x][target.y] != 0 && !CheckBlock(source, target);
+        },
+        source, 1, rad);
+
+    if (playerPosition) {
+        int pid = dPlayer[playerPosition->x][playerPosition->y];
+        // Convert to zero-based index and handle negative values (indicating players behind closed doors)
+        return &Players[abs(pid) - 1];
+    }
+
+    return nullptr;
+}
+
 void StartAttack(Player &player, Direction d, bool includesFirstFrame)
 {
 	if (player._pInvincible && player._pHitPoints == 0 && &player == MyPlayer) {
@@ -1307,12 +1336,23 @@ bool DoAttack(Player &player)
 				didhit = PlrHitObj(player, *object);
 			}
 		}
-		if (&player == MyPlayer) {
+		if (&player == MyPlayer && PlayerAtPosition(position) != nullptr) {
 			// Check for holy fire effect
 			if ((GenerateRnd(100) + 1) <= HolyFireChance(*PlayerAtPosition(position))) {
 			    HolyFireDamage(player, *PlayerAtPosition(position));
 				CastHolyShock(player, *PlayerAtPosition(position));
 				ExplodingBoneArmor(player, *PlayerAtPosition(position));
+			}
+		} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
+			auto *targetPlayer = FindClosestPlayer(position, 1);
+			if (FindClosestPlayer(player.position.tile, 1) == nullptr) {
+				return;
+			} else {
+				// Check for holy fire effect
+				((GenerateRnd(100) + 1) <= HolyFireChance(*targetPlayer));
+			    HolyFireDamage(player, *targetPlayer);
+				CastHolyShock(player, *targetPlayer);
+				ExplodingBoneArmor(player, *targetPlayer);
 			}
 		}
 
@@ -1429,12 +1469,23 @@ bool DoRangeAttack(Player &player)
 	}
 
 	Point position = player.position.tile + player._pdir;
-	if (&player == MyPlayer) {
+	if (&player == MyPlayer && PlayerAtPosition(position) != nullptr) {
 		// Check for holy fire effect
 		if ((GenerateRnd(100) + 1) <= HolyFireChance(*PlayerAtPosition(position))) {
 		    HolyFireDamage(player, *PlayerAtPosition(position));
 			CastHolyShock(player, *PlayerAtPosition(position));
 			ExplodingBoneArmor(player, *PlayerAtPosition(position));
+		}
+	} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
+		auto *targetPlayer = FindClosestPlayer(position, 1);
+		if (FindClosestPlayer(player.position.tile, 1) == nullptr) {
+			return;
+		} else {
+			// Check for holy fire effect
+			((GenerateRnd(100) + 1) <= HolyFireChance(*targetPlayer));
+		    HolyFireDamage(player, *targetPlayer);
+			CastHolyShock(player, *targetPlayer);
+			ExplodingBoneArmor(player, *targetPlayer);
 		}
 	}
 
@@ -1626,12 +1677,23 @@ bool DoSpell(Player &player)
 	}
 
 	Point position = player.position.tile + player._pdir;
-	if (&player == MyPlayer) {
+	if (&player == MyPlayer && PlayerAtPosition(position) != nullptr) {
 		// Check for holy fire effect
 		if ((GenerateRnd(100) + 1) <= HolyFireChance(*PlayerAtPosition(position))) {
 		    HolyFireDamage(player, *PlayerAtPosition(position));
 			CastHolyShock(player, *PlayerAtPosition(position));
 			ExplodingBoneArmor(player, *PlayerAtPosition(position));
+		}
+	} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
+		auto *targetPlayer = FindClosestPlayer(position, 1);
+		if (FindClosestPlayer(player.position.tile, 1) == nullptr) {
+			return;
+		} else {
+			// Check for holy fire effect
+			((GenerateRnd(100) + 1) <= HolyFireChance(*targetPlayer));
+		    HolyFireDamage(player, *targetPlayer);
+			CastHolyShock(player, *targetPlayer);
+			ExplodingBoneArmor(player, *targetPlayer);
 		}
 	}
 
