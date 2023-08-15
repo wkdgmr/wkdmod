@@ -1344,8 +1344,9 @@ bool DoAttack(Player &player)
 				ExplodingBoneArmor(player, *PlayerAtPosition(position));
 			}
 		} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
-			auto *targetPlayer = FindClosestPlayer(position, 1);
-			if (FindClosestPlayer(player.position.tile, 1) != nullptr) {
+			Point position = player.position.tile;
+			auto targetPlayer = FindClosestPlayer(position, 1);
+			if (targetPlayer != nullptr) {
 				// Check for holy fire effect
 				((GenerateRnd(100) + 1) <= HolyFireChance(*targetPlayer));
 			    HolyFireDamage(player, *targetPlayer);
@@ -1475,8 +1476,9 @@ bool DoRangeAttack(Player &player)
 			ExplodingBoneArmor(player, *PlayerAtPosition(position));
 		}
 	} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
-		auto *targetPlayer = FindClosestPlayer(position, 1);
-		if (FindClosestPlayer(player.position.tile, 1) != nullptr) {
+		Point position = player.position.tile;
+		auto targetPlayer = FindClosestPlayer(position, 1);
+		if (targetPlayer != nullptr) {
 			// Check for holy fire effect
 			((GenerateRnd(100) + 1) <= HolyFireChance(*targetPlayer));
 		    HolyFireDamage(player, *targetPlayer);
@@ -1681,8 +1683,9 @@ bool DoSpell(Player &player)
 			ExplodingBoneArmor(player, *PlayerAtPosition(position));
 		}
 	} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
-		auto *targetPlayer = FindClosestPlayer(position, 1);
-		if (FindClosestPlayer(player.position.tile, 1) != nullptr) {
+		Point position = player.position.tile;
+		auto targetPlayer = FindClosestPlayer(position, 1);
+		if (targetPlayer != nullptr) {
 			// Check for holy fire effect
 			((GenerateRnd(100) + 1) <= HolyFireChance(*targetPlayer));
 		    HolyFireDamage(player, *targetPlayer);
