@@ -807,6 +807,10 @@ void HolyFireDamage(Player &player, Monster &monster) {
 			mdam = mdam << 6;
 			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
 			NetSendAddMissile(true, monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
 		}
 	}
 }
@@ -842,6 +846,10 @@ void CastHolyShock(Player &player, Monster &monster)
 			ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
 			NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
 			NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
 		}
 	}
 }
@@ -872,6 +880,10 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 	    		    Displacement displacement(arrowDirection);
 	    		    NetSendAddMissile(true, player.position.tile, player.position.old + displacement, arrowDirection,
 	    		               MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), mdam, 0);
+					if (monster.hitPoints >> 6 <= 0)
+						M_StartKill(monster, player);
+					else
+						M_StartHit(monster, player, mdam);
 	    		}
 			}
 		}
