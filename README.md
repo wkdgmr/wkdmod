@@ -12,7 +12,20 @@ This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" 
 
 wkdmod is compatible* with standard DevilutionX characters. Simply copy your character data and stash data into the **devxmods/wkdmod folder in %appdata%/roaming/**
 
-***WARNING** Unique Items are not forward compatible.  They will morph when brought into wkdmod, it is suggested to just toss them on to the ground or sell them to a vendor.  However, white and magic (blue) items are forward compatible into wkdmod.
+***WARNING**
+1) Unique Items:  All Unique Items are now available and have been extensively overhauled.  Ice Shank and Hammer of Johlm have been replaced with the Amulet of Empowerment and Tsang's Blessed Hammer. **(Unique's are not forwards or backwards compatible from standard devx/vanilla characters.  If brought into or out of wkdmod they could cause game crashing/character save corruption).**  If you plan on bringing over your character and stash, make sure you make a copy of this stuff and before bringing in the character load up the save and toss out all of your uniques.  There have been many new uniques and effects added.  Play the game to discover them all!
+
+2) Magic/Blue Items:  In Hell the player will be able to find all affixes in the dungeon.  There are no longer any items that "can't" be found. **(Magic/Blue Items are intended to be forwards compatible into wkdmod.  There may still be potentially a small percentage of these items that could morph... it's just the nature of what happens when you bring stuff into a mod)**
+
+3) Oils and Scrolls are **NOT** forwards compatible into wkdmod.
+
+So in summary, what can be expected to be forwards compatible are: 
+**--** Character saves with only blue items
+**--** Stashes with gold, blue items, elixirs, books.
+
+Don't forget, you can always start fresh as well if you'd like!
+
+Please report bugs in the #wkdmod channel in the DevilutionX discord, underneath the wkdmod bug reports thread.  Or use github bug reports on the wkdmod github repo.
 
 ### **DevX Release 1.5.x** with additional **NEW** features:
 
@@ -32,7 +45,7 @@ wkdmod is compatible* with standard DevilutionX characters. Simply copy your cha
 - Character's now have a natural random chance to dodge incoming missiles.  This scales with character level.
 - Character's now gain a passive spell dodge affect based on resistances to that spell element.
 - Fixed Bug that currently persists in DevilutionX where not all Unique items could actually be found.
-- Black Deaths no longer permanently damage your character, HOWEVER, they have been given the same LIFESTEAL mechanic as the Skeleton King.
+- Black Deaths have a decreasing chance based on character level to steal 1 Vit point from the player, and they have been given the same LIFESTEAL mechanic as the Skeleton King.
 - Warrior, Barbarian, and Bard have all received a melee and ranged ToHit buff and are no longer desperate for Dexterity/ToHit gear.
 - Barbarian no longer takes damage from the Rage skill, it will drain mana instead if the Barbarian has any
 - Buffed Barbarian's passive bonuses to include 2H Axes, 2H Maces, Staffs, 2H Swords
@@ -40,12 +53,12 @@ wkdmod is compatible* with standard DevilutionX characters. Simply copy your cha
 - Bard is now buffed when wearing Unique, Medium, and Light Armor.  However receives a debuff when wearing non-Unique Heavy Armor (same as Monk).
 - Golem has been buffed significantly and can no longer take Friendly Fire damage.
 - Rogue gains +100 on Normal, +500 on Nightmare, or +1000 on Hell experience points when disarming a trap
-- The Thorns affix has been reworked into Holy Fire.  Holy Fire damage can be boosted by elemental damage Oils and will do full additive damage from any equipped   Holy Fire source to any   
-  Monster that melee hits the player.
+- The Thorns affix has been reworked into Holy Fire.  Holy Fire damage can be boosted by elemental damage Oils and will do full additive damage from any equipped Holy Fire source to any Monster that melee hits the player (Holy Shock has replaced Flash, Exploding Bone Armor added as special item empowered effect).
 - The Damage% line of affixes have been buffed, ending with Merciless which now can get up to 250% damage (151 - 250).
 - The +Damage line of affixes have been buffed, ending with Slaughter, which now can get up to +50 damage (17 - 50).
 - Nerfed Apocalypse in Diablo so it acts like its Hellfire counterpart
 - Swapped some scrolls out for the four oils I added in Hellfire, nobody will miss them
+- New Item effect: Empowerment (Can be found on the Amulet of Empowerment (Hellfire) or the Amulet of the Horadrim (Diablo))
 
 **UNIQUE ITEM OVERHAUL**
 - Quest uniques have been brought in line with how easy they are to obtain, but mostly have also received buffs (a small handful nerfed) and can be farmed for      better/preferred rolls on stats
@@ -54,7 +67,8 @@ wkdmod is compatible* with standard DevilutionX characters. Simply copy your cha
 - I have chosen to have uniques roll stats in line with the affix table, and I call this out in this document.  If there is an affix with a corresponding stat on 
   a unique, it is called out
 - Some Uniques are simply just going to be better than others, no way to avoid that.  But hopefully everything is at least useful if found in a playthrough even 
-  if not the most optimal piece in the long run... also trying to maintain theme of the items as well 
+  if not the most optimal piece in the long run... also trying to maintain theme of the items as well
+- There have been a ton of unique items given spell-on-strike and bows that shoot spells... explore the dungeon to find these new powerful weapons!
 
 **SPELL AND ELEMENTAL WEAPON DAMAGE BALANCING**
 - Holy Bolt is now Magic Missile
@@ -62,19 +76,20 @@ wkdmod is compatible* with standard DevilutionX characters. Simply copy your cha
     - Bone Spirit being a significantly stronger spell for high magic users and it is more then triple the mana cost of Blood Star) (edited)
 - Firebolt (+Guardian), Charged Bolt, Inferno and Lightning have had slight damage buffs to scale with character level, and these spells pierce enemy immunes and damage is resisted instead of ignored.
 - Lightning and Fire WEAPON damage pierce enemy immunes and damage is resisted instead of ignored.  This includes the special Hellfire weapons that cast spells based on Weapon element damage.
+- Mana shield has been rebalanced as well and no longer redirects 100% of damage to mana
 
 **OILS**
 - All available Oils now drop in Classic and Hellfire multiplayer mode as well as singleplayer mode and added the following NEW Oils with NEW changes to 
   Accuracy, Mastery, Hardening, Imperviousness, Sharpening, Death, Permanence (note Blacksmith Oil has been removed):
-- Oil of Sharpening:  +1 minimum dmg, with 15/20/30/40 being the ceiling for minimum dmg for bows/1h/2h/Axe respectively / Can never exceed Maximum Damage
-- Oil of Death:  +2 maximum dmg, with 30/35/60/80 being the ceiling for maximum dmg for bows/1h/2h/Axe respectively 
+- Oil of Sharpening:  +1 minimum dmg, +2 maximum damage, with 15/20/30/40 being the ceiling for minimum dmg for bows/1h/2h/Axe respectively / Can never exceed Maximum Damage
+- Oil of Death:  +2 minimum dmg, +4 maximum damage, with 30/35/60/80 being the ceiling for maximum dmg for bows/1h/2h/Axe respectively 
 - Oil of Accuracy: Can now increase passive or active ToHit bonus on a weapon to 60
 - Oil of Mastery: Can now increase passive or active ToHit bonus on a weapon to 120
 - Oil of Hardening: Can now increase item AC to a maximum of 60
 - Oil of Imperviousness: Can now increase item AC to a maximum of 90
 - Oil of Permanence: 10% Chance to make an item Indestructible, will increase item durability slightly on fail only if item durability is 200 or greater.  If increasing an item above 255 with Permeance it will automatically become Indestructible.
-- Oil of Wick & Spark: +2 minimum fire/lightning dmg, with a ceiling of 200 minimum fire/lightning damage / Can never exceed maximum fire/lightning damage
-- Oil of Sun & Storm: +4 maximum fire/lightning dmg, with a ceiling of 200 maximum fire/lightning damage
+- Oil of Horadrim (small): +2 minimum/+4 maximum fire/lightning dmg, with a ceiling of 200 minimum fire/lightning damage / Can never exceed maximum fire/lightning damage
+- Oil of Horadrim(large:) +4 minimum/+8 maximum fire/lightning dmg, with a ceiling of 200 maximum fire/lightning damage
 
 **Splash damage now does damage to two extra tiles** (so its more like a U instead of a T, the shape of the splash), and can be accessed with the following classes/weapons (and thanks to DevX is applied in both Diablo and Hellfire gamemodes):
 - **Monk:** Staff, 2H Sword
@@ -95,6 +110,7 @@ wkdmod is compatible* with standard DevilutionX characters. Simply copy your cha
 - Hork Spawn now drop items like normal monsters.
 - Fixed Hellfire Arrow behavior to be like Diablo
 - Gnat Sting now always properly fires 3 arrows in a strafe pattern instead of bugging out and only firing one arrow if the player tries to attack too quickly.
+- Many unique items have new effects waiting for you to discover them!
 - Runes have been disabled
 
 **[INVADER]**
