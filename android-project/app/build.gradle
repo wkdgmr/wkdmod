@@ -9,18 +9,16 @@ task prepareKotlinBuildScriptModel {
 
 }
 android {
-	//ndkVersion '25.0.8775105'
-	//ndkVersion '24.0.8215888'
-	ndkVersion '23.2.8568313'
-	compileSdkVersion 32
+	ndkVersion '25.2.9519653'
+	compileSdk 33
 	defaultConfig {
 		if (buildAsApplication) {
 			applicationId "org.devxmods.wkdmod"
 		}
 		minSdkVersion 18
-		targetSdkVersion 32
-		versionCode 26
-		versionName "1.1.0"
+		targetSdkVersion 33
+		versionCode 28
+		versionName project.file('../../VERSION').text.trim()
 		externalNativeBuild {
 			cmake {
 				arguments "-DANDROID_STL=c++_static"
