@@ -387,7 +387,7 @@ struct Player {
 		return _pStrength >= item._iMinStr
 		    && _pMagic >= item._iMinMag
 		    && _pDexterity >= item._iMinDex
-			&& (IsAnyOf(item._iClass, ICLASS_MISC, ICLASS_GOLD, ICLASS_QUEST) || item._iDurability != 0);
+		    && (IsAnyOf(item._iClass, ICLASS_MISC, ICLASS_GOLD, ICLASS_QUEST) || item._iDurability != 0);
 	}
 
 	/**
@@ -774,7 +774,6 @@ struct Player {
 		this->plrlevel = static_cast<uint8_t>(level);
 		this->plrIsOnSetLevel = true;
 	}
-
 };
 
 extern DVL_API_FOR_TEST size_t MyPlayerId;

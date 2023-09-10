@@ -776,22 +776,23 @@ void StartAttack(Monster &monster)
 	monster.position.old = monster.position.tile;
 }
 
-int HolyFireChance(Player &player) {
-    if (player._pLevel < 10) {
-        return 10; // 10% chance at level 1-9.
-    } else if (player._pLevel < 20) {
-        return 15; // 15% chance at level 10-19.
-    } else if (player._pLevel < 30) {
-        return 20; // 20% chance at level 20-29.
-    } else if (player._pLevel < 40) {
-        return 25; // 25% chance at level 30-39.
-    } else {
-        return 30; // 30% chance at level 40 and above.
-    }
+int HolyFireChance(Player &player)
+{
+	if (player._pLevel < 10) {
+		return 10; // 10% chance at level 1-9.
+	} else if (player._pLevel < 20) {
+		return 15; // 15% chance at level 10-19.
+	} else if (player._pLevel < 30) {
+		return 20; // 20% chance at level 20-29.
+	} else if (player._pLevel < 40) {
+		return 25; // 25% chance at level 30-39.
+	} else {
+		return 30; // 30% chance at level 40 and above.
+	}
 }
 
-
-void HolyFireDamage(Player &player, Monster &monster) {
+void HolyFireDamage(Player &player, Monster &monster)
+{
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
 			int eMind;
@@ -815,25 +816,25 @@ void HolyFireDamage(Player &player, Monster &monster) {
 	}
 }
 
-void CastHolyShock(Player &player, Monster &monster) 
+void CastHolyShock(Player &player, Monster &monster)
 {
 	SpellID spellId = SpellID::Flash;
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
-    	if (player._pRSpell != spellId || player._pRSplType != SpellType::Spell) {
-    	    return;
-    	}
-    	if (player._pSplLvl[static_cast<int>(spellId)] <= 0) {
-    	    return;
-    	}
+		if (player._pRSpell != spellId || player._pRSplType != SpellType::Spell) {
+			return;
+		}
+		if (player._pSplLvl[static_cast<int>(spellId)] <= 0) {
+			return;
+		}
 		if (monster.mode == MonsterMode::Death) {
 			return;
 		}
-    	int spellLevel = player._pSplLvl[static_cast<int>(spellId)];
+		int spellLevel = player._pSplLvl[static_cast<int>(spellId)];
 		PlaySFX(IS_CAST4);
-        int base = (player._pLevel * 4) + (spellLevel * 10);
-        double lightningPct = std::min(0.1 * (1 + (spellLevel - 1) / 2), 1.0);
-        int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
-        lightningDamage = static_cast<int>(lightningPct * lightningDamage);
+		int base = (player._pLevel * 4) + (spellLevel * 10);
+		double lightningPct = std::min(0.1 * (1 + (spellLevel - 1) / 2), 1.0);
+		int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
+		lightningDamage = static_cast<int>(lightningPct * lightningDamage);
 		int mdam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
 		int bsmdam = mdam;
 		int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
@@ -854,7 +855,6 @@ void CastHolyShock(Player &player, Monster &monster)
 	}
 }
 
-
 void ExplodingBoneArmor(Player &player, Monster &monster)
 {
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
@@ -864,27 +864,27 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 		if (!player.InvBody[INVLOC_CHEST].isEmpty()) {
 			auto &BoneArmor = player.InvBody[INVLOC_CHEST];
 			if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
-			&& HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-		    	int arrows = 6;
-	    		int directionIndex = static_cast<int>(player._pdir);
-	    		std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
-	    		for (int arrow = 0; arrow < arrows; arrow++) {
-	    		    int arrowDirectionIndex;
+			    && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+				int arrows = 6;
+				int directionIndex = static_cast<int>(player._pdir);
+				std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
+				for (int arrow = 0; arrow < arrows; arrow++) {
+					int arrowDirectionIndex;
 					if (arrows == 6) {
-	    		        arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
-	    		    }
-	    		    if (arrowDirectionIndex < 0) {
-	    		        arrowDirectionIndex += 8;
-	    		    }
-	    		    Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
-	    		    Displacement displacement(arrowDirection);
-	    		    NetSendAddMissile(true, player.position.tile, player.position.old + displacement, arrowDirection,
-	    		               MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), mdam, 0);
+						arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
+					}
+					if (arrowDirectionIndex < 0) {
+						arrowDirectionIndex += 8;
+					}
+					Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
+					Displacement displacement(arrowDirection);
+					NetSendAddMissile(true, player.position.tile, player.position.old + displacement, arrowDirection,
+					    MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), mdam, 0);
 					if (monster.hitPoints >> 6 <= 0)
 						M_StartKill(monster, player);
 					else
 						M_StartHit(monster, player, mdam);
-	    		}
+				}
 			}
 		}
 	}
@@ -892,7 +892,7 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 
 void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 {
-	Player& player = Players[monster.enemy];
+	Player &player = Players[monster.enemy];
 	Direction md = GetMonsterDirection(monster);
 	NewMonsterAnim(monster, MonsterGraphic::Attack, md, AnimationDistributionFlags::ProcessAnimationPending);
 	monster.mode = MonsterMode::RangedAttack;
@@ -902,7 +902,7 @@ void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 	monster.position.old = monster.position.tile;
 	// Check for holy fire effect
 	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
-	    HolyFireDamage(player, monster);
+		HolyFireDamage(player, monster);
 		CastHolyShock(player, monster);
 		ExplodingBoneArmor(player, monster);
 	}
@@ -910,7 +910,7 @@ void StartRangedAttack(Monster &monster, MissileID missileType, int dam)
 
 void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 {
-	Player& player = Players[monster.enemy];
+	Player &player = Players[monster.enemy];
 	Direction md = GetMonsterDirection(monster);
 	int8_t distributeFramesBeforeFrame = 0;
 	if (monster.ai == MonsterAIID::Mega)
@@ -924,7 +924,7 @@ void StartRangedSpecialAttack(Monster &monster, MissileID missileType, int dam)
 	monster.position.old = monster.position.tile;
 	// Check for holy fire effect
 	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
-	    HolyFireDamage(player, monster);
+		HolyFireDamage(player, monster);
 		CastHolyShock(player, monster);
 		ExplodingBoneArmor(player, monster);
 	}
@@ -1003,7 +1003,7 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 	}
 
 	if (Quests[Q_GARBUD].IsAvailable() && monster.uniqueType == UniqueMonsterType::Garbud) {
-		
+
 		CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
 		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
 			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
@@ -1079,7 +1079,7 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
 		}
-		
+
 		int nSFX = IsUberRoomOpened ? USFX_NAKRUL4 : USFX_NAKRUL5;
 		if (sgGameInitInfo.bCowQuest != 0)
 			nSFX = USFX_NAKRUL6;
@@ -1358,11 +1358,11 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 	} else {
 		// Check for holy fire effect
 		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
-		    HolyFireDamage(player, monster);
+			HolyFireDamage(player, monster);
 			CastHolyShock(player, monster);
 			ExplodingBoneArmor(player, monster);
 		}
-	}	
+	}
 
 	int hper = GenerateRnd(100);
 #ifdef _DEBUG
@@ -1397,30 +1397,30 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 		}
 		// Check for holy fire effect
 		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
-		    HolyFireDamage(player, monster);
+			HolyFireDamage(player, monster);
 			CastHolyShock(player, monster);
 			ExplodingBoneArmor(player, monster);
 		}
 	}
 	// Check if the monster is a type of zombie and the player is MyPlayer.
 	if (monster.type().type == MT_YZOMBIE && &player == MyPlayer) {
-	    // Determine the chance of vitality drain based on the player's level.
-	    int vitalityDrainChancePercent;
-	    if (player._pLevel <= 25) {
-	        vitalityDrainChancePercent = 30;  // 30% chance if level is 25 or below.
-	    } else {
-	        vitalityDrainChancePercent = std::max(5, 30 - (player._pLevel - 25));  // Decrease 1% per level over 25, but never go below 5%.
-	    }
-	    // Generate a random integer from 0 to 99.
-	    int roll = GenerateRnd(100); // Range is 0 to 99.
+		// Determine the chance of vitality drain based on the player's level.
+		int vitalityDrainChancePercent;
+		if (player._pLevel <= 25) {
+			vitalityDrainChancePercent = 30; // 30% chance if level is 25 or below.
+		} else {
+			vitalityDrainChancePercent = std::max(5, 30 - (player._pLevel - 25)); // Decrease 1% per level over 25, but never go below 5%.
+		}
+		// Generate a random integer from 0 to 99.
+		int roll = GenerateRnd(100); // Range is 0 to 99.
 
-	    // Check if the roll is within the vitality drain chance.
-	    if (roll < vitalityDrainChancePercent) { // Since roll is from 0 to 99, use < not <=
-	        // If player's vitality is more than 0, decrease it by 1.
-	        if (player._pVitality > 9) {
-	            player._pVitality -= 1;
-	        }
-	    }
+		// Check if the roll is within the vitality drain chance.
+		if (roll < vitalityDrainChancePercent) { // Since roll is from 0 to 99, use < not <=
+			// If player's vitality is more than 0, decrease it by 1.
+			if (player._pVitality > 9) {
+				player._pVitality -= 1;
+			}
+		}
 	}
 
 	int dam = (minDam << 6) + GenerateRnd(((maxDam - minDam) << 6) + 1);
@@ -1435,14 +1435,14 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 
 	// Check for holy fire effect
 	if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
-	    HolyFireDamage(player, monster);
+		HolyFireDamage(player, monster);
 		CastHolyShock(player, monster);
 		ExplodingBoneArmor(player, monster);
 	}
 
 	if ((monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_SKING
-	|| (monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_YZOMBIE
-	|| (monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_GOLEM)
+	    || (monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_YZOMBIE
+	    || (monster.flags & MFLAG_NOLIFESTEAL) == 0 && monster.type().type == MT_GOLEM)
 		monster.hitPoints += dam;
 
 	if (player._pHitPoints >> 6 <= 0) {
@@ -4896,23 +4896,23 @@ bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 {
 	const Player &myPlayer = *MyPlayer;
 	if ((missileType == MissileID::FireArrow)
-	|| (missileType == MissileID::WeaponExplosion)
-	|| (missileType == MissileID::FireballBow && myPlayer._pIMisType == 1)
-	|| (missileType == MissileID::LightningArrow)
-	|| (missileType == MissileID::LightningBow)
-	|| (missileType == MissileID::ChargedBoltBow)
-	|| (missileType == MissileID::Firebolt)
-	|| (missileType == MissileID::Inferno)
-	|| (missileType == MissileID::ChargedBolt)
-	|| (missileType == MissileID::FlashBottom)
-	|| (missileType == MissileID::FlashTop)
-	|| (missileType == MissileID::Acid && myPlayer._pIMisType == 10)
-	|| (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
+	    || (missileType == MissileID::WeaponExplosion)
+	    || (missileType == MissileID::FireballBow && myPlayer._pIMisType == 1)
+	    || (missileType == MissileID::LightningArrow)
+	    || (missileType == MissileID::LightningBow)
+	    || (missileType == MissileID::ChargedBoltBow)
+	    || (missileType == MissileID::Firebolt)
+	    || (missileType == MissileID::Inferno)
+	    || (missileType == MissileID::ChargedBolt)
+	    || (missileType == MissileID::FlashBottom)
+	    || (missileType == MissileID::FlashTop)
+	    || (missileType == MissileID::Acid && myPlayer._pIMisType == 10)
+	    || (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
 		return false;
 	} else {
 		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-		|| ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid)) {
+		    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid)) {
 			return true;
 		} else {
 			return false;
@@ -4924,31 +4924,31 @@ bool Monster::isResistant(MissileID missileType, DamageType missileElement) cons
 {
 	const Player &myPlayer = *MyPlayer;
 	if ((missileType == MissileID::FireArrow)
-	|| (missileType == MissileID::WeaponExplosion)
-	|| (missileType == MissileID::FireballBow && myPlayer._pIMisType == 1)
-	|| (missileType == MissileID::LightningArrow)
-	|| (missileType == MissileID::LightningBow)
-	|| (missileType == MissileID::ChargedBoltBow)
-	|| (missileType == MissileID::Firebolt)
-	|| (missileType == MissileID::Inferno)
-	|| (missileType == MissileID::ChargedBolt)
-	|| (missileType == MissileID::FlashBottom)
-	|| (missileType == MissileID::FlashTop)
-	|| (missileType == MissileID::Acid && myPlayer._pIMisType == 10)
-	|| (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
+	    || (missileType == MissileID::WeaponExplosion)
+	    || (missileType == MissileID::FireballBow && myPlayer._pIMisType == 1)
+	    || (missileType == MissileID::LightningArrow)
+	    || (missileType == MissileID::LightningBow)
+	    || (missileType == MissileID::ChargedBoltBow)
+	    || (missileType == MissileID::Firebolt)
+	    || (missileType == MissileID::Inferno)
+	    || (missileType == MissileID::ChargedBolt)
+	    || (missileType == MissileID::FlashBottom)
+	    || (missileType == MissileID::FlashTop)
+	    || (missileType == MissileID::Acid && myPlayer._pIMisType == 10)
+	    || (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
 		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-		|| ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-		|| ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-		|| ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-		|| ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Acid)) {
+		    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		    || ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
+		    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		    || ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Acid)) {
 			return true;
 		} else {
 			return false;
 		}
 	} else {
 		if (((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-		|| ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
-		|| ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
+		    || ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
+		    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
 			return true;
 		} else {
 			return false;

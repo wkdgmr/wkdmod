@@ -180,15 +180,15 @@ struct DLevel {
 };
 
 struct TCmdAddMissile {
-    uint8_t bCmd;
-    Point src;
-    Point dst;
-    Direction midir;
-    MissileID mitype;
-    mienemy_type micaster;
-    int id;
-    int midam;
-    int spllvl;
+	uint8_t bCmd;
+	Point src;
+	Point dst;
+	Direction midir;
+	MissileID mitype;
+	mienemy_type micaster;
+	int id;
+	int midam;
+	int spllvl;
 	Missile *parent;
 	std::optional<_sfx_id> lSFX;
 };
@@ -1056,7 +1056,7 @@ int SyncDropItem(Point position, const TItem &item)
 	    SDL_SwapLE16(item.wCI),
 	    SDL_SwapLE32(item.dwSeed),
 	    item.bId,
-		item.bAC,
+	    item.bAC,
 	    item.bDur,
 	    item.bMDur,
 	    item.bCh,
@@ -1064,16 +1064,16 @@ int SyncDropItem(Point position, const TItem &item)
 	    SDL_SwapLE16(item.wValue),
 	    SDL_SwapLE32(item.dwBuff),
 	    SDL_SwapLE16(item.wToHit),
-		SDL_SwapLE16(item.wMinDam),
+	    SDL_SwapLE16(item.wMinDam),
 	    SDL_SwapLE16(item.wMaxDam),
 	    SDL_SwapLE16(item.bMinStr),
 	    SDL_SwapLE16(item.bMinMag),
 	    SDL_SwapLE16(item.bMinDex),
-		SDL_SwapLE16(item.wFMinDam),
+	    SDL_SwapLE16(item.wFMinDam),
 	    SDL_SwapLE16(item.wFMaxDam),
-		SDL_SwapLE16(item.wLMinDam),
+	    SDL_SwapLE16(item.wLMinDam),
 	    SDL_SwapLE16(item.wLMaxDam),
-		SDL_SwapLE16(item.wIMisType));
+	    SDL_SwapLE16(item.wIMisType));
 }
 
 int SyncDropEar(Point position, const TEar &ear)
@@ -1831,18 +1831,18 @@ size_t OnPlayerDamage(const TCmd *pCmd, Player &player)
 
 size_t OnAddMissile(const TCmd *pCmd, Player &player)
 {
-    const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
+	const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
 
-    if (&player == MyPlayer)
-        return sizeof(message);
+	if (&player == MyPlayer)
+		return sizeof(message);
 
 	if (message.mitype == MissileID::InfernoControl) {
-    	AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl, message.parent);
+		AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl, message.parent);
 	} else {
 		AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl);
 	}
 
-    return sizeof(message);
+	return sizeof(message);
 }
 
 size_t OnOperateObject(const TCmd &pCmd, size_t pnum)
@@ -3137,26 +3137,26 @@ void NetSendCmdDamage(bool bHiPri, uint8_t bPlr, uint32_t dwDam, DamageType dama
 }
 
 void NetSendAddMissile(bool bHiPri, Point src, Point dst, Direction midir, MissileID mitype,
-mienemy_type micaster, int id, int midam, int spllvl, Missile *parent, std::optional<_sfx_id> lSFX)
+    mienemy_type micaster, int id, int midam, int spllvl, Missile *parent, std::optional<_sfx_id> lSFX)
 {
-    TCmdAddMissile cmd;
+	TCmdAddMissile cmd;
 
-    cmd.bCmd = CMD_ADDMISSILE;
-    cmd.src = src;
-    cmd.dst = dst;
-    cmd.midir = midir;
-    cmd.mitype = mitype;
-    cmd.micaster = micaster;
-    cmd.id = id;
-    cmd.midam = midam;
-    cmd.spllvl = spllvl;
+	cmd.bCmd = CMD_ADDMISSILE;
+	cmd.src = src;
+	cmd.dst = dst;
+	cmd.midir = midir;
+	cmd.mitype = mitype;
+	cmd.micaster = micaster;
+	cmd.id = id;
+	cmd.midam = midam;
+	cmd.spllvl = spllvl;
 	cmd.parent = parent;
 	cmd.lSFX = lSFX;
 
-    if (bHiPri)
-        NetSendHiPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
-    else
-        NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
+	if (bHiPri)
+		NetSendHiPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
+	else
+		NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 }
 
 void NetSendCmdMonDmg(bool bHiPri, uint16_t wMon, uint32_t dwDam)
@@ -3285,8 +3285,8 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 		return OnPlayerDeath(pCmd, pnum);
 	case CMD_PLRDAMAGE:
 		return OnPlayerDamage(pCmd, player);
-    case CMD_ADDMISSILE:
-        return OnAddMissile(pCmd, player);
+	case CMD_ADDMISSILE:
+		return OnAddMissile(pCmd, player);
 	case CMD_OPENDOOR:
 	case CMD_CLOSEDOOR:
 	case CMD_OPERATEOBJ:

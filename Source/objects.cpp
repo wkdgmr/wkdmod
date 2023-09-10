@@ -2447,17 +2447,17 @@ void OperateShrineGloomy(Player &player)
 		case ItemType::MediumArmor:
 		case ItemType::HeavyArmor:
 		case ItemType::Staff:
-			if (item._iAC > 0 || item._itype == ItemType:: Staff) {
+			if (item._iAC > 0 || item._itype == ItemType::Staff) {
 				if ((item._itype == ItemType::LightArmor && item._iAC < 45)
-				|| (item._itype == ItemType::MediumArmor && item._iAC < 75)
-				|| (item._itype == ItemType::HeavyArmor && item._iAC < 105)
-				|| (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)) {
+				    || (item._itype == ItemType::MediumArmor && item._iAC < 75)
+				    || (item._itype == ItemType::HeavyArmor && item._iAC < 105)
+				    || (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)) {
 					item._iAC += 2;
 					if (item._itype == ItemType::Staff)
 						item._iMaxDam--;
-						if (item._iMaxDam < item._iMinDam)
-							item._iMaxDam = item._iMinDam;
-						break;
+					if (item._iMaxDam < item._iMinDam)
+						item._iMaxDam = item._iMinDam;
+					break;
 				}
 				break;
 			}
@@ -2567,38 +2567,38 @@ void OperateShrineMagical(const Player &player)
 
 void OperateShrineStone(Player &player)
 {
-    if (&player != MyPlayer)
-        return;
+	if (&player != MyPlayer)
+		return;
 
-    for (Item &item : PlayerItemsRange { player }) {
-        if (item._itype == ItemType::Staff && IsValidSpell(item._iSpell)) {
-            // calculate the increment based on player level
-            int inc;
-            if (player._pLevel == 50) {
-                inc = 20;
-            } else if (player._pLevel >= 21 && player._pLevel < 50) {
+	for (Item &item : PlayerItemsRange { player }) {
+		if (item._itype == ItemType::Staff && IsValidSpell(item._iSpell)) {
+			// calculate the increment based on player level
+			int inc;
+			if (player._pLevel == 50) {
+				inc = 20;
+			} else if (player._pLevel >= 21 && player._pLevel < 50) {
 				if (player._pLevel <= 24) {
 					inc = GenerateRnd(20) + 1; // range 1-20
 				} else if (player._pLevel >= 25) {
-                	inc = GenerateRnd(11) + 10; // range 10-20
+					inc = GenerateRnd(11) + 10; // range 10-20
 				}
-            } else if (player._pLevel <= 20) {
-                inc = GenerateRnd(player._pLevel) + 1; // range 1-pLevel
-            }
+			} else if (player._pLevel <= 20) {
+				inc = GenerateRnd(player._pLevel) + 1; // range 1-pLevel
+			}
 
-            // increase max charges by the increment, up to 200
-            item._iMaxCharges = std::min(item._iMaxCharges + inc, 200);
+			// increase max charges by the increment, up to 200
+			item._iMaxCharges = std::min(item._iMaxCharges + inc, 200);
 
-            // ensure the current charges are at least the maximum charges
-            item._iCharges = std::max(item._iCharges, item._iMaxCharges);
-        }
-    }
+			// ensure the current charges are at least the maximum charges
+			item._iCharges = std::max(item._iCharges, item._iMaxCharges);
+		}
+	}
 
-    CalcPlrInv(player, true);
+	CalcPlrInv(player, true);
 
-    RedrawEverything();
+	RedrawEverything();
 
-    InitDiabloMsg(EMSG_SHRINE_STONE);
+	InitDiabloMsg(EMSG_SHRINE_STONE);
 }
 
 void OperateShrineReligious(Player &player)
@@ -2694,7 +2694,8 @@ void OperateShrineCostOfWisdom(Player &player, SpellID spellId, diablo_message m
 	}
 	if (player._pBaseMag = 0)
 		ModifyPlrVit(player, -2);
-	else ModifyPlrMag(player, -2);
+	else
+		ModifyPlrMag(player, -2);
 	CheckStats(player);
 	CalcPlrInv(player, true);
 	RedrawEverything();
@@ -2767,7 +2768,8 @@ void OperateShrineEerie(Player &player)
 
 	if (player._pBaseMag = 0)
 		ModifyPlrVit(player, 2);
-	else ModifyPlrMag(player, 2);
+	else
+		ModifyPlrMag(player, 2);
 	CheckStats(player);
 	CalcPlrInv(player, true);
 	RedrawEverything();
@@ -3010,7 +3012,8 @@ void OperateShrineGlowing(Player &player)
 	// Add 1-5 points to Magic
 	if (player._pBaseMag = 0)
 		ModifyPlrVit(player, modplrmag);
-	else ModifyPlrMag(player, modplrmag);
+	else
+		ModifyPlrMag(player, modplrmag);
 
 	// Add 1000 - 5000 xp
 	player._pExperience += static_cast<uint32_t>(modplrmag * 1000);
@@ -3020,7 +3023,6 @@ void OperateShrineGlowing(Player &player)
 
 	InitDiabloMsg(EMSG_SHRINE_GLOWING);
 }
-
 
 void OperateShrineMendicant(Player &player)
 {
@@ -3114,7 +3116,8 @@ void OperateShrineSolar(Player &player)
 		InitDiabloMsg(EMSG_SHRINE_SOLAR3);
 		if (player._pBaseMag = 0)
 			ModifyPlrVit(player, 2);
-		else ModifyPlrMag(player, 2);
+		else
+			ModifyPlrMag(player, 2);
 	} else if (hour >= 12) {
 		InitDiabloMsg(EMSG_SHRINE_SOLAR2);
 		ModifyPlrStr(player, 2);
@@ -3133,7 +3136,7 @@ void OperateShrineMurphys(Player &player)
 	if (&player != MyPlayer)
 		return;
 
-	if (FlipCoin(2)) {  // 50% chance
+	if (FlipCoin(2)) { // 50% chance
 		// Increase durability and give money.
 		for (auto &item : player.InvBody) {
 			if (!item.isEmpty()) {
@@ -3162,8 +3165,7 @@ void OperateShrineMurphys(Player &player)
 				player._pGold += goldItem._ivalue;
 			}
 		}
-	}
-	else {
+	} else {
 		// Decrease durability and take money.
 		bool broke = false;
 		for (auto &item : player.InvBody) {

@@ -120,31 +120,30 @@ bool IsTownItemValid(uint16_t iCreateInfo)
 
 bool IsUniqueMonsterItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
 {
-    const uint8_t level = iCreateInfo & CF_LEVEL;
-    const bool isHellfireItem = (dwBuff & CF_HELLFIRE) != 0;
+	const uint8_t level = iCreateInfo & CF_LEVEL;
+	const bool isHellfireItem = (dwBuff & CF_HELLFIRE) != 0;
 
-    for (int i = 0; UniqueMonstersData[i].mName != nullptr; i++) {
-        const auto &uniqueMonsterData = UniqueMonstersData[i];
-        uint8_t uniqueMonsterLevel = MonstersData[uniqueMonsterData.mtype].level;
+	for (int i = 0; UniqueMonstersData[i].mName != nullptr; i++) {
+		const auto &uniqueMonsterData = UniqueMonstersData[i];
+		uint8_t uniqueMonsterLevel = MonstersData[uniqueMonsterData.mtype].level;
 
-        if (!isHellfireItem && IsAnyOf(uniqueMonsterData.mtype, MT_HORKDMN, MT_DEFILER, MT_NAKRUL)) {
-            // These monsters don't appear in Diablo
-            continue;
-        }
+		if (!isHellfireItem && IsAnyOf(uniqueMonsterData.mtype, MT_HORKDMN, MT_DEFILER, MT_NAKRUL)) {
+			// These monsters don't appear in Diablo
+			continue;
+		}
 
-        uint8_t plus15mlvl = std::min(uniqueMonsterLevel + 15, 60);
+		uint8_t plus15mlvl = std::min(uniqueMonsterLevel + 15, 60);
 		uint8_t plus25mlvl = std::min(uniqueMonsterLevel + 25, 60);
-        uint8_t plus36mlvl = std::min(uniqueMonsterLevel + 36, 60);
+		uint8_t plus36mlvl = std::min(uniqueMonsterLevel + 36, 60);
 
-        if (level == uniqueMonsterLevel || level == plus15mlvl || level == plus25mlvl
-		|| level == plus36mlvl) {
-            return true;
-        }
-    }
+		if (level == uniqueMonsterLevel || level == plus15mlvl || level == plus25mlvl
+		    || level == plus36mlvl) {
+			return true;
+		}
+	}
 
-    return false;
+	return false;
 }
-
 
 bool IsDungeonItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
 {
@@ -159,14 +158,14 @@ bool IsDungeonItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
 			continue;
 		}
 
-        uint8_t plus15mlvl = std::min(monsterLevel + 15, 60);
+		uint8_t plus15mlvl = std::min(monsterLevel + 15, 60);
 		uint8_t plus25mlvl = std::min(monsterLevel + 25, 60);
-        uint8_t plus36mlvl = std::min(monsterLevel + 36, 60);
+		uint8_t plus36mlvl = std::min(monsterLevel + 36, 60);
 
-        if (level == monsterLevel || level == plus15mlvl || level == plus25mlvl
-		|| level == plus36mlvl) {
-            return true;
-        }
+		if (level == monsterLevel || level == plus15mlvl || level == plus25mlvl
+		    || level == plus36mlvl) {
+			return true;
+		}
 	}
 
 	return level <= 30;
@@ -637,7 +636,6 @@ bool UnPackNetPlayer(const PlayerNetPack &packed, Player &player)
 	ValidateFields(player._pILMaxDam, SDL_SwapLE32(packed.pILMaxDam), player._pILMaxDam == SDL_SwapLE32(packed.pILMaxDam));
 	ValidateFields(player._pIMMinDam, SDL_SwapLE32(packed.pIMMinDam), player._pIMMinDam == SDL_SwapLE32(packed.pIMMinDam));
 	ValidateFields(player._pIMMaxDam, SDL_SwapLE32(packed.pIMMaxDam), player._pIMMaxDam == SDL_SwapLE32(packed.pIMMaxDam));
-
 
 	return true;
 }

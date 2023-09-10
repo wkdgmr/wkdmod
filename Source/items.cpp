@@ -526,7 +526,7 @@ void CalcSelfItems(Player &player)
 			if (currstr >= equipment._iMinStr
 			    && currmag >= equipment._iMinMag
 			    && currdex >= equipment._iMinDex
-				&& ((equipment._iClass == ICLASS_MISC || equipment._iClass == ICLASS_GOLD || equipment._iClass == ICLASS_QUEST) || equipment._iDurability != 0))
+			    && ((equipment._iClass == ICLASS_MISC || equipment._iClass == ICLASS_GOLD || equipment._iClass == ICLASS_QUEST) || equipment._iDurability != 0))
 				continue;
 
 			changeflag = true;
@@ -1361,11 +1361,11 @@ void GetOilType(Item &item, int maxLvl)
 
 void GetItemBonus(const Player &player, Item &item, int minlvl, int maxlvl, bool onlygood, bool allowspells)
 {
-    int minlvlCeiling = 20;
-    if ((item._iCreateInfo & CF_BOY) != 0)
-        minlvlCeiling = 25;
-    if (minlvl > minlvlCeiling)
-        minlvl = minlvlCeiling;
+	int minlvlCeiling = 20;
+	if ((item._iCreateInfo & CF_BOY) != 0)
+		minlvlCeiling = 25;
+	if (minlvl > minlvlCeiling)
+		minlvl = minlvlCeiling;
 
 	switch (item._itype) {
 	case ItemType::Sword:
@@ -1478,7 +1478,7 @@ _unique_items CheckUnique(Item &item, int lvl, int uper, bool recreate)
 	if (GenerateRnd(100) > uper)
 		return UITEM_INVALID;
 
-	int idata = item.IDidx;  // moved this line from below for reuse
+	int idata = item.IDidx; // moved this line from below for reuse
 	for (uint8_t j = 0; UniqueItems[j].UIItemId != UITYPE_INVALID; j++) {
 		if (!IsUniqueAvailable(j))
 			break;
@@ -2355,11 +2355,11 @@ std::string GetTranslatedItemNameMagical(const Item &item, bool hellfireItem, bo
 		DiscardRandomValues(1); // CheckUnique
 	}
 
-    int minlvlCeiling = 20;
-    if ((item._iCreateInfo & CF_BOY) != 0)
-        minlvlCeiling = 25;
-    if (minlvl > minlvlCeiling)
-        minlvl = minlvlCeiling;
+	int minlvlCeiling = 20;
+	if ((item._iCreateInfo & CF_BOY) != 0)
+		minlvlCeiling = 25;
+	if (minlvl > minlvlCeiling)
+		minlvl = minlvlCeiling;
 
 	AffixItemType affixItemType = AffixItemType::None;
 
@@ -2595,13 +2595,13 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	int spllvladd = 0; // increased spell level
 	int enac = 0;      // enhanced accuracy
 
-	int fmin = 0; // minimum fire damage
-	int fmax = 0; // maximum fire damage
-	int lmin = 0; // minimum lightning damage
-	int lmax = 0; // maximum lightning damage
-	int mmin = 0; // minimum magic damage
-	int mmax = 0; // maximum magic damage
-	int miscase = 0; // spectral arrow switch/case 
+	int fmin = 0;    // minimum fire damage
+	int fmax = 0;    // maximum fire damage
+	int lmin = 0;    // minimum lightning damage
+	int lmax = 0;    // maximum lightning damage
+	int mmin = 0;    // minimum magic damage
+	int mmax = 0;    // maximum magic damage
+	int miscase = 0; // spectral arrow switch/case
 
 	for (auto &item : player.InvBody) {
 		if (!item.isEmpty() && item._iStatFlag) {
@@ -2667,9 +2667,6 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 				lmin += item._iLMinDam;
 				lmax += item._iLMaxDam;
 				miscase += item._iMisType;
-				
-				
-			
 			}
 		}
 	}
@@ -2743,11 +2740,11 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	} else if (player._pClass == HeroClass::Bard) {
 		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword) {
 			player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
-		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace) {
+		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace) {
 			player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
-		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace) {
+		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace) {
 			player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
-		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace|| player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword) {
+		} else if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword) {
 			player._pDamageMod = player._pLevel * (player._pStrength + player._pDexterity) / 150;
 		} else {
 			player._pDamageMod = player._pLevel * player._pStrength / 100;
@@ -2792,8 +2789,8 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		lr += player._pLevel;
 	}
 
-	if (player._pClass == HeroClass::Monk 
-	|| player._pClass == HeroClass::Bard ) {
+	if (player._pClass == HeroClass::Monk
+	    || player._pClass == HeroClass::Bard) {
 		if (player._pLevel <= 30) {
 			mr += player._pLevel;
 			fr += player._pLevel;
@@ -2804,7 +2801,6 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 			lr += 30;
 		}
 	}
-
 
 	if (HasAnyOf(player._pSpellFlags, SpellFlag::RageCooldown)) {
 		mr -= player._pLevel;
@@ -2854,7 +2850,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		}
 		if (player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT].isEmpty())
 			player._pBlockFlag = true;
-			player._pIFlags |= ItemSpecialEffect::FastBlock;
+		player._pIFlags |= ItemSpecialEffect::FastBlock;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON && player.GetItemLocation(player.InvBody[INVLOC_HAND_LEFT]) != ILOC_TWOHAND && player.InvBody[INVLOC_HAND_RIGHT].isEmpty())
 			player._pBlockFlag = true;
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON && player.GetItemLocation(player.InvBody[INVLOC_HAND_RIGHT]) != ILOC_TWOHAND && player.InvBody[INVLOC_HAND_LEFT].isEmpty())
@@ -2908,7 +2904,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 	PlayerArmorGraphic animArmorId = PlayerArmorGraphic::Light;
 	if (player.InvBody[INVLOC_CHEST]._itype == ItemType::HeavyArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
 		if (player._pClass == HeroClass::Monk
-		|| (player._pClass == HeroClass::Bard)) {
+		    || (player._pClass == HeroClass::Bard)) {
 			if (player.InvBody[INVLOC_CHEST]._iMagical == ITEM_QUALITY_UNIQUE) {
 				player._pIAC += player._pLevel;
 				player._pIBonusToHit += player._pLevel / 2;
@@ -2919,7 +2915,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		animArmorId = PlayerArmorGraphic::Heavy;
 	} else if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor && player.InvBody[INVLOC_CHEST]._iStatFlag) {
 		if (player._pClass == HeroClass::Monk
-		|| (player._pClass == HeroClass::Bard)) {
+		    || (player._pClass == HeroClass::Bard)) {
 			player._pIAC += player._pLevel * 2;
 			player._pIBonusToHit += player._pLevel;
 			if (player.InvBody[INVLOC_CHEST]._itype == ItemType::MediumArmor)
@@ -2927,11 +2923,11 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 		}
 		animArmorId = PlayerArmorGraphic::Medium;
 	} else if (player._pClass == HeroClass::Monk
-		|| (player._pClass == HeroClass::Bard)) {
-			player._pIAC += player._pLevel * 2;
-			player._pIBonusToHit += player._pLevel * 2;
-			if (player.InvBody[INVLOC_CHEST]._itype == ItemType::LightArmor)
-				player._pIAC += player.InvBody[INVLOC_CHEST]._iAC;
+	    || (player._pClass == HeroClass::Bard)) {
+		player._pIAC += player._pLevel * 2;
+		player._pIBonusToHit += player._pLevel * 2;
+		if (player.InvBody[INVLOC_CHEST]._itype == ItemType::LightArmor)
+			player._pIAC += player.InvBody[INVLOC_CHEST]._iAC;
 	}
 
 	const uint8_t gfxNum = static_cast<uint8_t>(animWeaponId) | static_cast<uint8_t>(animArmorId);
@@ -3400,8 +3396,8 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 	case DIFF_HELL:
 		if (mLevel >= 24)
 			mLevel += 36;
-			if (mLevel > 60)
-				mLevel = 60;
+		if (mLevel > 60)
+			mLevel = 60;
 		else {
 			mLevel += 25;
 			if (mLevel > 60)
@@ -3930,13 +3926,13 @@ bool DoOil(Player &player, int cii)
 			return fmt::format(fmt::runtime(_("inferno dmg: {:d}")), item._iFMinDam);
 		else
 			return fmt::format(fmt::runtime(_("inferno dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
-	case IPL_THORNS: 
+	case IPL_THORNS:
 		if (item._iFMinDam == item._iFMaxDam)
 			return fmt::format(fmt::runtime(_("holy fire dmg: {:d}")), item._iFMinDam);
 		else
 			return fmt::format(fmt::runtime(_("holy fire dmg: {:d}-{:d}")), item._iFMinDam, item._iFMaxDam);
 	case IPL_EMPOWER:
-			return fmt::format(fmt::runtime(_("empowers some unique items")));
+		return fmt::format(fmt::runtime(_("empowers some unique items")));
 	case IPL_NOMANA:
 		return _("user loses all mana");
 	case IPL_ABSHALFTRAP:
@@ -3990,7 +3986,8 @@ bool DoOil(Player &player, int cii)
 	case IPL_ONEHAND:
 		if (item._iFMaxDam > 0)
 			return _("one handed maul");
-		else return _("one handed great sword");
+		else
+			return _("one handed great sword");
 	case IPL_DRAINLIFE:
 		return _("constantly lose hit points");
 	case IPL_DRAINMANA:
@@ -5046,7 +5043,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 		break;
 	case IMISC_OILHARD:
 	case IMISC_OILIMP:
-		if (item._iClass == ICLASS_WEAPON && item._itype != ItemType:: Staff) {
+		if (item._iClass == ICLASS_WEAPON && item._itype != ItemType::Staff) {
 			return false;
 		}
 		break;
@@ -5170,17 +5167,17 @@ bool ApplyOilToItem(Item &item, Player &player)
 		item._iMinDex = std::max(0, item._iMinDex - r);
 		break;
 	case IMISC_OILIMP:
-		if (item._iAC > 0 || item._itype == ItemType:: Staff) {
+		if (item._iAC > 0 || item._itype == ItemType::Staff) {
 			if ((item._itype == ItemType::LightArmor && item._iAC < 45)
-			|| (item._itype == ItemType::MediumArmor && item._iAC < 75)
-			|| (item._itype == ItemType::HeavyArmor && item._iAC < 105)
-			|| (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)) {
+			    || (item._itype == ItemType::MediumArmor && item._iAC < 75)
+			    || (item._itype == ItemType::HeavyArmor && item._iAC < 105)
+			    || (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)) {
 				item._iAC += GenerateRnd(3) + 3;
 				break;
 			}
 		}
 	case IMISC_OILPERM:
-		if ((int)(rand()%10 + 1) == 1) {
+		if ((int)(rand() % 10 + 1) == 1) {
 			if (item._iMaxDur != DUR_INDESTRUCTIBLE) {
 				item._iDurability = DUR_INDESTRUCTIBLE;
 				item._iMaxDur = DUR_INDESTRUCTIBLE;
@@ -5205,13 +5202,13 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 		}
 	case IMISC_OILHARD:
-		if (item._iAC > 0 || item._itype == ItemType:: Staff) {
+		if (item._iAC > 0 || item._itype == ItemType::Staff) {
 			if ((item._itype == ItemType::LightArmor && item._iAC < 45)
-			|| (item._itype == ItemType::MediumArmor && item._iAC < 75)
-			|| (item._itype == ItemType::HeavyArmor && item._iAC < 105)
-			|| (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)) {
-					item._iAC += GenerateRnd(2) + 1;
-					break;
+			    || (item._itype == ItemType::MediumArmor && item._iAC < 75)
+			    || (item._itype == ItemType::HeavyArmor && item._iAC < 105)
+			    || (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)) {
+				item._iAC += GenerateRnd(2) + 1;
+				break;
 			}
 		}
 	case IMISC_OILFORT:
@@ -5280,7 +5277,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			item._iDurability = DUR_INDESTRUCTIBLE;
 			item._iMaxDur = DUR_INDESTRUCTIBLE;
 		}
-		if (item._iAC > 0 || item._itype == ItemType:: Staff) {
+		if (item._iAC > 0 || item._itype == ItemType::Staff) {
 			if (item._itype == ItemType::LightArmor && item._iAC < 45)
 				item._iAC = 45;
 			if (item._itype == ItemType::MediumArmor && item._iAC < 75)
@@ -5295,7 +5292,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 				item._iMaxDam = 60;
 				if (item._iPLToHit < 125) {
 					item._iPLToHit = 125;
-				}	
+				}
 			}
 			if (item._iMinDam > 0 && item._iMinDam < 30 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = 30;
@@ -5305,7 +5302,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 				item._iMaxDam = 80;
 				if (item._iPLToHit < 125) {
 					item._iPLToHit = 125;
-				}				
+				}
 			}
 			if (item._iMinDam > 0 && item._iMinDam < 40 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = 40;
@@ -5315,15 +5312,15 @@ bool ApplyOilToItem(Item &item, Player &player)
 				item._iMaxDam = 30;
 				if (item._iPLToHit < 125) {
 					item._iPLToHit = 125;
-				}				
+				}
 			}
 			if (item._iMinDam > 0 && item._iMinDam < 15 && item._iMinDam < item._iMaxDam) {
 				item._iMinDam = 15;
 			}
 		} else {
 			if (item._itype != ItemType::HeavyArmor
-			|| item._itype != ItemType::MediumArmor || item._itype != ItemType::LightArmor
-			|| item._itype != ItemType::Helm | item._itype != ItemType::Shield) {
+			    || item._itype != ItemType::MediumArmor || item._itype != ItemType::LightArmor
+			    || item._itype != ItemType::Helm | item._itype != ItemType::Shield) {
 				if (item._iMaxDam > 0 && item._iMaxDam < 35) {
 					item._iMaxDam = 35;
 					if (item._iPLToHit < 125) {

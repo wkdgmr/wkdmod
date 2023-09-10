@@ -442,9 +442,9 @@ void CheckInvPaste(Player &player, Point cursorPosition)
 
 		inv_body_loc pasteHand = pasteIntoSelectedHand ? selectedHand : otherHand;
 		Item previouslyEquippedItem = dequipTwoHandedWeapon ? player.InvBody[otherHand] : player.InvBody[pasteHand];
-    	if (dequipTwoHandedWeapon) {
+		if (dequipTwoHandedWeapon) {
 			RemoveEquipment(player, otherHand, false);
-        }
+		}
 
 		ChangeEquipment(player, pasteHand, player.HoldItem.pop());
 
@@ -1742,8 +1742,8 @@ bool CanPut(Point position)
 	return true;
 }
 
-int SyncDropItem(Point position, _item_indexes idx, uint16_t icreateinfo, int iseed, int id, int AC, int dur, int mdur, int ch, int mch, 
-int ivalue, uint32_t ibuff, int toHit, int minDam, int maxDam, int minStr, int minMag, int minDex, int minFDam, int maxFDam, int minLDam, int maxLDam, int IMis)
+int SyncDropItem(Point position, _item_indexes idx, uint16_t icreateinfo, int iseed, int id, int AC, int dur, int mdur, int ch, int mch,
+    int ivalue, uint32_t ibuff, int toHit, int minDam, int maxDam, int minStr, int minMag, int minDex, int minFDam, int maxFDam, int minLDam, int maxLDam, int IMis)
 {
 	if (ActiveItemCount >= MAXITEMS)
 		return -1;

@@ -1083,7 +1083,7 @@ GameplayOptions::GameplayOptions()
               { FloatingNumbers::Random, N_("Random Angles") },
               { FloatingNumbers::Vertical, N_("Vertical Only") },
           })
-	, allowZeroDurabilityItems("Prevent Item Destruction", OptionEntryFlags::None, N_("Prevent Item Destruction"), N_("Prevent items from breaking when reduced to 0 durability."), false)
+    , allowZeroDurabilityItems("Prevent Item Destruction", OptionEntryFlags::None, N_("Prevent Item Destruction"), N_("Prevent items from breaking when reduced to 0 durability."), false)
 {
 	grabInput.SetValueChangedCallback(OptionGrabInputChanged);
 	experienceBar.SetValueChangedCallback(OptionExperienceBarChanged);
