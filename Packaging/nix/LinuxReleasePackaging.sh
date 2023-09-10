@@ -6,7 +6,7 @@ BUILD_DIR="${1-build}"
 
 mkdir -p "${BUILD_DIR}/package"
 
-PKG_PATH=("${BUILD_DIR}/_CPack_Packages/Linux/7Z/"devilutionx-*/)
+PKG_PATH=("${BUILD_DIR}/_CPack_Packages/Linux/7Z/"wkdmod-*/)
 PKG_PATH="${PKG_PATH[@]}"
 PKG_PATH="${PKG_PATH%/}"
 
