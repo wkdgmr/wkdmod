@@ -933,8 +933,8 @@ int CheckReflect(Player &attacker, Player &target, int dam)
 	return mdam;
 }
 
-int HolyFireChance(Player &attacker, Player &target) {
-	if (&attacker == MyPlayer) {
+int HolyFireChance(Player &target) {
+	if (&target == MyPlayer) {
     	if (target._pLevel < 10) {
     	    return 10; // 10% chance at level 1-9.
     	} else if (target._pLevel < 20) {
@@ -951,7 +951,7 @@ int HolyFireChance(Player &attacker, Player &target) {
 
 
 void HolyFireDamage(Player &attacker, Player &target) {
-	if (&attacker == MyPlayer) {
+	if (&target == MyPlayer) {
 		if (attacker.position.tile.WalkingDistance(target.position.tile) < 2
 		&& !attacker.friendlyMode) {
 			if (HasAnyOf(target._pIFlags, ItemSpecialEffect::Thorns)) {
@@ -971,7 +971,7 @@ void HolyFireDamage(Player &attacker, Player &target) {
 
 void CastHolyShock(Player &attacker, Player &target) 
 {
-	if (&attacker == MyPlayer) {
+	if (&target == MyPlayer) {
 		SpellID spellId = SpellID::Flash;
 		if (attacker.position.tile.WalkingDistance(target.position.tile) < 2
 		&& !attacker.friendlyMode) {
@@ -1001,7 +1001,7 @@ void CastHolyShock(Player &attacker, Player &target)
 
 void ExplodingBoneArmor(Player &attacker, Player &target)
 {
-	if (&attacker == MyPlayer) {
+	if (&target == MyPlayer) {
 		if (attacker.position.tile.WalkingDistance(target.position.tile) < 2
 		&& !attacker.friendlyMode) {
 			int eMind = target._pIMMinDam;
@@ -1342,7 +1342,7 @@ bool DoAttack(Player &player)
 		}
 		if (&player == MyPlayer && PlayerAtPosition(position) != nullptr) {
 			// Check for holy fire effect
-			if ((GenerateRnd(100) + 1) <= HolyFireChance(player, *PlayerAtPosition(position))) {
+			if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 			    HolyFireDamage(player, *PlayerAtPosition(position));
 				CastHolyShock(player, *PlayerAtPosition(position));
 				ExplodingBoneArmor(player, *PlayerAtPosition(position));
@@ -1352,7 +1352,7 @@ bool DoAttack(Player &player)
 			auto targetPlayer = FindClosestPlayer(position, 1);
 			if (targetPlayer != nullptr) {
 				// Check for holy fire effect
-				if ((GenerateRnd(100) + 1) <= HolyFireChance(player, *targetPlayer)); {
+				if ((GenerateRnd(100) + 1) <= HolyFireChance(player)); {
 		    		HolyFireDamage(player, *targetPlayer);
 					CastHolyShock(player, *targetPlayer);
 					ExplodingBoneArmor(player, *targetPlayer);
@@ -1475,7 +1475,7 @@ bool DoRangeAttack(Player &player)
 	Point position = player.position.tile + player._pdir;
 	if (&player == MyPlayer && PlayerAtPosition(position) != nullptr) {
 		// Check for holy fire effect
-		if ((GenerateRnd(100) + 1) <= HolyFireChance(player, *PlayerAtPosition(position))) {
+		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 		    HolyFireDamage(player, *PlayerAtPosition(position));
 			CastHolyShock(player, *PlayerAtPosition(position));
 			ExplodingBoneArmor(player, *PlayerAtPosition(position));
@@ -1485,7 +1485,7 @@ bool DoRangeAttack(Player &player)
 		auto targetPlayer = FindClosestPlayer(position, 1);
 		if (targetPlayer != nullptr) {
 			// Check for holy fire effect
-			if ((GenerateRnd(100) + 1) <= HolyFireChance(player, *targetPlayer)); {
+			if ((GenerateRnd(100) + 1) <= HolyFireChance(player)); {
 		    	HolyFireDamage(player, *targetPlayer);
 				CastHolyShock(player, *targetPlayer);
 				ExplodingBoneArmor(player, *targetPlayer);
@@ -1683,7 +1683,7 @@ bool DoSpell(Player &player)
 	Point position = player.position.tile + player._pdir;
 	if (&player == MyPlayer && PlayerAtPosition(position) != nullptr) {
 		// Check for holy fire effect
-		if ((GenerateRnd(100) + 1) <= HolyFireChance(player, *PlayerAtPosition(position))) {
+		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
 		    HolyFireDamage(player, *PlayerAtPosition(position));
 			CastHolyShock(player, *PlayerAtPosition(position));
 			ExplodingBoneArmor(player, *PlayerAtPosition(position));
@@ -1693,7 +1693,7 @@ bool DoSpell(Player &player)
 		auto targetPlayer = FindClosestPlayer(position, 1);
 		if (targetPlayer != nullptr) {
 			// Check for holy fire effect
-			if ((GenerateRnd(100) + 1) <= HolyFireChance(player, *targetPlayer)); {
+			if ((GenerateRnd(100) + 1) <= HolyFireChance(player)); {
 		    	HolyFireDamage(player, *targetPlayer);
 				CastHolyShock(player, *targetPlayer);
 				ExplodingBoneArmor(player, *targetPlayer);
