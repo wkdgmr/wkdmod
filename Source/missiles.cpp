@@ -1120,6 +1120,7 @@ bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, Missil
 				dam /= 2;
 		dam += player._pIGetHit;
 	}
+	dam = std::max(dam, 64);
 
 	if (resper <= 0 && blk < blkper) {
 		Direction dir = player._pdir;
