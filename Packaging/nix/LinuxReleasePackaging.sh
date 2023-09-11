@@ -23,7 +23,7 @@ SH
 fi
 
 cp "${BUILD_DIR}/wkdmod" "${BUILD_DIR}/package/wkdmod"
-cp "${BUILD_DIR}/wkdmod.mpq" "${BUILD_DIR}/package/wkdmod.mpq"
+cp "${BUILD_DIR}/devilutionx.mpq" "${BUILD_DIR}/package/devilutionx.mpq"
 
 if which dpkg 2>/dev/null; then
 	cp "${BUILD_DIR}/"wkdmod*.deb "${BUILD_DIR}/package/wkdmod.deb"
