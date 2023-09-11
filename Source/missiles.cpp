@@ -1974,8 +1974,6 @@ void AddWeaponExplosion(Missile &missile, AddMissileParameter &parameter)
 		SetMissAnim(missile, MissileGraphicID::ChargedBolt);
 	else if (parameter.dst.x == 3 || parameter.dst.x == 6)
 		SetMissAnim(missile, MissileGraphicID::HolyBoltExplosion);
-	else if (parameter.dst.x == 7)
-		SetMissAnim(missile, MissileGraphicID::BoneSpirit);
 	missile._mirange = missile._miAnimLen - 1;
 }
 
@@ -3768,37 +3766,35 @@ void ProcessWeaponExplosion(Missile &missile)
 	DamageType damageType;
 	if (missile.var2 == 1 || missile.var2 == 4) {
 		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
-		if (missile.var2 == 1)
+		if (missile.var2 == 1) {
 			mind = player._pIFMinDam;
-		maxd = player._pIFMaxDam;
-		if (missile.var2 == 4)
-			mind = 0;
-		maxd = 0;
-		damageType = DamageType::Fire;
+			maxd = player._pIFMaxDam;
+		} else if (missile.var2 == 4) {
+			mind = player._pIFMinDam / 4;
+			maxd = player._pIFMaxDam / 4;
+			damageType = DamageType::Fire;
+		}
 	} else if (missile.var2 == 2 || missile.var2 == 5) {
 		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
-		if (missile.var2 == 2)
+		if (missile.var2 == 2) {
 			mind = player._pILMinDam;
-		maxd = player._pILMaxDam;
-		if (missile.var2 == 5)
-			mind = 0;
-		maxd = 0;
-		damageType = DamageType::Lightning;
+			maxd = player._pILMaxDam;
+		} else if (missile.var2 == 5) {
+			mind = player._pILMinDam / 4;
+			maxd = player._pILMaxDam / 4;
+			damageType = DamageType::Lightning;
+		}
 	} else if (missile.var2 == 3 || missile.var2 == 6) {
 		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
-		if (missile.var2 == 3)
+		if (missile.var2 == 3) {
 			mind = player._pIMMinDam;
-		maxd = player._pIMMaxDam;
-		if (missile.var2 == 6)
-			mind = 0;
-		maxd = 0;
-		damageType = DamageType::Magic;
-	} else if (missile.var2 == 7) {
-		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
-		mind = player._pIMMinDam;
-		maxd = player._pIMMaxDam;
-		damageType = DamageType::Magic;
-	}
+			maxd = player._pIMMaxDam;
+		} else if (missile.var2 == 6) {
+			mind = player._pIMMinDam / 4;
+			maxd = player._pIMMaxDam / 4;
+			damageType = DamageType::Magic;
+		}
+	} 
 	CheckMissileCol(missile, damageType, mind, maxd, false, missile.position.tile, false);
 	if (missile.var1 == 0) {
 		missile._mlid = AddLight(missile.position.tile, 9);
