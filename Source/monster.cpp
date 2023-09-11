@@ -795,10 +795,8 @@ void HolyFireDamage(Player &player, Monster &monster)
 {
 	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
-			int eMind;
-			int eMaxd;
-			eMind = player._pIFMinDam;
-			eMaxd = player._pIFMaxDam;
+			int eMind = player._pIFMinDam;
+			int eMaxd = player._pIFMaxDam;
 			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
 			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
 			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0) {
@@ -807,7 +805,8 @@ void HolyFireDamage(Player &player, Monster &monster)
 			}
 			mdam = mdam << 6;
 			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
-			NetSendAddMissile(true, monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0);
+			AddMissile(monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0);
+			NetSendAddMissile(true, monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0, nullptr);
 			if (monster.hitPoints >> 6 <= 0)
 				M_StartKill(monster, player);
 			else
@@ -815,6 +814,7 @@ void HolyFireDamage(Player &player, Monster &monster)
 		}
 	}
 }
+
 
 void CastHolyShock(Player &player, Monster &monster)
 {
@@ -830,30 +830,24 @@ void CastHolyShock(Player &player, Monster &monster)
 			return;
 		}
 		int spellLevel = player._pSplLvl[static_cast<int>(spellId)];
-		PlaySFX(IS_CAST4);
 		int base = (player._pLevel * 4) + (spellLevel * 10);
 		double lightningPct = std::min(0.1 * (1 + (spellLevel - 1) / 2), 1.0);
 		int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 		lightningDamage = static_cast<int>(lightningPct * lightningDamage);
 		int mdam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
-		int bsmdam = mdam;
-		int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
-		if ((res & (RESIST_LIGHTNING | IMMUNE_LIGHTNING)) != 0) {
-			bsmdam -= bsmdam / 2;
-			bsmdam -= bsmdam / 2;
-		}
-		bsmdam = bsmdam << 6;
-		if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
-			ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
-			NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
-			NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
-			if (monster.hitPoints >> 6 <= 0)
-				M_StartKill(monster, player);
-			else
-				M_StartHit(monster, player, mdam);
-		}
+		int bsmdam = mdam << 6;
+		ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
+		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+		NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel, nullptr);
+		NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel, nullptr);
+		if (monster.hitPoints >> 6 <= 0)
+			M_StartKill(monster, player);
+		else
+			M_StartHit(monster, player, mdam);
 	}
 }
+
 
 void ExplodingBoneArmor(Player &player, Monster &monster)
 {
@@ -878,6 +872,8 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 					}
 					Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
 					Displacement displacement(arrowDirection);
+					AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
+					    MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), mdam, 0);
 					NetSendAddMissile(true, player.position.tile, player.position.old + displacement, arrowDirection,
 					    MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), mdam, 0);
 					if (monster.hitPoints >> 6 <= 0)
