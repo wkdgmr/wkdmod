@@ -3772,8 +3772,8 @@ void ProcessWeaponExplosion(Missile &missile)
 		} else if (missile.var2 == 4) {
 			mind = player._pIFMinDam / 4;
 			maxd = player._pIFMaxDam / 4;
-			damageType = DamageType::Fire;
 		}
+		damageType = DamageType::Fire;
 	} else if (missile.var2 == 2 || missile.var2 == 5) {
 		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
 		if (missile.var2 == 2) {
@@ -3782,8 +3782,8 @@ void ProcessWeaponExplosion(Missile &missile)
 		} else if (missile.var2 == 5) {
 			mind = player._pILMinDam / 4;
 			maxd = player._pILMaxDam / 4;
-			damageType = DamageType::Lightning;
 		}
+		damageType = DamageType::Lightning;
 	} else if (missile.var2 == 3 || missile.var2 == 6) {
 		// BUGFIX: damage of missile should be encoded in missile struct; player can be dead/have left the game before missile arrives.
 		if (missile.var2 == 3) {
@@ -3792,8 +3792,8 @@ void ProcessWeaponExplosion(Missile &missile)
 		} else if (missile.var2 == 6) {
 			mind = player._pIMMinDam / 4;
 			maxd = player._pIMMaxDam / 4;
-			damageType = DamageType::Magic;
 		}
+		damageType = DamageType::Magic;
 	} 
 	CheckMissileCol(missile, damageType, mind, maxd, false, missile.position.tile, false);
 	if (missile.var1 == 0) {
