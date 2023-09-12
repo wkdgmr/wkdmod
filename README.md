@@ -7,19 +7,19 @@ This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" 
 
 Thank you to the invaluable efforts of the DevilutionX community going above and beyond whenever I needed assistance during my journey creating this mod!  The following handles contributed to my mod via either direct or indirect code consultation/contribution or game testing:
 
-Ajenbo
-staphen
-Qndel
-kphoeniX
-DakkJaniels
-ikonomov
-Knight of NSFW
-Brewbeck
-Entkoffeinator
-Tree
-Belix (wkdmod is inspired by the efforts of Hellfire modders that came before me)
-Donald Tsang of Synergistic
-Blizzard North
+- Ajenbo
+- staphen
+- Qndel
+- kphoeniX
+- DakkJaniels
+- ikonomov
+- Knight of NSFW
+- Brewbeck
+- Entkoffeinator
+- Tree
+- Belix (wkdmod is inspired by the efforts of Hellfire modders that came before me)
+- Donald Tsang of Synergistic
+- Blizzard North
 
 (click the banner for current intro trailer)
 <a href="https://www.youtube.com/watch?v=qGFhbjFcxxQ" target="_blank" rel="noopener noreferrer">
