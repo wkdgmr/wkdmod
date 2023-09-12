@@ -1,7 +1,25 @@
 # wkdmod is a fork of DevilutionX
 ## wkdmod aims to implement more quality of life changes that are deemed out of scope for DevX.  This modified version of DevilutionX focuses on a more modern and casual approach to ARPG gameplay and mechanics.
 
+**[CREDITS]**
+
 This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" target="_blank" rel="noopener noreferrer">wkd1337gmr</a>.
+
+Thank you to the invaluable efforts of the DevilutionX community going above and beyond whenever I needed assistance during my journey creating this mod!  The following handles contributed to my mod via either direct or indirect code consultation/contribution or game testing:
+
+Ajenbo
+staphen
+Qndel
+kphoeniX
+DakkJaniels
+ikonomov
+Knight of NSFW
+Brewbeck
+Entkoffeinator
+Tree
+Belix (wkdmod is inspired by the efforts of Hellfire modders that came before me)
+Donald Tsang of Synergistic
+Blizzard North
 
 (click the banner for current intro trailer)
 <a href="https://www.youtube.com/watch?v=qGFhbjFcxxQ" target="_blank" rel="noopener noreferrer">
