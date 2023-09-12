@@ -12,7 +12,7 @@ This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" 
 
 wkdmod is compatible* with standard DevilutionX characters. Simply copy your character data and stash data into the **devxmods/wkdmod folder in %appdata%/roaming/**
 
-***WARNING**
+**WARNING**
 1) Unique Items:  All Unique Items are now available and have been extensively overhauled.  Ice Shank and Hammer of Johlm have been replaced with the Amulet of Empowerment and Tsang's Blessed Hammer. **(Unique's are not forwards or backwards compatible from standard devx/vanilla characters.  If brought into or out of wkdmod they could cause game crashing/character save corruption).**  If you plan on bringing over your character and stash, make sure you make a copy of this stuff and before bringing in the character load up the save and toss out all of your uniques.  There have been many new uniques and effects added.  Play the game to discover them all!
 
 2) Magic/Blue Items:  In Hell the player will be able to find all affixes in the dungeon.  There are no longer any items that "can't" be found. **(Magic/Blue Items are intended to be forwards compatible into wkdmod.  There may still be potentially a small percentage of these items that could morph... it's just the nature of what happens when you bring stuff into a mod)**
@@ -30,22 +30,40 @@ Please report bugs in the #wkdmod channel in the DevilutionX discord, underneath
 ### **DevX Release 1.5.x** with additional **NEW** features:
 
 **[GLOBAL]**
+
 - When Diablo is killed the game does not end and he drops loot (drops 6 items).
 - Buffed loot drop chances 300% in Hell, 200% in Nightmare, Normal is unchanged.
 - When killing Diablo, Nakrul, Hork Demon or Defiler loot drop tiers are determined by difficulty.  Best drops from these bosses will be found on Hell difficulty.
 - Diablo and Nakrul have been buffed and are much more difficult to defeat.
+
+- All magic affixes including the previous unfindable ones are now available to find in the dungeon
+- All unique items can now be found (including brand new never before seen uniques and unique item effects)
+
 - Nightmare and Hell monster HP/AC/ToHit has been increased
 - previous Triple Immunes now have RESISTANCE TO MAGIC and can be hit by magic spells
 - Nightmare and Hell difficulties have been buffed significantly
+
 - MLVL's have been increased in Nightmare and Hell to allow for slightly better affix pools in the higher difficulties.
 - Wirt's shop price cap has been raised from 200,000 to 300,000. 
 - Items are no longer destroyed at 0 durability, they become disabled and you must repair.
 - Players do not drop items on death, unless you enable **INVADER** mode, more details below.  -1% TOTAL CHARACTER Experience upon death.
+
 - Shared XP in multiplayer games.
 - Character's now have a natural random chance to dodge incoming missiles.  This scales with character level.
 - Character's now gain a passive spell dodge affect based on resistances to that spell element.
-- Fixed Bug that currently persists in DevilutionX where not all Unique items could actually be found.
+
 - Black Deaths have a decreasing chance based on character level to steal 1 Vit point from the player, and they have been given the same LIFESTEAL mechanic as the Skeleton King.
+- **CRIPPLING SHRINES EFFECTS HAVE BEEN REMOVED:**
+  -- shrines that increase spell levels and did -10% mana now do -2 to the magic stat
+  -- Spiritual Shrines gold pile amounts per difficulty are increase by x 20
+  -- Stone Shrine now increases equipped Staff Charges by a random amount based on character level as well as refilling them
+  -- Gloomy Shrine can't increase AC past 90 (balance fix for wkdmod)
+  -- Weird Shrine cannot increase weapon max damage past weapon maximums set in wkdmod, will also increase elemental damage if present
+  **-- HELLFIRE Shrines**
+  -- Glowing Shrine now increases magic randomly between 1 - 5 and gives XP between 1000 - 5000, removed penalty
+  -- Murphy's Shrine now has a 50% chance to increase a random items durability using the Oil of Fortitude logic and give you money using the Spiritual  Shrine logic, the downsides remain the same
+  -- This should make it so wkdmod players no longer need to use the disable crippling shrines option as all negative effects are reversible with oils or elixirs (or even other shrines)
+
 - Warrior, Barbarian, and Bard have all received a melee and ranged ToHit buff and are no longer desperate for Dexterity/ToHit gear.
 - Barbarian no longer takes damage from the Rage skill, it will drain mana instead if the Barbarian has any
 - Buffed Barbarian's passive bonuses to include 2H Axes, 2H Maces, Staffs, 2H Swords
@@ -56,22 +74,21 @@ Please report bugs in the #wkdmod channel in the DevilutionX discord, underneath
 - The Thorns affix has been reworked into Holy Fire.  Holy Fire damage can be boosted by elemental damage Oils and will do full additive damage from any equipped Holy Fire source to any Monster that melee hits the player (Holy Shock has replaced Flash, Exploding Bone Armor added as special item empowered effect).
 - The Damage% line of affixes have been buffed, ending with Merciless which now can get up to 250% damage (151 - 250).
 - The +Damage line of affixes have been buffed, ending with Slaughter, which now can get up to +50 damage (17 - 50).
+- all Lifesteal and Manasteal affixes are now additive
 - Nerfed Apocalypse in Diablo so it acts like its Hellfire counterpart
-- Swapped some scrolls out for the four oils I added in Hellfire, nobody will miss them
-- New Item effect: Empowerment (Can be found on the Amulet of Empowerment (Hellfire) or the Amulet of the Horadrim (Diablo))
+- Swapped some Scrolls out for the Oils I added, nobody will miss them
 
 **UNIQUE ITEM OVERHAUL**
-- Quest uniques have been brought in line with how easy they are to obtain, but mostly have also received buffs (a small handful nerfed) and can be farmed for      better/preferred rolls on stats
-- Some items will seem to have more punishing curses on them, but this is only because of how powerful they are and the curses are really there to make it a 
-  dangerous item for under leveled characters
-- I have chosen to have uniques roll stats in line with the affix table, and I call this out in this document.  If there is an affix with a corresponding stat on 
-  a unique, it is called out
-- Some Uniques are simply just going to be better than others, no way to avoid that.  But hopefully everything is at least useful if found in a playthrough even 
-  if not the most optimal piece in the long run... also trying to maintain theme of the items as well
+- Quest uniques have been brought in line with how easy they are to obtain, but mostly have also received buffs (a small handful nerfed) and can be farmed for better/preferred rolls on stats
+- Some items will seem to have more punishing curses on them, but this is only because of how powerful they are and the curses are really there to make it a dangerous item for under leveled characters
+- Some Uniques are simply just going to be better than others, no way to avoid that.  But hopefully everything is at least useful if found in a playthrough even if not the most optimal piece in the long run... also trying to maintain theme of the items as well
 - There have been a ton of unique items given spell-on-strike and bows that shoot spells... explore the dungeon to find these new powerful weapons!
+- - New Item effect: Empowerment (Can be found on the Amulet of Empowerment (Hellfire) or the Amulet of the Horadrim (Diablo))
+Many unique items have new EMPOWERED effects when combined with either of the two new powerful amulets waiting for you to discover them!
 
 **SPELL AND ELEMENTAL WEAPON DAMAGE BALANCING**
 - Holy Bolt is now Magic Missile
+- Flash is now Holy Shock (even though its one of the new auto cast effects, it can still be manually cast as well)
 - Magic Missile, Blood Star and Bone Spirit have had damage buffs in line with their balance in the game and Blood Star/Bone Spirit should be considered equivalent damage to Fireball
     - Bone Spirit being a significantly stronger spell for high magic users and it is more then triple the mana cost of Blood Star) (edited)
 - Firebolt (+Guardian), Charged Bolt, Inferno and Lightning have had slight damage buffs to scale with character level, and these spells pierce enemy immunes and damage is resisted instead of ignored.
@@ -88,8 +105,8 @@ Please report bugs in the #wkdmod channel in the DevilutionX discord, underneath
 - Oil of Hardening: Can now increase item AC to a maximum of 60
 - Oil of Imperviousness: Can now increase item AC to a maximum of 90
 - Oil of Permanence: 10% Chance to make an item Indestructible, will increase item durability slightly on fail only if item durability is 200 or greater.  If increasing an item above 255 with Permeance it will automatically become Indestructible.
-- Oil of Horadrim (small): +2 minimum/+4 maximum fire/lightning dmg, with a ceiling of 200 minimum fire/lightning damage / Can never exceed maximum fire/lightning damage
-- Oil of Horadrim(large:) +4 minimum/+8 maximum fire/lightning dmg, with a ceiling of 200 maximum fire/lightning damage
+- Oil of the Horadrim (small): +2 minimum/+4 maximum fire/lightning dmg, with a ceiling of 200 minimum fire/lightning damage / Can never exceed maximum fire/lightning damage
+- Oil of the Horadrim (large:) +4 minimum/+8 maximum fire/lightning dmg, with a ceiling of 200 maximum fire/lightning damage
 
 **Splash damage now does damage to two extra tiles** (so its more like a U instead of a T, the shape of the splash), and can be accessed with the following classes/weapons (and thanks to DevX is applied in both Diablo and Hellfire gamemodes):
 - **Monk:** Staff, 2H Sword
@@ -110,7 +127,6 @@ Please report bugs in the #wkdmod channel in the DevilutionX discord, underneath
 - Hork Spawn now drop items like normal monsters.
 - Fixed Hellfire Arrow behavior to be like Diablo
 - Gnat Sting now always properly fires 3 arrows in a strafe pattern instead of bugging out and only firing one arrow if the player tries to attack too quickly.
-- Many unique items have new effects waiting for you to discover them!
 - Runes have been disabled
 
 **[INVADER]**
