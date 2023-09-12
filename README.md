@@ -12,7 +12,7 @@ This mod was created by <a href="https://www.patreon.com/wkd1337gmr/membership" 
 
 wkdmod is compatible* with standard DevilutionX characters. Simply copy your character data and stash data into the **devxmods/wkdmod folder in %appdata%/roaming/**
 
-**WARNING**
+***WARNING**
 1) Unique Items:  All Unique Items are now available and have been extensively overhauled.  Ice Shank and Hammer of Johlm have been replaced with the Amulet of Empowerment and Tsang's Blessed Hammer. **(Unique's are not forwards or backwards compatible from standard devx/vanilla characters.  If brought into or out of wkdmod they could cause game crashing/character save corruption).**  If you plan on bringing over your character and stash, make sure you make a copy of this stuff and before bringing in the character load up the save and toss out all of your uniques.  There have been many new uniques and effects added.  Play the game to discover them all!
 
 2) Magic/Blue Items:  In Hell the player will be able to find all affixes in the dungeon.  There are no longer any items that "can't" be found. **(Magic/Blue Items are intended to be forwards compatible into wkdmod.  There may still be potentially a small percentage of these items that could morph... it's just the nature of what happens when you bring stuff into a mod)**
@@ -54,15 +54,15 @@ Please report bugs in the #wkdmod channel in the DevilutionX discord, underneath
 
 - Black Deaths have a decreasing chance based on character level to steal 1 Vit point from the player, and they have been given the same LIFESTEAL mechanic as the Skeleton King.
 - **CRIPPLING SHRINES EFFECTS HAVE BEEN REMOVED:**
-  -- shrines that increase spell levels and did -10% mana now do -2 to the magic stat
-  -- Spiritual Shrines gold pile amounts per difficulty are increase by x 20
-  -- Stone Shrine now increases equipped Staff Charges by a random amount based on character level as well as refilling them
-  -- Gloomy Shrine can't increase AC past 90 (balance fix for wkdmod)
-  -- Weird Shrine cannot increase weapon max damage past weapon maximums set in wkdmod, will also increase elemental damage if present
-  **-- HELLFIRE Shrines**
-  -- Glowing Shrine now increases magic randomly between 1 - 5 and gives XP between 1000 - 5000, removed penalty
-  -- Murphy's Shrine now has a 50% chance to increase a random items durability using the Oil of Fortitude logic and give you money using the Spiritual  Shrine logic, the downsides remain the same
-  -- This should make it so wkdmod players no longer need to use the disable crippling shrines option as all negative effects are reversible with oils or elixirs (or even other shrines)
+  - shrines that increase spell levels and did -10% mana now do -2 to the magic stat
+  - Spiritual Shrines gold pile amounts per difficulty are increase by x 20
+  - Stone Shrine now increases equipped Staff Charges by a random amount based on character level as well as refilling them
+  - Gloomy Shrine can't increase AC past 90 (balance fix for wkdmod)
+  - Weird Shrine cannot increase weapon max damage past weapon maximums set in wkdmod, will also increase elemental damage if present
+  **- HELLFIRE Shrines**
+  - Glowing Shrine now increases magic randomly between 1 - 5 and gives XP between 1000 - 5000, removed penalty
+  - Murphy's Shrine now has a 50% chance to increase a random items durability using the Oil of Fortitude logic and give you money using the Spiritual  Shrine logic, the downsides remain the same
+  - This should make it so wkdmod players no longer need to use the disable crippling shrines option as all negative effects are reversible with oils or elixirs (or even other shrines)
 
 - Warrior, Barbarian, and Bard have all received a melee and ranged ToHit buff and are no longer desperate for Dexterity/ToHit gear.
 - Barbarian no longer takes damage from the Rage skill, it will drain mana instead if the Barbarian has any
