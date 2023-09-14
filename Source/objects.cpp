@@ -3003,20 +3003,15 @@ void OperateShrineOily(Player &player, Point spawnPosition)
 
 void OperateShrineGlowing(Player &player)
 {
-	if (&player != MyPlayer)
-		return;
+	// Add 0-5 points to Magic or Vit (0.1% of the players XP) for all players
+	if (HasNoneOf(player._pIFlags, ItemSpecialEffect::NoMana)) {
+		ModifyPlrMag(player, static_cast<int>(std::min<uint32_t>(player._pExperience / 1000, 5)));
+	} else {
+		ModifyPlrVit(player, static_cast<int>(std::min<uint32_t>(player._pExperience / 1000, 5)));
+	}
 
-	int modplrmag = std::max(1, static_cast<int>(player._pExperience / 1000));
-	modplrmag = std::min(modplrmag, 5);
-
-	// Add 1-5 points to Magic
-	if (player._pBaseMag = 0)
-		ModifyPlrVit(player, modplrmag);
-	else
-		ModifyPlrMag(player, modplrmag);
-
-	// Add 1000 - 5000 xp
-	player._pExperience += static_cast<uint32_t>(modplrmag * 1000);
+	// Increase all players experience by 25%
+	player._pExperience = static_cast<uint32_t>(player._pExperience * 1.25);
 
 	CheckStats(player);
 	RedrawEverything();
