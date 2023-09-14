@@ -18,8 +18,6 @@ Thank you to the invaluable efforts of the DevilutionX community going above and
 - Entkoffeinator
 - Tree
 - Belix (wkdmod is inspired by the efforts of Hellfire modders that came before me)
-- Donald Tsang of Synergistic
-- Blizzard North
 
 (click the banner for current intro trailer)
 <a href="https://www.youtube.com/watch?v=qGFhbjFcxxQ" target="_blank" rel="noopener noreferrer">
