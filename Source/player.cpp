@@ -1265,11 +1265,13 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 				AddMissile(target.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendAddMissile(true, target.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendCmdDamage(true, target.getId(), pFireDam, DamageType::Fire);
-			} else if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::LightningDamage) && attacker._pILMaxDam > 0) {
+			}
+			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::LightningDamage) && attacker._pILMaxDam > 0) {
 				AddMissile(target.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendAddMissile(true, target.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendCmdDamage(true, target.getId(), pLightningDam, DamageType::Lightning);
-			} else if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::MagicDamage) && attacker._pIMMaxDam > 0) {
+			}
+			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::MagicDamage) && attacker._pIMMaxDam > 0) {
 				AddMissile(target.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendAddMissile(true, target.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendCmdDamage(true, target.getId(), pMagicDam, DamageType::Magic);
@@ -1311,9 +1313,11 @@ bool DoAttack(Player &player)
 
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
 			AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
 			AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
 			AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 
@@ -1405,9 +1409,11 @@ bool DoAttack(Player &player)
 						didhit = true;
 						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
 							AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
+						}
+						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
 							AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
+						}
+						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
 							AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 						}
 				}
@@ -1416,9 +1422,11 @@ bool DoAttack(Player &player)
 					didhit = true;
 					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
 						AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
+					}
+					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
 						AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
+					}
+					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
 						AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 					}
 			}
@@ -1430,9 +1438,11 @@ bool DoAttack(Player &player)
 						didhit = true;
 						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
 							AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
+						}
+						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
 							AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
+						}
+						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
 							AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 						}
 				}
@@ -1445,9 +1455,11 @@ bool DoAttack(Player &player)
 						didhit = true;
 						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
 							AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
+						}
+						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
 							AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
+						}
+						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
 							AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 						}
 				}
@@ -1460,9 +1472,11 @@ bool DoAttack(Player &player)
 						didhit = true;
 						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
 							AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
+						}
+						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
 							AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
+						}
+						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
 							AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 						}
 				}
@@ -1471,9 +1485,11 @@ bool DoAttack(Player &player)
 					didhit = true;
 					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage) && player._pIFMaxDam > 0) {
 						AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
+					}
+					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage) && player._pILMaxDam > 0) {
 						AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
+					}
+					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage) && player._pIMMaxDam > 0) {
 						AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 					}
 			}
