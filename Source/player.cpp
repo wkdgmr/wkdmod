@@ -936,34 +936,6 @@ void ExplodingBoneArmor(Player &attacker, Player &target)
 	}
 }
 
-void WeaponElementalDamageSplash(const Player &player, const Point &position) {
-    size_t playerId = player.getId();
-    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-        AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-    }
-    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-        AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-    }
-    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
-        AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-    }
-}
-
-void ApplyWeaponElementalDamageSplash(Player &player, Point position) {
-    Monster *monster = FindMonsterAtPosition(position);
-    if (monster != nullptr && !monster->isPlayerMinion()) {
-        if (!CanTalkToMonst(*monster) && monster->position.old == position) {
-            if (PlrHitMonst(player, *monster, true)) {
-                WeaponElementalDamageSplash(player, position);
-            }
-        }
-    } else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
-        if (PlrHitPlr(player, *PlayerAtPosition(position), true)) {
-            WeaponElementalDamageSplash(player, position);
-        }
-    }
-}
-
 bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 {
 	if (target._pInvincible) {
@@ -1203,6 +1175,34 @@ bool PlrHitObj(const Player &player, Object &targetObject)
 	}
 
 	return false;
+}
+
+void WeaponElementalDamageSplash(const Player &player, const Point &position) {
+    size_t playerId = player.getId();
+    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
+        AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+    }
+    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+        AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+    }
+    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+        AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+    }
+}
+
+void ApplyWeaponElementalDamageSplash(Player &player, Point position) {
+    Monster *monster = FindMonsterAtPosition(position);
+    if (monster != nullptr && !monster->isPlayerMinion()) {
+        if (!CanTalkToMonst(*monster) && monster->position.old == position) {
+            if (PlrHitMonst(player, *monster, true)) {
+                WeaponElementalDamageSplash(player, position);
+            }
+        }
+    } else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
+        if (PlrHitPlr(player, *PlayerAtPosition(position), true)) {
+            WeaponElementalDamageSplash(player, position);
+        }
+    }
 }
 
 bool DoAttack(Player &player)
