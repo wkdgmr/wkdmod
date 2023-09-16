@@ -1223,8 +1223,6 @@ bool DoAttack(Player &player)
 				player.position.temp.x = 0; /** @todo Looks to be irrelevant, probably just remove it */
 				return false;
 			}
-		} else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
-			position = player.position.tile;
 		}
 
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
