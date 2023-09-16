@@ -789,7 +789,7 @@ void NetSendCmdDelItem(bool bHiPri, uint8_t bLoc);
 void NetSendCmdChInvItem(bool bHiPri, int invGridIndex);
 void NetSendCmdChBeltItem(bool bHiPri, int invGridIndex);
 void NetSendCmdDamage(bool bHiPri, uint8_t bPlr, uint32_t dwDam, DamageType damageType);
-void NetSendAddMissile(bool bHiPri, Point src, Point dst, Direction midir, MissileID mitype,
+void NetSendAddMissile(Point src, Point dst, Direction midir, MissileID mitype,
     mienemy_type micaster, int id, int midam, int spllvl, Missile *parent = nullptr, std::optional<_sfx_id> lSFX = std::nullopt);
 void NetSendCmdMonDmg(bool bHiPri, uint16_t wMon, uint32_t dwDam);
 void NetSendCmdString(uint32_t pmask, const char *pszStr);

@@ -805,7 +805,7 @@ void HolyFireDamage(Player &player, Monster &monster)
 			}
 			mdam = mdam << 6;
 			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
-			NetSendAddMissile(true, monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0, nullptr);
+			NetSendAddMissile(monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0);
 			if (monster.hitPoints >> 6 <= 0)
 				M_StartKill(monster, player);
 			else
@@ -836,8 +836,8 @@ void CastHolyShock(Player &player, Monster &monster)
 		int mdam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
 		int bsmdam = mdam << 6;
 		ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
-		NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel, nullptr);
-		NetSendAddMissile(true, player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel, nullptr);
+		NetSendAddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+		NetSendAddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
 		if (monster.hitPoints >> 6 <= 0)
 			M_StartKill(monster, player);
 		else
@@ -869,7 +869,7 @@ void ExplodingBoneArmor(Player &player, Monster &monster)
 					}
 					Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
 					Displacement displacement(arrowDirection);
-					NetSendAddMissile(true, player.position.tile, player.position.old + displacement, arrowDirection,
+					NetSendAddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
 					    MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), mdam, 0);
 					if (monster.hitPoints >> 6 <= 0)
 						M_StartKill(monster, player);
