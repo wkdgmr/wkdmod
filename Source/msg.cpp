@@ -1815,11 +1815,12 @@ size_t OnPlayerDamage(const TCmd *pCmd, Player &player)
 	return sizeof(message);
 }
 
-size_t OnAddMissile(const TCmd *pCmd, Player &player)
+size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 {
     const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
 
     if (gbBufferMsgs != 1) {
+		Player &player = Players[pnum];
         if (&player != MyPlayer) {
             if (message.mitype == MissileID::InfernoControl) {
                 AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl, message.parent);
@@ -1827,10 +1828,11 @@ size_t OnAddMissile(const TCmd *pCmd, Player &player)
                 AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl);
             }
         }
-	}
-	
+    }
+
     return sizeof(message);
 }
+
 
 size_t OnOperateObject(const TCmd &pCmd, size_t pnum)
 {
@@ -3270,7 +3272,7 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 	case CMD_PLRDAMAGE:
 		return OnPlayerDamage(pCmd, player);
 	case CMD_ADDMISSILE:
-		return OnAddMissile(pCmd, player);
+		return OnAddMissile(*pCmd, pnum);
 	case CMD_OPENDOOR:
 	case CMD_CLOSEDOOR:
 	case CMD_OPERATEOBJ:
