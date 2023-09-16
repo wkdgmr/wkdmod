@@ -3561,6 +3561,28 @@ void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*
 	}
 }
 
+void ApplyLifeDrain(DamageType damageType, Player &player, int dam, int minHP /*= 0*/, int frac /*= 0*/, DeathReason deathReason /*= DeathReason::MonsterOrTrap*/)
+{
+	int totalDamage = (dam << 6) + frac;
+	if (&player == MyPlayer) {
+		AddFloatingNumber(damageType, player, totalDamage);
+	}
+	RedrawComponent(PanelDrawComponent::Health);
+	player._pHitPoints -= totalDamage;
+	player._pHPBase -= totalDamage;
+	if (player._pHitPoints > player._pMaxHP) {
+		player._pHitPoints = player._pMaxHP;
+		player._pHPBase = player._pMaxHPBase;
+	}
+	int minHitPoints = minHP << 6;
+	if (player._pHitPoints < minHitPoints) {
+		SetPlayerHitPoints(player, minHitPoints);
+	}
+	if (player._pHitPoints >> 6 <= 0) {
+		SyncPlrKill(player, deathReason);
+	}
+}
+
 void ApplyManaDrain(DamageType damageType, Player &player, int dam, int minMP, int minHP /*= 0*/, int frac /*= 0*/, DeathReason deathReason /*= DeathReason::MonsterOrTrap*/)
 {
 	int totalDamage = (dam << 6) + frac;
@@ -3771,7 +3793,7 @@ void ProcessPlayers()
 
 			if (&player == MyPlayer) {
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainLife) && leveltype != DTYPE_TOWN) {
-					ApplyPlrDamage(DamageType::Physical, player, 0, 0, 4);
+					ApplyLifeDrain(DamageType::Physical, player, 0, 0, 4);
 				}
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainMana) && leveltype != DTYPE_TOWN) {
 					ApplyManaDrain(DamageType::Physical, player, 0, 0, 0, 4);
