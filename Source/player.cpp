@@ -537,7 +537,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 
     item_equip_type equipTypes[] = { ILOC_ONEHAND, ILOC_TWOHAND };
 
-    bool didDamage = false;
+    bool damagedWeapon = false;
 
     for (const auto& bodyLoc : bodyLocs) {
         for (const auto& type : weaponTypes) {
@@ -555,12 +555,13 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
                         CalcPlrInv(player, true);
                     }
 
-                    didDamage = true;
+                    damagedWeapon = true;
+				}
             }
         }
     }
 
-    return didDamage;
+    return damagedWeapon;
 }
 
 
