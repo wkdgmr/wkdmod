@@ -531,119 +531,38 @@ bool WeaponDecay(Player &player, int ii)
 
 bool DamageWeapon(Player &player, unsigned damageFrequency)
 {
-	if (&player != MyPlayer) {
-		return false;
-	}
+    ItemType weaponTypes[] = { ItemType::Bow, ItemType::Sword, ItemType::Axe, ItemType::Mace, ItemType::Staff };
 
-	if (WeaponDecay(player, INVLOC_HAND_LEFT))
-		return true;
-	if (WeaponDecay(player, INVLOC_HAND_RIGHT))
-		return true;
+    inv_body_loc bodyLocs[] = { INVLOC_HAND_LEFT, INVLOC_HAND_RIGHT };
 
-	if (!FlipCoin(damageFrequency)) {
-		return false;
-	}
+    item_equip_type equipTypes[] = { ILOC_ONEHAND, ILOC_TWOHAND };
 
-	if (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON
-	    || (player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON)
-	    || (player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON && player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON)
-	    || (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield)
-	    || (player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield)) {
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
-			return false;
-		}
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			CalcPlrInv(player, true);
-			return true;
-		}
-	}
+    bool didDamage = false;
 
-	if (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON
-	    || (player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON)
-	    || (player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON && player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON)
-	    || (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)
-	    || (player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)) {
-		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == DUR_INDESTRUCTIBLE) {
-			return false;
-		}
+    for (const auto& bodyLoc : bodyLocs) {
+        for (const auto& type : weaponTypes) {
+            for (const auto& equipType : equipTypes) {
+                if (player.InvBody[bodyLoc]._itype == type && player.InvBody[bodyLoc]._iLoc == equipType) {
+                    if (player.InvBody[bodyLoc]._iDurability == DUR_INDESTRUCTIBLE) {
+                        return false;
+                    }
+                    
+                    if (player.InvBody[bodyLoc]._iDurability != 0) {
+                        player.InvBody[bodyLoc]._iDurability--;
+                    }
+                    
+                    if (player.InvBody[bodyLoc]._iDurability == 0) {
+                        CalcPlrInv(player, true);
+                    }
 
-		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
-			CalcPlrInv(player, true);
-			return true;
-		}
-	}
+                    didDamage = true;
+            }
+        }
+    }
 
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
-			return false;
-		}
-
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			CalcPlrInv(player, true);
-			return true;
-		}
-	}
-
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
-			return false;
-		}
-
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			CalcPlrInv(player, true);
-			return true;
-		}
-	}
-
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Axe && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
-			return false;
-		}
-
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			CalcPlrInv(player, true);
-			return true;
-		}
-	}
-
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
-			return false;
-		}
-
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			CalcPlrInv(player, true);
-			return true;
-		}
-	}
-
-	if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
-			return false;
-		}
-
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
-			CalcPlrInv(player, true);
-			return true;
-		}
-	}
-
-	return false;
+    return didDamage;
 }
+
 
 bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 {
