@@ -236,7 +236,7 @@ MissileFileData MissileSpriteData[] = {
 /*Krull*/                    { {},               96,          16, "krull",            1, MissileGraphicsFlags::MonsterOwned,             0, AnimLen_14      },
 /*ChargedBolt*/              { {},               64,           0, "miniltng",         1, MissileGraphicsFlags::None,                     1, AnimLen_8       },
 /*HolyBolt*/                 { {},               96,          16, "holy",            16, MissileGraphicsFlags::None,                     4, AnimLen_14      },
-/*HolyBoltExplosion*/        { {},              160,          48, "holyexpl",         1, MissileGraphicsFlags::None,                     0, AnimLen_8       },
+/*HolyBoltExplosion*/        { {},              160,          48, "holyexpl",         1, MissileGraphicsFlags::None,                     1, AnimLen_8       },
 /*LightningArrow*/           { {},               96,          16, "larrow",          16, MissileGraphicsFlags::None,                     0, AnimLen_4       },
 /*FireArrowExplosion*/       { {},               64,           0, {},                 1, MissileGraphicsFlags::None,                     0, AnimLen_6       },
 /*Acid*/                     { {},               96,          16, "acidbf",          16, MissileGraphicsFlags::None,                     0, AnimLen_8       },

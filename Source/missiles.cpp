@@ -1969,12 +1969,13 @@ void AddMissileExplosion(Missile &missile, AddMissileParameter &parameter)
 void AddWeaponExplosion(Missile &missile, AddMissileParameter &parameter)
 {
 	missile.var2 = parameter.dst.x;
-	if (parameter.dst.x == 1 || parameter.dst.x == 4)
+	if (parameter.dst.x == 1 || parameter.dst.x == 4) {
 		SetMissAnim(missile, MissileGraphicID::MagmaBallExplosion);
-	else if (parameter.dst.x == 2 || parameter.dst.x == 5)
+	} else if (parameter.dst.x == 2 || parameter.dst.x == 5) {
 		SetMissAnim(missile, MissileGraphicID::ChargedBolt);
-	else if (parameter.dst.x == 3 || parameter.dst.x == 6)
+	} else if (parameter.dst.x == 3 || parameter.dst.x == 6) {
 		SetMissAnim(missile, MissileGraphicID::HolyBoltExplosion);
+	}
 	missile._mirange = missile._miAnimLen - 1;
 }
 
