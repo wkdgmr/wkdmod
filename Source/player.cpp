@@ -867,7 +867,6 @@ void HolyFireDamage(Player &attacker, Player &target)
 				mdam -= mdam * (attacker._pFireResist / 100);
 				mdam = mdam << 6;
 				NetSendCmdDamage(true, attacker.getId(), mdam, DamageType::Fire);
-				AddMissile(attacker.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendAddMissile(true, attacker.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, target.getId(), 0, 0);
 			}
 		}
@@ -897,8 +896,6 @@ void CastHolyShock(Player &attacker, Player &target)
 			bsmdam -= bsmdam * (attacker._pLghtResist / 100);
 			bsmdam = bsmdam << 6;
 			NetSendCmdDamage(true, attacker.getId(), bsmdam, DamageType::Lightning);
-			AddMissile(target.position.tile, target.position.temp, target._pdir, MissileID::FlashBottom, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
-			AddMissile(target.position.tile, target.position.temp, target._pdir, MissileID::FlashTop, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
 			NetSendAddMissile(true, target.position.tile, target.position.temp, target._pdir, MissileID::FlashBottom, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
 			NetSendAddMissile(true, target.position.tile, target.position.temp, target._pdir, MissileID::FlashTop, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
 		}
@@ -930,8 +927,6 @@ void ExplodingBoneArmor(Player &attacker, Player &target)
 						}
 						Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
 						Displacement displacement(arrowDirection);
-						AddMissile(target.position.tile, target.position.old + displacement,
-						    arrowDirection, MissileID::BoneSpirit, TARGET_MONSTERS, target.getId(), mdam, 0);
 						NetSendAddMissile(true, target.position.tile, target.position.old + displacement,
 						    arrowDirection, MissileID::BoneSpirit, TARGET_MONSTERS, target.getId(), mdam, 0);
 					}
@@ -939,6 +934,34 @@ void ExplodingBoneArmor(Player &attacker, Player &target)
 			}
 		}
 	}
+}
+
+void WeaponElementalDamageSplash(const Player &player, const Point &position) {
+    size_t playerId = player.getId();
+    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
+        AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+    }
+    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+        AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+    }
+    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+        AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+    }
+}
+
+void ApplyWeaponElementalDamageSplash(Player &player, Point position) {
+    Monster *monster = FindMonsterAtPosition(position);
+    if (monster != nullptr && !monster->isPlayerMinion()) {
+        if (!CanTalkToMonst(*monster) && monster->position.old == position) {
+            if (PlrHitMonst(player, *monster, true)) {
+                WeaponElementalDamageSplash(player, position);
+            }
+        }
+    } else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
+        if (PlrHitPlr(player, *PlayerAtPosition(position), true)) {
+            WeaponElementalDamageSplash(player, position);
+        }
+    }
 }
 
 bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
@@ -1074,12 +1097,6 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 		}
 	}
 
-	int pFireDam = attacker._pIFMinDam + GenerateRnd(attacker._pIFMaxDam - attacker._pIFMinDam + 1);
-	int pLightningDam = attacker._pILMinDam + GenerateRnd(attacker._pILMaxDam - attacker._pILMinDam + 1);
-	int pMagicDam = attacker._pIMMinDam + GenerateRnd(attacker._pIMMaxDam - attacker._pIMMinDam + 1);
-	pFireDam -= pFireDam * (target._pFireResist / 100);
-	pLightningDam -= pLightningDam * (target._pLghtResist / 100);
-	pMagicDam -= pMagicDam * (target._pMagResist / 100);
 	int mind = attacker._pIMinDam;
 	int maxd = attacker._pIMaxDam;
 	int dam = GenerateRnd(maxd - mind + 1) + mind;
@@ -1099,9 +1116,7 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 	}
 
 	dam <<= 6;
-	pFireDam <<= 6;
-	pLightningDam <<= 6;
-	pMagicDam <<= 6;
+
 	if (HasAnyOf(attacker.pDamAcFlags, ItemSpecialEffectHf::Jesters)) {
 		int r = GenerateRnd(201);
 		if (r >= 100)
@@ -1111,9 +1126,6 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 
 	if (adjacentDamage)
 		dam >>= 2;
-	pFireDam >>= 2;
-	pLightningDam >>= 2;
-	pMagicDam >>= 2;
 
 	if (target.wReflections > 0) {
 		int reflectedDamage = CheckReflect(attacker, target, dam);
@@ -1179,22 +1191,6 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 	}
 
 	StartPlrHit(target, dam, false);
-	if (&attacker == MyPlayer) {
-		if (adjacentDamage) {
-			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::FireDamage)) {
-				AddMissile(target.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
-				NetSendAddMissile(true, target.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
-			}
-			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::LightningDamage)) {
-				AddMissile(target.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
-				NetSendAddMissile(true, target.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
-			}
-			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::MagicDamage)) {
-				AddMissile(target.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
-				NetSendAddMissile(true, target.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
-			}
-		}
-	}
 
 	return true;
 }
@@ -1222,20 +1218,23 @@ bool DoAttack(Player &player)
 		Monster *monster = FindMonsterAtPosition(position);
 
 		if (monster != nullptr) {
+			position = monster->position.tile;
 			if (CanTalkToMonst(*monster)) {
 				player.position.temp.x = 0; /** @todo Looks to be irrelevant, probably just remove it */
 				return false;
 			}
+		} else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
+			position = player.position.tile;
 		}
 
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-			AddMissile(monster->position.tile, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-			AddMissile(monster->position.tile, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
-			AddMissile(monster->position.tile, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+			AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 
 		if (monster != nullptr && !monster->isPlayerMinion()) {
@@ -1270,148 +1269,20 @@ bool DoAttack(Player &player)
 			}
 		}
 
-		if (player._pLevel >= 40 && player.InvBody[INVLOC_HAND_LEFT]._itype != ItemType::Bow
-		    || (player._pClass == HeroClass::Monk && player._pLevel <= 39
-		            && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		            && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		        || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		            && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0))
-		    || (player._pClass == HeroClass::Bard && player._pLevel <= 39
-		            && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		            && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0
-		        || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		            && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-		        || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		            && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-		        || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		            && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0))
-		    || (player._pClass == HeroClass::Warrior && player._pLevel <= 39
-		            && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		            && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		        || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		            && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-		        || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		            && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-		        || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		            && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-		        || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		            && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0))
-		    || (player._pClass == HeroClass::Sorcerer && player._pLevel <= 39
-		            && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		            && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		        || (player._pClass == HeroClass::Barbarian && player._pLevel <= 39
-		                && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		                && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0
-		            || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Staff && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
-		                && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0
-		            || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Axe && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		                && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-		            || (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Axe && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
-		                && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-		            || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		                && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-		            || (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Sword && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
-		                && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-		            || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND
-		                && player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-		            || (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Mace && player.InvBody[INVLOC_HAND_RIGHT]._iLoc == ILOC_TWOHAND
-		                   && player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-		                && !(player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield || player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield)))) {
-			// playing as a class/weapon with cleave
-			position = player.position.tile + Right(player._pdir);
-			monster = FindMonsterAtPosition(position);
-			if (monster != nullptr && !monster->isPlayerMinion()) {
-				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
-					if (PlrHitMonst(player, *monster, true))
-						didhit = true;
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-							AddMissile(monster->position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-							AddMissile(monster->position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
-							AddMissile(monster->position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-				}
-			} else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
-				if (PlrHitPlr(player, *PlayerAtPosition(position), true))
-					didhit = true;
-					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-						AddMissile(monster->position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					}
-					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-						AddMissile(monster->position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					}
-					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
-						AddMissile(monster->position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					}
-			}
-			position = player.position.tile + Left(player._pdir);
-			monster = FindMonsterAtPosition(position);
-			if (monster != nullptr && !monster->isPlayerMinion()) {
-				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
-					if (PlrHitMonst(player, *monster, true))
-						didhit = true;
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-							AddMissile(monster->position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-							AddMissile(monster->position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
-							AddMissile(monster->position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-				}
-			}
-			position = player.position.tile + Left(Left(player._pdir));
-			monster = FindMonsterAtPosition(position);
-			if (monster != nullptr && !monster->isPlayerMinion()) {
-				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
-					if (PlrHitMonst(player, *monster, true))
-						didhit = true;
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-							AddMissile(monster->position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-							AddMissile(monster->position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
-							AddMissile(monster->position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-				}
-			}
-			position = player.position.tile + Right(Right(player._pdir));
-			monster = FindMonsterAtPosition(position);
-			if (monster != nullptr && !monster->isPlayerMinion()) {
-				if (!CanTalkToMonst(*monster) && monster->position.old == position) {
-					if (PlrHitMonst(player, *monster, true))
-						didhit = true;
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-							AddMissile(monster->position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-							AddMissile(monster->position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-						if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
-							AddMissile(monster->position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-						}
-				}
-			} else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
-				if (PlrHitPlr(player, *PlayerAtPosition(position), true))
-					didhit = true;
-					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-						AddMissile(monster->position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					}
-					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-						AddMissile(monster->position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					}
-					if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
-						AddMissile(monster->position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-					}
-			}
-		}
-
+    	if (player.CanCleave()) { // Check whether the player can cleave or not
+    	    Point positions[] = {
+    	        player.position.tile + Right(player._pdir),
+    	        player.position.tile + Left(player._pdir),
+    	        player.position.tile + Left(Left(player._pdir)),
+    	        player.position.tile + Right(Right(player._pdir))
+    	    };
+	
+    	    for (const Point& position : positions) {
+				didhit = true;
+    	        ApplyWeaponElementalDamageSplash(player, position);
+    	    }
+    	}
+	
 		if (didhit && DamageWeapon(player, 30)) {
 			StartStand(player, player._pdir);
 			ClearStateVariables(player);
