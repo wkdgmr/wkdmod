@@ -1264,17 +1264,14 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::FireDamage) && attacker._pIFMaxDam > 0) {
 				AddMissile(target.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendAddMissile(true, target.position.tile, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
-				NetSendCmdDamage(true, target.getId(), pFireDam, DamageType::Fire);
 			}
 			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::LightningDamage) && attacker._pILMaxDam > 0) {
 				AddMissile(target.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendAddMissile(true, target.position.tile, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
-				NetSendCmdDamage(true, target.getId(), pLightningDam, DamageType::Lightning);
 			}
 			if (HasAnyOf(attacker._pIFlags, ItemSpecialEffect::MagicDamage) && attacker._pIMMaxDam > 0) {
 				AddMissile(target.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendAddMissile(true, target.position.tile, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, target.getId(), 0, 0);
-				NetSendCmdDamage(true, target.getId(), pMagicDam, DamageType::Magic);
 			}
 		}
 	}
