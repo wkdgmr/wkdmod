@@ -1815,23 +1815,20 @@ size_t OnPlayerDamage(const TCmd *pCmd, Player &player)
 	return sizeof(message);
 }
 
-size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
+size_t OnAddMissile(const TCmd *pCmd, Player &player)
 {
     const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
 
     if (gbBufferMsgs != 1) {
-        Player &player = Players[pnum];
-        if (player.isOnActiveLevel()) {
+        if (&player != MyPlayer) {
             if (message.mitype == MissileID::InfernoControl) {
                 AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl, message.parent);
             } else {
                 AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl);
             }
         }
-    } else {
-        SendPacket(pnum, &message, sizeof(message));
-    }
-
+	}
+	
     return sizeof(message);
 }
 

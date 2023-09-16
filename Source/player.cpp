@@ -867,6 +867,7 @@ void HolyFireDamage(Player &attacker, Player &target)
 				mdam -= mdam * (attacker._pFireResist / 100);
 				mdam = mdam << 6;
 				NetSendCmdDamage(true, attacker.getId(), mdam, DamageType::Fire);
+				AddMissile(attacker.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendAddMissile(attacker.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, target.getId(), 0, 0);
 			}
 		}
@@ -896,6 +897,8 @@ void CastHolyShock(Player &attacker, Player &target)
 			bsmdam -= bsmdam * (attacker._pLghtResist / 100);
 			bsmdam = bsmdam << 6;
 			NetSendCmdDamage(true, attacker.getId(), bsmdam, DamageType::Lightning);
+			AddMissile(target.position.tile, target.position.temp, target._pdir, MissileID::FlashBottom, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
+			AddMissile(target.position.tile, target.position.temp, target._pdir, MissileID::FlashTop, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
 			NetSendAddMissile(target.position.tile, target.position.temp, target._pdir, MissileID::FlashBottom, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
 			NetSendAddMissile(target.position.tile, target.position.temp, target._pdir, MissileID::FlashTop, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
 		}
@@ -927,6 +930,8 @@ void ExplodingBoneArmor(Player &attacker, Player &target)
 						}
 						Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
 						Displacement displacement(arrowDirection);
+						AddMissile(target.position.tile, target.position.old + displacement,
+						    arrowDirection, MissileID::BoneSpirit, TARGET_MONSTERS, target.getId(), mdam, 0);
 						NetSendAddMissile(target.position.tile, target.position.old + displacement,
 						    arrowDirection, MissileID::BoneSpirit, TARGET_MONSTERS, target.getId(), mdam, 0);
 					}
