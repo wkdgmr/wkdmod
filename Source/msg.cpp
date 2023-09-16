@@ -3270,7 +3270,7 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 	case CMD_PLRDAMAGE:
 		return OnPlayerDamage(pCmd, player);
 	case CMD_ADDMISSILE:
-		return OnAddMissile(pCmd, pnum);
+		return OnAddMissile(pCmd, player);
 	case CMD_OPENDOOR:
 	case CMD_CLOSEDOOR:
 	case CMD_OPERATEOBJ:
