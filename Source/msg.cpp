@@ -317,6 +317,7 @@ bool WasPlayerCmdAlreadyRequested(_cmd_id bCmd, Point position = {}, uint16_t wP
 	case _cmd_id::CMD_OPOBJXY:
 	case _cmd_id::CMD_GOTOGETITEM:
 	case _cmd_id::CMD_GOTOAGETITEM:
+	case _cmd_id::CMD_ADDMISSILE:
 		break;
 	default:
 		// None player actions should work normally
@@ -1833,8 +1834,8 @@ size_t OnAddMissile(const TCmd *pCmd, Player &player)
 {
 	const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
 
-	if (&player == MyPlayer)
-		return sizeof(message);
+	// if (&player == MyPlayer)
+	//	return sizeof(message);
 
 	if (message.mitype == MissileID::InfernoControl) {
 		AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl, message.parent);
