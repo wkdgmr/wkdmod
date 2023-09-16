@@ -508,6 +508,20 @@ struct TCmdParam5 {
 	uint16_t wParam5;
 };
 
+struct TCmdAddMissile {
+	_cmd_id bCmd;
+	Point src;
+	Point dst;
+	Direction midir;
+	MissileID mitype;
+	mienemy_type micaster;
+	int id;
+	int midam;
+	int spllvl;
+	Missile *parent;
+	std::optional<_sfx_id> lSFX;
+};
+
 struct TCmdGolem {
 	_cmd_id bCmd;
 	uint8_t _mx;

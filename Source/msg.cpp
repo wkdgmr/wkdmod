@@ -179,20 +179,6 @@ struct DLevel {
 	DMonsterStr monster[MaxMonsters];
 };
 
-struct TCmdAddMissile {
-	uint8_t bCmd;
-	Point src;
-	Point dst;
-	Direction midir;
-	MissileID mitype;
-	mienemy_type micaster;
-	int id;
-	int midam;
-	int spllvl;
-	Missile *parent;
-	std::optional<_sfx_id> lSFX;
-};
-
 #pragma pack(push, 1)
 struct LocalLevel {
 	LocalLevel(const uint8_t (&other)[DMAXX][DMAXY])
@@ -317,7 +303,6 @@ bool WasPlayerCmdAlreadyRequested(_cmd_id bCmd, Point position = {}, uint16_t wP
 	case _cmd_id::CMD_OPOBJXY:
 	case _cmd_id::CMD_GOTOGETITEM:
 	case _cmd_id::CMD_GOTOAGETITEM:
-	case _cmd_id::CMD_ADDMISSILE:
 		break;
 	default:
 		// None player actions should work normally
@@ -1830,20 +1815,24 @@ size_t OnPlayerDamage(const TCmd *pCmd, Player &player)
 	return sizeof(message);
 }
 
-size_t OnAddMissile(const TCmd *pCmd, Player &player)
+size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 {
-	const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
+    const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
 
-	// if (&player == MyPlayer)
-	//	return sizeof(message);
+    if (gbBufferMsgs != 1) {
+        Player &player = Players[pnum];
+        if (player.isOnActiveLevel()) {
+            if (message.mitype == MissileID::InfernoControl) {
+                AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl, message.parent);
+            } else {
+                AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl);
+            }
+        }
+    } else {
+        SendPacket(pnum, &message, sizeof(message));
+    }
 
-	if (message.mitype == MissileID::InfernoControl) {
-		AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl, message.parent);
-	} else {
-		AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl);
-	}
-
-	return sizeof(message);
+    return sizeof(message);
 }
 
 size_t OnOperateObject(const TCmd &pCmd, size_t pnum)
@@ -3287,7 +3276,7 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 	case CMD_PLRDAMAGE:
 		return OnPlayerDamage(pCmd, player);
 	case CMD_ADDMISSILE:
-		return OnAddMissile(pCmd, player);
+		return OnAddMissile(pCmd, pnum);
 	case CMD_OPENDOOR:
 	case CMD_CLOSEDOOR:
 	case CMD_OPERATEOBJ:
