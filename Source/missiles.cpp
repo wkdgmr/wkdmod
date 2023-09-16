@@ -3516,9 +3516,9 @@ void ProcessSpectralArrow(Missile &missile)
 			break;
 		}
 	}
-/* 	missile._mirange--;
+	missile._mirange--;
 	if (missile._mirange == 0)
-		missile._miDelFlag = true; */
+		missile._miDelFlag = true;
 }
 
 void ProcessLightningControl(Missile &missile)
