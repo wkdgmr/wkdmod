@@ -3639,27 +3639,27 @@ void ProcessSpectralArrow(Missile &missile)
 			if (player._pIMisType == 4 && !HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 				dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 				std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
-				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
-				AddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
-				AddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl);
 			} else if (player._pIMisType == 8 || player._pIMisType == 4 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 				dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 				std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
-				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
-				AddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
-				AddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl);
 				dir = OppositeIMisDir(dir);
 				std::pair<Direction, Direction> infernodir2 = NextIMisDir(dir);
-				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 				AddMissile(src, dst, infernodir2.first, mitype, micaster, id, dam, spllvl, &missile);
 				AddMissile(src, dst, infernodir2.second, mitype, micaster, id, dam, spllvl, &missile);
 			} else if (player._pIMisType == 7) {
 				if (mitype == MissileID::InfernoControl) {
 					dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 					std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
-					AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
-					AddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
-					AddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
+					AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+					AddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl);
+					AddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl);
 					mitype = MissileID::ChargedBoltBow;
 				}
 				if (mitype == MissileID::ChargedBoltBow) {
