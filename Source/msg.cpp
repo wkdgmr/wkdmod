@@ -134,6 +134,7 @@ string_view CmdIdString(_cmd_id cmd)
 	case CMD_KILLGOLEM: return "CMD_KILLGOLEM";
 	case CMD_SYNCQUEST: return "CMD_SYNCQUEST";
 	case CMD_AWAKEGOLEM: return "CMD_AWAKEGOLEM";
+	case CMD_ADDMISSILE: return "CMD_ADDMISSILE";
 	case CMD_SETSHIELD: return "CMD_SETSHIELD";
 	case CMD_REMSHIELD: return "CMD_REMSHIELD";
 	case CMD_SETREFLECT: return "CMD_SETREFLECT";
@@ -1756,6 +1757,36 @@ size_t OnAwakeGolem(const TCmd *pCmd, size_t pnum)
 	return sizeof(message);
 }
 
+size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
+{
+	const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
+	const Point position { message._dst };
+
+	if (gbBufferMsgs == 1) {
+		SendPacket(pnum, &message, sizeof(message));
+	} else if (InDungeonBounds(position)) {
+		Player &player = Players[pnum];
+		if (&player != MyPlayer) {
+			// Check if this player already has an active missile effect
+			for (auto &missile : Missiles) {
+				if (missile._mitype == message._mitype && &Players[missile._misource] == message._id) {
+					return sizeof(message);
+				}
+			}
+
+			if (message._mitype == MissileID::InfernoControl) {
+				AddMissile(message._src, message._dst, message._mdir, message._mitype, 
+				message._micaster, message._id, message._midam, message._spllvl, message._parent);
+			} else {
+				AddMissile(message._src, message._dst, message._mdir, message._mitype, 
+				message._micaster, message._id, message._midam, message._spllvl);
+			}
+		}
+	}
+
+	return sizeof(message);
+}
+
 size_t OnMonstDamage(const TCmd *pCmd, size_t pnum)
 {
 	const auto &message = *reinterpret_cast<const TCmdMonDamage *>(pCmd);
@@ -2789,6 +2820,26 @@ void NetSendCmdGolem(uint8_t mx, uint8_t my, Direction dir, uint8_t menemy, int 
 	NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 }
 
+Missile *NetSendAddMissile(Point src, Point dst, Direction midir, MissileID mitype,
+	mienemy_type micaster, int id, int midam, int spllvl, 
+	Missile *parent = nullptr, std::optional<_sfx_id> lSFX = std::nullopt)
+{
+	TCmdAddMissile cmd;
+
+	cmd.bCmd = CMD_ADDMISSILE;
+	cmd._src = src;
+	cmd._dst = dst;
+	cmd._midir = midir;
+	cmd._mitype = mitype;
+	cmd._micaster = micaster;
+	cmd._id = id;
+	cmd._midam = midam;
+	cmd._spllvl = spllvl;
+	cmd._parent = *parent;
+	cmd._lSFX = lSFX;
+	NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
+}
+
 void NetSendCmdLoc(size_t playerId, bool bHiPri, _cmd_id bCmd, Point position)
 {
 	if (playerId == MyPlayerId && WasPlayerCmdAlreadyRequested(bCmd, position))
@@ -3226,6 +3277,8 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 		return OnKillGolem(pCmd, pnum);
 	case CMD_AWAKEGOLEM:
 		return OnAwakeGolem(pCmd, pnum);
+	case CMD_ADDMISSILE:
+		return OnAddMissile(pCmd, pnum);
 	case CMD_MONSTDAMAGE:
 		return OnMonstDamage(pCmd, pnum);
 	case CMD_PLRDEAD:

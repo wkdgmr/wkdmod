@@ -298,7 +298,7 @@ int HolyFireChance(Player &player);
 void HolyFireDamage(Player &player, Monster &monster);
 void CastHolyShock(Player &player, Monster &monster);
 void ExplodingBoneArmor(Player &player, Monster &monster);
-int HolyFireChancePlr(Player &target);
+int HolyFireChancePlr(Player &attacker, Player &target);
 void HolyFireDamagePlr(Player &attacker, Player &target);
 void CastHolyShockPlr(Player &attacker, Player &target);
 void ExplodingBoneArmorPlr(Player &attacker, Player &target);

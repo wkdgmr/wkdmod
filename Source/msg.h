@@ -404,6 +404,10 @@ enum _cmd_id : uint8_t {
 	//
 	// body (TCmdGolem)
 	CMD_AWAKEGOLEM,
+	// Add Missile Net Sync
+	//
+	// body (TCmdAddMissile)
+	CMD_ADDMISSILE,
 	// Enable mana shield of player (render).
 	//
 	// body (TCmd)
@@ -512,6 +516,20 @@ struct TCmdGolem {
 	int8_t _menemy;
 	int32_t _mhitpoints;
 	uint8_t _currlevel;
+};
+
+struct TCmdAddMissile {
+	_cmd_id bCmd;
+	Point src;
+	Point dst;
+	Direction midir;
+	MissileID mitype;
+	mienemy_type micaster;
+	int id;
+	int midam; 
+	int spllvl;
+	Missile *parent;
+	std::optional<_sfx_id> lSFX;
 };
 
 struct TCmdQuest {
@@ -753,6 +771,9 @@ void DeltaLoadLevel();
 void ClearLastSentPlayerCmd();
 void NetSendCmd(bool bHiPri, _cmd_id bCmd);
 void NetSendCmdGolem(uint8_t mx, uint8_t my, Direction dir, uint8_t menemy, int hp, uint8_t cl);
+Missile *NetSendAddMissile(Point src, Point dst, Direction midir, MissileID mitype,
+	mienemy_type micaster, int id, int midam, int spllvl, 
+	Missile *parent = nullptr, std::optional<_sfx_id> lSFX = std::nullopt);
 void NetSendCmdLoc(size_t playerId, bool bHiPri, _cmd_id bCmd, Point position);
 void NetSendCmdLocParam1(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wParam1);
 void NetSendCmdLocParam2(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wParam1, uint16_t wParam2);
