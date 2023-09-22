@@ -1769,7 +1769,7 @@ size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 		if (&player != MyPlayer) {
 			// Check if this player already has an active missile effect
 			for (auto &missile : Missiles) {
-				if (missile._mitype == message._mitype &&& &Players[missile._misource] == &player) {
+				if (missile._mitype == message._mitype && &Players[missile._misource] == &player) {
 					return sizeof(message);
 				}
 			}
@@ -1778,7 +1778,7 @@ size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 				AddMissile(message._src, message._dst, message._mdir, message._mitype, 
 				message._micaster, message._id, message._midam, message._spllvl);
 			} else { */
-			AddMissile(message._src, message._dst, message._mdir, message._mitype, 
+			AddMissile(message._src, message._dst, message._midir, message._mitype, 
 			message._micaster, message._id, message._midam, message._spllvl);
 			// }
 		}
