@@ -1776,7 +1776,7 @@ size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 
 			if (message._mitype == MissileID::InfernoControl) {
 				AddMissile(message._src, message._dst, message._mdir, message._mitype, 
-				message._micaster, message._id, message._midam, message._spllvl, message._parent);
+				message._micaster, message._id, message._midam, message._spllvl, nullptr);
 			} else {
 				AddMissile(message._src, message._dst, message._mdir, message._mitype, 
 				message._micaster, message._id, message._midam, message._spllvl);
@@ -2821,8 +2821,7 @@ void NetSendCmdGolem(uint8_t mx, uint8_t my, Direction dir, uint8_t menemy, int 
 }
 
 Missile *NetSendAddMissile(Point src, Point dst, Direction midir, MissileID mitype,
-	mienemy_type micaster, int id, int midam, int spllvl, 
-	Missile *parent = nullptr, std::optional<_sfx_id> lSFX = std::nullopt)
+	mienemy_type micaster, int id, int midam, int spllvl)
 {
 	TCmdAddMissile cmd;
 
@@ -2835,8 +2834,6 @@ Missile *NetSendAddMissile(Point src, Point dst, Direction midir, MissileID mity
 	cmd._id = id;
 	cmd._midam = midam;
 	cmd._spllvl = spllvl;
-	cmd._parent = *parent;
-	cmd._lSFX = lSFX;
 	NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 }
 
