@@ -1081,11 +1081,9 @@ void WeaponElementalDamageSplash(const Player &player, const Point &position) {
     size_t playerId = player.getId();
     if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
         AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-    }
-    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+    } else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
         AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-    }
-    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+    } else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
         AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
     }
 }
@@ -1127,11 +1125,9 @@ bool DoAttack(Player &player)
 
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
 			AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
 			AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
 			AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 
@@ -1231,11 +1227,11 @@ bool DoRangeAttack(Player &player)
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows) && misswitch != 2) {
 			mistype = MissileID::LightningArrow;
 		}
-		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 1) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireArrows) && misswitch == 1) {
 			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 			mistype = MissileID::SpectralArrow;
 		}
-		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 2) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows) && misswitch == 2) {
 			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1));
 			mistype = MissileID::SpectralArrow;
 		}
