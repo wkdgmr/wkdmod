@@ -520,16 +520,16 @@ struct TCmdGolem {
 
 struct TCmdAddMissile {
 	_cmd_id bCmd;
-	Point src;
-	Point dst;
-	Direction midir;
-	MissileID mitype;
-	mienemy_type micaster;
-	int id;
-	int midam; 
-	int spllvl;
-	Missile *parent;
-	std::optional<_sfx_id> lSFX;
+	Point _src;
+	Point _dst;
+	Direction _midir;
+	MissileID _mitype;
+	mienemy_type _micaster;
+	int _id;
+	int _midam; 
+	int _spllvl;
+	Missile _parent;
+	std::optional<_sfx_id> _lSFX;
 };
 
 struct TCmdQuest {
