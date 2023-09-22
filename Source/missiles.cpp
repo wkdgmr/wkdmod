@@ -2012,6 +2012,7 @@ void HolyFireDamagePlr(Player &attacker, Player &target)
 				mdam -= mdam * (attacker._pFireResist / 100);
 				mdam = mdam << 6;
 				NetSendCmdDamage(true, attacker.getId(), mdam, DamageType::Fire);
+				AddMissile(attacker.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, target.getId(), 0, 0);
 				NetSendAddMissile(attacker.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, target.getId(), 0, 0);
 			}
 		}
@@ -3699,9 +3700,9 @@ void ProcessSpectralArrow(Missile &missile)
 				if (mitype == MissileID::ChargedBoltBow) {
 					dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 					std::pair<Direction, Direction> novadir = NextIMisDir(player._pdir);
-					AddMissile(player.position.tile, player.position.temp, novadir.first, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-					AddMissile(player.position.tile, player.position.temp, novadir.second, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-					AddMissile(player.position.tile, player.position.temp, dir, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
+					AddMissile(player.position.tile, player.position.temp, novadir.first, mitype, TARGET_MONSTERS, player.getId(), dam, spllvl);
+					AddMissile(player.position.tile, player.position.temp, novadir.second, mitype, TARGET_MONSTERS, player.getId(), dam, spllvl);
+					AddMissile(player.position.tile, player.position.temp, dir, mitype, TARGET_MONSTERS, player.getId(), dam, spllvl);
 				}
 			} else if (player._pIMisType == 104) {
 				if (mitype == MissileID::HolyBoltBow) {
@@ -3712,9 +3713,9 @@ void ProcessSpectralArrow(Missile &missile)
 				if (mitype == MissileID::InfernoControl) {
 					dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 					std::pair<Direction, Direction> infernodir = NextIMisDir(player._pdir);
-					NetSendAddMissile(src, dst, player._pdir, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl);
-					NetSendAddMissile(src, dst, infernodir.first, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl);
-					NetSendAddMissile(src, dst, infernodir.second, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl);
+					NetSendAddMissile(src, dst, player._pdir, mitype, TARGET_MONSTERS, player.getId(), dam, spllvl);
+					NetSendAddMissile(src, dst, infernodir.first, mitype, TARGET_MONSTERS, player.getId(), dam, spllvl);
+					NetSendAddMissile(src, dst, infernodir.second, mitype, TARGET_MONSTERS, player.getId(), dam, spllvl);
 				}
 			} else if (player._pIMisType == 100) {
 				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
