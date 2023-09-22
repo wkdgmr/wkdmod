@@ -3653,8 +3653,8 @@ void ProcessSpectralArrow(Missile &missile)
 				dir = OppositeIMisDir(dir);
 				std::pair<Direction, Direction> infernodir2 = NextIMisDir(dir);
 				NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-				AddMissile(src, dst, infernodir2.first, mitype, micaster, id, dam, spllvl);
-				AddMissile(src, dst, infernodir2.second, mitype, micaster, id, dam, spllvl);
+				NetSendAddMissile(src, dst, infernodir2.first, mitype, micaster, id, dam, spllvl);
+				NetSendAddMissile(src, dst, infernodir2.second, mitype, micaster, id, dam, spllvl);
 			} else if (player._pIMisType == 7) {
 				if (mitype == MissileID::InfernoControl) {
 					dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);

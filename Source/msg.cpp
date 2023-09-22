@@ -1769,18 +1769,18 @@ size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 		if (&player != MyPlayer) {
 			// Check if this player already has an active missile effect
 			for (auto &missile : Missiles) {
-				if (missile._mitype == message._mitype && &Players[missile._misource] == message._id) {
+				if (missile._mitype == message._mitype &&& &Players[missile._misource] == &player) {
 					return sizeof(message);
 				}
 			}
 
-			if (message._mitype == MissileID::InfernoControl) {
-				AddMissile(message._src, message._dst, message._mdir, message._mitype, 
-				message._micaster, message._id, message._midam, message._spllvl, nullptr);
-			} else {
+/* 			if (message._mitype == MissileID::InfernoControl) {
 				AddMissile(message._src, message._dst, message._mdir, message._mitype, 
 				message._micaster, message._id, message._midam, message._spllvl);
-			}
+			} else { */
+			AddMissile(message._src, message._dst, message._mdir, message._mitype, 
+			message._micaster, message._id, message._midam, message._spllvl);
+			// }
 		}
 	}
 
@@ -2820,7 +2820,7 @@ void NetSendCmdGolem(uint8_t mx, uint8_t my, Direction dir, uint8_t menemy, int 
 	NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 }
 
-Missile *NetSendAddMissile(Point src, Point dst, Direction midir, MissileID mitype,
+void NetSendAddMissile(Point src, Point dst, Direction midir, MissileID mitype,
 	mienemy_type micaster, int id, int midam, int spllvl)
 {
 	TCmdAddMissile cmd;
