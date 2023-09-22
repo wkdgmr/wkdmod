@@ -294,6 +294,14 @@ void AddLightningControl(Missile &missile, AddMissileParameter &parameter);
 void AddLightning(Missile &missile, AddMissileParameter &parameter);
 void AddMissileExplosion(Missile &missile, AddMissileParameter &parameter);
 void AddWeaponExplosion(Missile &missile, AddMissileParameter &parameter);
+int HolyFireChance(Player &player);
+void HolyFireDamage(Player &player, Monster &monster);
+void CastHolyShock(Player &player, Monster &monster);
+void ExplodingBoneArmor(Player &player, Monster &monster);
+int HolyFireChancePlr(Player &target);
+void HolyFireDamagePlr(Player &attacker, Player &target);
+void CastHolyShockPlr(Player &attacker, Player &target);
+void ExplodingBoneArmorPlr(Player &attacker, Player &target);
 
 /**
  * var1: Animation

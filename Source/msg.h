@@ -281,10 +281,6 @@ enum _cmd_id : uint8_t {
 	//
 	// body (TCmdDamage)
 	CMD_PLRDAMAGE,
-	// Net Sync for AddMissile.
-	//
-	// body (TCmdAddMissile)
-	CMD_ADDMISSILE,
 	// Set player level.
 	//
 	// body (TCmdParam1):
@@ -506,20 +502,6 @@ struct TCmdParam5 {
 	uint16_t wParam3;
 	uint16_t wParam4;
 	uint16_t wParam5;
-};
-
-struct TCmdAddMissile {
-	_cmd_id bCmd;
-	Point src;
-	Point dst;
-	Direction midir;
-	MissileID mitype;
-	mienemy_type micaster;
-	int id;
-	int midam;
-	int spllvl;
-	Missile *parent;
-	std::optional<_sfx_id> lSFX;
 };
 
 struct TCmdGolem {
@@ -789,8 +771,6 @@ void NetSendCmdDelItem(bool bHiPri, uint8_t bLoc);
 void NetSendCmdChInvItem(bool bHiPri, int invGridIndex);
 void NetSendCmdChBeltItem(bool bHiPri, int invGridIndex);
 void NetSendCmdDamage(bool bHiPri, uint8_t bPlr, uint32_t dwDam, DamageType damageType);
-void NetSendAddMissile(Point src, Point dst, Direction midir, MissileID mitype,
-    mienemy_type micaster, int id, int midam, int spllvl, Missile *parent = nullptr, std::optional<_sfx_id> lSFX = std::nullopt);
 void NetSendCmdMonDmg(bool bHiPri, uint16_t wMon, uint32_t dwDam);
 void NetSendCmdString(uint32_t pmask, const char *pszStr);
 void delta_close_portal(int pnum);

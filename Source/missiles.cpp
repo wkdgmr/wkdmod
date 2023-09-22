@@ -1979,6 +1979,213 @@ void AddWeaponExplosion(Missile &missile, AddMissileParameter &parameter)
 	missile._mirange = missile._miAnimLen - 1;
 }
 
+int HolyFireChancePlr(Player &target)
+{
+	if (&target == MyPlayer) {
+		if (target._pLevel < 10) {
+			return 10; // 10% chance at level 1-9.
+		} else if (target._pLevel < 20) {
+			return 15; // 15% chance at level 10-19.
+		} else if (target._pLevel < 30) {
+			return 20; // 20% chance at level 20-29.
+		} else if (target._pLevel < 40) {
+			return 25; // 25% chance at level 30-39.
+		} else {
+			return 30; // 30% chance at level 40 and above.
+		}
+	}
+}
+
+void HolyFireDamagePlr(Player &attacker, Player &target)
+{
+	if (&attacker != MyPlayer && &target == MyPlayer) {
+		if (attacker.position.tile.WalkingDistance(target.position.tile) < 2
+		    && !attacker.friendlyMode) {
+			if (HasAnyOf(target._pIFlags, ItemSpecialEffect::Thorns)) {
+				int eMind;
+				int eMaxd;
+				eMind = target._pIFMinDam;
+				eMaxd = target._pIFMaxDam;
+				int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+				mdam -= mdam * (attacker._pFireResist / 100);
+				mdam = mdam << 6;
+				NetSendCmdDamage(true, attacker.getId(), mdam, DamageType::Fire);
+				AddMissile(attacker.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, target.getId(), 0, 0);
+			}
+		}
+	}
+}
+
+void CastHolyShockPlr(Player &attacker, Player &target)
+{
+	if (&attacker != MyPlayer && &target == MyPlayer) {
+		SpellID spellId = SpellID::Flash;
+		if (attacker.position.tile.WalkingDistance(target.position.tile) < 2
+		    && !attacker.friendlyMode) {
+			if (target._pRSpell != spellId || target._pRSplType != SpellType::Spell) {
+				return;
+			}
+			if (target._pSplLvl[static_cast<int>(spellId)] <= 0) {
+				return;
+			}
+			int spellLevel = target._pSplLvl[static_cast<int>(spellId)];
+			PlaySFX(IS_CAST4);
+			int base = (target._pLevel * 4) + (spellLevel * 10);
+			double lightningPct = std::min(0.1 * (1 + (spellLevel - 1) / 2), 1.0);
+			int lightningDamage = target._pILMinDam + GenerateRnd(target._pILMaxDam - target._pILMinDam + 1);
+			lightningDamage = static_cast<int>(lightningPct * lightningDamage);
+			int mdam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
+			int bsmdam = mdam;
+			bsmdam -= bsmdam * (attacker._pLghtResist / 100);
+			bsmdam = bsmdam << 6;
+			NetSendCmdDamage(true, attacker.getId(), bsmdam, DamageType::Lightning);
+			AddMissile(target.position.tile, target.position.temp, target._pdir, MissileID::FlashBottom, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
+			AddMissile(target.position.tile, target.position.temp, target._pdir, MissileID::FlashTop, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
+		}
+	}
+}
+
+void ExplodingBoneArmorPlr(Player &attacker, Player &target)
+{
+	if (&attacker != MyPlayer && &target == MyPlayer) {
+		if (attacker.position.tile.WalkingDistance(target.position.tile) < 2
+		    && !attacker.friendlyMode) {
+			int eMind = target._pIMMinDam;
+			int eMaxd = target._pIMMaxDam;
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+			if (!target.InvBody[INVLOC_CHEST].isEmpty()) {
+				auto &BoneArmor = target.InvBody[INVLOC_CHEST];
+				if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
+				    && HasAnyOf(target._pIFlags, ItemSpecialEffect::Empower)) {
+					int arrows = 6;
+					int directionIndex = static_cast<int>(target._pdir);
+					std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
+					for (int arrow = 0; arrow < arrows; arrow++) {
+						int arrowDirectionIndex;
+						if (arrows == 6) {
+							arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
+						}
+						if (arrowDirectionIndex < 0) {
+							arrowDirectionIndex += 8;
+						}
+						Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
+						Displacement displacement(arrowDirection);
+						AddMissile(target.position.tile, target.position.old + displacement,
+						    arrowDirection, MissileID::BoneSpirit, TARGET_MONSTERS, target.getId(), mdam, 0);
+					}
+				}
+			}
+		}
+	}
+}
+
+int HolyFireChance(Player &player)
+{
+	if (&player == MyPlayer) {
+		if (player._pLevel < 10) {
+			return 10; // 10% chance at level 1-9.
+		} else if (player._pLevel < 20) {
+			return 15; // 15% chance at level 10-19.
+		} else if (player._pLevel < 30) {
+			return 20; // 20% chance at level 20-29.
+		} else if (player._pLevel < 40) {
+			return 25; // 25% chance at level 30-39.
+		} else {
+			return 30; // 30% chance at level 40 and above.
+		}
+	}
+}
+
+void HolyFireDamage(Player &player, Monster &monster)
+{
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && monster.mode != MonsterMode::Death) {
+			int eMind = player._pIFMinDam;
+			int eMaxd = player._pIFMaxDam;
+			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+			int res = monster.resistance & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMMUNE_MAGIC | IMMUNE_FIRE | IMMUNE_LIGHTNING);
+			if ((res & (RESIST_FIRE | IMMUNE_FIRE)) != 0) {
+				mdam -= mdam / 2;
+				mdam -= mdam / 2;
+			}
+			mdam = mdam << 6;
+			ApplyMonsterDamage(DamageType::Fire, monster, mdam);
+			AddMissile(monster.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, player.getId(), 0, 0);
+			if (monster.hitPoints >> 6 <= 0)
+				M_StartKill(monster, player);
+			else
+				M_StartHit(monster, player, mdam);
+		}
+	}
+}
+
+
+void CastHolyShock(Player &player, Monster &monster)
+{
+	SpellID spellId = SpellID::Flash;
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		if (player._pRSpell != spellId || player._pRSplType != SpellType::Spell) {
+			return;
+		}
+		if (player._pSplLvl[static_cast<int>(spellId)] <= 0) {
+			return;
+		}
+		if (monster.mode == MonsterMode::Death) {
+			return;
+		}
+		int spellLevel = player._pSplLvl[static_cast<int>(spellId)];
+		int base = (player._pLevel * 4) + (spellLevel * 10);
+		double lightningPct = std::min(0.1 * (1 + (spellLevel - 1) / 2), 1.0);
+		int lightningDamage = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
+		lightningDamage = static_cast<int>(lightningPct * lightningDamage);
+		int mdam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
+		int bsmdam = mdam << 6;
+		ApplyMonsterDamage(DamageType::Lightning, monster, bsmdam);
+		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashBottom, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::FlashTop, TARGET_MONSTERS, player.getId(), mdam, spellLevel);
+		if (monster.hitPoints >> 6 <= 0)
+			M_StartKill(monster, player);
+		else
+			M_StartHit(monster, player, mdam);
+	}
+}
+
+
+void ExplodingBoneArmor(Player &player, Monster &monster)
+{
+	if (monster.position.tile.WalkingDistance(player.position.tile) < 2) {
+		int eMind = player._pIMMinDam;
+		int eMaxd = player._pIMMaxDam;
+		int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
+		if (!player.InvBody[INVLOC_CHEST].isEmpty()) {
+			auto &BoneArmor = player.InvBody[INVLOC_CHEST];
+			if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
+			    && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
+				int arrows = 6;
+				int directionIndex = static_cast<int>(player._pdir);
+				std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
+				for (int arrow = 0; arrow < arrows; arrow++) {
+					int arrowDirectionIndex;
+					if (arrows == 6) {
+						arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
+					}
+					if (arrowDirectionIndex < 0) {
+						arrowDirectionIndex += 8;
+					}
+					Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
+					Displacement displacement(arrowDirection);
+					AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
+					    MissileID::BoneSpirit, TARGET_MONSTERS, player.getId(), mdam, 0);
+					if (monster.hitPoints >> 6 <= 0)
+						M_StartKill(monster, player);
+					else
+						M_StartHit(monster, player, mdam);
+				}
+			}
+		}
+	}
+}
+
 void AddTownPortal(Missile &missile, AddMissileParameter &parameter)
 {
 	if (leveltype == DTYPE_TOWN) {
@@ -3396,11 +3603,11 @@ void ProcessSpectralArrow(Missile &missile)
 		switch (player._pIMisType) {
 		case 1:
 			mitype = MissileID::FireballBow;
-			NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			break;
 		case 2:
 			mitype = MissileID::LightningBow;
-			NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			break;
 		case 3:
 		case 6:
@@ -3408,21 +3615,21 @@ void ProcessSpectralArrow(Missile &missile)
 			if (player._pIMisType == 3 && !HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 				dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 				std::pair<Direction, Direction> novadir = NextIMisDir(dir);
-				NetSendAddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
-				NetSendAddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
 				dir = OppositeIMisDir(dir);
-				NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			} else if (player._pIMisType == 6 || player._pIMisType == 3 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 				dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 				std::pair<Direction, Direction> novadir = NextIMisDir(dir);
-				NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-				NetSendAddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
-				NetSendAddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
 				dir = OppositeIMisDir(dir);
 				std::pair<Direction, Direction> novadir2 = NextIMisDir(dir);
-				NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-				NetSendAddMissile(src, dst, novadir2.first, mitype, micaster, id, dam, spllvl);
-				NetSendAddMissile(src, dst, novadir2.second, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, novadir2.first, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, novadir2.second, mitype, micaster, id, dam, spllvl);
 			}
 			break;
 		case 4:
@@ -3432,50 +3639,50 @@ void ProcessSpectralArrow(Missile &missile)
 			if (player._pIMisType == 4 && !HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 				dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 				std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
-				NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
-				NetSendAddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
-				NetSendAddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
 			} else if (player._pIMisType == 8 || player._pIMisType == 4 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 				dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 				std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
-				NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
-				NetSendAddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
-				NetSendAddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
 				dir = OppositeIMisDir(dir);
 				std::pair<Direction, Direction> infernodir2 = NextIMisDir(dir);
-				NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
-				NetSendAddMissile(src, dst, infernodir2.first, mitype, micaster, id, dam, spllvl, &missile);
-				NetSendAddMissile(src, dst, infernodir2.second, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, infernodir2.first, mitype, micaster, id, dam, spllvl, &missile);
+				AddMissile(src, dst, infernodir2.second, mitype, micaster, id, dam, spllvl, &missile);
 			} else if (player._pIMisType == 7) {
 				if (mitype == MissileID::InfernoControl) {
 					dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 					std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
-					NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
-					NetSendAddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
-					NetSendAddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
+					AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl, &missile);
+					AddMissile(src, dst, infernodir.first, mitype, micaster, id, dam, spllvl, &missile);
+					AddMissile(src, dst, infernodir.second, mitype, micaster, id, dam, spllvl, &missile);
 					mitype = MissileID::ChargedBoltBow;
 				}
 				if (mitype == MissileID::ChargedBoltBow) {
 					dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 					std::pair<Direction, Direction> novadir = NextIMisDir(dir);
-					NetSendAddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
-					NetSendAddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
+					AddMissile(src, dst, novadir.first, mitype, micaster, id, dam, spllvl);
+					AddMissile(src, dst, novadir.second, mitype, micaster, id, dam, spllvl);
 					dir = OppositeIMisDir(dir);
-					NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+					AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 				}
 			}
 			break;
 		case 5:
 			mitype = MissileID::BloodStar;
-			NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			break;
 		case 9:
 			mitype = MissileID::BoneSpirit;
-			NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			break;
 		case 10:
 			mitype = MissileID::Acid;
-			NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			break;
 		case 100:
 		case 103:
@@ -3484,35 +3691,34 @@ void ProcessSpectralArrow(Missile &missile)
 			mitype = MissileID::HolyBoltBow;
 			if (player._pIMisType == 103) {
 				if (mitype == MissileID::HolyBoltBow) {
-					NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+					AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 					mitype = MissileID::ChargedBoltBow;
 				}
 				if (mitype == MissileID::ChargedBoltBow) {
 					dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 					std::pair<Direction, Direction> novadir = NextIMisDir(player._pdir);
-					NetSendAddMissile(player.position.tile, player.position.temp, novadir.first, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-					NetSendAddMissile(player.position.tile, player.position.temp, novadir.second, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
-					dir = OppositeIMisDir(player._pdir);
-					NetSendAddMissile(player.position.tile, player.position.temp, dir, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
+					AddMissile(player.position.tile, player.position.temp, novadir.first, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
+					AddMissile(player.position.tile, player.position.temp, novadir.second, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
+					AddMissile(player.position.tile, player.position.temp, dir, MissileID::ChargedBolt, TARGET_MONSTERS, player.getId(), dam, spllvl);
 				}
 			} else if (player._pIMisType == 104) {
 				if (mitype == MissileID::HolyBoltBow) {
 					AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
-					NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+					AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 					mitype = MissileID::InfernoControl;
 				}
 				if (mitype == MissileID::InfernoControl) {
 					dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 					std::pair<Direction, Direction> infernodir = NextIMisDir(player._pdir);
-					NetSendAddMissile(src, dst, player._pdir, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
-					NetSendAddMissile(src, dst, infernodir.first, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
-					NetSendAddMissile(src, dst, infernodir.second, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
+					AddMissile(src, dst, player._pdir, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
+					AddMissile(src, dst, infernodir.first, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
+					AddMissile(src, dst, infernodir.second, MissileID::InfernoControl, TARGET_MONSTERS, player.getId(), dam, spllvl, &missile);
 				}
 			} else if (player._pIMisType == 100) {
-				NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			} else if (player._pIMisType == 200) {
 				dam += dam;
-				NetSendAddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
+				AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			}
 			break;
 		}
@@ -3866,7 +4072,7 @@ void ProcessAcidSplate(Missile &missile)
 		case MissileSource::Player: {
 			Player &player = Players[missile._misource];
 			int dam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
-			NetSendAddMissile(missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_MONSTERS, player.getId(), dam, missile._mispllvl);
+			AddMissile(missile.position.tile, { 0, 0 }, Direction::South, MissileID::AcidPuddle, TARGET_MONSTERS, player.getId(), dam, missile._mispllvl);
 			break;
 		}
 		case MissileSource::Monster: {

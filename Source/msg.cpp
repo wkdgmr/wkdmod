@@ -1815,25 +1815,6 @@ size_t OnPlayerDamage(const TCmd *pCmd, Player &player)
 	return sizeof(message);
 }
 
-size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
-{
-    const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
-
-    if (gbBufferMsgs != 1) {
-		Player &player = Players[pnum];
-        if (&player != MyPlayer) {
-            if (message.mitype == MissileID::InfernoControl) {
-                AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl, message.parent);
-            } else {
-                AddMissile(message.src, message.dst, message.midir, message.mitype, message.micaster, message.id, message.midam, message.spllvl);
-            }
-        }
-    }
-
-    return sizeof(message);
-}
-
-
 size_t OnOperateObject(const TCmd &pCmd, size_t pnum)
 {
 	const auto &message = reinterpret_cast<const TCmdLoc &>(pCmd);
@@ -3125,26 +3106,6 @@ void NetSendCmdDamage(bool bHiPri, uint8_t bPlr, uint32_t dwDam, DamageType dama
 		NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 }
 
-void NetSendAddMissile(Point src, Point dst, Direction midir, MissileID mitype,
-    mienemy_type micaster, int id, int midam, int spllvl, Missile *parent, std::optional<_sfx_id> lSFX)
-{
-	TCmdAddMissile cmd;
-
-	cmd.bCmd = CMD_ADDMISSILE;
-	cmd.src = src;
-	cmd.dst = dst;
-	cmd.midir = midir;
-	cmd.mitype = mitype;
-	cmd.micaster = micaster;
-	cmd.id = id;
-	cmd.midam = midam;
-	cmd.spllvl = spllvl;
-	cmd.parent = parent;
-	cmd.lSFX = lSFX;
-
-	NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
-}
-
 void NetSendCmdMonDmg(bool bHiPri, uint16_t wMon, uint32_t dwDam)
 {
 	TCmdMonDamage cmd;
@@ -3271,8 +3232,6 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 		return OnPlayerDeath(pCmd, pnum);
 	case CMD_PLRDAMAGE:
 		return OnPlayerDamage(pCmd, player);
-	case CMD_ADDMISSILE:
-		return OnAddMissile(pCmd, pnum);
 	case CMD_OPENDOOR:
 	case CMD_CLOSEDOOR:
 	case CMD_OPERATEOBJ:
