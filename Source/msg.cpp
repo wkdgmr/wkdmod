@@ -1483,16 +1483,13 @@ size_t OnInfernoSpell(const TCmd *pCmd, Player &player)
 	if (!InDungeonBounds(message.src))
 		return sizeof(message);
 
-	if (!InitNewSpell(player, SpellID::Inferno, SpellType::OnStrike, 0))
-		return sizeof(message);
-
 	ClrPlrPath(player);
 	player.destAction = ACTION_ONSTRIKE;
 	player.destParam1 = message.src.x;
 	player.destParam2 = message.src.y;
-	player.destParam3 = message.id;
+	player.destParam3 = message.wParam4;
 	player.destParam5 = message.dst.x;
-	player.destParam4 = static_cast<int>message.dir;
+	player.destParam4 = static_cast<int>(message.dir);
 	player.destParam6 = message.dst.y;
 
 
@@ -2988,7 +2985,7 @@ void NetSendCmdLocParam5(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wPa
 
 void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point src, Point dst, Direction dir, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4)
 {
-	if (WasPlayerCmdAlreadyRequested(bCmd, position, static_cast<uint16_t>(direction), wParam1, wParam2, wParam3, wParam4))
+	if (WasPlayerCmdAlreadyRequested(bCmd, src, static_cast<uint16_t>(dir), wParam1, wParam2, wParam3, wParam4))
 		return;
 
 	TCmdLocParam6 cmd;
