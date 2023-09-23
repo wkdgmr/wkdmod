@@ -35,6 +35,7 @@ SpellCheckResult CheckSpell(const Player &player, SpellID sn, SpellType st, bool
  */
 void EnsureValidReadiedSpell(Player &player);
 void CastSpell(int id, SpellID spl, int sx, int sy, int dx, int dy, int spllvl);
+void CastOnStrike(int id, SpellID spl, int srcX, int srcY, int dstX, int dstY, Direction dir);
 
 /**
  * @param pnum player index

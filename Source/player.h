@@ -134,6 +134,7 @@ enum action_id : int8_t {
 	ACTION_NONE        = -1,
 	ACTION_ATTACK      = 9,
 	ACTION_RATTACK     = 10,
+	ACTION_ONSTRIKE    = 11,
 	ACTION_SPELL       = 12,
 	ACTION_OPERATE     = 13,
 	ACTION_DISARM      = 14,
@@ -286,6 +287,8 @@ struct Player {
 	int destParam2;
 	int destParam3;
 	int destParam4;
+	int destParam5;
+	int destParam6;
 	int _pGold;
 
 	/**

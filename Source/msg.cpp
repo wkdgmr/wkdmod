@@ -1475,24 +1475,26 @@ size_t OnSpellTile(const TCmd *pCmd, Player &player)
 size_t OnInfernoSpell(const TCmd *pCmd, Player &player)
 {
 	const auto &message = *reinterpret_cast<const TCmdLocParam6 *>(pCmd);
-	const Point position { message.x, message.y };
 
 	if (gbBufferMsgs == 1)
 		return sizeof(message);
 	if (!player.isOnActiveLevel())
 		return sizeof(message);
-	if (!InDungeonBounds(position))
+	if (!InDungeonBounds(message.src))
 		return sizeof(message);
 
-	if (!InitNewSpell(player, message.wParam1, message.wParam2, message.wParam4))
+	if (!InitNewSpell(player, SpellID::Inferno, SpellType::OnStrike, 0))
 		return sizeof(message);
 
 	ClrPlrPath(player);
-	player.destAction = ACTION_SPELL;
-	player.destParam1 = position.x;
-	player.destParam2 = position.y;
-	player.destParam3 = SDL_SwapLE16(message.wParam3); // Spell Level
-	player.destParam4 =  static_cast<uint16_t>(message.dir);
+	player.destAction = ACTION_ONSTRIKE;
+	player.destParam1 = message.src.x;
+	player.destParam2 = message.src.y;
+	player.destParam3 = message.id;
+	player.destParam5 = message.dst.x;
+	player.destParam4 = static_cast<int>message.dir;
+	player.destParam6 = message.dst.y;
+
 
 	return sizeof(message);
 }
@@ -2984,7 +2986,7 @@ void NetSendCmdLocParam5(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wPa
 	MyPlayer->UpdatePreviewCelSprite(bCmd, position, wParam1, wParam3);
 }
 
-void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point position, Direction direction, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4)
+void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point src, Point dst, Direction dir, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4)
 {
 	if (WasPlayerCmdAlreadyRequested(bCmd, position, static_cast<uint16_t>(direction), wParam1, wParam2, wParam3, wParam4))
 		return;
@@ -2992,9 +2994,9 @@ void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point position, Direction di
 	TCmdLocParam6 cmd;
 
 	cmd.bCmd = bCmd;
-	cmd.x = position.x;
-	cmd.y = position.y;
-	cmd.dir = direction;
+	cmd.src = src;
+	cmd.dst = dst;
+	cmd.dir = dir;
 	cmd.wParam1 = SDL_SwapLE16(wParam1);
 	cmd.wParam2 = SDL_SwapLE16(wParam2);
 	cmd.wParam3 = SDL_SwapLE16(wParam3);
@@ -3003,8 +3005,6 @@ void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point position, Direction di
 		NetSendHiPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 	else
 		NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
-
-	MyPlayer->UpdatePreviewCelSprite(bCmd, position, wParam1, wParam3);
 }
 
 void NetSendCmdParam1(bool bHiPri, _cmd_id bCmd, uint16_t wParam1)

@@ -88,13 +88,14 @@ enum _cmd_id : uint8_t {
 	// Cast Inferno spell on strike
 	//
 	// body (TCmdLocParam6):
-	//    int8_t x
-	//    int8_t y
-	//	  Direction dir
-	//    int16_t spellID
-	//    int16_t spellType
-	//    int16_t spellLevel
-	//    int16_t spellFrom
+	// _cmd_id bCmd
+	// Point src
+	// Point dst
+	// Direction dir
+	// uint16_t wParam1
+	// uint16_t wParam2
+	// uint16_t wParam3
+	// uint16_t wParam4
 	CMD_SPELLINF,
 	// Operate object at location.
 	//
@@ -501,8 +502,8 @@ struct TCmdLocParam5 {
 
 struct TCmdLocParam6 {
 	_cmd_id bCmd;
-	uint8_t x;
-	uint8_t y;
+	Point src;
+	Point dst;
 	Direction dir;
 	uint16_t wParam1;
 	uint16_t wParam2;

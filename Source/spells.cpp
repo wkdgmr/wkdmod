@@ -227,6 +227,23 @@ void CastSpell(int id, SpellID spl, int sx, int sy, int dx, int dy, int spllvl)
 	}
 }
 
+void CastOnStrike(int id, SpellID spl, int srcX, int srcY, int dstX, int dstY, Direction dir)
+{
+	Player &player = Players[id];
+	Point src(srcX, srcY);
+	Point dst(dstX, dstY);
+
+	bool fizzled = false;
+	const SpellData &spellData = GetSpellData(spl);
+	for (size_t i = 0; i < sizeof(spellData.sMissiles) / sizeof(spellData.sMissiles[0]) && spellData.sMissiles[i] != MissileID::Null; i++) {
+		Missile *missile = AddMissile(src, dst, dir, spellData.sMissiles[i], TARGET_MONSTERS, id, 0, 0);
+		fizzled |= (missile == nullptr);
+	}
+	if (!fizzled) {
+		ConsumeSpell(player, spl);
+	}
+}
+
 void DoResurrect(size_t pnum, Player &target)
 {
 	if (pnum >= Players.size()) {
