@@ -531,37 +531,68 @@ bool WeaponDecay(Player &player, int ii)
 
 bool DamageWeapon(Player &player, unsigned damageFrequency)
 {
-    ItemType weaponTypes[] = { ItemType::Bow, ItemType::Sword, ItemType::Axe, ItemType::Mace, ItemType::Staff };
+	if (&player != MyPlayer) {
+		return false;
+	}
 
-    inv_body_loc bodyLocs[] = { INVLOC_HAND_LEFT, INVLOC_HAND_RIGHT };
+	if (WeaponDecay(player, INVLOC_HAND_LEFT))
+		return true;
+	if (WeaponDecay(player, INVLOC_HAND_RIGHT))
+		return true;
 
-    item_equip_type equipTypes[] = { ILOC_ONEHAND, ILOC_TWOHAND };
+	if (!FlipCoin(damageFrequency)) {
+		return false;
+	}
 
-    bool damagedWeapon = false;
+	if (!player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
 
-    for (const auto& bodyLoc : bodyLocs) {
-        for (const auto& type : weaponTypes) {
-            for (const auto& equipType : equipTypes) {
-                if (player.InvBody[bodyLoc]._itype == type && player.InvBody[bodyLoc]._iLoc == equipType) {
-                    if (player.InvBody[bodyLoc]._iDurability == DUR_INDESTRUCTIBLE) {
-                        return false;
-                    }
-                    
-                    if (player.InvBody[bodyLoc]._iDurability != 0) {
-                        player.InvBody[bodyLoc]._iDurability--;
-                    }
-                    
-                    if (player.InvBody[bodyLoc]._iDurability == 0) {
-                        CalcPlrInv(player, true);
-                    }
+		player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability <= 0) {
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
 
-                    damagedWeapon = true;
-				}
-            }
-        }
-    }
+	if (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON) {
+		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
 
-    return damagedWeapon;
+		player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (player.InvBody[INVLOC_HAND_LEFT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield) {
+		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	if (player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Shield) {
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == DUR_INDESTRUCTIBLE) {
+			return false;
+		}
+
+		player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
+			CalcPlrInv(player, true);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
@@ -1319,8 +1350,7 @@ void DamageParryItem(Player &player)
 			return;
 		}
 
-		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability != 0)
-			player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
+		player.InvBody[INVLOC_HAND_LEFT]._iDurability--;
 		if (player.InvBody[INVLOC_HAND_LEFT]._iDurability == 0) {
 			CalcPlrInv(player, true);
 		}
@@ -1328,8 +1358,7 @@ void DamageParryItem(Player &player)
 
 	if (player.InvBody[INVLOC_HAND_RIGHT]._itype == ItemType::Shield) {
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != DUR_INDESTRUCTIBLE) {
-			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability != 0)
-				player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
+			player.InvBody[INVLOC_HAND_RIGHT]._iDurability--;
 			if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == 0) {
 				CalcPlrInv(player, true);
 			}
@@ -1380,10 +1409,8 @@ void DamageArmor(Player &player)
 		return;
 	}
 
+	pi->_iDurability--;
 	if (pi->_iDurability != 0) {
-		pi->_iDurability--;
-		if (pi->_iDurability == 0)
-			CalcPlrInv(player, true);
 		return;
 	}
 
@@ -3473,7 +3500,7 @@ void ProcessPlayers()
 
 			if (&player == MyPlayer) {
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainLife) && leveltype != DTYPE_TOWN) {
-					ApplyLifeDrain(DamageType::Physical, player, 0, 0, 4);
+					ApplyLifeDrain(DamageType::Physical, player, 0, 0, 2);
 				}
 				if (HasAnyOf(player._pIFlags, ItemSpecialEffect::DrainMana) && leveltype != DTYPE_TOWN) {
 					ApplyManaDrain(DamageType::Physical, player, 0, 0, 0, 4);
