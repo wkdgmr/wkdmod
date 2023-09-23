@@ -2985,7 +2985,7 @@ void NetSendCmdLocParam5(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wPa
 
 void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point src, Point dst, Direction dir, SpellID wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4)
 {
-	if (WasPlayerCmdAlreadyRequested(bCmd, src, static_cast<uint16_t>(dir), wParam1, wParam2, wParam3, wParam4))
+	if (WasPlayerCmdAlreadyRequested(bCmd, src, static_cast<uint16_t>(dir), static_cast<uint16_t>(wParam1), wParam2, wParam3, wParam4))
 		return;
 
 	TCmdLocParam6 cmd;
@@ -2994,7 +2994,7 @@ void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point src, Point dst, Direct
 	cmd.src = src;
 	cmd.dst = dst;
 	cmd.dir = dir;
-	cmd.wParam1 = SDL_SwapLE16(wParam1);
+	cmd.wParam1 = wParam1;
 	cmd.wParam2 = SDL_SwapLE16(wParam2);
 	cmd.wParam3 = SDL_SwapLE16(wParam3);
 	cmd.wParam4 = SDL_SwapLE16(wParam4);

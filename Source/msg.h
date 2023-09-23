@@ -800,7 +800,7 @@ void NetSendCmdLocParam2(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wPa
 void NetSendCmdLocParam3(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3);
 void NetSendCmdLocParam4(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4);
 void NetSendCmdLocParam5(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4, uint16_t wParam5);
-void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point src, Point dst, Direction dir, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4);
+void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point src, Point dst, Direction dir, SpellID wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4);
 void NetSendCmdParam1(bool bHiPri, _cmd_id bCmd, uint16_t wParam1);
 void NetSendCmdParam2(bool bHiPri, _cmd_id bCmd, uint16_t wParam1, uint16_t wParam2);
 void NetSendCmdParam5(bool bHiPri, _cmd_id bCmd, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4, uint16_t wParam5);
