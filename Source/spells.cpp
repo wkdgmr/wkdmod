@@ -235,12 +235,15 @@ void CastOnStrike(int id, SpellID spl, int srcX, int srcY, int dstX, int dstY, D
 
 	bool fizzled = false;
 	const SpellData &spellData = GetSpellData(spl);
-	for (size_t i = 0; i < sizeof(spellData.sMissiles) / sizeof(spellData.sMissiles[0]) && spellData.sMissiles[i] != MissileID::Null; i++) {
-		Missile *missile = AddMissile(src, dst, dir, spellData.sMissiles[i], TARGET_MONSTERS, id, 0, 0);
+	if (spl == SpellID::Inferno) {
+		Missile *missile = AddMissile(src, dst, dir, 
+		MissileID::InfernoControl, TARGET_MONSTERS, id, 0, 0);
 		fizzled |= (missile == nullptr);
-	}
-	if (!fizzled) {
-		ConsumeSpell(player, spl);
+	} else {
+		for (size_t i = 0; i < sizeof(spellData.sMissiles) / sizeof(spellData.sMissiles[0]) && spellData.sMissiles[i] != MissileID::Null; i++) {
+			Missile *missile = AddMissile(src, dst, dir, spellData.sMissiles[i], TARGET_MONSTERS, id, 0, 0);
+			fizzled |= (missile == nullptr);
+		}
 	}
 }
 

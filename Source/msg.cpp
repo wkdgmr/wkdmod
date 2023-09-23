@@ -298,7 +298,7 @@ bool WasPlayerCmdAlreadyRequested(_cmd_id bCmd, Point position = {}, uint16_t wP
 	case _cmd_id::CMD_SATTACKXY:
 	case _cmd_id::CMD_RATTACKXY:
 	case _cmd_id::CMD_SPELLXY:
-	case _cmd_id::CMD_SPELLINF:
+	case _cmd_id::CMD_SPELLSTRIKE:
 	case _cmd_id::CMD_SPELLXYD:
 	case _cmd_id::CMD_WALKXY:
 	case _cmd_id::CMD_TALKXY:
@@ -3280,7 +3280,7 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 		return OnSpellWall(pCmd, player);
 	case CMD_SPELLXY:
 		return OnSpellTile(pCmd, player);
-	case CMD_SPELLINF:
+	case CMD_SPELLSTRIKE:
 		return OnStrikeSpell(pCmd, player);
 	case CMD_OPOBJXY:
 		return OnObjectTileAction(*pCmd, player, ACTION_OPERATE);

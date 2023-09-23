@@ -85,7 +85,7 @@ enum _cmd_id : uint8_t {
 	//    int16_t spellLevel
 	//    int16_t spellFrom
 	CMD_SPELLXY,
-	// Cast Inferno spell on strike
+	// Cast spell on strike
 	//
 	// body (TCmdLocParam6):
 	// _cmd_id bCmd
@@ -96,7 +96,7 @@ enum _cmd_id : uint8_t {
 	// uint16_t wParam2
 	// uint16_t wParam3
 	// uint16_t wParam4
-	CMD_SPELLINF,
+	CMD_SPELLSTRIKE,
 	// Operate object at location.
 	//
 	// body (TCmdLoc):
