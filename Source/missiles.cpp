@@ -2836,15 +2836,21 @@ void AddInferno(Missile &missile, AddMissileParameter &parameter)
 
 	missile._mirange = missile.var2 + 20;
 	missile._mlid = AddLight(missile.position.start, 1);
+
 	if (missile._micaster == TARGET_MONSTERS) {
 		int i = GenerateRnd(Players[missile._misource]._pLevel / 2) + GenerateRnd(missile._mispllvl);
-		// calculate mind (minimum damage)
 		int mind = missile._mispllvl + Players[missile._misource]._pLevel / 2;
-		// calculate maxd (maximum damage)
 		int maxd = (missile._mispllvl * 2) + Players[missile._misource]._pLevel;
 		maxd += maxd / 2 + Players[missile._misource]._pMagic / 2;
-		// determine the actual damage
 		missile._midam = mind + GenerateRnd(maxd - mind + 1);
+	} else if (Players[missile._misource]._pIMisType == 4 || Players[missile._misource]._pIMisType == 7
+	    || Players[missile._misource]._pIMisType == 8 || Players[missile._misource]._pIMisType == 104) {
+		if (Players[missile._misource].queuedSpell.spellType != SpellType::Spell
+		    && Players[missile._misource].queuedSpell.spellType != SpellType::Scroll
+		    && Players[missile._misource].queuedSpell.spellType != SpellType::Charges) {
+			missile._midam = (Players[missile._misource]._pIFMinDam
+			    + GenerateRnd(Players[missile._misource]._pIFMaxDam - Players[missile._misource]._pIFMinDam));
+		}
 	} else {
 		auto &monster = Monsters[missile._misource];
 		missile._midam = monster.minDamage + GenerateRnd(monster.maxDamage - monster.minDamage + 1);
@@ -4370,15 +4376,6 @@ void ProcessInferno(Missile &missile)
 
 void ProcessInfernoControl(Missile &missile)
 {
-	if (Players[missile._misource]._pIMisType == 4 || Players[missile._misource]._pIMisType == 7
-	    || Players[missile._misource]._pIMisType == 8 || Players[missile._misource]._pIMisType == 104) {
-		if (Players[missile._misource].queuedSpell.spellType != SpellType::Spell
-		    && Players[missile._misource].queuedSpell.spellType != SpellType::Scroll
-		    && Players[missile._misource].queuedSpell.spellType != SpellType::Charges) {
-			missile.var3 = (Players[missile._misource]._pIFMinDam
-			    + GenerateRnd(Players[missile._misource]._pIFMaxDam - Players[missile._misource]._pIFMinDam));
-		}
-	}
 	missile._mirange--;
 	missile.position.traveled += missile.position.velocity;
 	UpdateMissilePos(missile);
