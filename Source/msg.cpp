@@ -1472,7 +1472,7 @@ size_t OnSpellTile(const TCmd *pCmd, Player &player)
 	return sizeof(message);
 }
 
-size_t OnInfernoSpell(const TCmd *pCmd, Player &player)
+size_t OnStrikeSpell(const TCmd *pCmd, Player &player)
 {
 	const auto &message = *reinterpret_cast<const TCmdLocParam6 *>(pCmd);
 
@@ -1491,6 +1491,7 @@ size_t OnInfernoSpell(const TCmd *pCmd, Player &player)
 	player.destParam5 = message.dst.x;
 	player.destParam4 = static_cast<int>(message.dir);
 	player.destParam6 = message.dst.y;
+	player.destParam7 = static_cast<int>message.wParam1;
 
 
 	return sizeof(message);
@@ -3281,7 +3282,7 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 	case CMD_SPELLXY:
 		return OnSpellTile(pCmd, player);
 	case CMD_SPELLINF:
-		return OnInfernoSpell(pCmd, player);
+		return OnStrikeSpell(pCmd, player);
 	case CMD_OPOBJXY:
 		return OnObjectTileAction(*pCmd, player, ACTION_OPERATE);
 	case CMD_DISARMXY:

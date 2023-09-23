@@ -289,6 +289,7 @@ struct Player {
 	int destParam4;
 	int destParam5;
 	int destParam6;
+	int destParam7;
 	int _pGold;
 
 	/**
