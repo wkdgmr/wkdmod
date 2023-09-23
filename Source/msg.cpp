@@ -1492,7 +1492,7 @@ size_t OnInfernoSpell(const TCmd *pCmd, Player &player)
 	player.destParam1 = position.x;
 	player.destParam2 = position.y;
 	player.destParam3 = SDL_SwapLE16(message.wParam3); // Spell Level
-	player.destParam4 =  static_cast<uint16_t>message.dir;
+	player.destParam4 =  static_cast<uint16_t>(message.dir);
 
 	return sizeof(message);
 }
