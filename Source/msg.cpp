@@ -1492,7 +1492,7 @@ size_t OnInfernoSpell(const TCmd *pCmd, Player &player)
 	player.destParam1 = position.x;
 	player.destParam2 = position.y;
 	player.destParam3 = SDL_SwapLE16(message.wParam3); // Spell Level
-	player.destParam4 = message.dir;
+	player.destParam4 =  static_cast<uint16_t>message.dir;
 
 	return sizeof(message);
 }
@@ -2986,7 +2986,7 @@ void NetSendCmdLocParam5(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wPa
 
 void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point position, Direction direction, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4)
 {
-	if (WasPlayerCmdAlreadyRequested(bCmd, position, direction, wParam1, wParam2, wParam3, wParam4))
+	if (WasPlayerCmdAlreadyRequested(bCmd, position, static_cast<uint16_t>(direction), wParam1, wParam2, wParam3, wParam4))
 		return;
 
 	TCmdLocParam6 cmd;
