@@ -564,6 +564,29 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
     return damagedWeapon;
 }
 
+std::pair<Direction, Direction> NextIMisDir(Direction dir)
+{
+	switch (dir) {
+	case Direction::North:
+		return { Direction::NorthEast, Direction::NorthWest };
+	case Direction::NorthEast:
+		return { Direction::North, Direction::East };
+	case Direction::East:
+		return { Direction::NorthEast, Direction::SouthEast };
+	case Direction::SouthEast:
+		return { Direction::East, Direction::South };
+	case Direction::South:
+		return { Direction::SouthEast, Direction::SouthWest };
+	case Direction::SouthWest:
+		return { Direction::South, Direction::West };
+	case Direction::West:
+		return { Direction::SouthWest, Direction::NorthWest };
+	case Direction::NorthWest:
+		return { Direction::West, Direction::North };
+	default:
+		throw std::invalid_argument("Invalid direction");
+	}
+}
 
 bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 {
@@ -598,6 +621,8 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	}
 
 	int misswitch = player._pIMisType;
+	Direction dir = player._pdir;
+	Point src = player.position.tile;
 
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) && misswitch == 3) {
 		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
@@ -606,7 +631,11 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 4) {
-		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+		// AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+		std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
+		NetSendCmdLocParam6(true, CMD_SPELLSTRIKE, src, { 0, 0 }, dir, SpellID::Inferno, static_cast<uint8_t>(SpellType::OnStrike), player.GetSpellLevel(SpellID::Inferno), player.getId());
+		NetSendCmdLocParam6(true, CMD_SPELLSTRIKE, src, { 0, 0 }, infernodir.first, SpellID::Inferno, static_cast<uint8_t>(SpellType::OnStrike), player.GetSpellLevel(SpellID::Inferno), player.getId());
+		NetSendCmdLocParam6(true, CMD_SPELLSTRIKE, src, { 0, 0 }, infernodir.second, SpellID::Inferno, static_cast<uint8_t>(SpellType::OnStrike), player.GetSpellLevel(SpellID::Inferno), player.getId());
 	}
 	if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) && misswitch == 8) {
 		AddMissile(player.position.tile, player.position.temp, player._pdir, MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
