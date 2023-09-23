@@ -1775,9 +1775,6 @@ size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 		}
 		AddMissile(message._src, message._dst, message._midir, message._mitype, 
 		message._micaster, message._id, message._midam, message._spllvl);
-		missile._mirange--;
-		if (missile._mirange == 0)
-			missile._miDelFlag = true;
 		// }
 	}
 
