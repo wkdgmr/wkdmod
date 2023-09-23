@@ -1491,8 +1491,7 @@ size_t OnStrikeSpell(const TCmd *pCmd, Player &player)
 	player.destParam5 = message.dst.x;
 	player.destParam4 = static_cast<int>(message.dir);
 	player.destParam6 = message.dst.y;
-	player.destParam7 = static_cast<int>message.wParam1;
-
+	player.destParam7 = static_cast<int>(message.wParam1);
 
 	return sizeof(message);
 }
