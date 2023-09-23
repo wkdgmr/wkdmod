@@ -1760,22 +1760,25 @@ size_t OnAwakeGolem(const TCmd *pCmd, size_t pnum)
 size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 {
 	const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
+	const Point src = message._src;
 	const Point position { message._dst };
+	const Direction midir = message._midir;
+	const MissileID mitype = message._mitype;
+	const mienemy_type micaster = message._micaster;
+	const size_t id = message._id;
+	const int midam = message._midam;
+	const int spllvl = message._spllvl;
 
 	if (gbBufferMsgs == 1) {
 		SendPacket(pnum, &message, sizeof(message));
-	} else if (InDungeonBounds(position)) {
+	} else if (InDungeonBounds(message._dst)) {
 		Player &player = Players[pnum];
-/* 		if (&player != MyPlayer) {
-			// Check if this player already has an active missile effect */
 		for (auto &missile : Missiles) {
 			if (missile._mitype == message._mitype && &Players[missile._misource] == &player) {
 				return sizeof(message);
 			}
 		}
-		AddMissile(message._src, message._dst, message._midir, message._mitype, 
-		message._micaster, message._id, message._midam, message._spllvl);
-		// }
+		AddMissile(src, position, midir, mitype, micaster, id, midam, spllvl);
 	}
 
 	return sizeof(message);
