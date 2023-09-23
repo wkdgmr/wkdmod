@@ -92,7 +92,7 @@ enum _cmd_id : uint8_t {
 	// Point src
 	// Point dst
 	// Direction dir
-	// uint16_t wParam1
+	// SpellID wParam1
 	// uint16_t wParam2
 	// uint16_t wParam3
 	// uint16_t wParam4
@@ -505,7 +505,7 @@ struct TCmdLocParam6 {
 	Point src;
 	Point dst;
 	Direction dir;
-	uint16_t wParam1;
+	SpellID wParam1;
 	uint16_t wParam2;
 	uint16_t wParam3;
 	uint16_t wParam4;
