@@ -3647,6 +3647,8 @@ void CheckPlrSpell(bool isShiftHeld, SpellID spellID, SpellType spellType)
 	case SpellType::Charges:
 		addflag = pcurs == CURSOR_HAND && CanUseStaff(myPlayer, spellID);
 		break;
+	case SpellType::OnStrike:
+		break;
 	case SpellType::Invalid:
 		return;
 	}

@@ -3642,9 +3642,12 @@ void ProcessSpectralArrow(Missile &missile)
 			if (player._pIMisType == 4 && !HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 				dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 				std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
-				NetSendAddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl);
-				NetSendAddMissile(missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl);
-				NetSendAddMissile(missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl);
+				NetSendCmdLocParam6(true, CMD_SPELLINF, src, dir, static_cast<int8_t>(SpellID::Inferno), static_cast<uint8_t>(SpellType::OnStrike), player.GetSpellLevel(SpellID::Inferno), 0);
+				NetSendCmdLocParam6(true, CMD_SPELLINF, src, infernodir.first, static_cast<int8_t>(SpellID::Inferno), static_cast<uint8_t>(SpellType::OnStrike), player.GetSpellLevel(SpellID::Inferno), 0);
+				NetSendCmdLocParam6(true, CMD_SPELLINF, src, infernodir.second, static_cast<int8_t>(SpellID::Inferno), static_cast<uint8_t>(SpellType::OnStrike), player.GetSpellLevel(SpellID::Inferno), 0);
+				// NetSendAddMissile(missile.position.tile, missile.position.start, dir, mitype, micaster, id, dam, spllvl);
+				// NetSendAddMissile(missile.position.tile, missile.position.start, infernodir.first, mitype, micaster, id, dam, spllvl);
+				// NetSendAddMissile(missile.position.tile, missile.position.start, infernodir.second, mitype, micaster, id, dam, spllvl);
 			} else if (player._pIMisType == 8 || player._pIMisType == 4 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 				dam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 				std::pair<Direction, Direction> infernodir = NextIMisDir(dir);
@@ -3700,7 +3703,7 @@ void ProcessSpectralArrow(Missile &missile)
 				if (mitype == MissileID::ChargedBoltBow) {
 					dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
 					std::pair<Direction, Direction> novadir = NextIMisDir(player._pdir);
-					AddMissile(player.position.tile, player.position.temp, novadir.first, mitype, TARGET_MONSTERS, player.getId(), dam, spllvl);
+					AddMissile(player.position.tile, player.position.temp, novadir.first, mitype, TARGET_MONSTERS, id, dam, spllvl);
 					AddMissile(player.position.tile, player.position.temp, novadir.second, mitype, TARGET_MONSTERS, player.getId(), dam, spllvl);
 					AddMissile(player.position.tile, player.position.temp, dir, mitype, TARGET_MONSTERS, player.getId(), dam, spllvl);
 				}

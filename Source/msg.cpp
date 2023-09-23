@@ -73,6 +73,7 @@ string_view CmdIdString(_cmd_id cmd)
 	case CMD_ATTACKXY: return "CMD_ATTACKXY";
 	case CMD_RATTACKXY: return "CMD_RATTACKXY";
 	case CMD_SPELLXY: return "CMD_SPELLXY";
+	case CMD_SPELLINF: return "CMD_SPELLINF";
 	case CMD_OPOBJXY: return "CMD_OPOBJXY";
 	case CMD_DISARMXY: return "CMD_DISARMXY";
 	case CMD_ATTACKID: return "CMD_ATTACKID";
@@ -297,6 +298,7 @@ bool WasPlayerCmdAlreadyRequested(_cmd_id bCmd, Point position = {}, uint16_t wP
 	case _cmd_id::CMD_SATTACKXY:
 	case _cmd_id::CMD_RATTACKXY:
 	case _cmd_id::CMD_SPELLXY:
+	case _cmd_id::CMD_SPELLINF:
 	case _cmd_id::CMD_SPELLXYD:
 	case _cmd_id::CMD_WALKXY:
 	case _cmd_id::CMD_TALKXY:
@@ -1470,6 +1472,31 @@ size_t OnSpellTile(const TCmd *pCmd, Player &player)
 	return sizeof(message);
 }
 
+size_t OnInfernoSpell(const TCmd *pCmd, Player &player)
+{
+	const auto &message = *reinterpret_cast<const TCmdLocParam6 *>(pCmd);
+	const Point position { message.x, message.y };
+
+	if (gbBufferMsgs == 1)
+		return sizeof(message);
+	if (!player.isOnActiveLevel())
+		return sizeof(message);
+	if (!InDungeonBounds(position))
+		return sizeof(message);
+
+	if (!InitNewSpell(player, message.wParam1, message.wParam2, message.wParam4))
+		return sizeof(message);
+
+	ClrPlrPath(player);
+	player.destAction = ACTION_SPELL;
+	player.destParam1 = position.x;
+	player.destParam2 = position.y;
+	player.destParam3 = SDL_SwapLE16(message.wParam3); // Spell Level
+	player.destParam4 = message.dir;
+
+	return sizeof(message);
+}
+
 size_t OnObjectTileAction(const TCmd &cmd, Player &player, action_id action, bool pathToObject = true)
 {
 	const auto &message = reinterpret_cast<const TCmdLoc &>(cmd);
@@ -1760,18 +1787,18 @@ size_t OnAwakeGolem(const TCmd *pCmd, size_t pnum)
 size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 {
 	const auto &message = *reinterpret_cast<const TCmdAddMissile *>(pCmd);
-	const Point src = message._src;
-	const Point position { message._dst };
-	const Direction midir = message._midir;
-	const MissileID mitype = message._mitype;
-	const mienemy_type micaster = message._micaster;
-	const size_t id = message._id;
-	const int midam = message._midam;
-	const int spllvl = message._spllvl;
+	Point src = message._src;
+	Point position = message._dst;
+	Direction midir = message._midir;
+	MissileID mitype = message._mitype;
+	mienemy_type micaster = message._micaster;
+	size_t id = message._id;
+	int midam = message._midam;
+	int spllvl = message._spllvl;
 
 	if (gbBufferMsgs == 1) {
 		SendPacket(pnum, &message, sizeof(message));
-	} else if (InDungeonBounds(message._dst)) {
+	} else if (InDungeonBounds(position)) {
 		Player &player = Players[pnum];
 		for (auto &missile : Missiles) {
 			if (missile._mitype == message._mitype && &Players[missile._misource] == &player) {
@@ -2957,6 +2984,29 @@ void NetSendCmdLocParam5(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wPa
 	MyPlayer->UpdatePreviewCelSprite(bCmd, position, wParam1, wParam3);
 }
 
+void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point position, Direction direction, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4)
+{
+	if (WasPlayerCmdAlreadyRequested(bCmd, position, direction, wParam1, wParam2, wParam3, wParam4))
+		return;
+
+	TCmdLocParam6 cmd;
+
+	cmd.bCmd = bCmd;
+	cmd.x = position.x;
+	cmd.y = position.y;
+	cmd.dir = direction;
+	cmd.wParam1 = SDL_SwapLE16(wParam1);
+	cmd.wParam2 = SDL_SwapLE16(wParam2);
+	cmd.wParam3 = SDL_SwapLE16(wParam3);
+	cmd.wParam4 = SDL_SwapLE16(wParam4);
+	if (bHiPri)
+		NetSendHiPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
+	else
+		NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
+
+	MyPlayer->UpdatePreviewCelSprite(bCmd, position, wParam1, wParam3);
+}
+
 void NetSendCmdParam1(bool bHiPri, _cmd_id bCmd, uint16_t wParam1)
 {
 	if (WasPlayerCmdAlreadyRequested(bCmd, {}, wParam1))
@@ -3233,6 +3283,8 @@ size_t ParseCmd(size_t pnum, const TCmd *pCmd)
 		return OnSpellWall(pCmd, player);
 	case CMD_SPELLXY:
 		return OnSpellTile(pCmd, player);
+	case CMD_SPELLINF:
+		return OnInfernoSpell(pCmd, player);
 	case CMD_OPOBJXY:
 		return OnObjectTileAction(*pCmd, player, ACTION_OPERATE);
 	case CMD_DISARMXY:

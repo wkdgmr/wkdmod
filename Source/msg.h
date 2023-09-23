@@ -85,6 +85,17 @@ enum _cmd_id : uint8_t {
 	//    int16_t spellLevel
 	//    int16_t spellFrom
 	CMD_SPELLXY,
+	// Cast Inferno spell on strike
+	//
+	// body (TCmdLocParam6):
+	//    int8_t x
+	//    int8_t y
+	//	  Direction dir
+	//    int16_t spellID
+	//    int16_t spellType
+	//    int16_t spellLevel
+	//    int16_t spellFrom
+	CMD_SPELLINF,
 	// Operate object at location.
 	//
 	// body (TCmdLoc):
@@ -488,6 +499,17 @@ struct TCmdLocParam5 {
 	uint16_t wParam5;
 };
 
+struct TCmdLocParam6 {
+	_cmd_id bCmd;
+	uint8_t x;
+	uint8_t y;
+	Direction dir;
+	uint16_t wParam1;
+	uint16_t wParam2;
+	uint16_t wParam3;
+	uint16_t wParam4;
+};
+
 struct TCmdParam1 {
 	_cmd_id bCmd;
 	uint16_t wParam1;
@@ -777,6 +799,7 @@ void NetSendCmdLocParam2(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wPa
 void NetSendCmdLocParam3(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3);
 void NetSendCmdLocParam4(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4);
 void NetSendCmdLocParam5(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4, uint16_t wParam5);
+void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point position, Direction direction, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4);
 void NetSendCmdParam1(bool bHiPri, _cmd_id bCmd, uint16_t wParam1);
 void NetSendCmdParam2(bool bHiPri, _cmd_id bCmd, uint16_t wParam1, uint16_t wParam2);
 void NetSendCmdParam5(bool bHiPri, _cmd_id bCmd, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4, uint16_t wParam5);
