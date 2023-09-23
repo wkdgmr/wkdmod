@@ -288,8 +288,8 @@ struct Player {
 	int destParam3;
 	int destParam4;
 	int destParam5;
-	int destParam6;
-	int destParam7;
+	SpellID destParam6;
+	Direction destParam7;
 	int _pGold;
 
 	/**

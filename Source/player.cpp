@@ -1666,7 +1666,7 @@ void CheckNewPath(Player &player, bool pmWillBeCalled)
 			StartRangeAttack(player, d, target->position.future.x, target->position.future.y, pmWillBeCalled);
 			break;
 		case ACTION_ONSTRIKE:
-			CastOnStrike(player.destParam3, static_cast<devilution::SpellID>(player.destParam7), player.destParam1, player.destParam2, player.destParam5, player.destParam6, static_cast<devilution::Direction>(player.destParam4));
+			CastOnStrike(player.destParam5, player.destParam6, player.destParam1, player.destParam2, player.destParam3, player.destParam4, player.destParam7);
 			break;
 		case ACTION_SPELL:
 			d = GetDirection(player.position.tile, { player.destParam1, player.destParam2 });

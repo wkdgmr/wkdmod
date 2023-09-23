@@ -1487,11 +1487,11 @@ size_t OnStrikeSpell(const TCmd *pCmd, Player &player)
 	player.destAction = ACTION_ONSTRIKE;
 	player.destParam1 = message.src.x;
 	player.destParam2 = message.src.y;
-	player.destParam3 = message.wParam4;
-	player.destParam5 = message.dst.x;
-	player.destParam4 = static_cast<int>(message.dir);
-	player.destParam6 = message.dst.y;
-	player.destParam7 = static_cast<int>(message.wParam1);
+	player.destParam3 = message.dst.x;
+	player.destParam4 = message.dst.y;
+	player.destParam5 = message.wParam4;
+	player.destParam6 = message.wParam1;
+	player.destParam7 = message.dir;
 
 	return sizeof(message);
 }
@@ -2983,7 +2983,7 @@ void NetSendCmdLocParam5(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wPa
 	MyPlayer->UpdatePreviewCelSprite(bCmd, position, wParam1, wParam3);
 }
 
-void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point src, Point dst, Direction dir, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4)
+void NetSendCmdLocParam6(bool bHiPri, _cmd_id bCmd, Point src, Point dst, Direction dir, SpellID wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4)
 {
 	if (WasPlayerCmdAlreadyRequested(bCmd, src, static_cast<uint16_t>(dir), wParam1, wParam2, wParam3, wParam4))
 		return;
