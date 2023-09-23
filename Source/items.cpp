@@ -2388,6 +2388,7 @@ std::string GetTranslatedItemNameMagical(const Item &item, bool hellfireItem, bo
 			affixItemType = AffixItemType::Staff;
 		else if (FlipCoin(4)) {
 			affixItemType = AffixItemType::Staff;
+			minlvl = maxlvl / 2;
 		} else {
 			DiscardRandomValues(2); // Spell and Charges
 
