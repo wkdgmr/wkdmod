@@ -1772,12 +1772,12 @@ size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 	if (gbBufferMsgs == 1) {
 		SendPacket(pnum, &message, sizeof(message));
 	} else if (InDungeonBounds(message._dst)) {
-		Player &player = Players[pnum];
+/* 		Player &player = Players[pnum];
 		for (auto &missile : Missiles) {
 			if (missile._mitype == message._mitype && &Players[missile._misource] == &player) {
 				return sizeof(message);
 			}
-		}
+		} */
 		AddMissile(src, position, midir, mitype, micaster, id, midam, spllvl);
 	}
 
