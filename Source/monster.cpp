@@ -1302,9 +1302,9 @@ void MonsterAttackPlayer(Monster &monster, Player &player, int hit, int minDam, 
 
 		// Check if the roll is within the vitality drain chance.
 		if (roll < vitalityDrainChancePercent) { // Since roll is from 0 to 99, use < not <=
-			// If player's vitality is more than 0, decrease it by 1.
-			if (player._pVitality > 9) {
-				player._pVitality -= 1;
+			// If player's vitality is more than 9, decrease it by 1.
+			if (player._pBaseVit > 9) {
+				player._pBaseVit -= 1;
 			}
 		}
 	}
