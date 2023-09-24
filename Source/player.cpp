@@ -836,106 +836,6 @@ int CheckReflect(Player &attacker, Player &target, int dam)
 	return mdam;
 }
 
-int HolyFireChance(Player &target)
-{
-	if (&target == MyPlayer) {
-		if (target._pLevel < 10) {
-			return 10; // 10% chance at level 1-9.
-		} else if (target._pLevel < 20) {
-			return 15; // 15% chance at level 10-19.
-		} else if (target._pLevel < 30) {
-			return 20; // 20% chance at level 20-29.
-		} else if (target._pLevel < 40) {
-			return 25; // 25% chance at level 30-39.
-		} else {
-			return 30; // 30% chance at level 40 and above.
-		}
-	}
-}
-
-void HolyFireDamage(Player &attacker, Player &target)
-{
-	if (&target == MyPlayer) {
-		if (attacker.position.tile.WalkingDistance(target.position.tile) < 2
-		    && !attacker.friendlyMode) {
-			if (HasAnyOf(target._pIFlags, ItemSpecialEffect::Thorns)) {
-				int eMind;
-				int eMaxd;
-				eMind = target._pIFMinDam;
-				eMaxd = target._pIFMaxDam;
-				int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-				mdam -= mdam * (attacker._pFireResist / 100);
-				mdam = mdam << 6;
-				NetSendCmdDamage(true, attacker.getId(), mdam, DamageType::Fire);
-				NetSendAddMissile(attacker.position.tile, { 0, 0 }, Direction::South, MissileID::FireWall, TARGET_MONSTERS, target.getId(), 0, 0);
-			}
-		}
-	}
-}
-
-void CastHolyShock(Player &attacker, Player &target)
-{
-	if (&target == MyPlayer) {
-		SpellID spellId = SpellID::Flash;
-		if (attacker.position.tile.WalkingDistance(target.position.tile) < 2
-		    && !attacker.friendlyMode) {
-			if (target._pRSpell != spellId || target._pRSplType != SpellType::Spell) {
-				return;
-			}
-			if (target._pSplLvl[static_cast<int>(spellId)] <= 0) {
-				return;
-			}
-			int spellLevel = target._pSplLvl[static_cast<int>(spellId)];
-			PlaySFX(IS_CAST4);
-			int base = (target._pLevel * 4) + (spellLevel * 10);
-			double lightningPct = std::min(0.1 * (1 + (spellLevel - 1) / 2), 1.0);
-			int lightningDamage = target._pILMinDam + GenerateRnd(target._pILMaxDam - target._pILMinDam + 1);
-			lightningDamage = static_cast<int>(lightningPct * lightningDamage);
-			int mdam = ((base / 2) + GenerateRnd((base / 2) + 1)) + lightningDamage;
-			int bsmdam = mdam;
-			bsmdam -= bsmdam * (attacker._pLghtResist / 100);
-			bsmdam = bsmdam << 6;
-			NetSendCmdDamage(true, attacker.getId(), bsmdam, DamageType::Lightning);
-			NetSendAddMissile(target.position.tile, target.position.temp, target._pdir, MissileID::FlashBottom, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
-			NetSendAddMissile(target.position.tile, target.position.temp, target._pdir, MissileID::FlashTop, TARGET_MONSTERS, target.getId(), mdam, spellLevel);
-		}
-	}
-}
-
-void ExplodingBoneArmor(Player &attacker, Player &target)
-{
-	if (&target == MyPlayer) {
-		if (attacker.position.tile.WalkingDistance(target.position.tile) < 2
-		    && !attacker.friendlyMode) {
-			int eMind = target._pIMMinDam;
-			int eMaxd = target._pIMMaxDam;
-			int mdam = GenerateRnd(eMaxd - eMind + 1) + eMind;
-			if (!target.InvBody[INVLOC_CHEST].isEmpty()) {
-				auto &BoneArmor = target.InvBody[INVLOC_CHEST];
-				if (HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
-				    && HasAnyOf(target._pIFlags, ItemSpecialEffect::Empower)) {
-					int arrows = 6;
-					int directionIndex = static_cast<int>(target._pdir);
-					std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
-					for (int arrow = 0; arrow < arrows; arrow++) {
-						int arrowDirectionIndex;
-						if (arrows == 6) {
-							arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
-						}
-						if (arrowDirectionIndex < 0) {
-							arrowDirectionIndex += 8;
-						}
-						Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
-						Displacement displacement(arrowDirection);
-						NetSendAddMissile(target.position.tile, target.position.old + displacement,
-						    arrowDirection, MissileID::BoneSpirit, TARGET_MONSTERS, target.getId(), mdam, 0);
-					}
-				}
-			}
-		}
-	}
-}
-
 bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 {
 	if (target._pInvincible) {
@@ -1181,11 +1081,9 @@ void WeaponElementalDamageSplash(const Player &player, const Point &position) {
     size_t playerId = player.getId();
     if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
         AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-    }
-    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+    } else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
         AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-    }
-    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+    } else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
         AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
     }
 }
@@ -1217,6 +1115,26 @@ bool DoAttack(Player &player)
 		Point position = player.position.tile + player._pdir;
 		Monster *monster = FindMonsterAtPosition(position);
 
+		if (&player == MyPlayer && PlayerAtPosition(position) != nullptr) {
+			// Check for holy fire effect
+			if ((GenerateRnd(100) + 1) <= HolyFireChancePlr(player, *PlayerAtPosition(position))) {
+				HolyFireDamagePlr(player, *PlayerAtPosition(position));
+				CastHolyShockPlr(player, *PlayerAtPosition(position));
+				ExplodingBoneArmorPlr(player, *PlayerAtPosition(position));
+			}
+		} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
+			Point position = player.position.tile;
+			auto targetPlayer = FindClosestPlayer(position, 1);
+			if (targetPlayer != nullptr) {
+				// Check for holy fire effect
+				if ((GenerateRnd(100) + 1) <= HolyFireChancePlr(player, *PlayerAtPosition(position))) {
+					HolyFireDamagePlr(player, *PlayerAtPosition(position));
+					CastHolyShockPlr(player, *PlayerAtPosition(position));
+					ExplodingBoneArmorPlr(player, *PlayerAtPosition(position));
+				}
+			}
+		}
+
 		if (monster != nullptr) {
 			position = monster->position.tile;
 			if (CanTalkToMonst(*monster)) {
@@ -1227,11 +1145,9 @@ bool DoAttack(Player &player)
 
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
 			AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
 			AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
 			AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 
@@ -1245,28 +1161,7 @@ bool DoAttack(Player &player)
 				didhit = PlrHitObj(player, *object);
 			}
 		}
-		if (&player == MyPlayer && PlayerAtPosition(position) != nullptr) {
-			// Check for holy fire effect
-			if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
-				HolyFireDamage(player, *PlayerAtPosition(position));
-				CastHolyShock(player, *PlayerAtPosition(position));
-				ExplodingBoneArmor(player, *PlayerAtPosition(position));
-			}
-		} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
-			Point position = player.position.tile;
-			auto targetPlayer = FindClosestPlayer(position, 1);
-			if (targetPlayer != nullptr) {
-				// Check for holy fire effect
-				if ((GenerateRnd(100) + 1) <= HolyFireChance(player))
-					;
-				{
-					HolyFireDamage(player, *targetPlayer);
-					CastHolyShock(player, *targetPlayer);
-					ExplodingBoneArmor(player, *targetPlayer);
-				}
-			}
-		}
-
+		
     	if (player.CanCleave()) { // Check whether the player can cleave or not
     	    Point positions[] = {
     	        player.position.tile + Right(player._pdir),
@@ -1310,22 +1205,20 @@ bool DoRangeAttack(Player &player)
 	Point position = player.position.tile + player._pdir;
 	if (&player == MyPlayer && PlayerAtPosition(position) != nullptr) {
 		// Check for holy fire effect
-		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
-			HolyFireDamage(player, *PlayerAtPosition(position));
-			CastHolyShock(player, *PlayerAtPosition(position));
-			ExplodingBoneArmor(player, *PlayerAtPosition(position));
+		if ((GenerateRnd(100) + 1) <= HolyFireChancePlr(player, *PlayerAtPosition(position))) {
+			HolyFireDamagePlr(player, *PlayerAtPosition(position));
+			CastHolyShockPlr(player, *PlayerAtPosition(position));
+			ExplodingBoneArmorPlr(player, *PlayerAtPosition(position));
 		}
 	} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
 		Point position = player.position.tile;
 		auto targetPlayer = FindClosestPlayer(position, 1);
 		if (targetPlayer != nullptr) {
 			// Check for holy fire effect
-			if ((GenerateRnd(100) + 1) <= HolyFireChance(player))
-				;
-			{
-				HolyFireDamage(player, *targetPlayer);
-				CastHolyShock(player, *targetPlayer);
-				ExplodingBoneArmor(player, *targetPlayer);
+			if ((GenerateRnd(100) + 1) <= HolyFireChancePlr(player, *PlayerAtPosition(position))) {
+				HolyFireDamagePlr(player, *PlayerAtPosition(position));
+				CastHolyShockPlr(player, *PlayerAtPosition(position));
+				ExplodingBoneArmorPlr(player, *PlayerAtPosition(position));
 			}
 		}
 	}
@@ -1354,11 +1247,11 @@ bool DoRangeAttack(Player &player)
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows) && misswitch != 2) {
 			mistype = MissileID::LightningArrow;
 		}
-		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 1) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireArrows) && misswitch == 1) {
 			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam + 1);
 			mistype = MissileID::SpectralArrow;
 		}
-		if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows | ItemSpecialEffect::LightningArrows) && misswitch == 2) {
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows) && misswitch == 2) {
 			dmg = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1));
 			mistype = MissileID::SpectralArrow;
 		}
@@ -1517,22 +1410,20 @@ bool DoSpell(Player &player)
 	Point position = player.position.tile + player._pdir;
 	if (&player == MyPlayer && PlayerAtPosition(position) != nullptr) {
 		// Check for holy fire effect
-		if ((GenerateRnd(100) + 1) <= HolyFireChance(player)) {
-			HolyFireDamage(player, *PlayerAtPosition(position));
-			CastHolyShock(player, *PlayerAtPosition(position));
-			ExplodingBoneArmor(player, *PlayerAtPosition(position));
+		if ((GenerateRnd(100) + 1) <= HolyFireChancePlr(player, *PlayerAtPosition(position))) {
+			HolyFireDamagePlr(player, *PlayerAtPosition(position));
+			CastHolyShockPlr(player, *PlayerAtPosition(position));
+			ExplodingBoneArmorPlr(player, *PlayerAtPosition(position));
 		}
 	} else if (&player == MyPlayer && PlayerAtPosition(position) == nullptr) {
 		Point position = player.position.tile;
 		auto targetPlayer = FindClosestPlayer(position, 1);
 		if (targetPlayer != nullptr) {
 			// Check for holy fire effect
-			if ((GenerateRnd(100) + 1) <= HolyFireChance(player))
-				;
-			{
-				HolyFireDamage(player, *targetPlayer);
-				CastHolyShock(player, *targetPlayer);
-				ExplodingBoneArmor(player, *targetPlayer);
+			if ((GenerateRnd(100) + 1) <= HolyFireChancePlr(player, *PlayerAtPosition(position))) {
+				HolyFireDamagePlr(player, *PlayerAtPosition(position));
+				CastHolyShockPlr(player, *PlayerAtPosition(position));
+				ExplodingBoneArmorPlr(player, *PlayerAtPosition(position));
 			}
 		}
 	}
