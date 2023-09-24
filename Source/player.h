@@ -402,24 +402,24 @@ struct Player {
 	        switch (_pClass) {
 	            case HeroClass::Warrior:
 	                return isEquipped(ItemType::Sword, true) || 
-	                       (isEquipped(ItemType::Mace) && isEquipped(ItemType::Shield)) || 
-	                       (isEquipped(ItemType::Sword) && isEquipped(ItemType::Shield));
+	                       ((isEquipped(ItemType::Mace) && isEquipped(ItemType::Shield))) || 
+	                       ((isEquipped(ItemType::Sword) && isEquipped(ItemType::Shield)));
 	
 	            case HeroClass::Monk:
 	                return isEquipped(ItemType::Sword, true) || isEquipped(ItemType::Staff, true);
 	
 	            case HeroClass::Bard:
-	                return (isEquipped(ItemType::Sword) && isEquipped(ItemType::Sword)) || 
-	                       (isEquipped(ItemType::Mace) && isEquipped(ItemType::Mace)) || 
-	                       (isEquipped(ItemType::Mace) && isEquipped(ItemType::Sword)) || 
-	                       (isEquipped(ItemType::Sword) && isEquipped(ItemType::Mace));
+	                return ((isEquipped(ItemType::Sword) && isEquipped(ItemType::Sword))) || 
+	                       ((isEquipped(ItemType::Mace) && isEquipped(ItemType::Mace))) || 
+	                       ((isEquipped(ItemType::Mace) && isEquipped(ItemType::Sword))) || 
+	                       ((isEquipped(ItemType::Sword) && isEquipped(ItemType::Mace)));
 	
 	            case HeroClass::Sorcerer:
 	                return isEquipped(ItemType::Staff, true);
 	
 	            case HeroClass::Barbarian:
 	                return (isEquipped(ItemType::Staff, true) || isEquipped(ItemType::Axe, true) 
-					|| isEquipped(ItemType::Sword, true) && !isEquipped(ItemType::Shield) || isEquipped(ItemType::Mace, true)) && !isEquipped(ItemType::Shield);
+					|| (isEquipped(ItemType::Sword, true) && !isEquipped(ItemType::Shield)) || (isEquipped(ItemType::Mace, true)) && !isEquipped(ItemType::Shield));
 	            default:
 	                return false;
 	        }
@@ -437,8 +437,8 @@ struct Player {
 		case ItemType::Mace:
 		case ItemType::Shield:
 		case ItemType::Staff:
-			return (InvBody[INVLOC_HAND_LEFT]._itype == itemType && (!isTwoHanded || InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND))
-			    || (InvBody[INVLOC_HAND_RIGHT]._itype == itemType && (!isTwoHanded || InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND));
+			return ((InvBody[INVLOC_HAND_LEFT]._itype == itemType && (!isTwoHanded || InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND)))
+			    || ((InvBody[INVLOC_HAND_RIGHT]._itype == itemType && (!isTwoHanded || InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND)));
 		case ItemType::LightArmor:
 		case ItemType::MediumArmor:
 		case ItemType::HeavyArmor:

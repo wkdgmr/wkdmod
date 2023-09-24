@@ -1996,7 +1996,9 @@ int HolyFireChancePlr(Player &attacker, Player &target)
 			return 30; // 30% chance at level 40 and above.
 		}
 	}
+	return 0;
 }
+
 
 void HolyFireDamagePlr(Player &attacker, Player &target)
 {
@@ -2097,6 +2099,7 @@ int HolyFireChance(Player &player)
 			return 30; // 30% chance at level 40 and above.
 		}
 	}
+	return 0;
 }
 
 void HolyFireDamage(Player &player, Monster &monster)
@@ -3589,7 +3592,7 @@ std::pair<Direction, Direction> NextIMisDir(Direction dir)
 	case Direction::NorthWest:
 		return { Direction::West, Direction::North };
 	default:
-		throw std::invalid_argument("Invalid direction");
+		return { Direction::SouthEast, Direction::SouthWest };
 	}
 }
 
