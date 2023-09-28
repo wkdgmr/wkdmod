@@ -121,7 +121,7 @@ byte *CopyBufferedPackets(byte *destination, TBuffer *source, size_t *size)
 			srcPtr += chunkSize;
 			*size -= chunkSize;
 		}
-		memcpy(source->bData, srcPtr, (source->bData - srcPtr) + source->dwNextWriteOffset + 1);
+		memmove(source->bData, srcPtr, (source->bData - srcPtr) + source->dwNextWriteOffset + 1);
 		source->dwNextWriteOffset += static_cast<uint32_t>(source->bData - srcPtr);
 		return destination;
 	}
