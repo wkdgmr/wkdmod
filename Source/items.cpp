@@ -158,7 +158,7 @@ bool itemhold[3][3];
 /** Specifies the number of active item get records. */
 int gnNumGetRecords;
 
-int OilLevels[] = { 1, 10, 1, 10, 10, 10, 40, 1, 5, 10, 20, 50 };
+int OilLevels[] = { 1, 10, 1, 10, 10, 10, 20, 1, 5, 10, 20, 50 };
 int OilValues[] = { 500, 2500, 500, 2500, 2500, 2500, 15000, 500, 1500, 2500, 5000, 0 };
 item_misc_id OilMagic[] = {
 	IMISC_OILACC,
