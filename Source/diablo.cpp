@@ -1843,6 +1843,7 @@ void InitKeymapActions()
 	    "Programming is like magic.",
 	    'X',
 	    [] {
+			OperateGlowingShrine();
 		    DebugToggle = !DebugToggle;
 	    });
 #endif
