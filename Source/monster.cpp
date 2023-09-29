@@ -4783,8 +4783,6 @@ bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
 	    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid)) {
 		return true;
-	} else {
-		return false;
 	}
 }
 
@@ -4797,8 +4795,6 @@ bool Monster::isResistant(MissileID missileType, DamageType missileElement) cons
 		|| ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
 	    || ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Acid)) {
 		return true;
-	} else {
-		return false;
 	}
 }
 
