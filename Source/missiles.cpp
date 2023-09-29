@@ -222,13 +222,28 @@ int ProjectileTrapDamage(Missile &missile)
 bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, MissileID t, DamageType damageType, bool shift)
 {
 	auto &monster = Monsters[monsterId];
+	const Player &player = Players[pnum];
 
-	if (!monster.isPossibleToHit() || monster.isImmune(t, damageType))
-		return false;
-
+	if (!monster.isPossibleToHit() || monster.isImmune(t, damageType)) {
+	    if (!((t == MissileID::FireArrow)
+	        || (t == MissileID::WeaponExplosion)
+	        || (t == MissileID::FireballBow && player._pIMisType == 1)
+	        || (t == MissileID::LightningArrow)
+	        || (t == MissileID::LightningBow)
+	        || (t == MissileID::ChargedBoltBow)
+	        || (t == MissileID::Firebolt)
+	        || (t == MissileID::Inferno)
+	        || (t == MissileID::ChargedBolt)
+	        || (t == MissileID::FlashBottom)
+	        || (t == MissileID::FlashTop)
+	        || (t == MissileID::Acid && player._pIMisType == 10)
+	        || (t == MissileID::Lightning && player._pIMisType == 2))) {
+	            return false;
+	    }
+	}
+	
 	int hit = GenerateRnd(100);
 	int hper = 0;
-	const Player &player = Players[pnum];
 	const MissileData &missileData = GetMissileData(t);
 	if (missileData.isArrow()) {
 		hper = player.GetRangedPiercingToHit();

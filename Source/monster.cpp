@@ -4779,65 +4779,26 @@ bool Monster::isWalking() const
 
 bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
 {
-	const Player &myPlayer = *MyPlayer;
-	if ((missileType == MissileID::FireArrow)
-	    || (missileType == MissileID::WeaponExplosion)
-	    || (missileType == MissileID::FireballBow && myPlayer._pIMisType == 1)
-	    || (missileType == MissileID::LightningArrow)
-	    || (missileType == MissileID::LightningBow)
-	    || (missileType == MissileID::ChargedBoltBow)
-	    || (missileType == MissileID::Firebolt)
-	    || (missileType == MissileID::Inferno)
-	    || (missileType == MissileID::ChargedBolt)
-	    || (missileType == MissileID::FlashBottom)
-	    || (missileType == MissileID::FlashTop)
-	    || (missileType == MissileID::Acid && myPlayer._pIMisType == 10)
-	    || (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
-		return false;
+	if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
+	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+	    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid)) {
+		return true;
 	} else {
-		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-		    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-		    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid)) {
-			return true;
-		} else {
-			return false;
-		}
+		return false;
 	}
 }
 
 bool Monster::isResistant(MissileID missileType, DamageType missileElement) const
 {
-	const Player &myPlayer = *MyPlayer;
-	if ((missileType == MissileID::FireArrow)
-	    || (missileType == MissileID::WeaponExplosion)
-	    || (missileType == MissileID::FireballBow && myPlayer._pIMisType == 1)
-	    || (missileType == MissileID::LightningArrow)
-	    || (missileType == MissileID::LightningBow)
-	    || (missileType == MissileID::ChargedBoltBow)
-	    || (missileType == MissileID::Firebolt)
-	    || (missileType == MissileID::Inferno)
-	    || (missileType == MissileID::ChargedBolt)
-	    || (missileType == MissileID::FlashBottom)
-	    || (missileType == MissileID::FlashTop)
-	    || (missileType == MissileID::Acid && myPlayer._pIMisType == 10)
-	    || (missileType == MissileID::Lightning && myPlayer._pIMisType == 2)) {
-		if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
-		    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-		    || ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-		    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
-		    || ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Acid)) {
-			return true;
-		} else {
-			return false;
-		}
+	if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
+	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+	    || ((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
+	    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
+		|| ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
+	    || ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Acid)) {
+		return true;
 	} else {
-		if (((resistance & RESIST_FIRE) != 0 && missileElement == DamageType::Fire)
-		    || ((resistance & RESIST_MAGIC) != 0 && missileElement == DamageType::Magic)
-		    || ((resistance & RESIST_LIGHTNING) != 0 && missileElement == DamageType::Lightning)) {
-			return true;
-		} else {
-			return false;
-		}
+		return false;
 	}
 }
 
