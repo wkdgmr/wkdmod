@@ -1196,12 +1196,14 @@ bool DoRangeAttack(Player &player)
 		    if (player._pIMisType == 1) {
 				mistype = MissileID::SpectralArrow;
 		    } else {
+				dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 		        mistype = MissileID::FireArrow;
 		    }
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows)) {
 		    if (player._pIMisType == 2) {
 		        mistype = MissileID::SpectralArrow;
 		    } else {
+				dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 		        mistype = MissileID::LightningArrow;
 		    }
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {

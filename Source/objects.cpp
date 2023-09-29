@@ -3015,9 +3015,11 @@ void OperateShrineGlowing(Player &player)
         case HeroClass::Rogue:
 			ModifyPlrDex(player, statIncrease);
 			ModifyPlrVit(player, statIncrease);
+			break;
         case HeroClass::Monk:
 			ModifyPlrStr(player, statIncrease);
 			ModifyPlrDex(player, statIncrease);
+			break;
 		case HeroClass::Sorcerer:
         case HeroClass::Bard:
             ModifyPlrDex(player, statIncrease);
@@ -3029,9 +3031,9 @@ void OperateShrineGlowing(Player &player)
     }
 
     if (player._pLevel < 50) {
-        uint32_t xpToNextLevel = ExpLvlsTbl[player._pLevel] - player._pExperience;
-        uint32_t bonusXp = static_cast<uint32_t>(xpToNextLevel * 0.25);
-        AddPlrExperience(player, player._pLevel, bonusXp);
+        uint32_t xpToNextLevel = player._pNextExper - ExpLvlsTbl[player._pLevel - 1];
+        uint32_t bonusXP = static_cast<uint32_t>(xpToNextLevel * 0.25);
+        AddPlrExperience(player, player._pLevel, bonusXP);
     }
 
     CheckStats(player);
@@ -3065,9 +3067,9 @@ void OperateShrineSparkling(Player &player, Point spawnPosition)
 		return;
 
     if (player._pLevel < 50) {
-        uint32_t xpToNextLevel = ExpLvlsTbl[player._pLevel] - player._pExperience;
-        uint32_t bonusXp = static_cast<uint32_t>(xpToNextLevel * 0.25);
-        AddPlrExperience(player, player._pLevel, bonusXp);
+        uint32_t xpToNextLevel = player._pNextExper - ExpLvlsTbl[player._pLevel - 1];
+        uint32_t bonusXP = static_cast<uint32_t>(xpToNextLevel * 0.25);
+        AddPlrExperience(player, player._pLevel, bonusXP);
     }
 	
 	AddPlrExperience(player, player._pLevel, 1000 * currlevel);
