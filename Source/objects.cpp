@@ -5139,4 +5139,9 @@ void SyncNakrulRoom()
 	dPiece[UberRow][UberCol + 1] = 298;
 }
 
+void DebugOperateShrine(Player &player)
+{
+    OperateShrineGlowing(player);
+}
+
 } // namespace devilution

@@ -337,5 +337,6 @@ void SyncObjectAnim(Object &object);
  */
 void GetObjectStr(const Object &object);
 void SyncNakrulRoom();
+void DebugOperateShrine(Player &player);
 
 } // namespace devilution
