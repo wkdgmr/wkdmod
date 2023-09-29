@@ -1763,8 +1763,8 @@ size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 	const Point src = message._src;
 	const Point position { message._dst };
 	const Direction midir = message._midir;
-	const MissileID mitype = message._mitype;
-	const mienemy_type micaster = message._micaster;
+	const MissileID mitype = static_cast<MissileID>(message._mitype);
+	const mienemy_type micaster =  static_cast<mienemy_type>(message._micaster);
 	const size_t id = message._id;
 	const int midam = message._midam;
 	const int spllvl = message._spllvl;
@@ -2817,8 +2817,8 @@ void NetSendCmdGolem(uint8_t mx, uint8_t my, Direction dir, uint8_t menemy, int 
 	NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 }
 
-void NetSendAddMissile(Point src, Point dst, Direction midir, MissileID mitype,
-	mienemy_type micaster, int id, int midam, int spllvl)
+void NetSendAddMissile(Point src, Point dst, Direction midir, uint16_t mitype,
+	uint16_t micaster, int id, int midam, int spllvl)
 {
 	TCmdAddMissile cmd;
 
