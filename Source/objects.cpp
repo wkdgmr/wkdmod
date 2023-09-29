@@ -35,6 +35,7 @@
 #include "missiles.h"
 #include "monster.h"
 #include "options.h"
+#include "playerdat.hpp"
 #include "qol/stash.h"
 #include "stores.h"
 #include "towners.h"
@@ -3003,20 +3004,40 @@ void OperateShrineOily(Player &player, Point spawnPosition)
 
 void OperateShrineGlowing(Player &player)
 {
-	// Add 0-5 points to Magic or Vit (0.1% of the players XP) for all players
-	if (HasNoneOf(player._pIFlags, ItemSpecialEffect::NoMana)) {
-		ModifyPlrMag(player, static_cast<int>(std::min<uint32_t>(player._pExperience / 1000, 5)));
-	} else {
-		ModifyPlrVit(player, static_cast<int>(std::min<uint32_t>(player._pExperience / 1000, 5)));
-	}
+    int statIncrease = std::max(1, static_cast<int>(std::min<uint32_t>(player._pExperience / 1000, 5)));
 
-	// Increase all players experience by 25%
-	player._pExperience = static_cast<uint32_t>(player._pExperience * 1.25);
+    switch(player._pClass) {
+        case HeroClass::Warrior:
+		case HeroClass::Barbarian:
+            ModifyPlrStr(player, statIncrease);
+			ModifyPlrVit(player, statIncrease);
+            break;
+        case HeroClass::Rogue:
+			ModifyPlrDex(player, statIncrease);
+			ModifyPlrVit(player, statIncrease);
+        case HeroClass::Monk:
+			ModifyPlrStr(player, statIncrease);
+			ModifyPlrDex(player, statIncrease);
+		case HeroClass::Sorcerer:
+        case HeroClass::Bard:
+            ModifyPlrDex(player, statIncrease);
+			ModifyPlrMag(player, statIncrease);
+            break;
+        default:
+            ModifyPlrMag(player, statIncrease);
+            break;
+    }
 
-	CheckStats(player);
-	RedrawEverything();
+    if (player._pLevel < 50) {
+        uint32_t xpToNextLevel = ExpLvlsTbl[player._pLevel] - player._pExperience;
+        uint32_t bonusXp = static_cast<uint32_t>(xpToNextLevel * 0.25);
+        AddPlrExperience(player, player._pLevel, bonusXp);
+    }
 
-	InitDiabloMsg(EMSG_SHRINE_GLOWING);
+    CheckStats(player);
+    RedrawEverything();
+
+    InitDiabloMsg(EMSG_SHRINE_GLOWING);
 }
 
 void OperateShrineMendicant(Player &player)
@@ -3043,6 +3064,12 @@ void OperateShrineSparkling(Player &player, Point spawnPosition)
 	if (&player != MyPlayer)
 		return;
 
+    if (player._pLevel < 50) {
+        uint32_t xpToNextLevel = ExpLvlsTbl[player._pLevel] - player._pExperience;
+        uint32_t bonusXp = static_cast<uint32_t>(xpToNextLevel * 0.25);
+        AddPlrExperience(player, player._pLevel, bonusXp);
+    }
+	
 	AddPlrExperience(player, player._pLevel, 1000 * currlevel);
 
 	AddMissile(
