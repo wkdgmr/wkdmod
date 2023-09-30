@@ -3336,102 +3336,106 @@ Item *SpawnUnique(_unique_items uid, Point position, std::optional<int> level /*
 
 void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= false*/)
 {
-	static int extraDrops = -1;
+    static int extraDrops = -1;
 
-	_item_indexes idx;
-	bool onlygood = true;
+    _item_indexes idx = IDI_NONE;
+    bool onlygood = true;
 
-	if (extraDrops == -1) {
-		bool dropsSpecialTreasure = (monster.data().treasure & T_UNIQ) != 0;
-		bool dropBrain = Quests[Q_MUSHROOM]._qactive == QUEST_ACTIVE && Quests[Q_MUSHROOM]._qvar1 == QS_MUSHGIVEN;
+    if (extraDrops != -1) {
+        if ((monster.data().treasure & T_NODROP) != 0)
+            return;
+        onlygood = false;
+        idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
+    } else {
+        bool dropsSpecialTreasure = (monster.data().treasure & T_UNIQ) != 0;
+        bool dropBrain = Quests[Q_MUSHROOM]._qactive == QUEST_ACTIVE && Quests[Q_MUSHROOM]._qvar1 == QS_MUSHGIVEN;
 
-		if (dropsSpecialTreasure && !UseMultiplayerQuests()) {
-			Item *uniqueItem = SpawnUnique(static_cast<_unique_items>(monster.data().treasure & T_MASK), position, std::nullopt, false);
-			if (uniqueItem != nullptr && sendmsg)
-				NetSendCmdPItem(false, CMD_DROPITEM, uniqueItem->position, *uniqueItem);
-			return;
-		} else if (monster.isUnique() || dropsSpecialTreasure) {
-			idx = RndUItem(&monster);
-		} else if (dropBrain && !gbIsMultiplayer) {
-			Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
-			NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
-			idx = IDI_BRAIN;
-		} else {
-			if (dropBrain && gbIsMultiplayer && sendmsg) {
-				Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
-				NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
-				Point posBrain = GetSuperItemLoc(position);
-				SpawnQuestItem(IDI_BRAIN, posBrain, false, false, true);
-			}
+        if (dropsSpecialTreasure && !UseMultiplayerQuests()) {
+            Item *uniqueItem = SpawnUnique(static_cast<_unique_items>(monster.data().treasure & T_MASK), position, std::nullopt, false);
+            if (uniqueItem != nullptr && sendmsg)
+                NetSendCmdPItem(false, CMD_DROPITEM, uniqueItem->position, *uniqueItem);
+            return;
+        } else if (monster.isUnique() || dropsSpecialTreasure) {
+            idx = RndUItem(&monster);
+        } else if (dropBrain && !gbIsMultiplayer) {
+            Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
+            NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
+            idx = IDI_BRAIN;
+        } else {
+            if (dropBrain && gbIsMultiplayer && sendmsg) {
+                Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
+                NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
+                Point posBrain = GetSuperItemLoc(position);
+                SpawnQuestItem(IDI_BRAIN, posBrain, false, false, true);
+            }
+            if ((monster.data().treasure & T_NODROP) != 0)
+                return;
+            onlygood = false;
+            idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
+        }
+    }
 
-			if ((monster.data().treasure & T_NODROP) != 0)
-				return;
+    if (idx == IDI_NONE)
+        return;
 
-			onlygood = false;
-			idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
-		}
-	}
+    if (ActiveItemCount >= MAXITEMS)
+        return;
 
-	if (idx == IDI_NONE)
-		return;
+    int ii = AllocateItem();
+    auto &item = Items[ii];
+    GetSuperItemSpace(position, ii);
+    int uper = monster.isUnique() ? 15 : 1;
 
-	if (ActiveItemCount >= MAXITEMS)
-		return;
+    int8_t mLevel = monster.data().level;
 
-	int ii = AllocateItem();
-	auto &item = Items[ii];
-	GetSuperItemSpace(position, ii);
-	int uper = monster.isUnique() ? 15 : 1;
+    switch (sgGameInitInfo.nDifficulty) {
+    case DIFF_NIGHTMARE:
+        mLevel += 15;
+        if (mLevel > 60)
+            mLevel = 60;
+        break;
+    case DIFF_HELL:
+        if (mLevel >= 24)
+            mLevel += 36;
+        if (mLevel > 60)
+            mLevel = 60;
+        else {
+            mLevel += 25;
+            if (mLevel > 60)
+                mLevel = 60;
+        }
+        break;
+    }
 
-	int8_t mLevel = monster.data().level;
+    SetupAllItems(*MyPlayer, item, idx, AdvanceRndSeed(), mLevel, uper, onlygood, false, false);
 
-	switch (sgGameInitInfo.nDifficulty) {
-	case DIFF_NIGHTMARE:
-		mLevel += 15;
-		if (mLevel > 60)
-			mLevel = 60;
-		break;
-	case DIFF_HELL:
-		if (mLevel >= 24)
-			mLevel += 36;
-		if (mLevel > 60)
-			mLevel = 60;
-		else {
-			mLevel += 25;
-			if (mLevel > 60)
-				mLevel = 60;
-		}
-		break;
-	}
+    if (sendmsg)
+        NetSendCmdPItem(false, CMD_DROPITEM, item.position, item);
+    if (spawn)
+        NetSendCmdPItem(false, CMD_SPAWNITEM, item.position, item);
 
-	SetupAllItems(*MyPlayer, item, idx, AdvanceRndSeed(), mLevel, uper, onlygood, false, false);
+    if (extraDrops == -1) {
+        switch (sgGameInitInfo.nDifficulty) {
+        case DIFF_NIGHTMARE:
+            extraDrops = 1;
+            break;
+        case DIFF_HELL:
+            extraDrops = 2;
+            break;
+        default:
+            extraDrops = 0;
+            break;
+        }
+    }
 
-	if (sendmsg)
-		NetSendCmdPItem(false, CMD_DROPITEM, item.position, item);
-	if (spawn)
-		NetSendCmdPItem(false, CMD_SPAWNITEM, item.position, item);
-
-	if (extraDrops == -1) {
-		switch (sgGameInitInfo.nDifficulty) {
-		case DIFF_NIGHTMARE:
-			extraDrops = 1;
-			break;
-		case DIFF_HELL:
-			extraDrops = 2;
-			break;
-		default:
-			extraDrops = 0;
-			break;
-		}
-	}
-
-	if (extraDrops > 0) {
-		extraDrops--;
-		SpawnItem(monster, position, sendmsg, spawn);
-	} else if (extraDrops == 0) {
-		extraDrops = -1;
-	}
+    if (extraDrops > 0) {
+        extraDrops--;
+        SpawnItem(monster, position, sendmsg, spawn);
+    } else if (extraDrops == 0) {
+        extraDrops = -1;
+    }
 }
+
 
 void CreateRndItem(Point position, bool onlygood, bool sendmsg, bool delta)
 {
