@@ -1843,8 +1843,8 @@ void InitKeymapActions()
 	    "Programming is like magic.",
 	    'X',
 	    [] {
-			Player &myPlayer = *MyPlayer;
-			DebugOperateShrine(myPlayer);
+		    Player &myPlayer = *MyPlayer;
+		    DebugOperateShrine(myPlayer);
 		    DebugToggle = !DebugToggle;
 	    });
 #endif

@@ -250,7 +250,7 @@ void StartAttack(Player &player, Direction d, bool includesFirstFrame)
 			skippedAnimationFrames = 2;
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)
 		    || HasInventoryItemWithId(player, IDI_AURIC) && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
-			|| HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack)) {
+		    || HasAnyOf(player._pIFlags, ItemSpecialEffect::QuickAttack)) {
 			skippedAnimationFrames = 1;
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack)) {
 			// Fastest Attack is skipped if Fast or Faster Attack is also specified, because both skip the frame that triggers Fastest Attack skipping.
@@ -596,7 +596,6 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 	return false;
 }
 
-
 bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 {
 	int hper = 0;
@@ -630,54 +629,53 @@ bool PlrHitMonst(Player &player, Monster &monster, bool adjacentDamage = false)
 	}
 
 	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-	    if (player._pIMisType == 3 || player._pIMisType == 6) {
-	        AddMissile(player.position.tile, player.position.temp, player._pdir, 
-	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
-	    }
+		if (player._pIMisType == 3 || player._pIMisType == 6) {
+			AddMissile(player.position.tile, player.position.temp, player._pdir,
+			    MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+		}
 	}
 	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-	    if (player._pIMisType == 4 || player._pIMisType == 8) {
-	        AddMissile(player.position.tile, player.position.temp, player._pdir, 
-	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
-	    }
+		if (player._pIMisType == 4 || player._pIMisType == 8) {
+			AddMissile(player.position.tile, player.position.temp, player._pdir,
+			    MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+		}
 	}
 	if (HasAllOf(player._pIFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::LightningDamage) && player._pIMisType == 7) {
-	    AddMissile(player.position.tile, player.position.temp, player._pdir, 
-	               MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+		AddMissile(player.position.tile, player.position.temp, player._pdir,
+		    MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 	}
-	if (player._pIMisType == 1 || player._pIMisType == 2 || player._pIMisType == 5 || player._pIMisType == 9 
+	if (player._pIMisType == 1 || player._pIMisType == 2 || player._pIMisType == 5 || player._pIMisType == 9
 	    || player._pIMisType == 100 || player._pIMisType == 103 || player._pIMisType == 104) {
-	    int arrows = 0;
+		int arrows = 0;
 
-	    if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
-	        arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) ? 6 : 3;
-	    }
+		if (player.AnimInfo.currentFrame == player._pAFNum - 1) {
+			arrows = HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) ? 6 : 3;
+		}
 
-	    int directionIndex = static_cast<int>(player._pdir);
-	    std::array<int, 3> strafePattern3 = {-1, 0, 1};
-	    std::array<int, 6> strafePattern6 = {2, 1, 0, -1, -2, -3};
+		int directionIndex = static_cast<int>(player._pdir);
+		std::array<int, 3> strafePattern3 = { -1, 0, 1 };
+		std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 };
 
-	    for (int arrow = 0; arrow < arrows; arrow++) {
-	        int arrowDirectionIndex = arrows == 3 
-	            ? (directionIndex + strafePattern3[arrow] + 8) % 8 
-	            : (directionIndex + strafePattern6[arrow] + 8) % 8;
+		for (int arrow = 0; arrow < arrows; arrow++) {
+			int arrowDirectionIndex = arrows == 3
+			    ? (directionIndex + strafePattern3[arrow] + 8) % 8
+			    : (directionIndex + strafePattern6[arrow] + 8) % 8;
 
-	        if (arrowDirectionIndex < 0) {
-	            arrowDirectionIndex += 8;
-	        }
+			if (arrowDirectionIndex < 0) {
+				arrowDirectionIndex += 8;
+			}
 
-	        Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
-	        Displacement displacement(arrowDirection);
+			Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
+			Displacement displacement(arrowDirection);
 
-	        AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
-	                   MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
+			AddMissile(player.position.tile, player.position.old + displacement, arrowDirection,
+			    MissileID::SpectralArrow, TARGET_MONSTERS, player.getId(), 0, 0);
 
-	        if (player._pIMisType == 5 && arrow == 0) {
-	            PlaySfxLoc(IS_FBALLBOW, player.position.tile);
-	        }
-	    }
+			if (player._pIMisType == 5 && arrow == 0) {
+				PlaySfxLoc(IS_FBALLBOW, player.position.tile);
+			}
+		}
 	}
-
 
 	int mind = player._pIMinDam;
 	int maxd = player._pIMaxDam;
@@ -881,45 +879,45 @@ bool PlrHitPlr(Player &attacker, Player &target, bool adjacentDamage = false)
 	    || attacker._pIMisType == 9 || attacker._pIMisType == 100 || attacker._pIMisType == 103
 	    || attacker._pIMisType == 104 || attacker._pIMisType == 200) {
 
-	    int arrows = 0;
-	    if (attacker.AnimInfo.currentFrame == attacker._pAFNum - 1) {
-	        arrows = HasAnyOf(attacker._pIFlags, ItemSpecialEffect::Empower)
-	                || attacker._pIMisType == 200
-	            ? 6
-	            : 3;
-	    }
+		int arrows = 0;
+		if (attacker.AnimInfo.currentFrame == attacker._pAFNum - 1) {
+			arrows = HasAnyOf(attacker._pIFlags, ItemSpecialEffect::Empower)
+			        || attacker._pIMisType == 200
+			    ? 6
+			    : 3;
+		}
 
-	    // Get the index of the attacker's direction in the directions array
-	    int directionIndex = static_cast<int>(attacker._pdir);
+		// Get the index of the attacker's direction in the directions array
+		int directionIndex = static_cast<int>(attacker._pdir);
 
-	    // Define strafe patterns
-	    std::array<int, 3> strafePattern3 = { -1, 0, 1 };            // Normal strafe pattern
-	    std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 }; // Empower strafe pattern
+		// Define strafe patterns
+		std::array<int, 3> strafePattern3 = { -1, 0, 1 };            // Normal strafe pattern
+		std::array<int, 6> strafePattern6 = { 2, 1, 0, -1, -2, -3 }; // Empower strafe pattern
 
-	    for (int arrow = 0; arrow < arrows; arrow++) {
-	        // Choose the correct strafe pattern based on number of arrows
-	        int arrowDirectionIndex;
-	        if (arrows == 3) {
-	            arrowDirectionIndex = (directionIndex + strafePattern3[arrow] + 8) % 8;
-	        } else if (arrows == 6) {
-	            arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
-	        }
-	        if (arrowDirectionIndex < 0) {
-	            arrowDirectionIndex += 8; // Handle negative direction indices
-	        }
+		for (int arrow = 0; arrow < arrows; arrow++) {
+			// Choose the correct strafe pattern based on number of arrows
+			int arrowDirectionIndex;
+			if (arrows == 3) {
+				arrowDirectionIndex = (directionIndex + strafePattern3[arrow] + 8) % 8;
+			} else if (arrows == 6) {
+				arrowDirectionIndex = (directionIndex + strafePattern6[arrow] + 8) % 8;
+			}
+			if (arrowDirectionIndex < 0) {
+				arrowDirectionIndex += 8; // Handle negative direction indices
+			}
 
-	        // Get the direction enum value based on the direction index
-	        Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
+			// Get the direction enum value based on the direction index
+			Direction arrowDirection = static_cast<Direction>(arrowDirectionIndex);
 
-	        // Calculate the displacement based on the arrow direction
-	        Displacement displacement(arrowDirection);
+			// Calculate the displacement based on the arrow direction
+			Displacement displacement(arrowDirection);
 
-	        AddMissile(attacker.position.tile, attacker.position.old + displacement, arrowDirection,
-	            MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0); // Removed dmg and var3
+			AddMissile(attacker.position.tile, attacker.position.old + displacement, arrowDirection,
+			    MissileID::SpectralArrow, TARGET_MONSTERS, attacker.getId(), 0, 0); // Removed dmg and var3
 
-	        if (attacker._pIMisType == 5 && arrow == 0)
-	            PlaySfxLoc(IS_FBALLBOW, attacker.position.tile);
-	    }
+			if (attacker._pIMisType == 5 && arrow == 0)
+				PlaySfxLoc(IS_FBALLBOW, attacker.position.tile);
+		}
 	}
 
 	int mind = attacker._pIMinDam;
@@ -1030,30 +1028,32 @@ bool PlrHitObj(const Player &player, Object &targetObject)
 	return false;
 }
 
-void WeaponElementalDamageSplash(const Player &player, const Point &position) {
-    size_t playerId = player.getId();
-    if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
-        AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-    } else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
-        AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-    } else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
-        AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-    }
+void WeaponElementalDamageSplash(const Player &player, const Point &position)
+{
+	size_t playerId = player.getId();
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
+		AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+	} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+		AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+	} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+		AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
+	}
 }
 
-void ApplyWeaponElementalDamageSplash(Player &player, Point position) {
-    Monster *monster = FindMonsterAtPosition(position);
-    if (monster != nullptr && !monster->isPlayerMinion()) {
-        if (!CanTalkToMonst(*monster) && monster->position.old == position) {
-            if (PlrHitMonst(player, *monster, true)) {
-                WeaponElementalDamageSplash(player, position);
-            }
-        }
-    } else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
-        if (PlrHitPlr(player, *PlayerAtPosition(position), true)) {
-            WeaponElementalDamageSplash(player, position);
-        }
-    }
+void ApplyWeaponElementalDamageSplash(Player &player, Point position)
+{
+	Monster *monster = FindMonsterAtPosition(position);
+	if (monster != nullptr && !monster->isPlayerMinion()) {
+		if (!CanTalkToMonst(*monster) && monster->position.old == position) {
+			if (PlrHitMonst(player, *monster, true)) {
+				WeaponElementalDamageSplash(player, position);
+			}
+		}
+	} else if (PlayerAtPosition(position) != nullptr && !player.friendlyMode) {
+		if (PlrHitPlr(player, *PlayerAtPosition(position), true)) {
+			WeaponElementalDamageSplash(player, position);
+		}
+	}
 }
 
 bool DoAttack(Player &player)
@@ -1114,21 +1114,21 @@ bool DoAttack(Player &player)
 				didhit = PlrHitObj(player, *object);
 			}
 		}
-		
-    	if (player.CanCleave()) { // Check whether the player can cleave or not
-    	    Point positions[] = {
-    	        player.position.tile + Right(player._pdir),
-    	        player.position.tile + Left(player._pdir),
-    	        player.position.tile + Left(Left(player._pdir)),
-    	        player.position.tile + Right(Right(player._pdir))
-    	    };
-	
-    	    for (const Point& position : positions) {
+
+		if (player.CanCleave()) { // Check whether the player can cleave or not
+			Point positions[] = {
+				player.position.tile + Right(player._pdir),
+				player.position.tile + Left(player._pdir),
+				player.position.tile + Left(Left(player._pdir)),
+				player.position.tile + Right(Right(player._pdir))
+			};
+
+			for (const Point &position : positions) {
 				didhit = true;
-    	        ApplyWeaponElementalDamageSplash(player, position);
-    	    }
-    	}
-	
+				ApplyWeaponElementalDamageSplash(player, position);
+			}
+		}
+
 		if (didhit && DamageWeapon(player, 30)) {
 			StartStand(player, player._pdir);
 			ClearStateVariables(player);
@@ -1192,32 +1192,32 @@ bool DoRangeAttack(Player &player)
 
 		int dmg = 4;
 		MissileID mistype = MissileID::Arrow;
+		if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows) && player._pIMisType == 1)) {
+			mistype = MissileID::SpectralArrow;
+		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireArrows)) {
-		    if (player._pIMisType == 1) {
+			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+			mistype = MissileID::FireArrow;
+		}
+
+		if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows) && player._pIMisType == 2)) {
+			mistype = MissileID::SpectralArrow;
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows)) {
+			mistype = MissileID::LightningArrow;
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+			switch (player._pIMisType) {
+			case 100:
+			case 5:
+			case 9:
+			case 10:
 				mistype = MissileID::SpectralArrow;
-		    } else {
-				dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
-		        mistype = MissileID::FireArrow;
-		    }
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows)) {
-		    if (player._pIMisType == 2) {
-		        mistype = MissileID::SpectralArrow;
-		    } else {
-				dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
-		        mistype = MissileID::LightningArrow;
-		    }
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
-		    switch (player._pIMisType) {
-		        case 100:
-		        case 5:
-		        case 9:
-		        case 10:
-		            mistype = MissileID::SpectralArrow;
-		            break;
-		        default:
-		            mistype = MissileID::SpectralArrow;
-		            break;
-		    }
+				break;
+			default:
+				mistype = MissileID::SpectralArrow;
+				break;
+			}
 		}
 
 		AddMissile(
@@ -3022,7 +3022,7 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 
 	const bool dropGold = !gbIsMultiplayer || !(player.isOnArenaLevel());
 	const bool dropItems = dropGold && deathReason == DeathReason::Player && *sgOptions.Gameplay.friendlyFire == true
-	|| dropGold && deathReason == DeathReason::MonsterOrTrap && *sgOptions.Gameplay.friendlyFire == true;
+	    || dropGold && deathReason == DeathReason::MonsterOrTrap && *sgOptions.Gameplay.friendlyFire == true;
 	const bool dropEar = dropGold && deathReason == DeathReason::Player;
 
 	player.Say(HeroSpeech::AuughUh);

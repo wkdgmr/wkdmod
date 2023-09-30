@@ -225,24 +225,24 @@ bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Miss
 	const Player &player = Players[pnum];
 
 	if (!monster.isPossibleToHit() || monster.isImmune(t, damageType)) {
-	    if (!((t == MissileID::FireArrow)
-	        || (t == MissileID::WeaponExplosion)
-			|| (t == MissileID::FireballBow)
-	        || (t == MissileID::Fireball && player._pIMisType == 1)
-	        || (t == MissileID::LightningArrow)
-	        || (t == MissileID::LightningBow)
-	        || (t == MissileID::ChargedBoltBow)
-	        || (t == MissileID::Firebolt)
-	        || (t == MissileID::Inferno)
-	        || (t == MissileID::ChargedBolt)
-	        || (t == MissileID::FlashBottom)
-	        || (t == MissileID::FlashTop)
-	        || (t == MissileID::Acid && player._pIMisType == 10)
-	        || (t == MissileID::Lightning && player._pIMisType == 2))) {
-	            return false;
-	    }
+		if (!((t == MissileID::FireArrow)
+		        || (t == MissileID::WeaponExplosion)
+		        || (t == MissileID::FireballBow)
+		        || (t == MissileID::Fireball && player._pIMisType == 1)
+		        || (t == MissileID::LightningArrow)
+		        || (t == MissileID::LightningBow)
+		        || (t == MissileID::ChargedBoltBow)
+		        || (t == MissileID::Firebolt)
+		        || (t == MissileID::Inferno)
+		        || (t == MissileID::ChargedBolt)
+		        || (t == MissileID::FlashBottom)
+		        || (t == MissileID::FlashTop)
+		        || (t == MissileID::Acid && player._pIMisType == 10)
+		        || (t == MissileID::Lightning && player._pIMisType == 2))) {
+			return false;
+		}
 	}
-	
+
 	int hit = GenerateRnd(100);
 	int hper = 0;
 	const MissileData &missileData = GetMissileData(t);
@@ -2015,7 +2015,6 @@ int HolyFireChancePlr(Player &attacker, Player &target)
 	return 0;
 }
 
-
 void HolyFireDamagePlr(Player &attacker, Player &target)
 {
 	if (&attacker != MyPlayer && &target == MyPlayer) {
@@ -2140,7 +2139,6 @@ void HolyFireDamage(Player &player, Monster &monster)
 	}
 }
 
-
 void CastHolyShock(Player &player, Monster &monster)
 {
 	SpellID spellId = SpellID::Flash;
@@ -2170,7 +2168,6 @@ void CastHolyShock(Player &player, Monster &monster)
 			M_StartHit(monster, player, mdam);
 	}
 }
-
 
 void ExplodingBoneArmor(Player &player, Monster &monster)
 {
@@ -4038,7 +4035,7 @@ void ProcessWeaponExplosion(Missile &missile)
 			maxd = player._pIMMaxDam / 4;
 		}
 		damageType = DamageType::Magic;
-	} 
+	}
 	CheckMissileCol(missile, damageType, mind, maxd, false, missile.position.tile, false);
 	if (missile.var1 == 0) {
 		missile._mlid = AddLight(missile.position.tile, 9);

@@ -392,40 +392,35 @@ struct Player {
 
 	bool CanCleave()
 	{
-	    // High-level condition
-	    if (_pLevel >= 40 && !isEquipped(ItemType::Bow)) {
-	        return true;
-	    }
-	
-	    // Class-based conditions for low-level players
-	    if (_pLevel <= 39) {
-	        switch (_pClass) {
-	            case HeroClass::Warrior:
-	                return isEquipped(ItemType::Sword, true) || 
-	                       ((isEquipped(ItemType::Mace) && isEquipped(ItemType::Shield))) || 
-	                       ((isEquipped(ItemType::Sword) && isEquipped(ItemType::Shield)));
-	
-	            case HeroClass::Monk:
-	                return isEquipped(ItemType::Sword, true) || isEquipped(ItemType::Staff, true);
-	
-	            case HeroClass::Bard:
-	                return ((isEquipped(ItemType::Sword) && isEquipped(ItemType::Sword))) || 
-	                       ((isEquipped(ItemType::Mace) && isEquipped(ItemType::Mace))) || 
-	                       ((isEquipped(ItemType::Mace) && isEquipped(ItemType::Sword))) || 
-	                       ((isEquipped(ItemType::Sword) && isEquipped(ItemType::Mace)));
-	
-	            case HeroClass::Sorcerer:
-	                return isEquipped(ItemType::Staff, true);
-	
-	            case HeroClass::Barbarian:
-	                return (isEquipped(ItemType::Staff, true) || isEquipped(ItemType::Axe, true) 
-					|| (isEquipped(ItemType::Sword, true) && !isEquipped(ItemType::Shield)) || (isEquipped(ItemType::Mace, true)) && !isEquipped(ItemType::Shield));
-	            default:
-	                return false;
-	        }
-	    }
-	
-	    return false;
+		// High-level condition
+		if (_pLevel >= 40 && !isEquipped(ItemType::Bow)) {
+			return true;
+		}
+
+		// Class-based conditions for low-level players
+		if (_pLevel <= 39) {
+			switch (_pClass) {
+			case HeroClass::Warrior:
+				return isEquipped(ItemType::Sword, true) || ((isEquipped(ItemType::Mace) && isEquipped(ItemType::Shield))) || ((isEquipped(ItemType::Sword) && isEquipped(ItemType::Shield)));
+
+			case HeroClass::Monk:
+				return isEquipped(ItemType::Sword, true) || isEquipped(ItemType::Staff, true);
+
+			case HeroClass::Bard:
+				return ((isEquipped(ItemType::Sword) && isEquipped(ItemType::Sword))) || ((isEquipped(ItemType::Mace) && isEquipped(ItemType::Mace))) || ((isEquipped(ItemType::Mace) && isEquipped(ItemType::Sword))) || ((isEquipped(ItemType::Sword) && isEquipped(ItemType::Mace)));
+
+			case HeroClass::Sorcerer:
+				return isEquipped(ItemType::Staff, true);
+
+			case HeroClass::Barbarian:
+				return (isEquipped(ItemType::Staff, true) || isEquipped(ItemType::Axe, true)
+				    || (isEquipped(ItemType::Sword, true) && !isEquipped(ItemType::Shield)) || (isEquipped(ItemType::Mace, true)) && !isEquipped(ItemType::Shield));
+			default:
+				return false;
+			}
+		}
+
+		return false;
 	}
 
 	bool isEquipped(ItemType itemType, bool isTwoHanded = false)

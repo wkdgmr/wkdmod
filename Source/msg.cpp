@@ -1764,7 +1764,7 @@ size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 	const Point position { message._dst };
 	const Direction midir = message._midir;
 	const MissileID mitype = static_cast<MissileID>(message._mitype);
-	const mienemy_type micaster =  static_cast<mienemy_type>(message._micaster);
+	const mienemy_type micaster = static_cast<mienemy_type>(message._micaster);
 	const size_t id = message._id;
 	const int midam = message._midam;
 	const int spllvl = message._spllvl;
@@ -1772,12 +1772,12 @@ size_t OnAddMissile(const TCmd *pCmd, size_t pnum)
 	if (gbBufferMsgs == 1) {
 		SendPacket(pnum, &message, sizeof(message));
 	} else if (InDungeonBounds(message._dst)) {
-/* 		Player &player = Players[pnum];
-		for (auto &missile : Missiles) {
-			if (missile._mitype == message._mitype && &Players[missile._misource] == &player) {
-				return sizeof(message);
-			}
-		} */
+		/* 		Player &player = Players[pnum];
+		        for (auto &missile : Missiles) {
+		            if (missile._mitype == message._mitype && &Players[missile._misource] == &player) {
+		                return sizeof(message);
+		            }
+		        } */
 		AddMissile(src, position, midir, mitype, micaster, id, midam, spllvl);
 	}
 
@@ -2818,7 +2818,7 @@ void NetSendCmdGolem(uint8_t mx, uint8_t my, Direction dir, uint8_t menemy, int 
 }
 
 void NetSendAddMissile(Point src, Point dst, Direction midir, uint16_t mitype,
-	uint16_t micaster, int id, int midam, int spllvl)
+    uint16_t micaster, int id, int midam, int spllvl)
 {
 	TCmdAddMissile cmd;
 

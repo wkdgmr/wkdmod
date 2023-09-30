@@ -3004,42 +3004,42 @@ void OperateShrineOily(Player &player, Point spawnPosition)
 
 void OperateShrineGlowing(Player &player)
 {
-    int statIncrease = std::max(1, static_cast<int>(std::min<uint32_t>(player._pExperience / 1000, 5)));
+	int statIncrease = std::max(1, static_cast<int>(std::min<uint32_t>(player._pExperience / 1000, 5)));
 
-    switch(player._pClass) {
-        case HeroClass::Warrior:
-		case HeroClass::Barbarian:
-            ModifyPlrStr(player, statIncrease);
-			ModifyPlrVit(player, statIncrease);
-            break;
-        case HeroClass::Rogue:
-			ModifyPlrDex(player, statIncrease);
-			ModifyPlrVit(player, statIncrease);
-			break;
-        case HeroClass::Monk:
-			ModifyPlrStr(player, statIncrease);
-			ModifyPlrDex(player, statIncrease);
-			break;
-		case HeroClass::Sorcerer:
-        case HeroClass::Bard:
-            ModifyPlrDex(player, statIncrease);
-			ModifyPlrMag(player, statIncrease);
-            break;
-        default:
-            ModifyPlrMag(player, statIncrease);
-            break;
-    }
+	switch (player._pClass) {
+	case HeroClass::Warrior:
+	case HeroClass::Barbarian:
+		ModifyPlrStr(player, statIncrease);
+		ModifyPlrVit(player, statIncrease);
+		break;
+	case HeroClass::Rogue:
+		ModifyPlrDex(player, statIncrease);
+		ModifyPlrVit(player, statIncrease);
+		break;
+	case HeroClass::Monk:
+		ModifyPlrStr(player, statIncrease);
+		ModifyPlrDex(player, statIncrease);
+		break;
+	case HeroClass::Sorcerer:
+	case HeroClass::Bard:
+		ModifyPlrDex(player, statIncrease);
+		ModifyPlrMag(player, statIncrease);
+		break;
+	default:
+		ModifyPlrMag(player, statIncrease);
+		break;
+	}
 
-    if (player._pLevel < 50) {
-        uint32_t xpToNextLevel = player._pNextExper - ExpLvlsTbl[player._pLevel - 1];
-        uint32_t bonusXP = static_cast<uint32_t>(xpToNextLevel * 0.25);
-        AddPlrExperience(player, player._pLevel, bonusXP);
-    }
+	if (player._pLevel < 50) {
+		uint32_t xpToNextLevel = player._pNextExper - ExpLvlsTbl[player._pLevel - 1];
+		uint32_t bonusXP = static_cast<uint32_t>(xpToNextLevel * 0.25);
+		AddPlrExperience(player, player._pLevel, bonusXP);
+	}
 
-    CheckStats(player);
-    RedrawEverything();
+	CheckStats(player);
+	RedrawEverything();
 
-    InitDiabloMsg(EMSG_SHRINE_GLOWING);
+	InitDiabloMsg(EMSG_SHRINE_GLOWING);
 }
 
 void OperateShrineMendicant(Player &player)
@@ -3066,12 +3066,12 @@ void OperateShrineSparkling(Player &player, Point spawnPosition)
 	if (&player != MyPlayer)
 		return;
 
-    if (player._pLevel < 50) {
-        uint32_t xpToNextLevel = player._pNextExper - ExpLvlsTbl[player._pLevel - 1];
-        uint32_t bonusXP = static_cast<uint32_t>(xpToNextLevel * 0.25);
-        AddPlrExperience(player, player._pLevel, bonusXP);
-    }
-	
+	if (player._pLevel < 50) {
+		uint32_t xpToNextLevel = player._pNextExper - ExpLvlsTbl[player._pLevel - 1];
+		uint32_t bonusXP = static_cast<uint32_t>(xpToNextLevel * 0.25);
+		AddPlrExperience(player, player._pLevel, bonusXP);
+	}
+
 	AddPlrExperience(player, player._pLevel, 1000 * currlevel);
 
 	AddMissile(
@@ -5143,7 +5143,7 @@ void SyncNakrulRoom()
 
 void DebugOperateShrine(Player &player)
 {
-    OperateShrineGlowing(player);
+	OperateShrineGlowing(player);
 }
 
 } // namespace devilution
