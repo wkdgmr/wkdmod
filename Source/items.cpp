@@ -2655,7 +2655,7 @@ void CalcPlrItemVals(Player &player, bool loadgfx)
 
 				spllvladd += item._iSplLvlAdd;
 				enac += item._iPLEnAc;
-				if (HasAnyOf(item._iFlags, ItemSpecialEffect::FireDamage)) {
+				if (HasAnyOf(item._iFlags, ItemSpecialEffect::FireDamage | ItemSpecialEffect::FireArrows)) {
 					fmin += item._iFMinDam;
 					fmax += item._iFMaxDam;
 				} else if (HasAnyOf(item._iFlags, ItemSpecialEffect::MagicDamage)) {
