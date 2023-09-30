@@ -75,17 +75,6 @@ void VerifyGoldSeeds(Player &player)
 	}
 }
 
-void PackNetItem(const Item &item, ItemNetPack &packedItem)
-{
-	packedItem.def.wIndx = static_cast<_item_indexes>(SDL_SwapLE16(item.IDidx));
-	packedItem.def.wCI = SDL_SwapLE16(item._iCreateInfo);
-	packedItem.def.dwSeed = SDL_SwapLE32(item._iSeed);
-	if (item.IDidx != IDI_EAR)
-		PrepareItemForNetwork(item, packedItem.item);
-	else
-		PrepareEarForNetwork(item, packedItem.ear);
-}
-
 bool hasMultipleFlags(uint16_t flags)
 {
 	return (flags & (flags - 1)) > 0;
@@ -170,32 +159,6 @@ bool IsDungeonItemValid(uint16_t iCreateInfo, uint32_t dwBuff)
 
 	return level <= 30;
 }
-
-bool UnPackNetItem(const Player &player, const ItemNetPack &packedItem, Item &item)
-{
-	item = {};
-	_item_indexes idx = static_cast<_item_indexes>(SDL_SwapLE16(packedItem.def.wIndx));
-	if (idx < 0 || idx > IDI_LAST)
-		return true;
-	if (idx == IDI_EAR) {
-		RecreateEar(item, SDL_SwapLE16(packedItem.ear.wCI), SDL_SwapLE32(packedItem.ear.dwSeed), packedItem.ear.bCursval, packedItem.ear.heroname);
-		return true;
-	}
-
-	uint16_t creationFlags = SDL_SwapLE16(packedItem.item.wCI);
-	uint32_t dwBuff = SDL_SwapLE16(packedItem.item.dwBuff);
-	ValidateField(creationFlags, IsCreationFlagComboValid(creationFlags));
-	if ((creationFlags & CF_TOWN) != 0)
-		ValidateField(creationFlags, IsTownItemValid(creationFlags));
-	else if ((creationFlags & CF_USEFUL) == CF_UPER15)
-		ValidateFields(creationFlags, dwBuff, IsUniqueMonsterItemValid(creationFlags, dwBuff));
-	else
-		ValidateFields(creationFlags, dwBuff, IsDungeonItemValid(creationFlags, dwBuff));
-
-	RecreateItem(player, packedItem.item, item);
-	return true;
-}
-
 } // namespace
 
 void PackItem(ItemPack &packedItem, const Item &item, bool isHellfire)
@@ -291,6 +254,21 @@ void PackPlayer(PlayerPack &packed, const Player &player)
 	packed.bIsHellfire = gbIsHellfire ? 1 : 0;
 }
 
+void PackNetItem(const Item &item, ItemNetPack &packedItem)
+{
+	if (item.isEmpty()) {
+		packedItem.def.wIndx = static_cast<_item_indexes>(0xFFFF);
+		return;
+	}
+	packedItem.def.wIndx = static_cast<_item_indexes>(SDL_SwapLE16(item.IDidx));
+	packedItem.def.wCI = SDL_SwapLE16(item._iCreateInfo);
+	packedItem.def.dwSeed = SDL_SwapLE32(item._iSeed);
+	if (item.IDidx != IDI_EAR)
+		PrepareItemForNetwork(item, packedItem.item);
+	else
+		PrepareEarForNetwork(item, packedItem.ear);
+}
+
 void PackNetPlayer(PlayerNetPack &packed, const Player &player)
 {
 	packed.plrlevel = player.plrlevel;
@@ -362,6 +340,11 @@ void PackNetPlayer(PlayerNetPack &packed, const Player &player)
 
 void UnPackItem(const ItemPack &packedItem, const Player &player, Item &item, bool isHellfire)
 {
+	if (packedItem.idx == 0xFFFF) {
+		item.clear();
+		return;
+	}
+
 	auto idx = static_cast<_item_indexes>(SDL_SwapLE16(packedItem.idx));
 
 	if (gbIsSpawn) {
@@ -491,6 +474,32 @@ void UnPackPlayer(const PlayerPack &packed, Player &player)
 	CalcPlrInv(player, false);
 	player.wReflections = SDL_SwapLE16(packed.wReflections);
 	player.pDiabloKillLevel = SDL_SwapLE32(packed.pDiabloKillLevel);
+}
+
+bool UnPackNetItem(const Player &player, const ItemNetPack &packedItem, Item &item)
+{
+	item = {};
+	_item_indexes idx = static_cast<_item_indexes>(SDL_SwapLE16(packedItem.def.wIndx));
+	if (idx < 0 || idx > IDI_LAST)
+		return true;
+	if (idx == IDI_EAR) {
+		RecreateEar(item, SDL_SwapLE16(packedItem.ear.wCI), SDL_SwapLE32(packedItem.ear.dwSeed), packedItem.ear.bCursval, packedItem.ear.heroname);
+		return true;
+	}
+
+	uint16_t creationFlags = SDL_SwapLE16(packedItem.item.wCI);
+	uint32_t dwBuff = SDL_SwapLE16(packedItem.item.dwBuff);
+	if (idx != IDI_GOLD)
+		ValidateField(creationFlags, IsCreationFlagComboValid(creationFlags));
+	if ((creationFlags & CF_TOWN) != 0)
+		ValidateField(creationFlags, IsTownItemValid(creationFlags));
+	else if ((creationFlags & CF_USEFUL) == CF_UPER15)
+		ValidateFields(creationFlags, dwBuff, IsUniqueMonsterItemValid(creationFlags, dwBuff));
+	else
+		ValidateFields(creationFlags, dwBuff, IsDungeonItemValid(creationFlags, dwBuff));
+
+	RecreateItem(player, packedItem.item, item);
+	return true;
 }
 
 bool UnPackNetPlayer(const PlayerNetPack &packed, Player &player)
