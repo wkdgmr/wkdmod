@@ -1193,17 +1193,21 @@ bool DoRangeAttack(Player &player)
 		int dmg = 4;
 		MissileID mistype = MissileID::Arrow;
 		if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows) && player._pIMisType == 1)) {
+			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 			mistype = MissileID::SpectralArrow;
 		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireArrows)) {
+
+		if ((HasAllOf(player._pIFlags, ItemSpecialEffect::FireArrows) && player._pIMisType != 1)) {
 			dmg = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 			mistype = MissileID::FireArrow;
 		}
 
-		if ((HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows) && player._pIMisType == 2)) {
+		if ((HasAllOf(player._pIFlags, ItemSpecialEffect::LightningArrows) && player._pIMisType == 2)) {
+			dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 			mistype = MissileID::SpectralArrow;
 		}
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows)) {
+		if ((HasAllOf(player._pIFlags, ItemSpecialEffect::LightningArrows) && player._pIMisType != 2)) {
+			dmg = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam);
 			mistype = MissileID::LightningArrow;
 		}
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
@@ -1215,7 +1219,7 @@ bool DoRangeAttack(Player &player)
 				mistype = MissileID::SpectralArrow;
 				break;
 			default:
-				mistype = MissileID::SpectralArrow;
+				mistype = MissileID::Arrow;
 				break;
 			}
 		}
