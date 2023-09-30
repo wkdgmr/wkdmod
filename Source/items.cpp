@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <bitset>
+#include <set>
 #ifdef _DEBUG
 #include <random>
 #endif
@@ -3337,6 +3338,7 @@ Item *SpawnUnique(_unique_items uid, Point position, std::optional<int> level /*
 void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= false*/)
 {
 	static int extraDrops = -1;
+	static std::set<int32_t> usedSeeds;
 
 	_item_indexes idx = IDI_NONE;
 	bool onlygood = true;
@@ -3407,7 +3409,21 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 		break;
 	}
 
-	SetupAllItems(*MyPlayer, item, idx, AdvanceRndSeed(), mLevel, uper, onlygood, false, false);
+	int32_t seed;
+	int tries = 0;
+	const int maxTries = 1000;
+
+	do {
+		seed = AdvanceRndSeed();
+		tries++;
+		if (tries > maxTries) {
+			return;
+		}
+	} while (usedSeeds.find(seed) != usedSeeds.end());
+
+	usedSeeds.insert(seed);
+
+	SetupAllItems(*MyPlayer, item, idx, seed, mLevel, uper, onlygood, false, false);
 
 	if (sendmsg)
 		NetSendCmdPItem(false, CMD_DROPITEM, item.position, item);
