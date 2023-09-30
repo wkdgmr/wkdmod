@@ -3334,82 +3334,125 @@ Item *SpawnUnique(_unique_items uid, Point position, std::optional<int> level /*
 	return &item;
 }
 
-void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= false*/)
+void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn = false)
 {
-	_item_indexes idx;
-	bool onlygood = true;
+    // Declare a static variable to track extra drops.
+    static int extraDrops = -1;
 
-	bool dropsSpecialTreasure = (monster.data().treasure & T_UNIQ) != 0;
-	bool dropBrain = Quests[Q_MUSHROOM]._qactive == QUEST_ACTIVE && Quests[Q_MUSHROOM]._qvar1 == QS_MUSHGIVEN;
+    _item_indexes idx;
+    bool onlygood = true;
 
-	if (dropsSpecialTreasure && !UseMultiplayerQuests()) {
-		Item *uniqueItem = SpawnUnique(static_cast<_unique_items>(monster.data().treasure & T_MASK), position, std::nullopt, false);
-		if (uniqueItem != nullptr && sendmsg)
-			NetSendCmdPItem(false, CMD_DROPITEM, uniqueItem->position, *uniqueItem);
-		return;
-	} else if (monster.isUnique() || dropsSpecialTreasure) {
-		// Unqiue monster is killed => use better item base (for example no gold)
-		idx = RndUItem(&monster);
-	} else if (dropBrain && !gbIsMultiplayer) {
-		// Normal monster is killed => need to drop brain to progress the quest
-		Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
-		NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
-		// brain replaces normal drop
-		idx = IDI_BRAIN;
-	} else {
-		if (dropBrain && gbIsMultiplayer && sendmsg) {
-			Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
-			NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
-			// Drop the brain as extra item to ensure that all clients see the brain drop
-			// When executing SpawnItem is not reliable, cause another client can already have the quest state updated before SpawnItem is executed
-			Point posBrain = GetSuperItemLoc(position);
-			SpawnQuestItem(IDI_BRAIN, posBrain, false, false, true);
-		}
-		// Normal monster
-		if ((monster.data().treasure & T_NODROP) != 0)
-			return;
-		onlygood = false;
-		idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
-	}
+    // Special item checks only for the original call
+    if (extraDrops == -1)
+    {
+        bool dropsSpecialTreasure = (monster.data().treasure & T_UNIQ) != 0;
+        bool dropBrain = Quests[Q_MUSHROOM]._qactive == QUEST_ACTIVE && Quests[Q_MUSHROOM]._qvar1 == QS_MUSHGIVEN;
 
-	if (idx == IDI_NONE)
-		return;
+        if (dropsSpecialTreasure && !UseMultiplayerQuests()) 
+        {
+            Item *uniqueItem = SpawnUnique(static_cast<_unique_items>(monster.data().treasure & T_MASK), position, std::nullopt, false);
+            if (uniqueItem != nullptr && sendmsg)
+                NetSendCmdPItem(false, CMD_DROPITEM, uniqueItem->position, *uniqueItem);
+            return;
+        } 
+        else if (monster.isUnique() || dropsSpecialTreasure) 
+        {
+            idx = RndUItem(&monster);
+        } 
+        else if (dropBrain && !gbIsMultiplayer) 
+        {
+            Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
+            NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
+            idx = IDI_BRAIN;
+        } 
+        else 
+        {
+            if (dropBrain && gbIsMultiplayer && sendmsg) 
+            {
+                Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
+                NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
+                Point posBrain = GetSuperItemLoc(position);
+                SpawnQuestItem(IDI_BRAIN, posBrain, false, false, true);
+            }
+            
+            if ((monster.data().treasure & T_NODROP) != 0)
+                return;
 
-	if (ActiveItemCount >= MAXITEMS)
-		return;
+            onlygood = false;
+            idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
+        }
+    }
+    // ... (rest of the code for regular item drops)
 
-	int ii = AllocateItem();
-	auto &item = Items[ii];
-	GetSuperItemSpace(position, ii);
-	int uper = monster.isUnique() ? 15 : 1;
+    if (idx == IDI_NONE)
+        return;
 
-	int8_t mLevel = monster.data().level;
+    if (ActiveItemCount >= MAXITEMS)
+        return;
 
-	switch (sgGameInitInfo.nDifficulty) {
-	case DIFF_NIGHTMARE:
-		mLevel += 15;
-		if (mLevel > 60)
-			mLevel = 60;
-		break;
-	case DIFF_HELL:
-		if (mLevel >= 24)
-			mLevel += 36;
-		if (mLevel > 60)
-			mLevel = 60;
-		else {
-			mLevel += 25;
-			if (mLevel > 60)
-				mLevel = 60;
-		}
-		break;
-	}
+    int ii = AllocateItem();
+    auto &item = Items[ii];
+    GetSuperItemSpace(position, ii);
+    int uper = monster.isUnique() ? 15 : 1;
 
-	SetupAllItems(*MyPlayer, item, idx, AdvanceRndSeed(), mLevel, uper, onlygood, false, false);
+    int8_t mLevel = monster.data().level;
 
-	if (sendmsg)
-		NetSendCmdPItem(false, CMD_DROPITEM, item.position, item);
-	if (spawn)
-		NetSendCmdPItem(false, CMD_SPAWNITEM, item.position, item);
+    switch (sgGameInitInfo.nDifficulty) 
+    {
+        case DIFF_NIGHTMARE:
+            mLevel += 15;
+            if (mLevel > 60)
+                mLevel = 60;
+            break;
+        case DIFF_HELL:
+            if (mLevel >= 24)
+                mLevel += 36;
+            if (mLevel > 60)
+                mLevel = 60;
+            else 
+            {
+                mLevel += 25;
+                if (mLevel > 60)
+                    mLevel = 60;
+            }
+            break;
+    }
+
+    SetupAllItems(*MyPlayer, item, idx, AdvanceRndSeed(), mLevel, uper, onlygood, false, false);
+
+    if (sendmsg)
+        NetSendCmdPItem(false, CMD_DROPITEM, item.position, item);
+    if (spawn)
+        NetSendCmdPItem(false, CMD_SPAWNITEM, item.position, item);
+
+    // Handle extra drops based on difficulty
+    if (extraDrops == -1)  // This means it's an original call, not a recursive one
+    {
+        switch (sgGameInitInfo.nDifficulty) 
+        {
+            case DIFF_NIGHTMARE:
+                extraDrops = 1;  // One extra item for Nightmare
+                break;
+            case DIFF_HELL:
+                extraDrops = 2;  // Two extra items for Hell
+                break;
+            default:
+                extraDrops = 0;  // No extra items for other difficulties
+                break;
+        }
+    }
+
+    // If we have any extra drops remaining, recursively spawn another item
+    if (extraDrops > 0)
+    {
+        extraDrops--;  // Decrease the count of extra drops
+        SpawnItem(monster, position, sendmsg, spawn);
+    }
+    else if(extraDrops == 0)
+    {
+        // Reset the extraDrops variable after all recursive calls are finished
+        extraDrops = -1;
+    }
 }
 
 void CreateRndItem(Point position, bool onlygood, bool sendmsg, bool delta)
@@ -4689,6 +4732,11 @@ void CreateMagicArmor(Point position, ItemType itemType, int icurs, bool sendmsg
 void CreateAmulet(Point position, int lvl, bool sendmsg, bool delta, bool spawn /*= false*/)
 {
 	CreateMagicItem(position, lvl, ItemType::Amulet, IMISC_AMULET, ICURS_AMULET, sendmsg, delta, spawn);
+}
+
+void CreateRing(Point position, int lvl, bool sendmsg, bool delta, bool spawn /*= false*/)
+{
+	CreateMagicItem(position, lvl, ItemType::Ring, IMISC_RING, ICURS_RING, sendmsg, delta, spawn);
 }
 
 void CreateMagicWeapon(Point position, ItemType itemType, int icurs, bool sendmsg, bool delta)

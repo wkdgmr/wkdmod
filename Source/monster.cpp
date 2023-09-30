@@ -856,7 +856,7 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
 		CreateMagicArmor(diablo.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_WAR_HAMMER, sendmsg, false);
 
 	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
@@ -864,6 +864,7 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
 		CreateMagicArmor(diablo.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
+		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_GREAT_SWORD, sendmsg, false);
 		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_WAR_HAMMER, sendmsg, false);
 	}
 
@@ -874,18 +875,7 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 void SpawnLoot(Monster &monster, bool sendmsg)
 {
 	if (monster.type().type == MT_HORKSPWN) {
-		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-			SpawnItem(monster, monster.position.tile, sendmsg);
-
-		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-
-		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-		}
+		SpawnItem(monster, monster.position.tile, sendmsg);
 	}
 
 	if (Quests[Q_GARBUD].IsAvailable() && monster.uniqueType == UniqueMonsterType::Garbud) {
@@ -896,20 +886,27 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 
 		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
 			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
-			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+			CreateTypeItem(monster.position.tile + Displacement { 1, 2 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
 
 		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
 			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
-			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
-			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+			CreateTypeItem(monster.position.tile + Displacement { 1, 2 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
+			CreateTypeItem(monster.position.tile + Displacement { 1, 3 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
 		}
 
 	} else if (monster.uniqueType == UniqueMonsterType::Defiler) {
 
 		SpawnItem(monster, monster.position.tile, sendmsg);
-		SpawnItem(monster, monster.position.tile, sendmsg);
-		SpawnItem(monster, monster.position.tile, sendmsg);
-		SpawnItem(monster, monster.position.tile, sendmsg);
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			CreateRing(monster.position.tile, 20, sendmsg, false);
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			CreateRing(monster.position.tile, 20, sendmsg, false);
+			CreateRing(monster.position.tile, 30, sendmsg, false);
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			CreateRing(monster.position.tile, 20, sendmsg, false);
+			CreateRing(monster.position.tile, 30, sendmsg, false);
+			CreateRing(monster.position.tile, 50, sendmsg, false);
+		}
 
 		if (effect_is_playing(USFX_DEFILER8))
 			stream_stop();
@@ -919,23 +916,19 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 	} else if (monster.uniqueType == UniqueMonsterType::HorkDemon) {
 		if (sgGameInitInfo.bTheoQuest != 0) {
 			SpawnTheodore(monster.position.tile, sendmsg);
-		} else {
-			if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-				CreateAmulet(monster.position.tile, 15, sendmsg, false);
-				SpawnItem(monster, monster.position.tile, sendmsg);
-
-			} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-				CreateAmulet(monster.position.tile, 20, sendmsg, false);
-				SpawnItem(monster, monster.position.tile, sendmsg);
-				SpawnItem(monster, monster.position.tile, sendmsg);
-
-			} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-				CreateAmulet(monster.position.tile, 30, sendmsg, false);
-				SpawnItem(monster, monster.position.tile, sendmsg);
-				SpawnItem(monster, monster.position.tile, sendmsg);
-				SpawnItem(monster, monster.position.tile, sendmsg);
-			}
 		}
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+			CreateAmulet(monster.position.tile, 20, sendmsg, false);
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+			CreateAmulet(monster.position.tile, 20, sendmsg, false);
+			CreateAmulet(monster.position.tile, 30, sendmsg, false);
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+			CreateAmulet(monster.position.tile, 20, sendmsg, false);
+			CreateAmulet(monster.position.tile, 30, sendmsg, false);
+			CreateAmulet(monster.position.tile, 50, sendmsg, false);
+		}
+
 	} else if (monster.type().type == MT_NAKRUL) {
 
 		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
@@ -974,18 +967,7 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 		UberDiabloMonsterIndex = -2;
 
 	} else if (!monster.isPlayerMinion()) {
-		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-			SpawnItem(monster, monster.position.tile, sendmsg);
-
-		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-
-		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-			SpawnItem(monster, monster.position.tile, sendmsg);
-		}
+		SpawnItem(monster, monster.position.tile, sendmsg);
 	}
 }
 
