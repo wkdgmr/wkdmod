@@ -227,6 +227,7 @@ bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Miss
 	if (!monster.isPossibleToHit() || monster.isImmune(t, damageType)) {
 	    if (!((t == MissileID::FireArrow)
 	        || (t == MissileID::WeaponExplosion)
+			|| (t == MissileID::FireballBow)
 	        || (t == MissileID::Fireball && player._pIMisType == 1)
 	        || (t == MissileID::LightningArrow)
 	        || (t == MissileID::LightningBow)
