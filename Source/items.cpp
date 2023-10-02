@@ -3346,8 +3346,12 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 	if (extraDrops != -1) {
 		if ((monster.data().treasure & T_NODROP) != 0)
 			return;
-		onlygood = false;
-		idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
+		if (!monster.isUnique()) {
+			onlygood = false;
+			idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
+		} else  { 
+			idx = RndUItem(&monster);
+		}
 	} else {
 		bool dropsSpecialTreasure = (monster.data().treasure & T_UNIQ) != 0;
 		bool dropBrain = Quests[Q_MUSHROOM]._qactive == QUEST_ACTIVE && Quests[Q_MUSHROOM]._qvar1 == QS_MUSHGIVEN;
@@ -5214,7 +5218,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 			if ((item._itype == ItemType::LightArmor && item._iAC < 45)
 			    || (item._itype == ItemType::MediumArmor && item._iAC < 75)
 			    || (item._itype == ItemType::HeavyArmor && item._iAC < 105)
-			    || (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)) {
+			    || (item._itype == ItemType::Shield && item._iAC < 60)
+				|| (item._itype == ItemType::Staff && item._iAC < 60)
+				|| (item._itype == ItemType::Helm && item._iAC < 60)) {
 				item._iAC += GenerateRnd(3) + 3;
 				break;
 			}
@@ -5249,7 +5255,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 			if ((item._itype == ItemType::LightArmor && item._iAC < 45)
 			    || (item._itype == ItemType::MediumArmor && item._iAC < 75)
 			    || (item._itype == ItemType::HeavyArmor && item._iAC < 105)
-			    || (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)) {
+			    || (item._itype == ItemType::Shield && item._iAC < 60)
+				|| (item._itype == ItemType::Staff && item._iAC < 60)
+				|| (item._itype == ItemType::Helm && item._iAC < 60)) {
 				item._iAC += GenerateRnd(2) + 1;
 				break;
 			}

@@ -224,7 +224,11 @@ bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Miss
 	auto &monster = Monsters[monsterId];
 	const Player &player = Players[pnum];
 
-	if (!monster.isPossibleToHit() || monster.isImmune(t, damageType)) {
+	if (!monster.isPossibleToHit()) {
+		return false;
+	}
+
+	if (monster.isImmune(t, damageType)) {
 		if (!((t == MissileID::FireArrow)
 		        || (t == MissileID::WeaponExplosion)
 		        || (t == MissileID::FireballBow && player._pIMisType == 1 && player.executedSpell.spellId != SpellID::Immolation)
@@ -2846,6 +2850,19 @@ void AddApocalypse(Missile &missile, AddMissileParameter & /*parameter*/)
 
 void AddInferno(Missile &missile, AddMissileParameter &parameter)
 {
+	constexpr int equippedInferno = 4;
+	constexpr int equippedInfernoThunderclap = 7;
+	constexpr int equippedInfernos = 8;
+	constexpr int equippedInfernoTsangs = 104;
+
+	auto IsEquippedInfernoType = [](int misType) {
+		return misType == equippedInferno || misType == equippedInfernoThunderclap || misType == equippedInfernos || misType == equippedInfernoTsangs;
+	};
+
+	auto IsStandardSpellType = [](SpellType type) {
+		return type == SpellType::Spell || type == SpellType::Scroll || type == SpellType::Charges;
+	};
+
 	missile.var2 = 5 * missile._midam;
 	missile.position.start = parameter.dst;
 
@@ -2854,19 +2871,15 @@ void AddInferno(Missile &missile, AddMissileParameter &parameter)
 	missile._mirange = missile.var2 + 20;
 	missile._mlid = AddLight(missile.position.start, 1);
 
+	Player &player = Players[missile._misource];
+
 	if (missile._micaster == TARGET_MONSTERS) {
-		int i = GenerateRnd(Players[missile._misource]._pLevel / 2) + GenerateRnd(missile._mispllvl);
-		int mind = missile._mispllvl + Players[missile._misource]._pLevel / 2;
-		int maxd = (missile._mispllvl * 2) + Players[missile._misource]._pLevel;
-		maxd += maxd / 2 + Players[missile._misource]._pMagic / 2;
-		missile._midam = mind + GenerateRnd(maxd - mind + 1);
-	} else if (Players[missile._misource]._pIMisType == 4 || Players[missile._misource]._pIMisType == 7
-	    || Players[missile._misource]._pIMisType == 8 || Players[missile._misource]._pIMisType == 104) {
-		if (Players[missile._misource].queuedSpell.spellType != SpellType::Spell
-		    && Players[missile._misource].queuedSpell.spellType != SpellType::Scroll
-		    && Players[missile._misource].queuedSpell.spellType != SpellType::Charges) {
-			missile._midam = (Players[missile._misource]._pIFMinDam
-			    + GenerateRnd(Players[missile._misource]._pIFMaxDam - Players[missile._misource]._pIFMinDam));
+		if (IsEquippedInfernoType(player._pIMisType) && !IsStandardSpellType(player.queuedSpell.spellType)) {
+			missile._midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
+		} else {
+			int mind = missile._mispllvl + player._pLevel / 2;
+			int maxd = (missile._mispllvl * 2) + player._pLevel + player._pMagic / 2;
+			missile._midam = mind + GenerateRnd(maxd - mind + 1);
 		}
 	} else {
 		auto &monster = Monsters[missile._misource];
