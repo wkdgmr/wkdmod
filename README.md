@@ -62,7 +62,7 @@ Please report bugs in the #wkdmod channel in the DevilutionX discord, underneath
 - MLVL's have been increased in Nightmare and Hell to allow for slightly better affix pools in the higher difficulties.
 - Wirt's shop price cap has been raised from 200,000 to 300,000. 
 - Items are no longer destroyed at 0 durability, they become disabled and you must repair.
-- Players do not drop items on death, unless you enable **INVADER** mode, more details below.  -1% TOTAL CHARACTER Experience upon death.
+- Players do not drop items on death, unless you enable **INVADER** mode, more details below.  Death Penalty: -25% xp loss of current level progress and items take 50% of their max durability in damage.
 
 - Shared XP in multiplayer games.
 - Character's now have a natural random chance to dodge incoming missiles.  This scales with character level.

@@ -3338,7 +3338,6 @@ Item *SpawnUnique(_unique_items uid, Point position, std::optional<int> level /*
 void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= false*/)
 {
 	static int extraDrops = -1;
-	static std::set<int32_t> usedSeeds;
 
 	_item_indexes idx = IDI_NONE;
 	bool onlygood = true;
@@ -3349,7 +3348,7 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 		if (!monster.isUnique()) {
 			onlygood = false;
 			idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
-		} else  { 
+		} else  {
 			idx = RndUItem(&monster);
 		}
 	} else {
@@ -3413,21 +3412,7 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 		break;
 	}
 
-	int32_t seed;
-	int tries = 0;
-	const int maxTries = 1000;
-
-	do {
-		seed = AdvanceRndSeed();
-		tries++;
-		if (tries > maxTries) {
-			return;
-		}
-	} while (usedSeeds.find(seed) != usedSeeds.end());
-
-	usedSeeds.insert(seed);
-
-	SetupAllItems(*MyPlayer, item, idx, seed, mLevel, uper, onlygood, false, false);
+	SetupAllItems(*MyPlayer, item, idx, AdvanceRndSeed(), mLevel, uper, onlygood, false, false);
 
 	if (sendmsg)
 		NetSendCmdPItem(false, CMD_DROPITEM, item.position, item);
@@ -3450,6 +3435,8 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 
 	if (extraDrops > 0) {
 		extraDrops--;
+		monster.rndItemSeed = AdvanceRndSeed();
+		SetRndSeed(monster.rndItemSeed);
 		SpawnItem(monster, position, sendmsg, spawn);
 	} else if (extraDrops == 0) {
 		extraDrops = -1;
