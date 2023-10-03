@@ -3340,6 +3340,20 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 {
 	static int extraDrops = -1;
 
+	if (extraDrops == -1) {
+		switch (sgGameInitInfo.nDifficulty) {
+		case DIFF_NIGHTMARE:
+			extraDrops = 1;
+			break;
+		case DIFF_HELL:
+			extraDrops = 2;
+			break;
+		default:
+			extraDrops = 0;
+			break;
+		}
+	}
+
 	_item_indexes idx = IDI_NONE;
 	bool onlygood = true;
 
@@ -3419,20 +3433,6 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 		NetSendCmdPItem(false, CMD_DROPITEM, item.position, item);
 	if (spawn)
 		NetSendCmdPItem(false, CMD_SPAWNITEM, item.position, item);
-
-	if (extraDrops == -1) {
-		switch (sgGameInitInfo.nDifficulty) {
-		case DIFF_NIGHTMARE:
-			extraDrops = 1;
-			break;
-		case DIFF_HELL:
-			extraDrops = 2;
-			break;
-		default:
-			extraDrops = 0;
-			break;
-		}
-	}
 
 	if (extraDrops > 0) {
 		extraDrops--;
