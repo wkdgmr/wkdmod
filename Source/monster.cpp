@@ -62,11 +62,11 @@ bool sgbSaveSoundOn;
 
 namespace {
 
-constexpr int NightmareToHitBonus = 120;
-constexpr int HellToHitBonus = 240;
+constexpr int NightmareToHitBonus = 150;
+constexpr int HellToHitBonus = 270;
 
-constexpr int NightmareAcBonus = 70;
-constexpr int HellAcBonus = 130;
+constexpr int NightmareAcBonus = 100;
+constexpr int HellAcBonus = 160;
 
 /** Tracks which missile files are already loaded */
 size_t totalmonsters;
@@ -874,10 +874,6 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 
 void SpawnLoot(Monster &monster, bool sendmsg)
 {
-	if (monster.type().type == MT_HORKSPWN) {
-		SpawnItem(monster, monster.position.tile, sendmsg);
-	}
-
 	if (Quests[Q_GARBUD].IsAvailable() && monster.uniqueType == UniqueMonsterType::Garbud) {
 
 		CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
@@ -3228,22 +3224,16 @@ void PrepareUniqueMonst(Monster &monster, UniqueMonsterType monsterType, size_t 
 	}
 
 	if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-		monster.maxHitPoints = 3 * monster.maxHitPoints;
-		if (gbIsHellfire)
-			monster.maxHitPoints += (gbIsMultiplayer ? 100 : 50) << 6;
-		else
-			monster.maxHitPoints += 100 << 6;
+		monster.maxHitPoints = 4 * monster.maxHitPoints;
+		monster.maxHitPoints += (gbIsMultiplayer ? 200 : 100) << 6;
 		monster.hitPoints = monster.maxHitPoints;
 		monster.minDamage = 2 * (monster.minDamage + 2);
 		monster.maxDamage = 2 * (monster.maxDamage + 2);
 		monster.minDamageSpecial = 2 * (monster.minDamageSpecial + 2);
 		monster.maxDamageSpecial = 2 * (monster.maxDamageSpecial + 2);
 	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-		monster.maxHitPoints = 4 * monster.maxHitPoints;
-		if (gbIsHellfire)
-			monster.maxHitPoints += (gbIsMultiplayer ? 200 : 100) << 6;
-		else
-			monster.maxHitPoints += 200 << 6;
+		monster.maxHitPoints = 6 * monster.maxHitPoints;
+		monster.maxHitPoints += (gbIsMultiplayer ? 400 : 200) << 6;
 		monster.hitPoints = monster.maxHitPoints;
 		monster.minDamage = 4 * monster.minDamage + 6;
 		monster.maxDamage = 4 * monster.maxDamage + 6;
@@ -3780,6 +3770,21 @@ void MonsterDeath(Monster &monster, Direction md, bool sendmsg)
 	SetRndSeed(monster.rndItemSeed);
 
 	SpawnLoot(monster, sendmsg);
+	switch (sgGameInitInfo.nDifficulty) {
+	case DIFF_NIGHTMARE:
+		monster.rndItemSeed = AdvanceRndSeed();
+		SetRndSeed(monster.rndItemSeed);
+		SpawnLoot(monster, sendmsg);
+		break;
+	case DIFF_HELL:
+		monster.rndItemSeed = AdvanceRndSeed();
+		SetRndSeed(monster.rndItemSeed);
+		SpawnLoot(monster, sendmsg);
+		monster.rndItemSeed = AdvanceRndSeed();
+		SetRndSeed(monster.rndItemSeed);
+		SpawnLoot(monster, sendmsg);
+		break;
+	}
 
 	if (monster.type().type == MT_DIABLO) {
 		DiabloDeath(monster, true);
@@ -4329,14 +4334,7 @@ void PrintMonstHistory(int mt)
 	if (MonsterKillCounts[mt] >= 30) {
 		int minHP = MonstersData[mt].hitPointsMinimum;
 		int maxHP = MonstersData[mt].hitPointsMaximum;
-		if (!gbIsHellfire && mt == MT_DIABLO) {
-			minHP /= 2;
-			maxHP /= 2;
-		}
-		if (!gbIsMultiplayer) {
-			minHP /= 2;
-			maxHP /= 2;
-		}
+
 		if (minHP < 1)
 			minHP = 1;
 		if (maxHP < 1)
@@ -4344,16 +4342,12 @@ void PrintMonstHistory(int mt)
 
 		int hpBonusNightmare = 200;
 		int hpBonusHell = 400;
-		if (gbIsHellfire) {
-			hpBonusNightmare = (!gbIsMultiplayer ? 100 : 200);
-			hpBonusHell = (!gbIsMultiplayer ? 200 : 400);
-		}
 		if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-			minHP = 3 * minHP + hpBonusNightmare;
-			maxHP = 3 * maxHP + hpBonusNightmare;
+			minHP = 4 * minHP + hpBonusNightmare;
+			maxHP = 4 * maxHP + hpBonusNightmare;
 		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-			minHP = 4 * minHP + hpBonusHell;
-			maxHP = 4 * maxHP + hpBonusHell;
+			minHP = 6 * minHP + hpBonusHell;
+			maxHP = 6 * maxHP + hpBonusHell;
 		}
 		AddPanelString(fmt::format(fmt::runtime(_("Hit Points: {:d}-{:d}")), minHP, maxHP));
 	}

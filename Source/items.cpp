@@ -1735,6 +1735,7 @@ void PrintItemOil(char iDidx)
 	case IMISC_OILPERM:
 		AddPanelString(_("makes an item indestructible"));
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 10%"));
+		AddPanelString(/*xgettext:no-c-format*/ _("requires minimum 200 durability"));
 		break;
 	case IMISC_OILHARD:
 		AddPanelString(_("increase AC"));
@@ -3337,50 +3338,36 @@ Item *SpawnUnique(_unique_items uid, Point position, std::optional<int> level /*
 
 void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= false*/)
 {
-	static int extraDrops = -1;
-	static std::set<int32_t> usedSeeds;
-
-	_item_indexes idx = IDI_NONE;
+	_item_indexes idx;
 	bool onlygood = true;
 
-	if (extraDrops != -1) {
-		if ((monster.data().treasure & T_NODROP) != 0)
-			return;
-		if (!monster.isUnique()) {
-			onlygood = false;
-			idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
-		} else  { 
-			idx = RndUItem(&monster);
-		}
-	} else {
-		bool dropsSpecialTreasure = (monster.data().treasure & T_UNIQ) != 0;
-		bool dropBrain = Quests[Q_MUSHROOM]._qactive == QUEST_ACTIVE && Quests[Q_MUSHROOM]._qvar1 == QS_MUSHGIVEN;
+	bool dropsSpecialTreasure = (monster.data().treasure & T_UNIQ) != 0;
+	bool dropBrain = Quests[Q_MUSHROOM]._qactive == QUEST_ACTIVE && Quests[Q_MUSHROOM]._qvar1 == QS_MUSHGIVEN;
 
-		if (dropsSpecialTreasure && !UseMultiplayerQuests()) {
-			Item *uniqueItem = SpawnUnique(static_cast<_unique_items>(monster.data().treasure & T_MASK), position, std::nullopt, false);
-			if (uniqueItem != nullptr && sendmsg)
-				NetSendCmdPItem(false, CMD_DROPITEM, uniqueItem->position, *uniqueItem);
-			return;
-		} else if (monster.isUnique() || dropsSpecialTreasure) {
-			idx = RndUItem(&monster);
-		} else if (dropBrain && !gbIsMultiplayer) {
+	if (dropsSpecialTreasure && !UseMultiplayerQuests()) {
+		Item *uniqueItem = SpawnUnique(static_cast<_unique_items>(monster.data().treasure & T_MASK), position, std::nullopt, false);
+		if (uniqueItem != nullptr && sendmsg)
+			NetSendCmdPItem(false, CMD_DROPITEM, uniqueItem->position, *uniqueItem);
+		return;
+	} else if (monster.isUnique() || dropsSpecialTreasure) {
+		idx = RndUItem(&monster);
+	} else if (dropBrain && !gbIsMultiplayer) {
+		Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
+		NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
+		idx = IDI_BRAIN;
+	} else {
+		if (dropBrain && gbIsMultiplayer && sendmsg) {
 			Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
 			NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
-			idx = IDI_BRAIN;
-		} else {
-			if (dropBrain && gbIsMultiplayer && sendmsg) {
-				Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
-				NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
-				Point posBrain = GetSuperItemLoc(position);
-				SpawnQuestItem(IDI_BRAIN, posBrain, false, false, true);
-			}
-			if ((monster.data().treasure & T_NODROP) != 0)
-				return;
-			onlygood = false;
-			idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
+			Point posBrain = GetSuperItemLoc(position);
+			SpawnQuestItem(IDI_BRAIN, posBrain, false, false, true);
 		}
+		if ((monster.data().treasure & T_NODROP) != 0)
+			return;
+		onlygood = false;
+		idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
 	}
-
+	
 	if (idx == IDI_NONE)
 		return;
 
@@ -3413,47 +3400,13 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 		break;
 	}
 
-	int32_t seed;
-	int tries = 0;
-	const int maxTries = 1000;
-
-	do {
-		seed = AdvanceRndSeed();
-		tries++;
-		if (tries > maxTries) {
-			return;
-		}
-	} while (usedSeeds.find(seed) != usedSeeds.end());
-
-	usedSeeds.insert(seed);
-
-	SetupAllItems(*MyPlayer, item, idx, seed, mLevel, uper, onlygood, false, false);
+	SetupAllItems(*MyPlayer, item, idx, AdvanceRndSeed(), mLevel, uper, onlygood, false, false);
 
 	if (sendmsg)
 		NetSendCmdPItem(false, CMD_DROPITEM, item.position, item);
 	if (spawn)
 		NetSendCmdPItem(false, CMD_SPAWNITEM, item.position, item);
 
-	if (extraDrops == -1) {
-		switch (sgGameInitInfo.nDifficulty) {
-		case DIFF_NIGHTMARE:
-			extraDrops = 1;
-			break;
-		case DIFF_HELL:
-			extraDrops = 2;
-			break;
-		default:
-			extraDrops = 0;
-			break;
-		}
-	}
-
-	if (extraDrops > 0) {
-		extraDrops--;
-		SpawnItem(monster, position, sendmsg, spawn);
-	} else if (extraDrops == 0) {
-		extraDrops = -1;
-	}
 }
 
 void CreateRndItem(Point position, bool onlygood, bool sendmsg, bool delta)
@@ -5226,7 +5179,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 		}
 	case IMISC_OILPERM:
-		if ((int)(rand() % 10 + 1) == 1) {
+		if (GenerateRnd(10) + 1 == 1) {
 			if (item._iMaxDur != DUR_INDESTRUCTIBLE) {
 				item._iDurability = DUR_INDESTRUCTIBLE;
 				item._iMaxDur = DUR_INDESTRUCTIBLE;
@@ -5239,7 +5192,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 				r = GenerateRnd(2) + 1;
 				item._iMaxDur += r;
 				item._iDurability += r;
-				if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur >= 255) {
+				if (item._iMaxDur >= 255) {
 					item._iDurability = DUR_INDESTRUCTIBLE;
 					item._iMaxDur = DUR_INDESTRUCTIBLE;
 					break;
@@ -5335,7 +5288,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 				item._iAC = 75;
 			if (item._itype == ItemType::HeavyArmor && item._iAC < 105)
 				item._iAC = 105;
-			if (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)
+			if (item._itype == ItemType::Shield && item._iAC < 60 
+			|| item._itype == ItemType::Staff && item._iAC < 60 
+			|| item._itype == ItemType::Helm && item._iAC < 60)
 				item._iAC = 60;
 		}
 		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Axe && item._itype != ItemType::Bow) {

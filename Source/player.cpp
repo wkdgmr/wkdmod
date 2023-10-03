@@ -236,7 +236,11 @@ void StartAttack(Player &player, Direction d, bool includesFirstFrame)
 			skippedAnimationFrames = 3;
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastestAttack)) {
 			skippedAnimationFrames = 4;
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FasterAttack)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FasterAttack)
+		    || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Axe
+		        && player.InvBody[INVLOC_HAND_LEFT]._iMagical == ITEM_QUALITY_UNIQUE
+		        && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
+		        && player._pClass == HeroClass::Barbarian)) {
 			skippedAnimationFrames = 3;
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)) {
 			skippedAnimationFrames = 2;
@@ -245,8 +249,12 @@ void StartAttack(Player &player, Direction d, bool includesFirstFrame)
 			skippedAnimationFrames = 1;
 		}
 	} else {
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FasterAttack)) {
-			// The combination of Faster and Fast Attack doesn't result in more skipped frames, because the second frame skip of Faster Attack is not triggered.
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FasterAttack)
+		    // The combination of Faster and Fast Attack doesn't result in more skipped frames, because the second frame skip of Faster Attack is not triggered.
+		    || (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Axe
+		        && player.InvBody[INVLOC_HAND_LEFT]._iMagical == ITEM_QUALITY_UNIQUE
+		        && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
+		        && player._pClass == HeroClass::Barbarian)) {
 			skippedAnimationFrames = 2;
 		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FastAttack)
 		    || HasInventoryItemWithId(player, IDI_AURIC) && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
@@ -423,6 +431,39 @@ void DropHalfPlayersGold(Player &player)
 	}
 
 	player._pGold /= 2;
+}
+
+void RemoveQuarterProgress(Player &player)
+{
+	uint32_t startofLevel = ExpLvlsTbl[player._pLevel - 1];
+	uint32_t gainedXP = player._pExperience - startofLevel;
+
+	if (gainedXP > 0) {
+		uint32_t lostXP = gainedXP * 0.25;
+		player._pExperience -= lostXP;
+
+		if (player._pExperience < startofLevel) {
+			player._pExperience = startofLevel;
+		}
+	}
+}
+
+void DamageItemsOnDeath(Player &player)
+{
+	for (auto &item : player.InvBody) {
+		if (!item.isEmpty()) {
+			if (item._iDurability != DUR_INDESTRUCTIBLE) {
+				if (item._iDurability > 0) {
+					int halfMax = item._iMaxDur / 2;
+					item._iDurability -= halfMax;
+					if (item._iDurability <= 0) {
+						item._iDurability = 0;
+					}
+					break;
+				}
+			}
+		}
+	}
 }
 
 void InitLevelChange(Player &player)
@@ -1033,9 +1074,11 @@ void WeaponElementalDamageSplash(const Player &player, const Point &position)
 	size_t playerId = player.getId();
 	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
 		AddMissile(position, { 4, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-	} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+	}
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
 		AddMissile(position, { 5, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
-	} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+	}
+	if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
 		AddMissile(position, { 6, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, playerId, 0, 0);
 	}
 }
@@ -1098,9 +1141,11 @@ bool DoAttack(Player &player)
 
 		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::FireDamage)) {
 			AddMissile(position, { 1, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningDamage)) {
 			AddMissile(position, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
-		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+		}
+		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
 			AddMissile(position, { 3, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 		}
 
@@ -3073,6 +3118,8 @@ StartPlayerKill(Player &player, DeathReason deathReason)
 			}
 			if (dropGold) {
 				DropHalfPlayersGold(player);
+				RemoveQuarterProgress(player);
+				DamageItemsOnDeath(player);
 			}
 			if (dropEar) {
 				Item ear;
