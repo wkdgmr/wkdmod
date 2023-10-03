@@ -842,67 +842,27 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 	if (sendmsg)
 		NetSendCmdQuest(true, quest);
 
-	if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BROAD_AXE, sendmsg, false);
-		CreateMagicArmor(diablo.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
-
-	} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
-		CreateMagicArmor(diablo.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_WAR_HAMMER, sendmsg, false);
-
-	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-		CreateMagicWeapon(diablo.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
-		CreateMagicArmor(diablo.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_GREAT_SWORD, sendmsg, false);
-		CreateMagicWeapon(diablo.position.tile, ItemType::Mace, ICURS_WAR_HAMMER, sendmsg, false);
-	}
-
 	Player &myPlayer = *MyPlayer;
 	myPlayer.pDiabloKillLevel = std::max(myPlayer.pDiabloKillLevel, static_cast<uint8_t>(sgGameInitInfo.nDifficulty + 1));
 }
 
 void SpawnLoot(Monster &monster, bool sendmsg)
 {
+	int DiffQlvl = 15;
+	if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+		DiffQlvl = (GenerateRnd(30) + 15);
+	} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+		DiffQlvl = (GenerateRnd(60) + 25);
+	}
+
 	if (Quests[Q_GARBUD].IsAvailable() && monster.uniqueType == UniqueMonsterType::Garbud) {
 
 		CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
-		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
-
-		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
-			CreateTypeItem(monster.position.tile + Displacement { 1, 2 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
-
-		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-			CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
-			CreateTypeItem(monster.position.tile + Displacement { 1, 2 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
-			CreateTypeItem(monster.position.tile + Displacement { 1, 3 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
-		}
 
 	} else if (monster.uniqueType == UniqueMonsterType::Defiler) {
 
 		SpawnItem(monster, monster.position.tile, sendmsg);
-		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-			CreateRing(monster.position.tile, 20, sendmsg, false);
-		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-			CreateRing(monster.position.tile, 20, sendmsg, false);
-			CreateRing(monster.position.tile, 30, sendmsg, false);
-		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-			CreateRing(monster.position.tile, 20, sendmsg, false);
-			CreateRing(monster.position.tile, 30, sendmsg, false);
-			CreateRing(monster.position.tile, 50, sendmsg, false);
-		}
+		CreateRing(monster.position.tile, DiffQlvl, sendmsg, false);
 
 		if (effect_is_playing(USFX_DEFILER8))
 			stream_stop();
@@ -910,57 +870,80 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 		Quests[Q_DEFILER]._qactive = QUEST_DONE;
 		NetSendCmdQuest(true, Quests[Q_DEFILER]);
 	} else if (monster.uniqueType == UniqueMonsterType::HorkDemon) {
+		
 		if (sgGameInitInfo.bTheoQuest != 0) {
 			SpawnTheodore(monster.position.tile, sendmsg);
 		}
+
+		SpawnItem(monster, monster.position.tile, sendmsg);
+		CreateAmulet(monster.position.tile, DiffQlvl, sendmsg, false);
+
+	} else if (monster.type().type == MT_NAKRUL || monster.type().type == MT_DIABLO) {
+
+		std::pair<ItemType, uint8_t> NormalDrops[] = {
+		    { ItemType::Sword, ICURS_TWO_HANDED_SWORD },
+		    { ItemType::Sword, ICURS_LONG_SWORD },
+		    { ItemType::Mace, ICURS_MAUL },
+		    { ItemType::Axe, ICURS_BROAD_AXE },
+		    { ItemType::Staff, ICURS_LONG_STAFF },
+		    { ItemType::Bow, ICURS_LONG_BATTLE_BOW },
+		    { ItemType::HeavyArmor, ICURS_FIELD_PLATE },
+		};
+
+		std::pair<ItemType, uint8_t> NightmareDrops[] = {
+		    { ItemType::Sword, ICURS_GREAT_SWORD },
+		    { ItemType::Sword, ICURS_BROAD_SWORD },
+		    { ItemType::Mace, ICURS_MAUL },
+		    { ItemType::Axe, ICURS_BATTLE_AXE },
+		    { ItemType::Staff, ICURS_COMPOSITE_STAFF },
+		    { ItemType::Bow, ICURS_SHORT_WAR_BOW },
+		    { ItemType::HeavyArmor, ICURS_GOTHIC_PLATE },
+		};
+
+		std::pair<ItemType, uint8_t> HellDrops[] = {
+		    { ItemType::Sword, ICURS_GREAT_SWORD },
+		    { ItemType::Sword, ICURS_BASTARD_SWORD },
+		    { ItemType::Axe, ICURS_GREAT_AXE },
+		    { ItemType::Staff, ICURS_WAR_STAFF },
+		    { ItemType::Bow, ICURS_LONG_WAR_BOW },
+		    { ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL },
+		};
+
+		std::pair<ItemType, uint8_t>* dropArray;
+		int arraySize;
+		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
+		    dropArray = NormalDrops;
+		    arraySize = sizeof(NormalDrops) / sizeof(std::pair<ItemType, uint8_t>);
+		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
+		    dropArray = NightmareDrops;
+		    arraySize = sizeof(NightmareDrops) / sizeof(std::pair<ItemType, uint8_t>);
+		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
+		    dropArray = HellDrops;
+		    arraySize = sizeof(HellDrops) / sizeof(std::pair<ItemType, uint8_t>);
+		}
+
+		int32_t randomIndex;
+		do {
+		    randomIndex = GenerateRnd(arraySize);
+		} while (randomIndex < 0 || randomIndex >= arraySize);
+
 		SpawnItem(monster, monster.position.tile, sendmsg);
 		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-			CreateAmulet(monster.position.tile, 20, sendmsg, false);
-		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-			CreateAmulet(monster.position.tile, 20, sendmsg, false);
-			CreateAmulet(monster.position.tile, 30, sendmsg, false);
-		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-			CreateAmulet(monster.position.tile, 20, sendmsg, false);
-			CreateAmulet(monster.position.tile, 30, sendmsg, false);
-			CreateAmulet(monster.position.tile, 50, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, dropArray[randomIndex].first, dropArray[randomIndex].second, sendmsg, false);
+			CreateMagicWeapon(monster.position.tile, dropArray[randomIndex].first, dropArray[randomIndex].second, sendmsg, false);
+		} else if ((sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE)
+		|| (sgGameInitInfo.nDifficulty == DIFF_HELL)) {
+			CreateMagicWeapon(monster.position.tile, dropArray[randomIndex].first, dropArray[randomIndex].second, sendmsg, false);
 		}
 
-	} else if (monster.type().type == MT_NAKRUL) {
-
-		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_TWO_HANDED_SWORD, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_LONG_SWORD, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_BROAD_AXE, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_LONG_STAFF, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_BATTLE_BOW, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FIELD_PLATE, sendmsg, false);
-
-		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BROAD_SWORD, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Mace, ICURS_MAUL, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_BATTLE_AXE, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_COMPOSITE_STAFF, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_SHORT_WAR_BOW, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_GOTHIC_PLATE, sendmsg, false);
-
-		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-			CreateSpellBook(monster.position.tile, SpellID::Apocalypse, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_GREAT_SWORD, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Sword, ICURS_BASTARD_SWORD, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Axe, ICURS_GREAT_AXE, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Staff, ICURS_WAR_STAFF, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::Bow, ICURS_LONG_WAR_BOW, sendmsg, false);
-			CreateMagicWeapon(monster.position.tile, ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL, sendmsg, false);
+		if (monster.type().type == MT_NAKRUL) {
+			int nSFX = IsUberRoomOpened ? USFX_NAKRUL4 : USFX_NAKRUL5;
+			if (sgGameInitInfo.bCowQuest != 0)
+				nSFX = USFX_NAKRUL6;
+			if (effect_is_playing(nSFX))
+				stream_stop();
+			UberDiabloMonsterIndex = -2;
 		}
-
-		int nSFX = IsUberRoomOpened ? USFX_NAKRUL4 : USFX_NAKRUL5;
-		if (sgGameInitInfo.bCowQuest != 0)
-			nSFX = USFX_NAKRUL6;
-		if (effect_is_playing(nSFX))
-			stream_stop();
-		UberDiabloMonsterIndex = -2;
 
 	} else if (!monster.isPlayerMinion()) {
 		SpawnItem(monster, monster.position.tile, sendmsg);
