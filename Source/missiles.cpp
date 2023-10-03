@@ -234,6 +234,7 @@ bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Miss
 		        || (t == MissileID::FireballBow && player._pIMisType == 1 && player.executedSpell.spellId != SpellID::Immolation)
 		        || (t == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
 		        || (t == MissileID::Fireball && player._pIMisType == 1)
+				|| (t == MissileID::FireWall && HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && player.executedSpell.spellId != SpellID::FireWall)
 		        || (t == MissileID::LightningArrow)
 		        || (t == MissileID::LightningBow && player._pIMisType == 2)
 		        || (t == MissileID::Lightning && player._pIMisType == 2)
@@ -2468,9 +2469,9 @@ void AddGenericMagicMissile(Missile &missile, AddMissileParameter &parameter)
 			int maxDmg = (ScaleSpellEffect(dmgBase + 36, missile._mispllvl)) / 2;
 			missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 			if (player._pIMisType == 5) {
-				if (player.queuedSpell.spellType != SpellType::Spell
-				    && player.queuedSpell.spellType != SpellType::Scroll
-				    && player.queuedSpell.spellType != SpellType::Charges) {
+				if (!(player.executedSpell.spellType == SpellType::Spell
+				    && player.executedSpell.spellType == SpellType::Scroll
+				    && player.executedSpell.spellType == SpellType::Charges)) {
 					missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 				}
 			}
@@ -2874,7 +2875,7 @@ void AddInferno(Missile &missile, AddMissileParameter &parameter)
 	Player &player = Players[missile._misource];
 
 	if (missile._micaster == TARGET_MONSTERS) {
-		if (IsEquippedInfernoType(player._pIMisType) && !IsStandardSpellType(player.queuedSpell.spellType)) {
+		if (IsEquippedInfernoType(player._pIMisType) && !IsStandardSpellType(player.executedSpell.spellType)) {
 			missile._midam = player._pIFMinDam + GenerateRnd(player._pIFMaxDam - player._pIFMinDam);
 		} else {
 			int mind = missile._mispllvl + player._pLevel / 2;
@@ -2941,9 +2942,9 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 	missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	if (player._pIMisType == 100 || player._pIMisType == 103
 	    || player._pIMisType == 104 || player._pIMisType == 200) {
-		if (player.queuedSpell.spellType != SpellType::Spell
-		    && player.queuedSpell.spellType != SpellType::Scroll
-		    && player.queuedSpell.spellType != SpellType::Charges) {
+		if (!(player.executedSpell.spellType == SpellType::Spell
+		    && player.executedSpell.spellType == SpellType::Scroll
+		    && player.executedSpell.spellType == SpellType::Charges)) {
 			missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 		}
 	}
@@ -3647,7 +3648,7 @@ void ProcessSpectralArrow(Missile &missile)
 			break;
 		case 2:
 			mitype = MissileID::LightningBow;
-			dam = player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1);
+			dam = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1));
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			break;
 		case 3:
@@ -4585,9 +4586,9 @@ void ProcessBoneSpirit(Missile &missile)
 	if (player._pIMisType == 9
 	    || HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
 	        && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
-		if (player.queuedSpell.spellType != SpellType::Spell
-		    && player.queuedSpell.spellType != SpellType::Scroll
-		    && player.queuedSpell.spellType != SpellType::Charges) {
+		if (!(player.executedSpell.spellType == SpellType::Spell
+		    && player.executedSpell.spellType == SpellType::Scroll
+		    && player.executedSpell.spellType == SpellType::Charges)) {
 			minDmg = player._pIMMinDam;
 			maxDmg = player._pIMMaxDam;
 			missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
