@@ -870,7 +870,7 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 		Quests[Q_DEFILER]._qactive = QUEST_DONE;
 		NetSendCmdQuest(true, Quests[Q_DEFILER]);
 	} else if (monster.uniqueType == UniqueMonsterType::HorkDemon) {
-		
+
 		if (sgGameInitInfo.bTheoQuest != 0) {
 			SpawnTheodore(monster.position.tile, sendmsg);
 		}
@@ -881,50 +881,50 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 	} else if (monster.type().type == MT_NAKRUL || monster.type().type == MT_DIABLO) {
 
 		std::pair<ItemType, uint8_t> NormalDrops[] = {
-		    { ItemType::Sword, ICURS_TWO_HANDED_SWORD },
-		    { ItemType::Sword, ICURS_LONG_SWORD },
-		    { ItemType::Mace, ICURS_MAUL },
-		    { ItemType::Axe, ICURS_BROAD_AXE },
-		    { ItemType::Staff, ICURS_LONG_STAFF },
-		    { ItemType::Bow, ICURS_LONG_BATTLE_BOW },
-		    { ItemType::HeavyArmor, ICURS_FIELD_PLATE },
+			{ ItemType::Sword, ICURS_TWO_HANDED_SWORD },
+			{ ItemType::Sword, ICURS_LONG_SWORD },
+			{ ItemType::Mace, ICURS_MAUL },
+			{ ItemType::Axe, ICURS_BROAD_AXE },
+			{ ItemType::Staff, ICURS_LONG_STAFF },
+			{ ItemType::Bow, ICURS_LONG_BATTLE_BOW },
+			{ ItemType::HeavyArmor, ICURS_FIELD_PLATE },
 		};
 
 		std::pair<ItemType, uint8_t> NightmareDrops[] = {
-		    { ItemType::Sword, ICURS_GREAT_SWORD },
-		    { ItemType::Sword, ICURS_BROAD_SWORD },
-		    { ItemType::Mace, ICURS_MAUL },
-		    { ItemType::Axe, ICURS_BATTLE_AXE },
-		    { ItemType::Staff, ICURS_COMPOSITE_STAFF },
-		    { ItemType::Bow, ICURS_SHORT_WAR_BOW },
-		    { ItemType::HeavyArmor, ICURS_GOTHIC_PLATE },
+			{ ItemType::Sword, ICURS_GREAT_SWORD },
+			{ ItemType::Sword, ICURS_BROAD_SWORD },
+			{ ItemType::Mace, ICURS_MAUL },
+			{ ItemType::Axe, ICURS_BATTLE_AXE },
+			{ ItemType::Staff, ICURS_COMPOSITE_STAFF },
+			{ ItemType::Bow, ICURS_SHORT_WAR_BOW },
+			{ ItemType::HeavyArmor, ICURS_GOTHIC_PLATE },
 		};
 
 		std::pair<ItemType, uint8_t> HellDrops[] = {
-		    { ItemType::Sword, ICURS_GREAT_SWORD },
-		    { ItemType::Sword, ICURS_BASTARD_SWORD },
-		    { ItemType::Axe, ICURS_GREAT_AXE },
-		    { ItemType::Staff, ICURS_WAR_STAFF },
-		    { ItemType::Bow, ICURS_LONG_WAR_BOW },
-		    { ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL },
+			{ ItemType::Sword, ICURS_GREAT_SWORD },
+			{ ItemType::Sword, ICURS_BASTARD_SWORD },
+			{ ItemType::Axe, ICURS_GREAT_AXE },
+			{ ItemType::Staff, ICURS_WAR_STAFF },
+			{ ItemType::Bow, ICURS_LONG_WAR_BOW },
+			{ ItemType::HeavyArmor, ICURS_FULL_PLATE_MAIL },
 		};
 
-		std::pair<ItemType, uint8_t>* dropArray;
+		std::pair<ItemType, uint8_t> *dropArray;
 		int arraySize;
 		if (sgGameInitInfo.nDifficulty == DIFF_NORMAL) {
-		    dropArray = NormalDrops;
-		    arraySize = sizeof(NormalDrops) / sizeof(std::pair<ItemType, uint8_t>);
+			dropArray = NormalDrops;
+			arraySize = sizeof(NormalDrops) / sizeof(std::pair<ItemType, uint8_t>);
 		} else if (sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE) {
-		    dropArray = NightmareDrops;
-		    arraySize = sizeof(NightmareDrops) / sizeof(std::pair<ItemType, uint8_t>);
+			dropArray = NightmareDrops;
+			arraySize = sizeof(NightmareDrops) / sizeof(std::pair<ItemType, uint8_t>);
 		} else if (sgGameInitInfo.nDifficulty == DIFF_HELL) {
-		    dropArray = HellDrops;
-		    arraySize = sizeof(HellDrops) / sizeof(std::pair<ItemType, uint8_t>);
+			dropArray = HellDrops;
+			arraySize = sizeof(HellDrops) / sizeof(std::pair<ItemType, uint8_t>);
 		}
 
 		int32_t randomIndex;
 		do {
-		    randomIndex = GenerateRnd(arraySize);
+			randomIndex = GenerateRnd(arraySize);
 		} while (randomIndex < 0 || randomIndex >= arraySize);
 
 		SpawnItem(monster, monster.position.tile, sendmsg);
@@ -932,7 +932,7 @@ void SpawnLoot(Monster &monster, bool sendmsg)
 			CreateMagicWeapon(monster.position.tile, dropArray[randomIndex].first, dropArray[randomIndex].second, sendmsg, false);
 			CreateMagicWeapon(monster.position.tile, dropArray[randomIndex].first, dropArray[randomIndex].second, sendmsg, false);
 		} else if ((sgGameInitInfo.nDifficulty == DIFF_NIGHTMARE)
-		|| (sgGameInitInfo.nDifficulty == DIFF_HELL)) {
+		    || (sgGameInitInfo.nDifficulty == DIFF_HELL)) {
 			CreateMagicWeapon(monster.position.tile, dropArray[randomIndex].first, dropArray[randomIndex].second, sendmsg, false);
 		}
 

@@ -2152,11 +2152,13 @@ int Player::GetManaShieldDamageReduction()
 {
 	uint8_t manaShieldLevel = _pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
 
-	if (manaShieldLevel < 6) return 20;
-	else if (manaShieldLevel < 15) return 20 + (manaShieldLevel - 5);
-	else return 30;
+	if (manaShieldLevel < 6)
+		return 20;
+	else if (manaShieldLevel < 15)
+		return 20 + (manaShieldLevel - 5);
+	else
+		return 30;
 }
-
 
 void Player::RestorePartialLife()
 {
@@ -3055,6 +3057,12 @@ __attribute__((no_sanitize("shift-base")))
 void
 StartPlayerKill(Player &player, DeathReason deathReason)
 {
+
+	if (player._pHitPoints <= 0 && leveltype == DTYPE_TOWN) {
+		SetPlayerHitPoints(player, 64);
+		return;
+	}
+
 	if (player._pHitPoints <= 0 && player._pmode == PM_DEATH) {
 		return;
 	}
@@ -3254,7 +3262,6 @@ void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*
 		SyncPlrKill(player, deathReason);
 	}
 }
-
 
 void ApplyLifeDrain(DamageType damageType, Player &player, int dam, int minHP /*= 0*/, int frac /*= 0*/, DeathReason deathReason /*= DeathReason::MonsterOrTrap*/)
 {

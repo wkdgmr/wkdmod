@@ -229,24 +229,24 @@ bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Miss
 	}
 
 	if (monster.isImmune(t, damageType)
-		&& (!((t == MissileID::FireArrow)
-		|| (t == MissileID::WeaponExplosion)
-		|| (t == MissileID::FireballBow && player._pIMisType == 1 && player.executedSpell.spellId != SpellID::Immolation)
-		|| (t == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
-		|| (t == MissileID::Fireball && player._pIMisType == 1)
-		|| (t == MissileID::FireWall && HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && player.executedSpell.spellId != SpellID::FireWall)
-		|| (t == MissileID::LightningArrow)
-		|| (t == MissileID::LightningBow && player._pIMisType == 2)
-		|| (t == MissileID::Lightning && player._pIMisType == 2)
-		|| (t == MissileID::ChainLightning && player._pIMisType == 2 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
-		|| (t == MissileID::ChargedBoltBow)
-		|| (t == MissileID::Firebolt)
-		|| (t == MissileID::Inferno)
-		|| (t == MissileID::ChargedBolt)
-		|| (t == MissileID::FlashBottom)
-		|| (t == MissileID::FlashTop)
-		|| (t == MissileID::Acid && player._pIMisType == 10)))) {
-			return false;
+	    && (!((t == MissileID::FireArrow)
+	        || (t == MissileID::WeaponExplosion)
+	        || (t == MissileID::FireballBow && player._pIMisType == 1 && player.executedSpell.spellId != SpellID::Immolation)
+	        || (t == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
+	        || (t == MissileID::Fireball && player._pIMisType == 1)
+	        || (t == MissileID::FireWall && HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && player.executedSpell.spellId != SpellID::FireWall)
+	        || (t == MissileID::LightningArrow)
+	        || (t == MissileID::LightningBow && player._pIMisType == 2)
+	        || (t == MissileID::Lightning && player._pIMisType == 2)
+	        || (t == MissileID::ChainLightning && player._pIMisType == 2 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
+	        || (t == MissileID::ChargedBoltBow)
+	        || (t == MissileID::Firebolt)
+	        || (t == MissileID::Inferno)
+	        || (t == MissileID::ChargedBolt)
+	        || (t == MissileID::FlashBottom)
+	        || (t == MissileID::FlashTop)
+	        || (t == MissileID::Acid && player._pIMisType == 10)))) {
+		return false;
 	}
 
 	int hit = GenerateRnd(100);
@@ -2469,8 +2469,8 @@ void AddGenericMagicMissile(Missile &missile, AddMissileParameter &parameter)
 			missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 			if (player._pIMisType == 5) {
 				if (!(player.executedSpell.spellType == SpellType::Spell
-				    && player.executedSpell.spellType == SpellType::Scroll
-				    && player.executedSpell.spellType == SpellType::Charges)) {
+				        && player.executedSpell.spellType == SpellType::Scroll
+				        && player.executedSpell.spellType == SpellType::Charges)) {
 					missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 				}
 			}
@@ -2942,8 +2942,8 @@ void AddHolyBolt(Missile &missile, AddMissileParameter &parameter)
 	if (player._pIMisType == 100 || player._pIMisType == 103
 	    || player._pIMisType == 104 || player._pIMisType == 200) {
 		if (!(player.executedSpell.spellType == SpellType::Spell
-		    && player.executedSpell.spellType == SpellType::Scroll
-		    && player.executedSpell.spellType == SpellType::Charges)) {
+		        && player.executedSpell.spellType == SpellType::Scroll
+		        && player.executedSpell.spellType == SpellType::Charges)) {
 			missile._midam = player._pIMMinDam + GenerateRnd(player._pIMMaxDam - player._pIMMinDam + 1);
 		}
 	}
@@ -4586,8 +4586,8 @@ void ProcessBoneSpirit(Missile &missile)
 	    || HasAllOf(BoneArmor._iFlags, ItemSpecialEffect::MagicDamage | ItemSpecialEffect::FastestHitRecovery)
 	        && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)) {
 		if (!(player.executedSpell.spellType == SpellType::Spell
-		    && player.executedSpell.spellType == SpellType::Scroll
-		    && player.executedSpell.spellType == SpellType::Charges)) {
+		        && player.executedSpell.spellType == SpellType::Scroll
+		        && player.executedSpell.spellType == SpellType::Charges)) {
 			minDmg = player._pIMMinDam;
 			maxDmg = player._pIMMaxDam;
 			missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;

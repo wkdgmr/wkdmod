@@ -3367,7 +3367,7 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 		onlygood = false;
 		idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
 	}
-	
+
 	if (idx == IDI_NONE)
 		return;
 
@@ -3406,7 +3406,6 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 		NetSendCmdPItem(false, CMD_DROPITEM, item.position, item);
 	if (spawn)
 		NetSendCmdPItem(false, CMD_SPAWNITEM, item.position, item);
-
 }
 
 void CreateRndItem(Point position, bool onlygood, bool sendmsg, bool delta)
@@ -5172,8 +5171,8 @@ bool ApplyOilToItem(Item &item, Player &player)
 			    || (item._itype == ItemType::MediumArmor && item._iAC < 75)
 			    || (item._itype == ItemType::HeavyArmor && item._iAC < 105)
 			    || (item._itype == ItemType::Shield && item._iAC < 60)
-				|| (item._itype == ItemType::Staff && item._iAC < 60)
-				|| (item._itype == ItemType::Helm && item._iAC < 60)) {
+			    || (item._itype == ItemType::Staff && item._iAC < 60)
+			    || (item._itype == ItemType::Helm && item._iAC < 60)) {
 				item._iAC += GenerateRnd(3) + 3;
 				break;
 			}
@@ -5209,8 +5208,8 @@ bool ApplyOilToItem(Item &item, Player &player)
 			    || (item._itype == ItemType::MediumArmor && item._iAC < 75)
 			    || (item._itype == ItemType::HeavyArmor && item._iAC < 105)
 			    || (item._itype == ItemType::Shield && item._iAC < 60)
-				|| (item._itype == ItemType::Staff && item._iAC < 60)
-				|| (item._itype == ItemType::Helm && item._iAC < 60)) {
+			    || (item._itype == ItemType::Staff && item._iAC < 60)
+			    || (item._itype == ItemType::Helm && item._iAC < 60)) {
 				item._iAC += GenerateRnd(2) + 1;
 				break;
 			}
@@ -5288,9 +5287,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 				item._iAC = 75;
 			if (item._itype == ItemType::HeavyArmor && item._iAC < 105)
 				item._iAC = 105;
-			if (item._itype == ItemType::Shield && item._iAC < 60 
-			|| item._itype == ItemType::Staff && item._iAC < 60 
-			|| item._itype == ItemType::Helm && item._iAC < 60)
+			if (item._itype == ItemType::Shield && item._iAC < 60
+			    || item._itype == ItemType::Staff && item._iAC < 60
+			    || item._itype == ItemType::Helm && item._iAC < 60)
 				item._iAC = 60;
 		}
 		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Axe && item._itype != ItemType::Bow) {
