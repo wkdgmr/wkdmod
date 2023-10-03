@@ -874,10 +874,6 @@ void DiabloDeath(Monster &diablo, bool sendmsg)
 
 void SpawnLoot(Monster &monster, bool sendmsg)
 {
-	if (monster.type().type == MT_HORKSPWN) {
-		SpawnItem(monster, monster.position.tile, sendmsg);
-	}
-
 	if (Quests[Q_GARBUD].IsAvailable() && monster.uniqueType == UniqueMonsterType::Garbud) {
 
 		CreateTypeItem(monster.position.tile + Displacement { 1, 1 }, true, ItemType::Mace, IMISC_NONE, sendmsg, false);
@@ -3774,6 +3770,21 @@ void MonsterDeath(Monster &monster, Direction md, bool sendmsg)
 	SetRndSeed(monster.rndItemSeed);
 
 	SpawnLoot(monster, sendmsg);
+	switch (sgGameInitInfo.nDifficulty) {
+	case DIFF_NIGHTMARE:
+		monster.rndItemSeed = AdvanceRndSeed();
+		SetRndSeed(monster.rndItemSeed);
+		SpawnLoot(monster, sendmsg);
+		break;
+	case DIFF_HELL:
+		monster.rndItemSeed = AdvanceRndSeed();
+		SetRndSeed(monster.rndItemSeed);
+		SpawnLoot(monster, sendmsg);
+		monster.rndItemSeed = AdvanceRndSeed();
+		SetRndSeed(monster.rndItemSeed);
+		SpawnLoot(monster, sendmsg);
+		break;
+	}
 
 	if (monster.type().type == MT_DIABLO) {
 		DiabloDeath(monster, true);
