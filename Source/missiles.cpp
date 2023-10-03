@@ -222,14 +222,16 @@ int ProjectileTrapDamage(Missile &missile)
 bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, MissileID t, DamageType damageType, bool shift)
 {
 	auto &monster = Monsters[monsterId];
-	const Player &player = Players[pnum];
 
 	if (!monster.isPossibleToHit()) {
 		return false;
 	}
 
+	const Player &player = Players[pnum];
+
 	if (monster.isImmune(t, damageType)
-	    && (!((t == MissileID::FireArrow)
+	    && (!((damageType == DamageType::Physical)
+			|| (t == MissileID::FireArrow)
 	        || (t == MissileID::WeaponExplosion)
 	        || (t == MissileID::FireballBow && player._pIMisType == 1 && player.executedSpell.spellId != SpellID::Immolation)
 	        || (t == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
