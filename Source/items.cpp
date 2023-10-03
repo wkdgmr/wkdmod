@@ -3338,63 +3338,36 @@ Item *SpawnUnique(_unique_items uid, Point position, std::optional<int> level /*
 
 void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= false*/)
 {
-	static int extraDrops = -1;
-
-	if (extraDrops == -1) {
-		switch (sgGameInitInfo.nDifficulty) {
-		case DIFF_NIGHTMARE:
-			extraDrops = 1;
-			break;
-		case DIFF_HELL:
-			extraDrops = 2;
-			break;
-		default:
-			extraDrops = 0;
-			break;
-		}
-	}
-
-	_item_indexes idx = IDI_NONE;
+	_item_indexes idx;
 	bool onlygood = true;
 
-	if (extraDrops != -1) {
-		if ((monster.data().treasure & T_NODROP) != 0)
-			return;
-		if (!monster.isUnique()) {
-			onlygood = false;
-			idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
-		} else  {
-			idx = RndUItem(&monster);
-		}
-	} else {
-		bool dropsSpecialTreasure = (monster.data().treasure & T_UNIQ) != 0;
-		bool dropBrain = Quests[Q_MUSHROOM]._qactive == QUEST_ACTIVE && Quests[Q_MUSHROOM]._qvar1 == QS_MUSHGIVEN;
+	bool dropsSpecialTreasure = (monster.data().treasure & T_UNIQ) != 0;
+	bool dropBrain = Quests[Q_MUSHROOM]._qactive == QUEST_ACTIVE && Quests[Q_MUSHROOM]._qvar1 == QS_MUSHGIVEN;
 
-		if (dropsSpecialTreasure && !UseMultiplayerQuests()) {
-			Item *uniqueItem = SpawnUnique(static_cast<_unique_items>(monster.data().treasure & T_MASK), position, std::nullopt, false);
-			if (uniqueItem != nullptr && sendmsg)
-				NetSendCmdPItem(false, CMD_DROPITEM, uniqueItem->position, *uniqueItem);
-			return;
-		} else if (monster.isUnique() || dropsSpecialTreasure) {
-			idx = RndUItem(&monster);
-		} else if (dropBrain && !gbIsMultiplayer) {
+	if (dropsSpecialTreasure && !UseMultiplayerQuests()) {
+		Item *uniqueItem = SpawnUnique(static_cast<_unique_items>(monster.data().treasure & T_MASK), position, std::nullopt, false);
+		if (uniqueItem != nullptr && sendmsg)
+			NetSendCmdPItem(false, CMD_DROPITEM, uniqueItem->position, *uniqueItem);
+		return;
+	} else if (monster.isUnique() || dropsSpecialTreasure) {
+		idx = RndUItem(&monster);
+	} else if (dropBrain && !gbIsMultiplayer) {
+		Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
+		NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
+		idx = IDI_BRAIN;
+	} else {
+		if (dropBrain && gbIsMultiplayer && sendmsg) {
 			Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
 			NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
-			idx = IDI_BRAIN;
-		} else {
-			if (dropBrain && gbIsMultiplayer && sendmsg) {
-				Quests[Q_MUSHROOM]._qvar1 = QS_BRAINSPAWNED;
-				NetSendCmdQuest(true, Quests[Q_MUSHROOM]);
-				Point posBrain = GetSuperItemLoc(position);
-				SpawnQuestItem(IDI_BRAIN, posBrain, false, false, true);
-			}
-			if ((monster.data().treasure & T_NODROP) != 0)
-				return;
-			onlygood = false;
-			idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
+			Point posBrain = GetSuperItemLoc(position);
+			SpawnQuestItem(IDI_BRAIN, posBrain, false, false, true);
 		}
+		if ((monster.data().treasure & T_NODROP) != 0)
+			return;
+		onlygood = false;
+		idx = RndItemForMonsterLevel(monster.level(sgGameInitInfo.nDifficulty));
 	}
-
+	
 	if (idx == IDI_NONE)
 		return;
 
@@ -3434,14 +3407,6 @@ void SpawnItem(Monster &monster, Point position, bool sendmsg, bool spawn /*= fa
 	if (spawn)
 		NetSendCmdPItem(false, CMD_SPAWNITEM, item.position, item);
 
-	if (extraDrops > 0) {
-		extraDrops--;
-		monster.rndItemSeed = AdvanceRndSeed();
-		SetRndSeed(monster.rndItemSeed);
-		SpawnItem(monster, position, sendmsg, spawn);
-	} else if (extraDrops == 0) {
-		extraDrops = -1;
-	}
 }
 
 void CreateRndItem(Point position, bool onlygood, bool sendmsg, bool delta)
@@ -5323,7 +5288,9 @@ bool ApplyOilToItem(Item &item, Player &player)
 				item._iAC = 75;
 			if (item._itype == ItemType::HeavyArmor && item._iAC < 105)
 				item._iAC = 105;
-			if (item._itype == ItemType::Shield || item._itype == ItemType::Staff || item._itype == ItemType::Helm && item._iAC < 60)
+			if (item._itype == ItemType::Shield && item._iAC < 60 
+			|| item._itype == ItemType::Staff && item._iAC < 60 
+			|| item._itype == ItemType::Helm && item._iAC < 60)
 				item._iAC = 60;
 		}
 		if (item._iLoc == ILOC_TWOHAND && item._itype != ItemType::Axe && item._itype != ItemType::Bow) {
