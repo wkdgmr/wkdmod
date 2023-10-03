@@ -2150,15 +2150,17 @@ bool Player::isWalking() const
 
 int Player::GetManaShieldDamageReduction()
 {
-	uint8_t manaShieldLevel = _pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
-	if (manaShieldLevel <= 15) {
-		// Starting at 20% and increasing to 35% from level 1 to 15
-		return 20 + (manaShieldLevel - 1) * (35 - 20) / 14;
-	} else {
-		// Starting at 36% and increasing by 2% per level to 50% from level 16
-		return 35 + std::min((manaShieldLevel - 15) * 2, 15);
-	}
+    uint8_t manaShieldLevel = _pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
+
+    if (manaShieldLevel <= 5) {
+        return 20;
+    } else if (manaShieldLevel <= 15) {
+        return 20 + (manaShieldLevel - 5);
+    } else {
+        return 30;
+    }
 }
+
 
 void Player::RestorePartialLife()
 {
@@ -3199,52 +3201,63 @@ void StripTopGold(Player &player)
 
 void ApplyPlrDamage(DamageType damageType, Player &player, int dam, int minHP /*= 0*/, int frac /*= 0*/, DeathReason deathReason /*= DeathReason::MonsterOrTrap*/)
 {
-	int totalDamage = (dam << 6) + frac;
-	if (&player == MyPlayer && player._pHitPoints > 0) {
-		AddFloatingNumber(damageType, player, totalDamage);
-	}
-	if (totalDamage > 0 && player.pManaShield) {
-		uint8_t manaShieldLevel = player._pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
-		int damageAfterReduction = totalDamage * player.GetManaShieldDamageReduction() / 100;
-		int damageRedirectedToMana = 0;
-		if (manaShieldLevel <= 15) {
-			damageRedirectedToMana = damageAfterReduction * (30 + (manaShieldLevel - 1) * (75 - 30) / 14) / 100; // up to 75% at level 15
-		} else {
-			damageRedirectedToMana = damageAfterReduction * (75 + std::min((manaShieldLevel - 15) * 2, 30)) / 100; // additional 2% per level, capped at 90%
-		}
-		totalDamage = damageAfterReduction - damageRedirectedToMana;
-		if (&player == MyPlayer)
-			RedrawComponent(PanelDrawComponent::Mana);
-		if (player._pMana >= damageRedirectedToMana) {
-			player._pMana -= damageRedirectedToMana;
-			player._pManaBase -= damageRedirectedToMana;
-		} else {
-			totalDamage += player._pMana;
-			player._pMana = 0;
-			player._pManaBase = player._pMaxManaBase - player._pMaxMana;
-			if (&player == MyPlayer)
-				NetSendCmd(true, CMD_REMSHIELD);
-		}
-	}
+    int totalDamage = (dam << 6) + frac;
 
-	if (totalDamage == 0)
-		return;
+    if (&player == MyPlayer && player._pHitPoints > 0) {
+        AddFloatingNumber(damageType, player, totalDamage);
+    }
 
-	RedrawComponent(PanelDrawComponent::Health);
-	player._pHitPoints -= totalDamage;
-	player._pHPBase -= totalDamage;
-	if (player._pHitPoints > player._pMaxHP) {
-		player._pHitPoints = player._pMaxHP;
-		player._pHPBase = player._pMaxHPBase;
-	}
-	int minHitPoints = minHP << 6;
-	if (player._pHitPoints < minHitPoints) {
-		SetPlayerHitPoints(player, minHitPoints);
-	}
-	if (player._pHitPoints >> 6 <= 0) {
-		SyncPlrKill(player, deathReason);
-	}
+    if (player.pManaShield) {
+        uint8_t manaShieldLevel = player._pSplLvl[static_cast<int8_t>(SpellID::ManaShield)];
+        int damageAfterReduction = totalDamage * (100 - player.GetManaShieldDamageReduction()) / 100;
+        int damageRedirectedToMana = 0;
+
+        if (manaShieldLevel <= 14) {
+            damageRedirectedToMana = damageAfterReduction * (30 + 3 * manaShieldLevel) / 100;
+        } else if (manaShieldLevel == 15) {
+            damageRedirectedToMana = damageAfterReduction * 75 / 100;
+        } else {
+            damageRedirectedToMana = damageAfterReduction * (75 + (manaShieldLevel - 15)) / 100;
+        }
+
+        if (&player == MyPlayer)
+            RedrawComponent(PanelDrawComponent::Mana);
+
+        if (player._pMana >= damageRedirectedToMana) {
+            player._pMana -= damageRedirectedToMana;
+            player._pManaBase -= damageRedirectedToMana;
+        } else {
+            int residualDamage = damageRedirectedToMana - player._pMana;
+            damageAfterReduction += residualDamage;
+
+            player._pMana = 0;
+            player._pManaBase = player._pMaxManaBase - player._pMaxMana;
+            if (&player == MyPlayer)
+                NetSendCmd(true, CMD_REMSHIELD);
+        }
+        
+        totalDamage = damageAfterReduction;
+    }
+
+    if (totalDamage == 0)
+        return;
+
+    RedrawComponent(PanelDrawComponent::Health);
+    player._pHitPoints -= totalDamage;
+    player._pHPBase -= totalDamage;
+    if (player._pHitPoints > player._pMaxHP) {
+        player._pHitPoints = player._pMaxHP;
+        player._pHPBase = player._pMaxHPBase;
+    }
+    int minHitPoints = minHP << 6;
+    if (player._pHitPoints < minHitPoints) {
+        SetPlayerHitPoints(player, minHitPoints);
+    }
+    if (player._pHitPoints >> 6 <= 0) {
+        SyncPlrKill(player, deathReason);
+    }
 }
+
 
 void ApplyLifeDrain(DamageType damageType, Player &player, int dam, int minHP /*= 0*/, int frac /*= 0*/, DeathReason deathReason /*= DeathReason::MonsterOrTrap*/)
 {
