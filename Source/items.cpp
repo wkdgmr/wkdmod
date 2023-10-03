@@ -1735,6 +1735,7 @@ void PrintItemOil(char iDidx)
 	case IMISC_OILPERM:
 		AddPanelString(_("makes an item indestructible"));
 		AddPanelString(/*xgettext:no-c-format*/ _("Chance of Success 10%"));
+		AddPanelString(/*xgettext:no-c-format*/ _("requires minimum 200 durability"));
 		break;
 	case IMISC_OILHARD:
 		AddPanelString(_("increase AC"));
@@ -5213,7 +5214,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 			}
 		}
 	case IMISC_OILPERM:
-		if ((int)(rand() % 10 + 1) == 1) {
+		if (GenerateRnd(10) + 1 == 1) {
 			if (item._iMaxDur != DUR_INDESTRUCTIBLE) {
 				item._iDurability = DUR_INDESTRUCTIBLE;
 				item._iMaxDur = DUR_INDESTRUCTIBLE;
@@ -5226,7 +5227,7 @@ bool ApplyOilToItem(Item &item, Player &player)
 				r = GenerateRnd(2) + 1;
 				item._iMaxDur += r;
 				item._iDurability += r;
-				if (item._iMaxDur != DUR_INDESTRUCTIBLE && item._iMaxDur >= 255) {
+				if (item._iMaxDur >= 255) {
 					item._iDurability = DUR_INDESTRUCTIBLE;
 					item._iMaxDur = DUR_INDESTRUCTIBLE;
 					break;
