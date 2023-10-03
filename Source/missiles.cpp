@@ -228,26 +228,25 @@ bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Miss
 		return false;
 	}
 
-	if (monster.isImmune(t, damageType)) {
-		if (!((t == MissileID::FireArrow)
-		        || (t == MissileID::WeaponExplosion)
-		        || (t == MissileID::FireballBow && player._pIMisType == 1 && player.executedSpell.spellId != SpellID::Immolation)
-		        || (t == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
-		        || (t == MissileID::Fireball && player._pIMisType == 1)
-				|| (t == MissileID::FireWall && HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && player.executedSpell.spellId != SpellID::FireWall)
-		        || (t == MissileID::LightningArrow)
-		        || (t == MissileID::LightningBow && player._pIMisType == 2)
-		        || (t == MissileID::Lightning && player._pIMisType == 2)
-		        || (t == MissileID::ChainLightning && player._pIMisType == 2 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
-		        || (t == MissileID::ChargedBoltBow)
-		        || (t == MissileID::Firebolt)
-		        || (t == MissileID::Inferno)
-		        || (t == MissileID::ChargedBolt)
-		        || (t == MissileID::FlashBottom)
-		        || (t == MissileID::FlashTop)
-		        || (t == MissileID::Acid && player._pIMisType == 10))) {
+	if (monster.isImmune(t, damageType)
+		&& (!((t == MissileID::FireArrow)
+		|| (t == MissileID::WeaponExplosion)
+		|| (t == MissileID::FireballBow && player._pIMisType == 1 && player.executedSpell.spellId != SpellID::Immolation)
+		|| (t == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
+		|| (t == MissileID::Fireball && player._pIMisType == 1)
+		|| (t == MissileID::FireWall && HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && player.executedSpell.spellId != SpellID::FireWall)
+		|| (t == MissileID::LightningArrow)
+		|| (t == MissileID::LightningBow && player._pIMisType == 2)
+		|| (t == MissileID::Lightning && player._pIMisType == 2)
+		|| (t == MissileID::ChainLightning && player._pIMisType == 2 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
+		|| (t == MissileID::ChargedBoltBow)
+		|| (t == MissileID::Firebolt)
+		|| (t == MissileID::Inferno)
+		|| (t == MissileID::ChargedBolt)
+		|| (t == MissileID::FlashBottom)
+		|| (t == MissileID::FlashTop)
+		|| (t == MissileID::Acid && player._pIMisType == 10)))) {
 			return false;
-		}
 	}
 
 	int hit = GenerateRnd(100);
