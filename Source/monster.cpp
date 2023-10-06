@@ -4754,10 +4754,11 @@ bool Monster::isImmune(Missile &missile, MissileID missileType, DamageType missi
 
 		immune = !(missileType == MissileID::FireArrow
 		    || missileType == MissileID::WeaponExplosion
-		    || missileType == MissileID::FireballBow && player._pIMisType == 1 && player.executedSpell.spellId != SpellID::Immolation
-		    || missileType == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
+		    || missileType == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) 
+				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.executedSpell.spellId == SpellID::Immolation
+		    || missileType == MissileID::FireballBow && player._pIMisType == 1 && player._pmode != PM_SPELL
 		    || missileType == MissileID::Fireball && player._pIMisType == 1
-		    || missileType == MissileID::FireWall && HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && player.executedSpell.spellId != SpellID::FireWall
+		    || missileType == MissileID::FireWall && HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && player.executedSpell.spellId == SpellID::FireWall
 		    || missileType == MissileID::Firebolt
 		    || missileType == MissileID::Inferno);
 
@@ -4767,7 +4768,8 @@ bool Monster::isImmune(Missile &missile, MissileID missileType, DamageType missi
 		    || missileType == MissileID::WeaponExplosion
 		    || missileType == MissileID::LightningBow && player._pIMisType == 2
 		    || missileType == MissileID::Lightning && player._pIMisType == 2
-		    || missileType == MissileID::ChainLightning && player._pIMisType == 2 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
+		    || missileType == MissileID::ChainLightning && player._pIMisType == 2 
+				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
 		    || missileType == MissileID::ChargedBoltBow
 		    || missileType == MissileID::FlashBottom
 		    || missileType == MissileID::FlashTop);
