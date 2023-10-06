@@ -889,8 +889,8 @@ void GetDamageAmt(SpellID i, int *mind, int *maxd)
 	case SpellID::RuneOfImmolation:
 	case SpellID::Nova:
 	case SpellID::RuneOfNova:
-		*mind = (ScaleSpellEffect((myPlayer._pLevel + 5) / 2, sl) * 5) / 3;
-		*maxd = (ScaleSpellEffect((myPlayer._pLevel + 5) / 2, sl) * 5) / 3;
+		*mind = (ScaleSpellEffect((myPlayer._pLevel + 5) / 2, sl) * 5) / 6;
+		*maxd = (ScaleSpellEffect((myPlayer._pLevel + 30) / 2, sl) * 5) / 6;
 		break;
 	case SpellID::Inferno:
 		*mind = sl + myPlayer._pLevel / 2;
@@ -2718,8 +2718,8 @@ void AddNova(Missile &missile, AddMissileParameter &parameter)
 
 	if (!missile.IsTrap()) {
 		Player &player = Players[missile._misource];
-		int minDmg = (ScaleSpellEffect((player._pLevel + 5) / 2, missile._mispllvl) * 5) / 3;
-		int maxDmg = (ScaleSpellEffect((player._pLevel + 30) / 2, missile._mispllvl) * 5) / 3;
+		int minDmg = (ScaleSpellEffect((player._pLevel + 5) / 2, missile._mispllvl) * 5) / 6;
+		int maxDmg = (ScaleSpellEffect((player._pLevel + 30) / 2, missile._mispllvl) * 5) / 6;
 		missile._midam = GenerateRnd(maxDmg - minDmg + 1) + minDmg;
 	} else {
 		missile._midam = (currlevel / 2) + GenerateRndSum(3, 3);
@@ -3625,7 +3625,7 @@ void ProcessSpectralArrow(Missile &missile)
 			break;
 		case 2:
 			mitype = MissileID::LightningBow;
-			dam = (player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1));
+			dam = ((player._pILMinDam + GenerateRnd(player._pILMaxDam - player._pILMinDam + 1)) / 6);
 			AddMissile(src, dst, dir, mitype, micaster, id, dam, spllvl);
 			break;
 		case 3:
