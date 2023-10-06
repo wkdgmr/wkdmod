@@ -4736,13 +4736,48 @@ bool Monster::isWalking() const
 	}
 }
 
-bool Monster::isImmune(MissileID missileType, DamageType missileElement) const
+bool Monster::isImmuneTraps(MissileID missileType, DamageType missileElement) const
 {
 	if (((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire)
 	    || ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning)
 	    || ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid)) {
 		return true;
 	}
+}
+
+
+bool Monster::isImmune(Missile &missile, MissileID missileType, DamageType missileElement) const
+{
+    Player &player = Players[missile._misource];
+    bool immune = false;
+
+    if ((resistance & IMMUNE_FIRE) != 0 && missileElement == DamageType::Fire) {
+
+        immune = !(missileType == MissileID::FireArrow
+            || missileType == MissileID::WeaponExplosion
+            || missileType == MissileID::FireballBow && player._pIMisType == 1 && player.executedSpell.spellId != SpellID::Immolation
+            || missileType == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
+            || missileType == MissileID::Fireball && player._pIMisType == 1
+            || missileType == MissileID::FireWall && HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && player.executedSpell.spellId != SpellID::FireWall
+            || missileType == MissileID::Firebolt
+            || missileType == MissileID::Inferno);
+
+    } else if ((resistance & IMMUNE_LIGHTNING) != 0 && missileElement == DamageType::Lightning) {
+
+        immune = !(missileType == MissileID::LightningArrow
+            || missileType == MissileID::WeaponExplosion
+            || missileType == MissileID::LightningBow && player._pIMisType == 2
+            || missileType == MissileID::Lightning && player._pIMisType == 2
+            || missileType == MissileID::ChainLightning && player._pIMisType == 2 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
+            || missileType == MissileID::ChargedBoltBow
+            || missileType == MissileID::FlashBottom
+            || missileType == MissileID::FlashTop);
+
+    } else if ((resistance & IMMUNE_ACID) != 0 && missileElement == DamageType::Acid) {
+        immune = !(missileType == MissileID::Acid && player._pIMisType == 10);
+    }
+
+    return immune;
 }
 
 bool Monster::isResistant(MissileID missileType, DamageType missileElement) const

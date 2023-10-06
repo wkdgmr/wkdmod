@@ -219,40 +219,16 @@ int ProjectileTrapDamage(Missile &missile)
 	return currlevel + GenerateRnd(2 * currlevel);
 }
 
-bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, MissileID t, DamageType damageType, bool shift)
+bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Missile missile, MissileID t, DamageType damageType, bool shift)
 {
 	auto &monster = Monsters[monsterId];
 
-	if (!monster.isPossibleToHit()) {
+	if (!monster.isPossibleToHit() || monster.isImmune(missile, t, damageType))
 		return false;
-	}
-
-	const Player &player = Players[pnum];
-
-	if (monster.isImmune(t, damageType)
-	    && (!((damageType == DamageType::Physical)
-			|| (t == MissileID::FireArrow)
-	        || (t == MissileID::WeaponExplosion)
-	        || (t == MissileID::FireballBow && player._pIMisType == 1 && player.executedSpell.spellId != SpellID::Immolation)
-	        || (t == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
-	        || (t == MissileID::Fireball && player._pIMisType == 1)
-	        || (t == MissileID::FireWall && HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && player.executedSpell.spellId != SpellID::FireWall)
-	        || (t == MissileID::LightningArrow)
-	        || (t == MissileID::LightningBow && player._pIMisType == 2)
-	        || (t == MissileID::Lightning && player._pIMisType == 2)
-	        || (t == MissileID::ChainLightning && player._pIMisType == 2 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower))
-	        || (t == MissileID::ChargedBoltBow)
-	        || (t == MissileID::Firebolt)
-	        || (t == MissileID::Inferno)
-	        || (t == MissileID::ChargedBolt)
-	        || (t == MissileID::FlashBottom)
-	        || (t == MissileID::FlashTop)
-	        || (t == MissileID::Acid && player._pIMisType == 10)))) {
-		return false;
-	}
 
 	int hit = GenerateRnd(100);
 	int hper = 0;
+	const Player &player = Players[pnum];
 	const MissileData &missileData = GetMissileData(t);
 	if (missileData.isArrow()) {
 		hper = player.GetRangedPiercingToHit();
@@ -462,7 +438,7 @@ void CheckMissileCol(Missile &missile, DamageType damageType, int minDamage, int
 			// then the missile can potentially hit this target
 			isMonsterHit = MonsterTrapHit(mid, minDamage, maxDamage, missile._midist, missile._mitype, damageType, isDamageShifted);
 		} else if (IsAnyOf(missile._micaster, TARGET_BOTH, TARGET_MONSTERS)) {
-			isMonsterHit = MonsterMHit(missile._misource, mid, minDamage, maxDamage, missile._midist, missile._mitype, damageType, isDamageShifted);
+			isMonsterHit = MonsterMHit(missile._misource, mid, minDamage, maxDamage, missile._midist, missile, missile._mitype, damageType, isDamageShifted);
 		}
 	}
 
@@ -994,11 +970,11 @@ Direction16 GetDirection16(Point p1, Point p2)
 	return ret;
 }
 
-bool MonsterTrapHit(int monsterId, int mindam, int maxdam, int dist, MissileID t, DamageType damageType, bool shift)
+bool MonsterTrapHit(int monsterId, int mindam, int maxdam, int dist, Missile missile, MissileID t, DamageType damageType, bool shift)
 {
 	auto &monster = Monsters[monsterId];
 
-	if (!monster.isPossibleToHit() || monster.isImmune(t, damageType))
+	if (!monster.isPossibleToHit() || monster.isImmuneTraps(t, damageType))
 		return false;
 
 	int hit = GenerateRnd(100);

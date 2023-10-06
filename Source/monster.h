@@ -420,7 +420,8 @@ struct Monster { // note: missing field _mAFNum
 	 * @brief Is the monster currently walking?
 	 */
 	[[nodiscard]] bool isWalking() const;
-	[[nodiscard]] bool isImmune(MissileID mitype, DamageType missileElement) const;
+	[[nodiscard]] bool isImmune(Missile &missile, MissileID mitype, DamageType missileElement) const;
+	[[nodiscard]] bool isImmuneTraps(MissileID mitype, DamageType missileElement) const;
 	[[nodiscard]] bool isResistant(MissileID mitype, DamageType missileElement) const;
 
 	/**

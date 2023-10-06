@@ -1242,16 +1242,12 @@ bool DoRangeAttack(Player &player)
 			if (player._pIMisType == 1) {
 				mistype = MissileID::SpectralArrow;
 			}
-		}
-
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::LightningArrows)) {
 			mistype = MissileID::LightningArrow;
 			if (player._pIMisType == 2) {
 				mistype = MissileID::SpectralArrow;
 			}
-		}
-
-		if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
+		} else if (HasAnyOf(player._pIFlags, ItemSpecialEffect::MagicDamage)) {
 			switch (player._pIMisType) {
 			case 100:
 			case 5:
@@ -1263,6 +1259,8 @@ bool DoRangeAttack(Player &player)
 				mistype = MissileID::Arrow;
 				break;
 			}
+		} else {
+			mistype = MissileID::Arrow;
 		}
 
 		AddMissile(
