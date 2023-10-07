@@ -282,11 +282,15 @@ bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Miss
 	} else {
 		if (monster.mode != MonsterMode::Petrified && missileData.isArrow() && HasAnyOf(player._pIFlags, ItemSpecialEffect::Knockback)) {
 			M_GetKnockback(monster);
+			missile.var6 = monster.position.old.x;
+			missile.var7 = monster.position.old.y;
 		} else if (monster.mode != MonsterMode::Petrified && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow
 		    && player.InvBody[INVLOC_HAND_LEFT]._iMagical == ITEM_QUALITY_UNIQUE) {
 			if (HasAllOf(player._pIFlags, ItemSpecialEffect::FastestAttack | ItemSpecialEffect::Empower)        // Empowered Windforce
 			    || HasAllOf(player._pIFlags, ItemSpecialEffect::MultipleArrows | ItemSpecialEffect::Empower)) { // Empowered Gnat Sting
 				M_GetKnockback(monster);
+				missile.var6 = monster.position.old.x;
+				missile.var7 = monster.position.old.y;
 			}
 		}
 		if (monster.type().type != MT_GOLEM)
@@ -446,14 +450,6 @@ void CheckMissileCol(Missile &missile, DamageType damageType, int minDamage, int
 		if (!dontDeleteOnCollision)
 			missile._mirange = 0;
 		missile._miHitFlag = true;
-		if (missile._mitype == MissileID::FireArrow 
-		|| missile._mitype == MissileID::LightningArrow) {
-			Point c = missile.position.tile;
-			auto *monster = FindClosest(c, 1);
-			if (monster != nullptr) {
-				missile.position.tile = monster->position.tile;
-			}
-		}
 	}
 
 	bool isPlayerHit = false;
@@ -3066,6 +3062,7 @@ Missile *AddMissile(Point src, Point dst, Direction midir, MissileID mitype,
 
 void ProcessElementalArrow(Missile &missile)
 {
+	Point knockbackElement;
 	missile._mirange--;
 	if (missile._miAnimType == MissileGraphicID::ChargedBolt || missile._miAnimType == MissileGraphicID::MagmaBallExplosion) {
 		ChangeLight(missile._mlid, missile.position.tile, missile._miAnimFrame + 5);
@@ -3091,6 +3088,9 @@ void ProcessElementalArrow(Missile &missile)
 			maxd = GenerateRnd(10) + 1 + currlevel * 2;
 		}
 		MoveMissileAndCheckMissileCol(missile, DamageType::Physical, mind, maxd, true, false);
+		if (missile.var6 != -1 && missile.var7 != -1) {
+			Point knockbackElement = { missile.var6, missile.var7 };
+		}
 		if (missile._mirange == 0) {
 			missile._mimfnum = 0;
 			missile._mirange = missile._miAnimLen - 1;
@@ -3132,7 +3132,11 @@ void ProcessElementalArrow(Missile &missile)
 				break;
 			}
 			SetMissAnim(missile, eAnim);
-			CheckMissileCol(missile, damageType, eMind, eMaxd, false, missile.position.tile, true);
+        	if (missile.var6 != -1 && missile.var7 != -1) {
+        	    CheckMissileCol(missile, damageType, eMind, eMaxd, false, knockbackElement, true);
+        	} else {
+        	    CheckMissileCol(missile, damageType, eMind, eMaxd, false, missile.position.tile, true);
+        	}
 		} else {
 			if (missile.position.tile != Point { missile.var1, missile.var2 }) {
 				missile.var1 = missile.position.tile.x;
