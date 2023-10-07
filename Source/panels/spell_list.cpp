@@ -162,11 +162,11 @@ void DrawSpellList(const Surface &out)
 			    || spellId == SpellID::Inferno
 			    || spellId == SpellID::Guardian
 			    || spellId == SpellID::ChainLightning && myPlayer._pIMisType == 2 && myPlayer.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff
-					&& HasAnyOf(myPlayer._pIFlags, ItemSpecialEffect::Empower)
+			        && HasAnyOf(myPlayer._pIFlags, ItemSpecialEffect::Empower)
 			    || spellId == SpellID::Lightning && myPlayer._pIMisType == 2
 			    || spellId == SpellID::Fireball && myPlayer._pIMisType == 1
 			    || spellId == SpellID::Immolation && myPlayer._pIMisType == 1 && myPlayer.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff
-					&& HasAnyOf(myPlayer._pIFlags, ItemSpecialEffect::Empower)) {
+			        && HasAnyOf(myPlayer._pIFlags, ItemSpecialEffect::Empower)) {
 				AddPanelString(_("Pierces immunities"));
 			}
 			if (spellLevel == 0)

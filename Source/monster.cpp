@@ -4754,13 +4754,13 @@ bool Monster::isImmune(Missile &missile, MissileID missileType, DamageType missi
 
 		immune = !(missileType == MissileID::FireArrow
 		    || missileType == MissileID::WeaponExplosion
-			// Spell piercing enabled for Immolation if holding Immolator and have Empowered affix amulet equipped
-		    || missileType == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower) 
-				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.executedSpell.spellId == SpellID::Immolation
+		    // Spell piercing enabled for Immolation if holding Immolator and have Empowered affix amulet equipped
+		    || missileType == MissileID::FireballBow && player._pIMisType == 1 && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
+		        && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && player.executedSpell.spellId == SpellID::Immolation
 		    || missileType == MissileID::FireballBow && player._pIMisType == 1 && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow
-				&& !(player.executedSpell.spellId == SpellID::Immolation) // Flambeau
+		        && !(player.executedSpell.spellId == SpellID::Immolation) // Flambeau
 		    || missileType == MissileID::FireballBow && player._pIMisType == 1 && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff
-				&& !(player.executedSpell.spellId == SpellID::Immolation) // Immolator
+		        && !(player.executedSpell.spellId == SpellID::Immolation) // Immolator
 		    || missileType == MissileID::Fireball && player._pIMisType == 1
 		    || missileType == MissileID::FireWall && HasAnyOf(player._pIFlags, ItemSpecialEffect::Thorns) && player.executedSpell.spellId == SpellID::FireWall
 		    || missileType == MissileID::Firebolt
@@ -4772,11 +4772,11 @@ bool Monster::isImmune(Missile &missile, MissileID missileType, DamageType missi
 		    || missileType == MissileID::WeaponExplosion
 		    || missileType == MissileID::LightningBow && player._pIMisType == 2
 		    || missileType == MissileID::Lightning && player._pIMisType == 2
-			// Spell piercing enabled for Chain Lightning if holding Thundercall and have Empowered affix amulet equipped
-		    || missileType == MissileID::ChainLightning && player._pIMisType == 2 
-				&& player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
+		    // Spell piercing enabled for Chain Lightning if holding Thundercall and have Empowered affix amulet equipped
+		    || missileType == MissileID::ChainLightning && player._pIMisType == 2
+		        && player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Staff && HasAnyOf(player._pIFlags, ItemSpecialEffect::Empower)
 		    || missileType == MissileID::ChargedBoltBow
-			|| missileType == MissileID::ChargedBolt
+		    || missileType == MissileID::ChargedBolt
 		    || missileType == MissileID::FlashBottom
 		    || missileType == MissileID::FlashTop);
 

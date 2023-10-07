@@ -288,7 +288,7 @@ bool MonsterMHit(int pnum, int monsterId, int mindam, int maxdam, int dist, Miss
 			    || HasAllOf(player._pIFlags, ItemSpecialEffect::MultipleArrows | ItemSpecialEffect::Empower)) { // Empowered Gnat Sting
 				M_GetKnockback(monster);
 				if (HasAllOf(player._pIFlags, ItemSpecialEffect::FastestAttack | ItemSpecialEffect::Empower)) { // Empowered Windforce
-				AddMissile(monster.position.old, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
+					AddMissile(monster.position.old, { 2, 0 }, Direction::South, MissileID::WeaponExplosion, TARGET_MONSTERS, player.getId(), 0, 0);
 				}
 			}
 		}
@@ -3127,7 +3127,7 @@ void ProcessElementalArrow(Missile &missile)
 				break;
 			}
 			SetMissAnim(missile, eAnim);
-        	CheckMissileCol(missile, damageType, eMind, eMaxd, false, missile.position.tile, true);
+			CheckMissileCol(missile, damageType, eMind, eMaxd, false, missile.position.tile, true);
 		} else {
 			if (missile.position.tile != Point { missile.var1, missile.var2 }) {
 				missile.var1 = missile.position.tile.x;
