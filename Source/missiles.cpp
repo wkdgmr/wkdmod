@@ -3062,6 +3062,7 @@ Missile *AddMissile(Point src, Point dst, Direction midir, MissileID mitype,
 
 void ProcessElementalArrow(Missile &missile)
 {
+	Player &player = Players[missile._misource];
 	Point knockbackElement;
 	missile._mirange--;
 	if (missile._miAnimType == MissileGraphicID::ChargedBolt || missile._miAnimType == MissileGraphicID::MagmaBallExplosion) {
@@ -3088,8 +3089,11 @@ void ProcessElementalArrow(Missile &missile)
 			maxd = GenerateRnd(10) + 1 + currlevel * 2;
 		}
 		MoveMissileAndCheckMissileCol(missile, DamageType::Physical, mind, maxd, true, false);
-		if (missile.var6 != -1 && missile.var7 != -1) {
-			Point knockbackElement = { missile.var6, missile.var7 };
+		if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow
+		    && player.InvBody[INVLOC_HAND_LEFT]._iMagical == ITEM_QUALITY_UNIQUE) {
+			if (HasAllOf(player._pIFlags, ItemSpecialEffect::FastestAttack | ItemSpecialEffect::Empower)) { // Empowered Windforce
+				Point knockbackElement = { missile.var6, missile.var7 };
+			}
 		}
 		if (missile._mirange == 0) {
 			missile._mimfnum = 0;
@@ -3132,8 +3136,11 @@ void ProcessElementalArrow(Missile &missile)
 				break;
 			}
 			SetMissAnim(missile, eAnim);
-        	if (missile.var6 != -1 && missile.var7 != -1) {
-        	    CheckMissileCol(missile, damageType, eMind, eMaxd, false, knockbackElement, true);
+			if (player.InvBody[INVLOC_HAND_LEFT]._itype == ItemType::Bow
+			    && player.InvBody[INVLOC_HAND_LEFT]._iMagical == ITEM_QUALITY_UNIQUE) {
+				if (HasAllOf(player._pIFlags, ItemSpecialEffect::FastestAttack | ItemSpecialEffect::Empower)) { // Empowered Windforce
+					CheckMissileCol(missile, damageType, eMind, eMaxd, false, knockbackElement, true);
+				}
         	} else {
         	    CheckMissileCol(missile, damageType, eMind, eMaxd, false, missile.position.tile, true);
         	}
