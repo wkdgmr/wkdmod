@@ -446,6 +446,14 @@ void CheckMissileCol(Missile &missile, DamageType damageType, int minDamage, int
 		if (!dontDeleteOnCollision)
 			missile._mirange = 0;
 		missile._miHitFlag = true;
+		if (missile._mitype == MissileID::FireArrow 
+		|| missile._mitype == MissileID::LightningArrow) {
+			Point c = missile.position.tile;
+			auto *monster = FindClosest(c, 1);
+			if (monster != nullptr) {
+				missile.position.tile = monster->position.tile;
+			}
+		}
 	}
 
 	bool isPlayerHit = false;
@@ -3134,14 +3142,6 @@ void ProcessElementalArrow(Missile &missile)
 		}
 	}
 	if (missile._mirange == 0) {
-		if (missile._mitype == MissileID::FireArrow 
-		|| missile._mitype == MissileID::LightningArrow) {
-			Point c = missile.position.tile;
-			auto *monster = FindClosest(c, 1);
-			if (monster != nullptr) {
-				missile.position.tile = monster->position.tile;
-			}
-		}
 		missile._miDelFlag = true;
 		AddUnLight(missile._mlid);
 	}
