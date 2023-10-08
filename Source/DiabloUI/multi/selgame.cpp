@@ -74,7 +74,7 @@ bool IsGameCompatible(const GameData &data)
 	    && data.versionMinor == PROJECT_VERSION_MINOR
 	    && data.versionPatch == PROJECT_VERSION_PATCH
 	    && data.programid == GAME_ID
-		&& data.bFriendlyFire == *sgOptions.Gameplay.friendlyFire);
+	    && data.bFriendlyFire == *sgOptions.Gameplay.friendlyFire);
 	return false;
 }
 

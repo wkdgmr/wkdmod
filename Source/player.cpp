@@ -604,7 +604,7 @@ bool DamageWeapon(Player &player, unsigned damageFrequency)
 	}
 
 	if (!player.InvBody[INVLOC_HAND_RIGHT].isEmpty() && player.InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON
-	&& !(player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND)) {
+	    && !(player.InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND)) {
 		if (player.InvBody[INVLOC_HAND_RIGHT]._iDurability == DUR_INDESTRUCTIBLE) {
 			return false;
 		}
