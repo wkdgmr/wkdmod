@@ -18,6 +18,7 @@ Thank you to the invaluable efforts of the DevilutionX community going above and
 - Entkoffeinator
 - Tree
 - Belix (wkdmod is inspired by the efforts of Hellfire modders that came before me)
+- Toothless
 
 (click the banner for current intro trailer)
 <a href="https://www.youtube.com/watch?v=qGFhbjFcxxQ" target="_blank" rel="noopener noreferrer">
@@ -99,7 +100,7 @@ Please report bugs in the #wkdmod channel in the DevilutionX discord, underneath
 - Some items will seem to have more punishing curses on them, but this is only because of how powerful they are and the curses are really there to make it a dangerous item for under leveled characters
 - Some Uniques are simply just going to be better than others, no way to avoid that.  But hopefully everything is at least useful if found in a playthrough even if not the most optimal piece in the long run... also trying to maintain theme of the items as well
 - There have been a ton of unique items given spell-on-strike and bows that shoot spells... explore the dungeon to find these new powerful weapons!
-- - New Item effect: Empowerment (Can be found on the Amulet of Empowerment (Hellfire) or the Amulet of the Horadrim (Diablo))
+- New Item effect: Empowerment (Can be found on the Amulet of Empowerment (Hellfire) and/or the Amulet of the Horadrim (Diablo/Hellfire))
 Many unique items have new EMPOWERED effects when combined with either of the two new powerful amulets waiting for you to discover them!
 
 **SPELL AND ELEMENTAL WEAPON DAMAGE BALANCING**
@@ -135,6 +136,7 @@ Many unique items have new EMPOWERED effects when combined with either of the tw
 **[HELLFIRE ONLY]**
 - Auric Amulet can now be held in your inventory to receive the double gold pile capacity bonus and you no longer have to equip it.
 - Monk is now buffed when wearing Unique, Medium, and Light Armor.  However receives a debuff when wearing non-Unique Heavy Armor (same as Bard).
+- Monk gets fastest attack with unique staffs at level 30 while wearing an empowered affix amulet
 - Buffed Monk's abilities with barehanded and 2H Sword
 - Monk now has Infravision as a class skill
 - Search Books and Search Scrolls no longer drop
