@@ -73,7 +73,8 @@ bool IsGameCompatible(const GameData &data)
 	return (data.versionMajor == PROJECT_VERSION_MAJOR
 	    && data.versionMinor == PROJECT_VERSION_MINOR
 	    && data.versionPatch == PROJECT_VERSION_PATCH
-	    && data.programid == GAME_ID);
+	    && data.programid == GAME_ID
+		&& data.bFriendlyFire == *sgOptions.Gameplay.friendlyFire);
 	return false;
 }
 
