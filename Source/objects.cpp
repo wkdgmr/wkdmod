@@ -2693,7 +2693,7 @@ void OperateShrineCostOfWisdom(Player &player, SpellID spellId, diablo_message m
 		player._pSplLvl[static_cast<int8_t>(spellId)] = newSpellLevel;
 		NetSendCmdParam2(true, CMD_CHANGE_SPELL_LEVEL, static_cast<uint16_t>(spellId), newSpellLevel);
 	}
-	if (player._pBaseMag = 0)
+	if (player._pBaseMag == 0)
 		ModifyPlrVit(player, -2);
 	else
 		ModifyPlrMag(player, -2);
@@ -2767,7 +2767,7 @@ void OperateShrineEerie(Player &player)
 	if (&player != MyPlayer)
 		return;
 
-	if (player._pBaseMag = 0)
+	if (player._pBaseMag == 0)
 		ModifyPlrVit(player, 2);
 	else
 		ModifyPlrMag(player, 2);
@@ -3138,7 +3138,7 @@ void OperateShrineSolar(Player &player)
 		ModifyPlrVit(player, 2);
 	} else if (hour >= 18) {
 		InitDiabloMsg(EMSG_SHRINE_SOLAR3);
-		if (player._pBaseMag = 0)
+		if (player._pBaseMag == 0)
 			ModifyPlrVit(player, 2);
 		else
 			ModifyPlrMag(player, 2);
