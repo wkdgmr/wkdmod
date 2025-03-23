@@ -9,15 +9,15 @@ task prepareKotlinBuildScriptModel {
 
 }
 android {
-	ndkVersion '25.2.9519653'
-	compileSdk 33
+	ndkVersion '27.2.12479018'
+	compileSdk 35
 	defaultConfig {
 		if (buildAsApplication) {
 			applicationId "org.devxmods.wkdmod"
 		}
-		minSdkVersion 18
-		targetSdkVersion 33
-		versionCode 32
+		minSdkVersion 21
+		targetSdkVersion 35
+		versionCode 31
 		versionName project.file('../../VERSION').text.trim()
 		externalNativeBuild {
 			cmake {
@@ -33,6 +33,9 @@ android {
 		}
 	}
 	namespace 'org.diasurgical.devilutionx'
+	buildFeatures {
+		buildConfig true
+	}
 	applicationVariants.all { variant ->
 		tasks["merge${variant.name.capitalize()}Assets"]
 			.dependsOn("externalNativeBuild${variant.name.capitalize()}")
@@ -44,7 +47,7 @@ android {
 		externalNativeBuild {
 			cmake {
 				path '../../CMakeLists.txt'
-				version "3.22.1+"
+				version "3.31.0+"
 				buildStagingDirectory System.env.DevilutionX_Android_StagingDirectory
 			}
 		}

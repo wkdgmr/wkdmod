@@ -117,6 +117,8 @@ set(libdevilutionx_SRCS
   engine/render/scrollrt.cpp
   engine/render/text_render.cpp
 
+  items/validation.cpp
+
   levels/crypt.cpp
   levels/drlg_l1.cpp
   levels/drlg_l2.cpp
@@ -184,6 +186,10 @@ endif()
 
 if(USE_SDL1)
   list(APPEND libdevilutionx_SRCS utils/sdl2_to_1_2_backports.cpp)
+  if(APPLE)
+    enable_language(OBJC)
+    list(APPEND libdevilutionx_SRCS platform/macos_sdl1/SDL_filesystem.m)
+  endif()
 endif()
 
 if(NOT DISABLE_DEMOMODE)

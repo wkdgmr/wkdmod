@@ -520,14 +520,20 @@ void CalcSelfItems(Player &player)
 		const int currdex = std::max(0, da + player._pBaseDex);
 
 		changeflag = false;
+		// Iterate over equipped items and remove stat bonuses if they are not valid
 		for (Item &equipment : EquippedPlayerItemsRange(player)) {
 			if (!equipment._iStatFlag)
 				continue;
 
-			if (currstr >= equipment._iMinStr
-			    && currmag >= equipment._iMinMag
-			    && currdex >= equipment._iMinDex
+			bool isValid = IsItemValid(equipment);
+
+			if (currstr < equipment._iMinStr
+			    || currmag < equipment._iMinMag
+			    || currdex < equipment._iMinDex
 			    && ((equipment._iClass == ICLASS_MISC || equipment._iClass == ICLASS_GOLD || equipment._iClass == ICLASS_QUEST) || equipment._iDurability != 0))
+				isValid = false;
+
+			if (isValid)
 				continue;
 
 			changeflag = true;
@@ -1898,20 +1904,21 @@ void PrintItemMisc(const Item &item)
 	    || (item._iMiscId > IMISC_OILFIRST && item._iMiscId < IMISC_OILLAST)
 	    || (item._iMiscId > IMISC_RUNEFIRST && item._iMiscId < IMISC_RUNELAST)
 	    || item._iMiscId == IMISC_ARENAPOT;
-	const bool isCastOnTarget = (item._iMiscId == IMISC_SCROLLT && item._iSpell != SpellID::Flash)
+	const bool mouseRequiresTarget = (item._iMiscId == IMISC_SCROLLT && item._iSpell != SpellID::Flash)
 	    || (item._iMiscId == IMISC_SCROLL && IsAnyOf(item._iSpell, SpellID::TownPortal, SpellID::Identify));
+	const bool gamepadRequiresTarget = item.isScroll() && TargetsMonster(item._iSpell);
 
 	switch (ControlMode) {
 	case ControlTypes::None:
 		break;
 	case ControlTypes::KeyboardAndMouse:
-		printItemMiscKBM(item, isOil, isCastOnTarget);
+		printItemMiscKBM(item, isOil, mouseRequiresTarget);
 		break;
 	case ControlTypes::VirtualGamepad:
-		printItemMiscGenericGamepad(item, isOil, isCastOnTarget);
+		printItemMiscGenericGamepad(item, isOil, gamepadRequiresTarget);
 		break;
 	case ControlTypes::Gamepad:
-		printItemMiscGamepad(item, isOil, isCastOnTarget);
+		printItemMiscGamepad(item, isOil, gamepadRequiresTarget);
 		break;
 	}
 }
@@ -2028,7 +2035,7 @@ void SpawnOnePremium(Item &premiumItem, int plvl, const Player &player)
 		GetItemBonus(player, premiumItem, plvl / 2, plvl, true, !gbIsHellfire);
 
 		if (!gbIsHellfire) {
-			if (premiumItem._iIvalue <= 140000) {
+			if (premiumItem._iIvalue <= MaxVendorValue) {
 				break;
 			}
 		} else {
@@ -2065,7 +2072,7 @@ void SpawnOnePremium(Item &premiumItem, int plvl, const Player &player)
 				break;
 			}
 			itemValue = itemValue * 4 / 5; // avoids forced int > float > int conversion
-			if (premiumItem._iIvalue <= 200000
+			if (premiumItem._iIvalue <= MaxVendorValueHf
 			    && premiumItem._iMinStr <= strength
 			    && premiumItem._iMinMag <= magic
 			    && premiumItem._iMinDex <= dexterity
@@ -2504,6 +2511,11 @@ bool IsUniqueAvailable(int i)
 	return gbIsHellfire || i <= 89;
 }
 
+void ClearUniqueItemFlags()
+{
+	memset(UniqueItemFlags, 0, sizeof(UniqueItemFlags));
+}
+
 void InitItemGFX()
 {
 	char arglist[64];
@@ -2513,7 +2525,6 @@ void InitItemGFX()
 		*BufCopy(arglist, "items\\", ItemDropNames[i]) = '\0';
 		itemanims[i] = LoadCel(arglist, ItemAnimWidth);
 	}
-	memset(UniqueItemFlags, 0, sizeof(UniqueItemFlags));
 }
 
 void InitItems()
@@ -4237,7 +4248,7 @@ void UseItem(size_t pnum, item_misc_id mid, SpellID spellID, int spellFrom)
 				target = player.position.future + Displacement(player._pdir);
 			// Use CMD_SPELLXY because it's the same behavior as normal casting
 			assert(IsValidSpellFrom(spellFrom));
-			NetSendCmdLocParam4(true, CMD_SPELLXY, target, static_cast<int8_t>(spellID), static_cast<uint8_t>(SpellType::Scroll), spellLevel, static_cast<uint16_t>(spellFrom));
+			NetSendCmdLocParam3(true, CMD_SPELLXY, target, static_cast<int8_t>(spellID), static_cast<uint8_t>(SpellType::Scroll), static_cast<uint16_t>(spellFrom));
 		}
 		break;
 	case IMISC_BOOK: {
@@ -4505,7 +4516,7 @@ void SpawnBoy(int lvl)
 		GetItemBonus(*MyPlayer, boyitem, lvl, 2 * lvl, true, true);
 
 		if (!gbIsHellfire) {
-			if (boyitem._iIvalue > 90000) {
+			if (boyitem._iIvalue > MaxBoyValue) {
 				keepgoing = true; // prevent breaking the do/while loop too early by failing hellfire's condition in while
 				continue;
 			}

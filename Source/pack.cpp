@@ -9,6 +9,7 @@
 
 #include "engine/random.hpp"
 #include "init.h"
+#include "items/validation.h"
 #include "loadsave.h"
 #include "playerdat.hpp"
 #include "plrmsg.h"
@@ -75,24 +76,29 @@ void VerifyGoldSeeds(Player &player)
 	}
 }
 
-bool hasMultipleFlags(uint16_t flags)
-{
-	return (flags & (flags - 1)) > 0;
-}
+} // namespace
 
-bool IsCreationFlagComboValid(uint16_t iCreateInfo)
+bool RecreateHellfireSpellBook(const Player &player, const TItem &packedItem, Item *item)
 {
-	iCreateInfo = iCreateInfo & ~CF_LEVEL;
-	const bool isTownItem = (iCreateInfo & CF_TOWN) != 0;
-	const bool isPregenItem = (iCreateInfo & CF_PREGEN) != 0;
-	const bool isUsefulItem = (iCreateInfo & CF_USEFUL) == CF_USEFUL;
+	Item spellBook {};
+	RecreateItem(player, packedItem, spellBook);
 
-	if (isPregenItem)
-		return false;
-	if (isUsefulItem && (iCreateInfo & ~CF_USEFUL) != 0)
-		return false;
-	if (isTownItem && hasMultipleFlags(iCreateInfo))
-		return false;
+	// Hellfire uses the spell book level when generating items via CreateSpellBook()
+	int spellBookLevel = GetSpellBookLevel(spellBook._iSpell);
+
+	// CreateSpellBook() adds 1 to the spell level for ilvl
+	spellBookLevel++;
+
+	if (spellBookLevel >= 1 && (spellBook._iCreateInfo & CF_LEVEL) == spellBookLevel * 2) {
+		// The ilvl matches the result for a spell book drop, so we confirm the item is legitimate
+		if (item != nullptr)
+			*item = spellBook;
+		return true;
+	}
+
+	ValidateFields(spellBook._iCreateInfo, spellBook.dwBuff, IsDungeonItemValid(spellBook._iCreateInfo, spellBook.dwBuff));
+	if (item != nullptr)
+		*item = spellBook;
 	return true;
 }
 
@@ -394,13 +400,6 @@ void UnPackItem(const ItemPack &packedItem, const Player &player, Item &item, bo
 		item._iMaxDur = packedItem.bMDur;
 		item._iCharges = packedItem.bCh;
 		item._iMaxCharges = packedItem.bMCh;
-
-		RemoveInvalidItem(item);
-
-		if (isHellfire)
-			item.dwBuff |= CF_HELLFIRE;
-		else
-			item.dwBuff &= ~CF_HELLFIRE;
 	}
 }
 
@@ -495,6 +494,8 @@ bool UnPackNetItem(const Player &player, const ItemNetPack &packedItem, Item &it
 		ValidateField(creationFlags, IsTownItemValid(creationFlags));
 	else if ((creationFlags & CF_USEFUL) == CF_UPER15)
 		ValidateFields(creationFlags, dwBuff, IsUniqueMonsterItemValid(creationFlags, dwBuff));
+	else if ((dwBuff & CF_HELLFIRE) != 0 && AllItemsList[idx].iMiscId == IMISC_BOOK)
+		return RecreateHellfireSpellBook(player, packedItem.item, &item);
 	else
 		ValidateFields(creationFlags, dwBuff, IsDungeonItemValid(creationFlags, dwBuff));
 
@@ -516,7 +517,8 @@ bool UnPackNetPlayer(const PlayerNetPack &packed, Player &player)
 
 	int32_t baseHpMax = SDL_SwapLE32(packed.pMaxHPBase);
 	int32_t baseHp = SDL_SwapLE32(packed.pHPBase);
-	ValidateFields(baseHp, baseHpMax, baseHp >= 0 && baseHp <= baseHpMax);
+	int32_t hpMax = SDL_SwapLE32(packed.pMaxHP);
+	ValidateFields(baseHp, baseHpMax, baseHp >= (baseHpMax - hpMax) && baseHp <= baseHpMax);
 
 	int32_t baseManaMax = SDL_SwapLE32(packed.pMaxManaBase);
 	int32_t baseMana = SDL_SwapLE32(packed.pManaBase);
@@ -527,7 +529,7 @@ bool UnPackNetPlayer(const PlayerNetPack &packed, Player &player)
 	ValidateFields(packed.pClass, packed.pBaseDex, packed.pBaseDex <= player.GetMaximumAttributeValue(CharacterAttribute::Dexterity));
 	ValidateFields(packed.pClass, packed.pBaseVit, packed.pBaseVit <= player.GetMaximumAttributeValue(CharacterAttribute::Vitality));
 
-	ValidateField(packed._pNumInv, packed._pNumInv < InventoryGridCells);
+	ValidateField(packed._pNumInv, packed._pNumInv <= InventoryGridCells);
 
 	player._pLevel = packed.pLevel;
 	player.position.tile = position;

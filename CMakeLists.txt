@@ -106,6 +106,12 @@ option(MACOSX_STANDALONE_APP_BUNDLE "Generate a portable app bundle to use on ot
 cmake_dependent_option(DISABLE_TCP "Disable TCP multiplayer option" OFF "NOT NONET" ON)
 cmake_dependent_option(DISABLE_ZERO_TIER "Disable ZeroTier multiplayer option" OFF "NOT NONET" ON)
 
+# Graphics options
+if(NOT USE_SDL1)
+  set(DEVILUTIONX_DISPLAY_TEXTURE_FORMAT "SDL_PIXELFORMAT_RGB888" CACHE STRING "Texture format for DevilutionX textures when using the GPU renderer")
+  mark_as_advanced(DEVILUTIONX_DISPLAY_TEXTURE_FORMAT)
+endif()
+
 # Sound options
 option(NOSOUND "Disable sound support" OFF)
 option(DEVILUTIONX_RESAMPLER_SPEEX "Build with Speex resampler" ON)
@@ -325,7 +331,6 @@ else()
     Source/main.cpp
     Packaging/windows/devilutionx.exe.manifest
     Packaging/windows/devilutionx.rc
-    Packaging/apple/AppIcon.icns
     Packaging/apple/LaunchScreen.storyboard)
 
     if(CMAKE_STRIP AND NOT DEVILUTIONX_DISABLE_STRIP)
@@ -378,11 +383,19 @@ if(APPLE)
     set(MACOSX_BUNDLE_REQUIRED_PLATFORM IPhoneOS)
     set_target_properties(${BIN_TARGET} PROPERTIES XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
     set(CMAKE_OSX_DEPLOYMENT_TARGET "9.0")
-  else()
+  elseif(DARWIN_MAJOR_VERSION GREATER_EQUAL 16)
     set(MACOSX_BUNDLE_REQUIRED_PLATFORM Carbon)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12.0")
   endif()
-  set_target_properties(${BIN_TARGET} PROPERTIES MACOSX_BUNDLE_ICON_FILE "AppIcon.icns")
+  if(DARWIN_MAJOR_VERSION VERSION_LESS 9)
+    # Finder on OSX Tiger can only handle icns files with up to 128x128 icons.
+    set(_icon_file AppIcon_128)
+  else()
+    set(_icon_file AppIcon)
+  endif()
+  target_sources(${BIN_TARGET} PRIVATE "Packaging/apple/${_icon_file}.icns")
+  set_source_files_properties("./Packaging/apple/${_icon_file}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+  set_target_properties(${BIN_TARGET} PROPERTIES MACOSX_BUNDLE_ICON_FILE "${_icon_file}.icns")
   set_target_properties(${BIN_TARGET} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Packaging/apple/Info.plist")
 
   install (TARGETS ${BIN_TARGET} DESTINATION ./)
@@ -506,7 +519,7 @@ if(CPACK AND (APPLE OR BUILD_ASSETS_MPQ OR SRC_DIST))
     if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
       set(SDL2_WIN32_DLLS_DIR "${CMAKE_BINARY_DIR}")
     else()
-      set(SDL2_WIN32_DLLS_DIR "${SDL2_EXEC_PREFIX}/bin")
+      set(SDL2_WIN32_DLLS_DIR "${SDL2_EXEC_PREFIX}")
     endif()
     set(SDL2_WIN32_LICENSES_DIR "${PROJECT_SOURCE_DIR}/Packaging/resources")
 

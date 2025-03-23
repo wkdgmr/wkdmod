@@ -1540,8 +1540,6 @@ void SmithSellEnter()
  */
 void SmithRepairItem(int price)
 {
-	TakePlrsMoney(price);
-
 	int idx = stextvhold + ((stextlhold - stextup) / 4);
 	storehold[idx]._iDurability = storehold[idx]._iMaxDur;
 
@@ -1559,11 +1557,13 @@ void SmithRepairItem(int price)
 		if (i == -4)
 			myPlayer.InvBody[INVLOC_HAND_RIGHT]._iDurability = myPlayer.InvBody[INVLOC_HAND_RIGHT]._iMaxDur;
 		CalcPlrInv(myPlayer, true);
+		TakePlrsMoney(price);
 		return;
 	}
 
 	myPlayer.InvList[i]._iDurability = myPlayer.InvList[i]._iMaxDur;
 	CalcPlrInv(myPlayer, true);
+	TakePlrsMoney(price);
 }
 
 void SmithRepairEnter()
@@ -1696,8 +1696,6 @@ void WitchSellEnter()
  */
 void WitchRechargeItem(int price)
 {
-	TakePlrsMoney(price);
-
 	int idx = stextvhold + ((stextlhold - stextup) / 4);
 	storehold[idx]._iCharges = storehold[idx]._iMaxCharges;
 
@@ -1712,6 +1710,7 @@ void WitchRechargeItem(int price)
 		NetSyncInvItem(myPlayer, i);
 	}
 
+	TakePlrsMoney(price);
 	CalcPlrInv(myPlayer, true);
 }
 
@@ -1764,11 +1763,11 @@ void BoyEnter()
 	StartStore(TalkID::Gossip);
 }
 
-void BoyBuyItem(Item &item)
+void BoyBuyItem(Item &item, int itemPrice)
 {
-	TakePlrsMoney(item._iIvalue);
+	TakePlrsMoney(itemPrice);
 	StoreAutoPlace(item, true);
-	boyitem.clear();
+	item.clear();
 	stextshold = TalkID::Boy;
 	CalcPlrInv(*MyPlayer, true);
 	stextlhold = 12;
@@ -1892,7 +1891,7 @@ void ConfirmEnter(Item &item)
 			WitchRechargeItem(item._iIvalue);
 			break;
 		case TalkID::BoyBuy:
-			BoyBuyItem(item);
+			BoyBuyItem(boyitem, item._iIvalue);
 			break;
 		case TalkID::HealerBuy:
 			HealerBuyItem(item);

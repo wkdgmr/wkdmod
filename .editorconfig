@@ -11,6 +11,9 @@ insert_final_newline = true
 # Visual C++ Code Style settings
 cpp_generate_documentation_comments = doxygen_slash_star
 
+[*.java]
+end_of_line = lf
+
 [*.pot]
 end_of_line = lf
 
@@ -52,6 +55,9 @@ end_of_line = lf
 
 [*.txt]
 end_of_line = crlf
+
+[*.plist]
+end_of_line = lf
 
 [AppRun]
 end_of_line = lf

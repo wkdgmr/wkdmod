@@ -20,6 +20,7 @@
 #include "engine/point.hpp"
 #include "interfac.h"
 #include "items.h"
+#include "items/validation.h"
 #include "levels/gendung.h"
 #include "multi.h"
 #include "spelldat.h"

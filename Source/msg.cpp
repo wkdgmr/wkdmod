@@ -33,6 +33,7 @@
 #include "nthread.h"
 #include "objects.h"
 #include "options.h"
+#include "pack.h"
 #include "pfile.h"
 #include "plrmsg.h"
 #include "spells.h"
@@ -44,7 +45,43 @@
 #include "utils/str_cat.hpp"
 #include "utils/utf8.hpp"
 
+#define ValidateField(logValue, condition)                    \
+	do {                                                      \
+		if (!(condition)) {                                   \
+			LogFailedPacket(#condition, #logValue, logValue); \
+			EventFailedPacket(player._pName);                 \
+			return false;                                     \
+		}                                                     \
+	} while (0)
+
+#define ValidateFields(logValue1, logValue2, condition)                                \
+	do {                                                                               \
+		if (!(condition)) {                                                            \
+			LogFailedPacket(#condition, #logValue1, logValue1, #logValue2, logValue2); \
+			EventFailedPacket(player._pName);                                          \
+			return false;                                                              \
+		}                                                                              \
+	} while (0)
+
 namespace devilution {
+
+void EventFailedPacket(const char *playerName)
+{
+	std::string message = fmt::format("Player '{}' sent an invalid packet.", playerName);
+	EventPlrMsg(message);
+}
+
+template <typename T>
+void LogFailedPacket(const char *condition, const char *name, T value)
+{
+	LogDebug("Remote player packet validation failed: ValidateField({}: {}, {})", name, value, condition);
+}
+
+template <typename T1, typename T2>
+void LogFailedPacket(const char *condition, const char *name1, T1 value1, const char *name2, T2 value2)
+{
+	LogDebug("Remote player packet validation failed: ValidateFields({}: {}, {}: {}, {})", name1, value1, name2, value2, condition);
+}
 
 // #define LOG_RECEIVED_MESSAGES
 
@@ -973,14 +1010,32 @@ bool IsGItemValid(const TCmdGItem &message)
 	return IsItemAvailable(static_cast<_item_indexes>(SDL_SwapLE16(message.def.wIndx)));
 }
 
-bool IsPItemValid(const TCmdPItem &message)
+bool IsPItemValid(const TCmdPItem &message, const Player &player)
 {
 	const Point position { message.x, message.y };
 
 	if (!InDungeonBounds(position))
 		return false;
 
-	return IsItemAvailable(static_cast<_item_indexes>(SDL_SwapLE16(message.def.wIndx)));
+	auto idx = static_cast<_item_indexes>(SDL_SwapLE16(message.def.wIndx));
+
+	if (idx != IDI_EAR) {
+		uint16_t creationFlags = SDL_SwapLE16(message.item.wCI);
+		uint32_t dwBuff = SDL_SwapLE16(message.item.dwBuff);
+
+		if (idx != IDI_GOLD)
+			ValidateField(creationFlags, IsCreationFlagComboValid(creationFlags));
+		if ((creationFlags & CF_TOWN) != 0)
+			ValidateField(creationFlags, IsTownItemValid(creationFlags));
+		else if ((creationFlags & CF_USEFUL) == CF_UPER15)
+			ValidateFields(creationFlags, dwBuff, IsUniqueMonsterItemValid(creationFlags, dwBuff));
+		else if ((dwBuff & CF_HELLFIRE) != 0 && AllItemsList[idx].iMiscId == IMISC_BOOK)
+			return RecreateHellfireSpellBook(player, message.item);
+		else
+			ValidateFields(creationFlags, dwBuff, IsDungeonItemValid(creationFlags, dwBuff));
+	}
+
+	return IsItemAvailable(idx);
 }
 
 void PrepareItemForNetwork(const Item &item, TCmdGItem &message)
@@ -1270,10 +1325,11 @@ size_t OnItemExtra(const TCmd *pCmd, size_t pnum)
 size_t OnPutItem(const TCmd *pCmd, size_t pnum)
 {
 	const auto &message = *reinterpret_cast<const TCmdPItem *>(pCmd);
+	const auto &player = Players[pnum];
 
 	if (gbBufferMsgs == 1) {
 		SendPacket(pnum, &message, sizeof(message));
-	} else if (IsPItemValid(message)) {
+	} else if (IsPItemValid(message, player)) {
 		const Point position { message.x, message.y };
 		Player &player = Players[pnum];
 		bool isSelf = &player == MyPlayer;
@@ -1311,10 +1367,11 @@ size_t OnPutItem(const TCmd *pCmd, size_t pnum)
 size_t OnSyncPutItem(const TCmd *pCmd, size_t pnum)
 {
 	const auto &message = *reinterpret_cast<const TCmdPItem *>(pCmd);
+	const auto &player = Players[pnum];
 
 	if (gbBufferMsgs == 1)
 		SendPacket(pnum, &message, sizeof(message));
-	else if (IsPItemValid(message)) {
+	else if (IsPItemValid(message, player)) {
 		Player &player = Players[pnum];
 		const int32_t dwSeed = SDL_SwapLE32(message.def.dwSeed);
 		const uint16_t wCI = SDL_SwapLE16(message.def.wCI);
@@ -1420,7 +1477,7 @@ bool InitNewSpell(Player &player, uint16_t wParamSpellID, uint16_t wParamSpellTy
 
 size_t OnSpellWall(const TCmd *pCmd, Player &player)
 {
-	const auto &message = *reinterpret_cast<const TCmdLocParam5 *>(pCmd);
+	const auto &message = *reinterpret_cast<const TCmdLocParam4 *>(pCmd);
 	const Point position { message.x, message.y };
 
 	if (gbBufferMsgs == 1)
@@ -1433,7 +1490,7 @@ size_t OnSpellWall(const TCmd *pCmd, Player &player)
 	if (wParamDirection > static_cast<uint16_t>(Direction::SouthEast))
 		return sizeof(message);
 
-	if (!InitNewSpell(player, message.wParam1, message.wParam2, message.wParam5))
+	if (!InitNewSpell(player, message.wParam1, message.wParam2, message.wParam4))
 		return sizeof(message);
 
 	ClrPlrPath(player);
@@ -1441,14 +1498,14 @@ size_t OnSpellWall(const TCmd *pCmd, Player &player)
 	player.destParam1 = position.x;
 	player.destParam2 = position.y;
 	player.destParam3 = wParamDirection;
-	player.destParam4 = SDL_SwapLE16(message.wParam4); // Spell Level
+	player.destParam4 = player.GetSpellLevel(player.queuedSpell.spellId);
 
 	return sizeof(message);
 }
 
 size_t OnSpellTile(const TCmd *pCmd, Player &player)
 {
-	const auto &message = *reinterpret_cast<const TCmdLocParam4 *>(pCmd);
+	const auto &message = *reinterpret_cast<const TCmdLocParam3 *>(pCmd);
 	const Point position { message.x, message.y };
 
 	if (gbBufferMsgs == 1)
@@ -1458,14 +1515,14 @@ size_t OnSpellTile(const TCmd *pCmd, Player &player)
 	if (!InDungeonBounds(position))
 		return sizeof(message);
 
-	if (!InitNewSpell(player, message.wParam1, message.wParam2, message.wParam4))
+	if (!InitNewSpell(player, message.wParam1, message.wParam2, message.wParam3))
 		return sizeof(message);
 
 	ClrPlrPath(player);
 	player.destAction = ACTION_SPELL;
 	player.destParam1 = position.x;
 	player.destParam2 = position.y;
-	player.destParam3 = SDL_SwapLE16(message.wParam3); // Spell Level
+	player.destParam3 = player.GetSpellLevel(player.queuedSpell.spellId);
 
 	return sizeof(message);
 }
@@ -1547,7 +1604,7 @@ size_t OnRangedAttackPlayer(const TCmd *pCmd, Player &player)
 
 size_t OnSpellMonster(const TCmd *pCmd, Player &player)
 {
-	const auto &message = *reinterpret_cast<const TCmdParam5 *>(pCmd);
+	const auto &message = *reinterpret_cast<const TCmdParam4 *>(pCmd);
 
 	if (gbBufferMsgs == 1)
 		return sizeof(message);
@@ -1557,20 +1614,20 @@ size_t OnSpellMonster(const TCmd *pCmd, Player &player)
 	if (monsterIdx >= MaxMonsters)
 		return sizeof(message);
 
-	if (!InitNewSpell(player, message.wParam2, message.wParam3, message.wParam5))
+	if (!InitNewSpell(player, message.wParam2, message.wParam3, message.wParam4))
 		return sizeof(message);
 
 	ClrPlrPath(player);
 	player.destAction = ACTION_SPELLMON;
 	player.destParam1 = monsterIdx;
-	player.destParam2 = SDL_SwapLE16(message.wParam4); // Spell Level
+	player.destParam2 = player.GetSpellLevel(player.queuedSpell.spellId);
 
 	return sizeof(message);
 }
 
 size_t OnSpellPlayer(const TCmd *pCmd, Player &player)
 {
-	const auto &message = *reinterpret_cast<const TCmdParam5 *>(pCmd);
+	const auto &message = *reinterpret_cast<const TCmdParam4 *>(pCmd);
 
 	if (gbBufferMsgs == 1)
 		return sizeof(message);
@@ -1580,13 +1637,13 @@ size_t OnSpellPlayer(const TCmd *pCmd, Player &player)
 	if (playerIdx >= Players.size())
 		return sizeof(message);
 
-	if (!InitNewSpell(player, message.wParam2, message.wParam3, message.wParam5))
+	if (!InitNewSpell(player, message.wParam2, message.wParam3, message.wParam4))
 		return sizeof(message);
 
 	ClrPlrPath(player);
 	player.destAction = ACTION_SPELLPLR;
 	player.destParam1 = playerIdx;
-	player.destParam2 = SDL_SwapLE16(message.wParam4); // Spell Level
+	player.destParam2 = player.GetSpellLevel(player.queuedSpell.spellId);
 
 	return sizeof(message);
 }
@@ -2011,10 +2068,11 @@ size_t OnPlayerLevel(const TCmd *pCmd, size_t pnum)
 size_t OnDropItem(const TCmd *pCmd, size_t pnum)
 {
 	const auto &message = *reinterpret_cast<const TCmdPItem *>(pCmd);
+	const auto &player = Players[pnum];
 
 	if (gbBufferMsgs == 1) {
 		SendPacket(pnum, &message, sizeof(message));
-	} else if (IsPItemValid(message)) {
+	} else if (IsPItemValid(message, player)) {
 		DeltaPutItem(message, { message.x, message.y }, Players[pnum]);
 	}
 
@@ -2024,10 +2082,11 @@ size_t OnDropItem(const TCmd *pCmd, size_t pnum)
 size_t OnSpawnItem(const TCmd *pCmd, size_t pnum)
 {
 	const auto &message = *reinterpret_cast<const TCmdPItem *>(pCmd);
+	const auto &player = Players[pnum];
 
 	if (gbBufferMsgs == 1) {
 		SendPacket(pnum, &message, sizeof(message));
-	} else if (IsPItemValid(message)) {
+	} else if (IsPItemValid(message, player)) {
 		Player &player = Players[pnum];
 		if (player.isOnActiveLevel() && &player != MyPlayer) {
 			SyncDropItem(message);
@@ -2934,29 +2993,6 @@ void NetSendCmdLocParam4(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wPa
 	MyPlayer->UpdatePreviewCelSprite(bCmd, position, wParam1, wParam3);
 }
 
-void NetSendCmdLocParam5(bool bHiPri, _cmd_id bCmd, Point position, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4, uint16_t wParam5)
-{
-	if (WasPlayerCmdAlreadyRequested(bCmd, position, wParam1, wParam2, wParam3, wParam4, wParam5))
-		return;
-
-	TCmdLocParam5 cmd;
-
-	cmd.bCmd = bCmd;
-	cmd.x = position.x;
-	cmd.y = position.y;
-	cmd.wParam1 = SDL_SwapLE16(wParam1);
-	cmd.wParam2 = SDL_SwapLE16(wParam2);
-	cmd.wParam3 = SDL_SwapLE16(wParam3);
-	cmd.wParam4 = SDL_SwapLE16(wParam4);
-	cmd.wParam5 = SDL_SwapLE16(wParam5);
-	if (bHiPri)
-		NetSendHiPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
-	else
-		NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
-
-	MyPlayer->UpdatePreviewCelSprite(bCmd, position, wParam1, wParam3);
-}
-
 void NetSendCmdParam1(bool bHiPri, _cmd_id bCmd, uint16_t wParam1)
 {
 	if (WasPlayerCmdAlreadyRequested(bCmd, {}, wParam1))
@@ -2987,19 +3023,18 @@ void NetSendCmdParam2(bool bHiPri, _cmd_id bCmd, uint16_t wParam1, uint16_t wPar
 		NetSendLoPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 }
 
-void NetSendCmdParam5(bool bHiPri, _cmd_id bCmd, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4, uint16_t wParam5)
+void NetSendCmdParam4(bool bHiPri, _cmd_id bCmd, uint16_t wParam1, uint16_t wParam2, uint16_t wParam3, uint16_t wParam4)
 {
 	if (WasPlayerCmdAlreadyRequested(bCmd, {}, wParam1, wParam2, wParam3, wParam4))
 		return;
 
-	TCmdParam5 cmd;
+	TCmdParam4 cmd;
 
 	cmd.bCmd = bCmd;
 	cmd.wParam1 = SDL_SwapLE16(wParam1);
 	cmd.wParam2 = SDL_SwapLE16(wParam2);
 	cmd.wParam3 = SDL_SwapLE16(wParam3);
 	cmd.wParam4 = SDL_SwapLE16(wParam4);
-	cmd.wParam5 = SDL_SwapLE16(wParam5);
 	if (bHiPri)
 		NetSendHiPri(MyPlayerId, (byte *)&cmd, sizeof(cmd));
 	else

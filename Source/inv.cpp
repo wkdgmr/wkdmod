@@ -1975,6 +1975,7 @@ bool UseInvItem(int cii)
 			if (player.InvList[i]._iMiscId == item->_iMiscId && player.InvList[i]._iSpell == item->_iSpell) {
 				c = i;
 				item = &player.InvList[c];
+				cii = c + INVITEM_INV_FIRST;
 				speedlist = false;
 				break;
 			}
@@ -1987,6 +1988,7 @@ bool UseInvItem(int cii)
 
 				if (!candidate.isEmpty() && candidate._iMiscId == item->_iMiscId && candidate._iSpell == item->_iSpell) {
 					c = i;
+					cii = c + INVITEM_BELT_FIRST;
 					item = &candidate;
 					break;
 				}

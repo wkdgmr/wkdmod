@@ -144,6 +144,7 @@ struct PlayerNetPack {
 };
 #pragma pack(pop)
 
+bool RecreateHellfireSpellBook(const Player &player, const TItem &packedItem, Item *item = nullptr);
 void PackPlayer(PlayerPack &pPack, const Player &player);
 void UnPackPlayer(const PlayerPack &pPack, Player &player);
 void PackNetPlayer(PlayerNetPack &packed, const Player &player);
