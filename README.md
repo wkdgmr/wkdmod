@@ -30,11 +30,13 @@ Thank you to the invaluable efforts of the DevilutionX community going above and
 wkdmod is compatible* with standard DevilutionX characters. Simply copy your character data and stash data into the **devxmods/wkdmod folder in %appdata%/roaming/**
 
 ***WARNING**
-1) Unique Items:  All Unique Items are now available and have been extensively overhauled.  Ice Shank and Hammer of Johlm have been replaced with the Amulet of Empowerment and Tsang's Blessed Hammer. **(Unique's are not forwards or backwards compatible from standard devx/vanilla characters.  If brought into or out of wkdmod they could cause game crashing/character save corruption).**  If you plan on bringing over your character and stash, make sure you make a copy of this stuff and before bringing in the character load up the save and toss out all of your uniques.  There have been many new uniques and effects added.  Play the game to discover them all!
+1) Choose **MULTIPLAYER** to experience how this mod was intended to be played.  Singleplayer is still available to select, but it is buggy and unstable and will most likely be removed as an option if I ever do another release.  You can still have the Singleplayer experience with this mod by choosing **MULTIPLAYER** and selecting Loopback (which means Offline).  You can also play with other wkdmod players over ZeroTier.
 
-2) Magic/Blue Items:  In Hell the player will be able to find all affixes in the dungeon.  There are no longer any items that "can't" be found. **(Magic/Blue Items are intended to be forwards compatible into wkdmod.  There may still be potentially a small percentage of these items that could morph... it's just the nature of what happens when you bring stuff into a mod)**
+2) Unique Items:  All Unique Items are now available and have been extensively overhauled.  Ice Shank and Hammer of Johlm have been replaced with the Amulet of Empowerment and Tsang's Blessed Hammer. **(Unique's are not forwards or backwards compatible from standard devx/vanilla characters.  If brought into or out of wkdmod they could cause game crashing/character save corruption).**  If you plan on bringing over your character and stash, make sure you make a copy of this stuff and before bringing in the character load up the save and toss out all of your uniques.  There have been many new uniques and effects added.  Play the game to discover them all!
 
-3) Oils and Scrolls are **NOT** forwards compatible into wkdmod.
+3) Magic/Blue Items:  In Hell the player will be able to find all affixes in the dungeon.  There are no longer any items that "can't" be found. **(Magic/Blue Items are intended to be forwards compatible into wkdmod.  There may still be potentially a small percentage of these items that could morph... it's just the nature of what happens when you bring stuff into a mod)**
+
+4) Oils and Scrolls are **NOT** forwards compatible into wkdmod.
 
 So in summary, what can be expected to be forwards compatible are: 
 **--** Character saves with only blue items
